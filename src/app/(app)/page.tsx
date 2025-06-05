@@ -15,24 +15,24 @@ import { MotivationalQuoteCard } from '@/components/shared/MotivationalQuoteCard
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const gridItems = [
-  { id: 'stationery', href: '/delivery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'stationery items', labelEn: 'Stationery', labelHi: 'स्टेशनरी' },
-  { id: 'projects', href: '/study', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school project', labelEn: 'Projects', labelHi: 'परियोजनाएं' },
-  { id: 'assignments', href: '/study', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'homework assignment', labelEn: 'Assignments', labelHi: 'असाइनमेंट' },
-  { id: 'uniforms', href: '/delivery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school uniform', labelEn: 'Uniforms', labelHi: 'वर्दी' },
-  { id: 'elibrary', href: '/class-6-12-books', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'digital library', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी' },
-  { id: 'studysnacks', href: '/delivery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'healthy snacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स' },
-  { id: 'lastminutekits', href: '/delivery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'exam kit', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट' },
-  { id: 'testseries', href: '/test-series', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'mock test', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' },
-  { id: 'parentmode', href: '/parent-mode', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'parental app', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
-  { id: 'dailygyaan', href: '/ai-guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'daily wisdom', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान' },
-  { id: 'guruji', href: '/ai-guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ai tutor', labelEn: 'Guru Ji', labelHi: 'गुरु जी' },
-  { id: 'liveclasses', href: '/study', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'online class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं' },
+  { id: 'stationery', href: '/services/stationery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'stationery items', labelEn: 'Stationery', labelHi: 'स्टेशनरी' },
+  { id: 'projects', href: '/services/projects', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school project', labelEn: 'Projects', labelHi: 'परियोजनाएं' },
+  { id: 'assignments', href: '/services/assignments', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'homework assignment', labelEn: 'Assignments', labelHi: 'असाइनमेंट' },
+  { id: 'uniforms', href: '/services/uniforms', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school uniform', labelEn: 'Uniforms', labelHi: 'वर्दी' },
+  { id: 'elibrary', href: '/services/elibrary', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'digital library', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी' },
+  { id: 'studysnacks', href: '/services/studysnacks', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'healthy snacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स' },
+  { id: 'lastminutekits', href: '/services/lastminutekits', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'exam kit', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट' },
+  { id: 'testseries', href: '/services/testseries', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'mock test', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' },
+  { id: 'parentmode', href: '/services/parentmode', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'parental app', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
+  { id: 'dailygurugyaan', href: '/services/dailygurugyaan', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'daily wisdom', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान' },
+  { id: 'guruji', href: '/services/guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ai tutor', labelEn: 'Guru Ji', labelHi: 'गुरु जी' },
+  { id: 'liveclasses', href: '/services/liveclasses', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'online class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं' },
 ];
 
 
 export default function HomePage() {
   const [currentLanguage, setCurrentLanguage] = useState<'en' | 'hi'>('en');
-  
+
   const toggleLanguage = () => {
     setCurrentLanguage(prev => (prev === 'en' ? 'hi' : 'en'));
   };
@@ -43,7 +43,7 @@ export default function HomePage() {
       <header className="flex items-center justify-between py-3 px-1 mb-3">
         <div className="flex items-center space-x-2">
           <Image
-            src="https://placehold.co/40x40.png" 
+            src="https://placehold.co/40x40.png"
             alt="OSO App Logo"
             width={36}
             height={36}
@@ -67,7 +67,7 @@ export default function HomePage() {
       {/* Special Section: Daily Quote / Brain Tip (Horizontal Scroll) */}
       <ScrollArea className="w-full whitespace-nowrap pb-2.5 px-1">
         <div className="flex space-x-4">
-          <MotivationalQuoteCard /> 
+          <MotivationalQuoteCard />
           {/* Add more cards here for horizontal scroll if needed */}
           {/* Example: <Card className="min-w-[280px]"><CardContent className="p-4">Another tip...</CardContent></Card> */}
         </div>
@@ -77,7 +77,7 @@ export default function HomePage() {
 
       {/* 3x4 Grid of colorful rounded icons */}
       <section className="px-1">
-        <div className="grid grid-cols-3 gap-3 sm:gap-4"> {/* Changed to grid-cols-3 for 3x4 layout */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {gridItems.map((item) => (
             <Link href={item.href} key={item.id} passHref>
               <Card className="aspect-square flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-card hover:bg-muted/50 active:bg-muted/80 rounded-xl shadow-sm">
@@ -87,19 +87,13 @@ export default function HomePage() {
                     alt={currentLanguage === 'en' ? item.labelEn : item.labelHi}
                     layout="fill"
                     objectFit="contain"
-                    className="rounded-sm" 
+                    className="rounded-sm"
                     data-ai-hint={item.dataAiHint}
                   />
                 </div>
-                {currentLanguage === 'en' ? (
-                  <span className="text-[10px] sm:text-xs font-medium text-foreground leading-tight block h-7 overflow-hidden">
-                    {item.labelEn}
-                  </span>
-                ) : (
-                  <span className="text-[10px] sm:text-xs font-medium text-foreground leading-tight block h-7 overflow-hidden">
-                    {item.labelHi}
-                  </span>
-                )}
+                <span className="text-[10px] sm:text-xs font-medium text-foreground leading-tight block h-7 overflow-hidden">
+                   <BilingualText lang={currentLanguage} en={item.labelEn} hi={item.labelHi} />
+                </span>
               </Card>
             </Link>
           ))}
