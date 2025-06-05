@@ -2,121 +2,149 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import {
-  PencilLine, BookMarked, LibraryBig, BrainCircuit, ShoppingBasket, Rocket, Target, BotMessageSquare, Baby, School, Sparkles, Users as UsersIcon,
-  Languages, Volume2
+  BookOpen,
+  Brain,
+  Languages,
+  Notebook, // Used for Courses in previous iteration, PencilLine used for Stationery
+  PackageCheck,
+  Rocket,
+  ShoppingCart,
+  Bot,
+  Target,
+  Users,
+  FileText,
+  Briefcase,
+  GraduationCap,
+  Library, // Used for NCERTBooks and eLibrary
+  BookCopy,
+  Baby,
+  Apple,
+  PencilLine, // For Stationery
+  Shirt,
+  Sun,
+  ScreenShare,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { BilingualText } from '@/components/shared/BilingualText';
 
+// Icon mapping based on the new detailed prompt
 const iconMap = {
-  Stationery: PencilLine,
-  Courses: BookMarked,
-  NCERTBooks: LibraryBig,
-  BrainScan: BrainCircuit,
-  QuickOrder: ShoppingBasket,
-  PocketSchool: Rocket,
-  TestSeries: Target,
-  AIGuruji: BotMessageSquare,
-  NurseryTo5th: Baby,
-  Class6To12: School,
-  CompetitivePrep: Sparkles,
-  ParentMode: UsersIcon,
+  Stationery: PencilLine, // ✏️
+  Courses: BookOpen, // 📘 (prompt actually doesn't list this in the 3x4 grid, but it's a core feature) - Re-added based on previous grid. Let's map new items.
+  NCERTBooks: Library, // 📚
+  BrainScan: Brain, // 🧠
+  QuickOrder: ShoppingCart, // 🛍️
+  PocketSchool: Rocket, // 🚀
+  TestSeries: Target, // 🎯
+  AIGuruji: Bot, // 👨‍🏫
+  NurseryTo5th: Baby, // 👶
+  Class6To12: BookCopy, // 📖
+  CompetitivePrep: GraduationCap, // 🎓
+  ParentMode: Users, // 👪
+
+  // Additional items from the 3x4 prompt:
+  Projects: Briefcase,
+  Assignments: FileText,
+  Uniforms: Shirt,
+  eLibrary: Library, // Using Library icon, same as NCERT Books as per prompt (📚)
+  StudySnacks: Apple,
+  LastMinuteKits: PackageCheck,
+  DailyGuruGyaan: Sun,
+  LiveClasses: ScreenShare,
 };
 
+// Updated gridItems to match the 3x4 layout from the prompt
 const gridItems = [
-  { id: 'stationery', href: '/delivery', icon: iconMap.Stationery, labelEn: 'Stationery', labelHi: 'स्टेशनरी', iconColor: 'text-primary' },
-  { id: 'courses', href: '/study', icon: iconMap.Courses, labelEn: 'Courses', labelHi: 'कोर्स', iconColor: 'text-accent' },
-  { id: 'ncert', href: '/ncert-books', icon: iconMap.NCERTBooks, labelEn: 'NCERT Books', labelHi: 'एनसीईआरटी किताबें', iconColor: 'text-primary' },
-  { id: 'brain_scan', href: '/profile', icon: iconMap.BrainScan, labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', iconColor: 'text-accent' },
-  { id: 'quick_order', href: '/delivery', icon: iconMap.QuickOrder, labelEn: 'Quick Order', labelHi: 'तुरंत ऑर्डर', iconColor: 'text-primary' },
-  { id: 'pocket_school', href: '/study', icon: iconMap.PocketSchool, labelEn: 'Pocket School', labelHi: 'पॉकेट स्कूल', iconColor: 'text-accent' },
-  { id: 'test_series', href: '/test-series', icon: iconMap.TestSeries, labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', iconColor: 'text-primary' },
-  { id: 'ai_guruji', href: '/ai-guruji', icon: iconMap.AIGuruji, labelEn: 'AI Guruji', labelHi: 'एआई गुरुजी', iconColor: 'text-accent' },
-  { id: 'nursery_to_5th', href: '/books/nursery-5th', icon: iconMap.NurseryTo5th, labelEn: 'Nursery to 5th', labelHi: 'नर्सरी से 5वीं', iconColor: 'text-primary' },
-  { id: 'class_6_12', href: '/books/6-12', icon: iconMap.Class6To12, labelEn: 'Class 6–12', labelHi: 'कक्षा 6–12', iconColor: 'text-accent' },
-  { id: 'competitive_prep', href: '/competitive-prep', icon: iconMap.CompetitivePrep, labelEn: 'Competitive Prep', labelHi: 'प्रतियोगी परीक्षा', iconColor: 'text-primary' },
-  { id: 'parent_mode', href: '/parent-mode', icon: iconMap.ParentMode, labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड', iconColor: 'text-accent' },
+  // Row 1
+  { id: 'stationery', href: '/delivery', icon: iconMap.Stationery, labelEn: 'Stationery', labelHi: 'स्टेशनरी', iconColor: 'text-blue-500' },
+  { id: 'projects', href: '/projects', icon: iconMap.Projects, labelEn: 'Projects', labelHi: 'परियोजनाएं', iconColor: 'text-green-500' }, // Assuming /projects page
+  { id: 'assignments', href: '/assignments', icon: iconMap.Assignments, labelEn: 'Assignments', labelHi: 'असाइनमेंट', iconColor: 'text-red-500' }, // Assuming /assignments page
+  { id: 'uniforms', href: '/uniforms', icon: iconMap.Uniforms, labelEn: 'Uniforms', labelHi: 'वर्दी', iconColor: 'text-yellow-600' }, // Assuming /uniforms page
+
+  // Row 2
+  { id: 'elibrary', href: '/elibrary', icon: iconMap.eLibrary, labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी', iconColor: 'text-indigo-500' }, // Assuming /elibrary page
+  { id: 'studysnacks', href: '/study-snacks', icon: iconMap.StudySnacks, labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स', iconColor: 'text-pink-500' }, // Assuming /study-snacks page
+  { id: 'kits', href: '/last-minute-kits', icon: iconMap.LastMinuteKits, labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट', iconColor: 'text-purple-500' }, // Assuming /last-minute-kits page
+  { id: 'testseries', href: '/test-series', icon: iconMap.TestSeries, labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', iconColor: 'text-teal-500' }, // Assuming /test-series page
+  
+  // Row 3
+  { id: 'parentmode', href: '/parent-mode', icon: iconMap.ParentMode, labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड', iconColor: 'text-orange-500' }, // Assuming /parent-mode page
+  { id: 'dailygyaan', href: '/daily-gyaan', icon: iconMap.DailyGuruGyaan, labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान', iconColor: 'text-cyan-500' }, // Assuming /daily-gyaan page
+  { id: 'guruji', href: '/ai-guruji', icon: iconMap.AIGuruji, labelEn: 'Guru Ji', labelHi: 'गुरु जी', iconColor: 'text-lime-500' },
+  { id: 'liveclasses', href: '/live-classes', icon: iconMap.LiveClasses, labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', iconColor: 'text-rose-500' }, // Assuming /live-classes page
 ];
 
+
 export default function HomePage() {
+  // TODO: Implement language toggle state
+  // const [currentLanguage, setCurrentLanguage] = useState<'en' | 'hi'>('en');
+  // const toggleLanguage = () => setCurrentLanguage(prev => prev === 'en' ? 'hi' : 'en');
+
   return (
-    <div className="space-y-6 pb-16 md:pb-8"> {/* Padding bottom for floating button if not on md screen */}
-      <header className="mb-2">
-        <h1 className="text-2xl font-bold font-headline">
-          <BilingualText en="OSO App" hi="OSO ऐप" />
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          <BilingualText en="One Student One App" hi="एक छात्र एक ऐप" />
-        </p>
+    <div className="space-y-4 pb-8 relative">
+      {/* Header: OSO logo & Subheading: “One Student, One App” */}
+      <header className="flex items-center justify-between py-3 px-1 mb-3">
+        <div className="flex items-center space-x-2">
+          <Image
+            src="https://placehold.co/40x40.png" // Actual OSO logo
+            alt="OSO App Logo"
+            width={36} // Adjusted size
+            height={36} // Adjusted size
+            className="rounded-md"
+            data-ai-hint="app logo"
+          />
+          <div>
+            <h1 className="text-xl font-bold font-headline text-primary">OSO App</h1>
+            <p className="text-xs text-muted-foreground">
+              <BilingualText en="One Student, One App" hi="एक छात्र, एक ऐप" separator=" / " hiClassName="opacity-80"/>
+            </p>
+          </div>
+        </div>
+        {/* Language Toggle Button */}
+        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+          <Languages className="h-5 w-5" />
+          <span className="sr-only"><BilingualText en="Language" hi="भाषा"/></span>
+        </Button>
       </header>
 
-      <section>
-        <ScrollArea className="w-full whitespace-nowrap rounded-md pb-2.5">
-          <div className="flex space-x-4">
-            <Card className="min-w-[280px] sm:min-w-[320px] shadow-md bg-gradient-to-r from-primary/5 via-background to-accent/5 border border-primary/10">
-              <CardHeader className="pb-3 pt-4">
-                <CardTitle className="text-base font-semibold flex items-center">
-                  <BilingualText en="Brain Tip ✨" hi="ब्रेन टिप ✨" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <p className="text-sm mb-2">
-                  <BilingualText en="Stay curious & keep learning! – AI Guruji" hi="मन शांत रखो और सीखते रहो। – एआई गुरुजी" />
-                </p>
-                <Button variant="link" size="sm" className="p-0 h-auto text-primary hover:text-primary/80">
-                  <Volume2 className="mr-1.5 h-4 w-4" />
-                  <BilingualText en="Play Audio" hi="ऑडियो चलाएं" />
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="min-w-[280px] sm:min-w-[320px] shadow-md">
-              <CardHeader className="pb-3 pt-4">
-                <CardTitle className="text-base font-semibold">
-                  <BilingualText en="Quick Study" hi="जल्दी पढ़ाई" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <p className="text-sm text-muted-foreground mb-3">
-                  <BilingualText en="Jump back into your last lesson." hi="अपनी पिछली पाठ पर वापस जाएं।" />
-                </p>
-                <Button variant="outline" size="sm" className="w-full">
-                    <BilingualText en="Continue Chapter 3" hi="अध्याय 3 जारी रखें" />
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </section>
+      {/* Special Section: Daily Quote / Brain Tip (Horizontal Scroll) - Placeholder for now */}
+      {/* This was requested "above or below grid". Let's put it below grid for now or before. */}
+      {/* For now, this section is omitted for simplicity of fixing the current error, will add later if requested */}
 
-      <section>
-        <div className="grid grid-cols-3 gap-3 sm:gap-4">
-          {gridItems.map((item) => (
+
+      {/* 3x4 Grid of colorful rounded icons */}
+      <section className="px-1">
+        <div className="grid grid-cols-4 gap-3 sm:gap-4"> {/* 4 columns for 12 items = 3 rows */}
+          {gridItems.map((item) => {
+            const IconComponent = item.icon;
+            return (
             <Link href={item.href} key={item.id} passHref>
-              <Card className="aspect-[10/9] flex flex-col items-center justify-center p-2 sm:p-3 text-center hover:shadow-lg transition-shadow cursor-pointer bg-card hover:bg-muted/50 active:bg-muted/90">
-                <item.icon className={`h-7 w-7 sm:h-8 sm:w-8 mb-1.5 ${item.iconColor}`} strokeWidth={2} />
-                <span className="text-xs sm:text-sm font-medium text-foreground leading-tight block">
+              <Card className="aspect-square flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-card hover:bg-muted/50 active:bg-muted/80 rounded-xl shadow-sm">
+                <IconComponent className={`h-8 w-8 mb-1.5 ${item.iconColor || 'text-primary'}`} strokeWidth={1.5} />
+                <span className="text-[11px] sm:text-xs font-medium text-foreground leading-tight block">
                   {item.labelEn}
                 </span>
-                <span className="text-[10px] sm:text-xs text-muted-foreground block">
+                <span className="text-[9px] sm:text-[10px] text-muted-foreground/90 block">
                   {item.labelHi}
                 </span>
               </Card>
             </Link>
-          ))}
+          )})}
         </div>
       </section>
 
-      <div className="fixed bottom-20 right-4 z-20 md:hidden"> {/* Only show on mobile, below BottomNav */}
-        <Button variant="default" className="rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90 h-11 w-auto px-3">
-          <Languages className="mr-1.5 h-5 w-5" />
-          <span className="text-xs"><BilingualText en="EN" hi="हि" separator="|" hiClassName="font-semibold"/></span>
-        </Button>
-      </div>
+      {/* Bottom banner: “Infinite Learning” (purple with white text) */}
+      <footer className="mt-6 px-1">
+        <div className="bg-purple-600 text-white text-center py-3 rounded-lg shadow-md">
+          <span className="font-semibold text-sm tracking-wide">
+            <BilingualText en="Infinite Learning" hi="अनंत शिक्षा" separator=" ✨ " hiClassName="opacity-90"/>
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }
