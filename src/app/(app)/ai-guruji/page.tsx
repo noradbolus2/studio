@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mic, Send, Volume2, Loader2 } from "lucide-react";
-import Image from "next/image";
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -88,11 +87,11 @@ export default function AiGurujiPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[700px] bg-background rounded-lg shadow-xl border"> {/* Adjust height as needed */}
+    <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
       <header className="p-4 border-b text-center bg-card rounded-t-lg">
         <div className="flex items-center justify-center space-x-3">
            <Avatar className="h-10 w-10">
-            <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="guru avatar spiritual" />
+            <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" />
             <AvatarFallback>AG</AvatarFallback>
           </Avatar>
           <div>
@@ -140,8 +139,7 @@ export default function AiGurujiPage() {
       <footer className="p-3 border-t bg-card rounded-b-lg">
         <form onSubmit={handleSubmit} className="flex items-center space-x-2">
           <Textarea
-            placeholder_en="Ask Guru Ji anything..."
-            placeholder_hi="गुरु जी से कुछ भी पूछें..."
+            placeholder="Ask Guru Ji anything..."
             className="flex-grow resize-none min-h-[40px] max-h-[120px] text-sm"
             rows={1}
             value={inputValue}
