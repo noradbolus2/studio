@@ -3,74 +3,33 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react'; // Added for language state
+import { useState } from 'react';
 import {
-  BookOpen,
-  Brain,
-  Languages,
-  Notebook, 
-  PackageCheck,
-  Rocket,
-  ShoppingCart,
-  Bot,
-  Target,
-  Users,
-  FileText,
-  Briefcase,
-  GraduationCap,
-  Library, 
-  BookCopy,
-  Baby,
-  Apple,
-  PencilLine, 
-  Shirt,
-  Sun,
-  ScreenShare,
+  Languages, // Keep for toggle button
+  // Removed: BookOpen, Brain, Notebook, PackageCheck, Rocket, ShoppingCart, Bot, Target, Users, FileText, Briefcase, GraduationCap, Library, BookCopy, Baby, Apple, PencilLine, Shirt, Sun, ScreenShare
 } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BilingualText } from '@/components/shared/BilingualText';
-import { MotivationalQuoteCard } from '@/components/shared/MotivationalQuoteCard'; // Assuming this is for the daily quote/tip
+import { MotivationalQuoteCard } from '@/components/shared/MotivationalQuoteCard';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-
-const iconMap = {
-  Stationery: PencilLine,
-  Courses: BookOpen, 
-  NCERTBooks: Library,
-  BrainScan: Brain,
-  QuickOrder: ShoppingCart,
-  PocketSchool: Rocket,
-  TestSeries: Target,
-  AIGuruji: Bot,
-  NurseryTo5th: Baby,
-  Class6To12: BookCopy,
-  CompetitivePrep: GraduationCap,
-  ParentMode: Users,
-  Projects: Briefcase,
-  Assignments: FileText,
-  Uniforms: Shirt,
-  eLibrary: Library, 
-  StudySnacks: Apple,
-  LastMinuteKits: PackageCheck,
-  DailyGuruGyaan: Sun,
-  LiveClasses: ScreenShare,
-};
+// Removed iconMap as we are using imageUrls now
 
 const gridItems = [
-  { id: 'stationery', href: '/delivery', icon: iconMap.Stationery, labelEn: 'Stationery', labelHi: 'स्टेशनरी', iconColor: 'text-blue-500' },
-  { id: 'projects', href: '/projects', icon: iconMap.Projects, labelEn: 'Projects', labelHi: 'परियोजनाएं', iconColor: 'text-green-500' },
-  { id: 'assignments', href: '/assignments', icon: iconMap.Assignments, labelEn: 'Assignments', labelHi: 'असाइनमेंट', iconColor: 'text-red-500' },
-  { id: 'uniforms', href: '/uniforms', icon: iconMap.Uniforms, labelEn: 'Uniforms', labelHi: 'वर्दी', iconColor: 'text-yellow-600' },
-  { id: 'elibrary', href: '/class-6-12-books', icon: iconMap.eLibrary, labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी', iconColor: 'text-indigo-500' }, // Pointing to class-6-12-books for now
-  { id: 'studysnacks', href: '/study-snacks', icon: iconMap.StudySnacks, labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स', iconColor: 'text-pink-500' },
-  { id: 'kits', href: '/last-minute-kits', icon: iconMap.LastMinuteKits, labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट', iconColor: 'text-purple-500' },
-  { id: 'testseries', href: '/test-series', icon: iconMap.TestSeries, labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', iconColor: 'text-teal-500' },
-  { id: 'parentmode', href: '/parent-mode', icon: iconMap.ParentMode, labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड', iconColor: 'text-orange-500' },
-  { id: 'dailygyaan', href: '/daily-gyaan', icon: iconMap.DailyGuruGyaan, labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान', iconColor: 'text-cyan-500' },
-  { id: 'guruji', href: '/ai-guruji', icon: iconMap.AIGuruji, labelEn: 'Guru Ji', labelHi: 'गुरु जी', iconColor: 'text-lime-500' },
-  { id: 'liveclasses', href: '/live-classes', icon: iconMap.LiveClasses, labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', iconColor: 'text-rose-500' },
+  { id: 'stationery', href: '/delivery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'stationery items', labelEn: 'Stationery', labelHi: 'स्टेशनरी' },
+  { id: 'projects', href: '/projects', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'project work', labelEn: 'Projects', labelHi: 'परियोजनाएं' },
+  { id: 'assignments', href: '/assignments', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'assignment notebook', labelEn: 'Assignments', labelHi: 'असाइनमेंट' },
+  { id: 'uniforms', href: '/uniforms', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school uniform', labelEn: 'Uniforms', labelHi: 'वर्दी' },
+  { id: 'elibrary', href: '/class-6-12-books', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'digital library', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी' },
+  { id: 'studysnacks', href: '/study-snacks', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'healthy snacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स' },
+  { id: 'kits', href: '/last-minute-kits', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'exam kit', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट' },
+  { id: 'testseries', href: '/test-series', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'test paper', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' },
+  { id: 'parentmode', href: '/parent-mode', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'parent child', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
+  { id: 'dailygyaan', href: '/daily-gyaan', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'wisdom quote', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान' },
+  { id: 'guruji', href: '/ai-guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ai assistant', labelEn: 'Guru Ji', labelHi: 'गुरु जी' },
+  { id: 'liveclasses', href: '/live-classes', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'online class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं' },
 ];
 
 
@@ -122,12 +81,19 @@ export default function HomePage() {
       {/* 3x4 Grid of colorful rounded icons */}
       <section className="px-1">
         <div className="grid grid-cols-4 gap-3 sm:gap-4">
-          {gridItems.map((item) => {
-            const IconComponent = item.icon;
-            return (
+          {gridItems.map((item) => (
             <Link href={item.href} key={item.id} passHref>
               <Card className="aspect-square flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-card hover:bg-muted/50 active:bg-muted/80 rounded-xl shadow-sm">
-                <IconComponent className={`h-7 w-7 sm:h-8 sm:w-8 mb-1.5 ${item.iconColor || 'text-primary'}`} strokeWidth={1.5} />
+                <div className="relative h-7 w-7 sm:h-8 sm:w-8 mb-1.5">
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.labelEn}
+                    layout="fill"
+                    objectFit="contain"
+                    className="rounded-sm" 
+                    data-ai-hint={item.dataAiHint}
+                  />
+                </div>
                 <span className="text-[10px] sm:text-xs font-medium text-foreground leading-tight block">
                   {item.labelEn}
                 </span>
@@ -136,7 +102,7 @@ export default function HomePage() {
                 </span>
               </Card>
             </Link>
-          )})}
+          ))}
         </div>
       </section>
 
