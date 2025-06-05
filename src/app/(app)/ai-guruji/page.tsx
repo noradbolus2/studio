@@ -35,33 +35,59 @@ export default function AiGurujiPage() {
   };
 
   useEffect(() => {
+    console.log("AI Guruji UI: Setting initial message.");
     setMessages([initialGuruMessage]);
   }, []);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
+      console.log("AI Guruji UI: Scrolling to bottom.");
       scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
 
   const handleSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
-    if (!inputValue.trim() || isLoading) return;
+    console.log('AI Guruji UI: handleSubmit called. InputValue:', `"${inputValue}"`, 'IsLoading:', isLoading);
+
+    const trimmedInput = inputValue.trim();
+    if (!trimmedInput || isLoading) {
+      console.log('AI Guruji UI: handleSubmit aborted. Reason: empty input or already loading.');
+      if (!trimmedInput) console.log('Input was empty or whitespace.');
+      if (isLoading) console.log('Already loading.');
+      return;
+    }
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: 'user',
-      textEn: inputValue,
+      textEn: trimmedInput, // Use trimmed input for the message
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
+    setInputValue(''); // Clear input field
     setIsLoading(true);
+    console.log('AI Guruji UI: User message added to state. Input cleared. isLoading set to true.');
 
     try {
-      const gurujiInput: AiGurujiInput = { userInput: userMessage.textEn };
+      console.log('AI Guruji UI: Preparing to call askAiGuruji with input:', trimmedInput);
+      const gurujiInput: AiGurujiInput = { userInput: trimmedInput };
       const response = await askAiGuruji(gurujiInput);
+      console.log('AI Guruji UI: Received response from askAiGuruji:', response);
       
+      if (!response || typeof response.responseTextEn !== 'string' || typeof response.responseTextHi !== 'string') {
+        console.error('AI Guruji UI: Invalid response structure from askAiGuruji:', response);
+        const errorResponse: Message = {
+          id: `guru-error-structure-${Date.now()}`,
+          role: 'guru',
+          textEn: "I apologize, I seem to have formulated my thoughts a bit unusually. Could you ask again?",
+          textHi: "क्षमा करें, मेरे विचार थोड़े असामान्य रूप से बन गए। क्या आप दोबारा पूछ सकते हैं?",
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, errorResponse]);
+        return;
+      }
+
       const guruResponse: Message = {
         id: `guru-${Date.now()}`,
         role: 'guru',
@@ -70,19 +96,22 @@ export default function AiGurujiPage() {
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, guruResponse]);
+      console.log('AI Guruji UI: Guru response message added to state.');
 
     } catch (error) {
-      console.error("Error calling AI Guruji:", error);
+      console.error("AI Guruji UI: Error encountered while calling AI Guruji flow:", error);
       const errorResponse: Message = {
-        id: `guru-error-${Date.now()}`,
+        id: `guru-error-catch-${Date.now()}`,
         role: 'guru',
-        textEn: "I'm sorry, I encountered a little hiccup. Could you please try asking again?",
-        textHi: "क्षमा करें, मुझे थोड़ी सी परेशानी हुई। क्या आप कृपया दोबारा पूछ सकते हैं?",
+        textEn: "I'm sorry, I encountered an unexpected hiccup. Could you please try asking again?",
+        textHi: "क्षमा करें, मुझे एक अप्रत्याशित परेशानी हुई। क्या आप कृपया दोबारा पूछ सकते हैं?",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorResponse]);
+      console.log('AI Guruji UI: Error response message added to state due to catch block.');
     } finally {
       setIsLoading(false);
+      console.log('AI Guruji UI: isLoading set to false in finally block.');
     }
   };
 
