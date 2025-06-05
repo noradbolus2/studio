@@ -2,7 +2,7 @@
 // Placeholder for AI Guruji Voice Chat UI
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Mic, Send, Volume2 } from "lucide-react";
 import Image from "next/image";
@@ -22,7 +22,7 @@ export default function AiGurujiPage() {
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {/* Chat messages will go here */}
         <div className="flex justify-center my-4">
-            <Image src="https://placehold.co/100x100.png" alt="Guru Avatar" width={80} height={80} className="rounded-full data-ai-hint="guru avatar animated" />
+            <Image src="https://placehold.co/100x100.png" alt="Guru Avatar" width={80} height={80} className="rounded-full" data-ai-hint="guru avatar animated" />
         </div>
         <Card className="bg-primary/10 border-primary/20 self-start max-w-xs p-3 rounded-lg">
           <p className="text-sm">
@@ -41,10 +41,10 @@ export default function AiGurujiPage() {
 
       <footer className="p-4 border-t bg-background">
         <div className="flex items-center space-x-2">
-          <Textarea 
-            placeholder_en="Ask Guru Ji anything..." 
-            placeholder_hi="गुरु जी से कुछ भी पूछें..." 
-            className="flex-grow resize-none min-h-[40px] max-h-[100px]" 
+          <Textarea
+            placeholder_en="Ask Guru Ji anything..."
+            placeholder_hi="गुरु जी से कुछ भी पूछें..."
+            className="flex-grow resize-none min-h-[40px] max-h-[100px]"
             rows={1}
           />
           <Button size="icon" variant="ghost" className="text-primary hover:bg-primary/10">
