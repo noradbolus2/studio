@@ -5,8 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import {
-  Languages, // Keep for toggle button
-  // Removed: BookOpen, Brain, Notebook, PackageCheck, Rocket, ShoppingCart, Bot, Target, Users, FileText, Briefcase, GraduationCap, Library, BookCopy, Baby, Apple, PencilLine, Shirt, Sun, ScreenShare
+  Languages,
 } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
@@ -15,21 +14,19 @@ import { BilingualText } from '@/components/shared/BilingualText';
 import { MotivationalQuoteCard } from '@/components/shared/MotivationalQuoteCard';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-// Removed iconMap as we are using imageUrls now
-
 const gridItems = [
   { id: 'stationery', href: '/delivery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'stationery items', labelEn: 'Stationery', labelHi: 'स्टेशनरी' },
-  { id: 'projects', href: '/projects', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'project work', labelEn: 'Projects', labelHi: 'परियोजनाएं' },
-  { id: 'assignments', href: '/assignments', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'assignment notebook', labelEn: 'Assignments', labelHi: 'असाइनमेंट' },
-  { id: 'uniforms', href: '/uniforms', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school uniform', labelEn: 'Uniforms', labelHi: 'वर्दी' },
-  { id: 'elibrary', href: '/class-6-12-books', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'digital library', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी' },
-  { id: 'studysnacks', href: '/study-snacks', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'healthy snacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स' },
-  { id: 'kits', href: '/last-minute-kits', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'exam kit', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट' },
-  { id: 'testseries', href: '/test-series', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'test paper', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' },
-  { id: 'parentmode', href: '/parent-mode', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'parent child', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
-  { id: 'dailygyaan', href: '/daily-gyaan', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'wisdom quote', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान' },
-  { id: 'guruji', href: '/ai-guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ai assistant', labelEn: 'Guru Ji', labelHi: 'गुरु जी' },
-  { id: 'liveclasses', href: '/live-classes', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'online class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं' },
+  { id: 'courses', href: '/study', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'online course', labelEn: 'Courses', labelHi: 'कोर्स' },
+  { id: 'ncertbooks', href: '/class-6-12-books', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ncert textbook', labelEn: 'NCERT Books', labelHi: 'एनसीईआरटी किताबें' },
+  { id: 'brainscan', href: '/brain-scan-report', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'brain scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन' },
+  { id: 'quickorder', href: '/delivery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'fast delivery', labelEn: 'Quick Order', labelHi: 'तुरंत ऑर्डर' },
+  { id: 'pocketschool', href: '/study-dashboard', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'offline study', labelEn: 'Pocket School', labelHi: 'पॉकेट स्कूल' },
+  { id: 'testseries', href: '/test-series', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'mock test', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' },
+  { id: 'aiguruji', href: '/ai-guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ai tutor', labelEn: 'AI Guruji', labelHi: 'एआई गुरुजी' },
+  { id: 'nurserybooks', href: '/class-6-12-books?category=nursery-5', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'kids books', labelEn: 'Nursery to 5th', labelHi: 'नर्सरी से 5वीं' }, // Shortened English label for space
+  { id: 'class6to12books', href: '/class-6-12-books?category=6-12', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school textbook', labelEn: 'Class 6–12', labelHi: 'कक्षा 6–12' }, // Shortened English label for space
+  { id: 'competitiveprep', href: '/competitive-bookstore', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'exam prep', labelEn: 'Competitive', labelHi: 'प्रतियोगी परीक्षा' }, // Shortened English label
+  { id: 'parentmode', href: '/parent-mode', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'parental app', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
 ];
 
 
@@ -80,7 +77,7 @@ export default function HomePage() {
 
       {/* 3x4 Grid of colorful rounded icons */}
       <section className="px-1">
-        <div className="grid grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4"> {/* Changed to grid-cols-3 for 3x4 layout */}
           {gridItems.map((item) => (
             <Link href={item.href} key={item.id} passHref>
               <Card className="aspect-square flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-card hover:bg-muted/50 active:bg-muted/80 rounded-xl shadow-sm">
