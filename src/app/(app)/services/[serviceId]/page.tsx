@@ -2,11 +2,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent, useRef } from 'react';
-import { useParams } from 'next/navigation'; 
-// STEP 1: Import Firebase and your db instance.
-// Make sure you have created `src/lib/firebase.ts` as described in the instructions.
-// import { db } from '@/lib/firebase'; 
-// import { doc, getDoc } from 'firebase/firestore';
+import { useParams, useRouter } from 'next/navigation'; 
 
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { BilingualText } from '@/components/shared/BilingualText';
@@ -54,10 +50,12 @@ type ServicePageParams = {
 export default function ServicePage() {
   const params = useParams<ServicePageParams>();
   const serviceId = params.serviceId; 
+  const router = useRouter();
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const [servicePageChatInputValue, setServicePageChatInputValue] = useState('');
   const [servicePageChatMessages, setServicePageChatMessages] = useState<ServiceChatMessage[]>([]);
@@ -70,10 +68,11 @@ export default function ServicePage() {
       const fetchServiceData = async () => {
         setLoading(true);
         setError(null);
+        setIsRedirecting(false); // Reset redirecting state
         setServicePageChatMessages([]); 
         try {
           console.log(`Fetching mock data for serviceId: ${serviceId}`);
-          await new Promise(resolve => setTimeout(resolve, 1000)); 
+          await new Promise(resolve => setTimeout(resolve, 500)); // Reduced timeout for faster load/redirect
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
@@ -116,6 +115,19 @@ export default function ServicePage() {
       servicePageChatScrollAreaRef.current.scrollTo({ top: servicePageChatScrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [servicePageChatMessages]);
+
+  useEffect(() => {
+    if (serviceData && serviceData.type === 'books_list_page' && serviceData.data?.redirectTo && !loading && router) {
+      setIsRedirecting(true);
+      router.push(serviceData.data.redirectTo);
+    } else {
+      // Reset if serviceData changes to something not requiring redirection
+      if (serviceData && serviceData.type !== 'books_list_page') {
+        setIsRedirecting(false);
+      }
+    }
+  }, [serviceData, loading, router]);
+
 
   const handleServicePageChatSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
@@ -181,6 +193,21 @@ export default function ServicePage() {
     );
   }
 
+  if (isRedirecting && serviceData?.type === 'books_list_page' && serviceData.data?.redirectTo) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
+        <LoadingSpinner size={48} />
+        <p className="mt-4 text-muted-foreground">
+          <BilingualText 
+            en={`Redirecting to ${serviceData.name}...`} 
+            hi={`${serviceData.name} पर रीडायरेक्ट किया जा रहा है...`} 
+          />
+        </p>
+      </div>
+    );
+  }
+
+
   if (error && !serviceData) {
     const isInfoError = error.startsWith(INFO_PREFIX);
     const displayMessage = isInfoError ? error.substring(INFO_PREFIX.length) : error;
@@ -229,19 +256,33 @@ export default function ServicePage() {
   const renderServiceContent = () => {
     switch (serviceData.type) {
       case 'books_list_page':
-        if (serviceData.data?.redirectTo) {
+        // This case should ideally be handled by the isRedirecting block above.
+        // If somehow reached, it means redirection isn't configured or failed to initiate.
+        if (!serviceData.data?.redirectTo) {
           return (
-            <div className="text-center">
-              <p className="mb-4"><BilingualText en={`This section will take you to ${serviceData.name}.`} hi={`यह अनुभाग आपको ${serviceData.name} पर ले जाएगा।`} /></p>
-              <Button asChild>
-                <Link href={serviceData.data.redirectTo}>
-                  <BilingualText en={`Go to ${serviceData.name}`} hi={`${serviceData.name} पर जाएं`} />
-                </Link>
-              </Button>
-            </div>
+            <Alert variant="default">
+              <AlertTitle><BilingualText en="Configuration Issue" hi="कॉन्फ़िगरेशन समस्या" /></AlertTitle>
+              <AlertDescription>
+                <BilingualText 
+                  en={`The service "${serviceData.name}" is intended for redirection but is not configured correctly.`} 
+                  hi={`सेवा "${serviceData.name}" रीडायरेक्शन के लिए है लेकिन सही ढंग से कॉन्फ़िगर नहीं है।`} 
+                />
+              </AlertDescription>
+            </Alert>
           );
         }
-        return <p><BilingualText en="Book listing will appear here." hi="पुस्तक सूची यहाँ दिखाई देगी।" /></p>;
+        // Fallback if isRedirecting state didn't catch it (should be rare)
+        return (
+            <div className="text-center py-10">
+              <LoadingSpinner size={32} />
+              <p className="mt-2 text-muted-foreground">
+                <BilingualText 
+                    en={`Preparing to go to ${serviceData.name}...`} 
+                    hi={`${serviceData.name} पर जाने की तैयारी हो रही है...`} 
+                />
+              </p>
+            </div>
+        );
       
       case 'chat_interface':
         return (
@@ -325,12 +366,12 @@ export default function ServicePage() {
     }
   };
 
-  // Determine if the main title should be hidden for chat interface
-  const hideMainTitleForChat = serviceData?.type === 'chat_interface';
+  // Determine if the main title should be hidden for chat interface OR redirection
+  const hideMainElements = serviceData?.type === 'chat_interface' || (serviceData?.type === 'books_list_page' && !!serviceData.data?.redirectTo);
 
   return (
     <div className="space-y-6">
-      {!hideMainTitleForChat && (
+      {!hideMainElements && (
         <header className="py-4">
           <h1 className="text-3xl font-bold font-headline text-primary">
             <BilingualText en={serviceData?.name || "Service"} hi={serviceData?.name || "सेवा"} />
@@ -343,18 +384,17 @@ export default function ServicePage() {
         </header>
       )}
 
-      {/* Conditionally render the Card wrapper or directly the chat interface */}
-      {serviceData?.type === 'chat_interface' ? (
+      {serviceData?.type === 'chat_interface' || (serviceData?.type === 'books_list_page' && !serviceData.data?.redirectTo) ? ( // Render chat or book list page with misconfiguration
         renderServiceContent()
-      ) : (
+      ) : !hideMainElements ? ( // For other types, wrap in a card if not hidden
         <Card>
           <CardContent className="pt-6">
             {renderServiceContent()}
           </CardContent>
         </Card>
-      )}
+      ) : null /* For books_list_page with redirectTo, content is handled by isRedirecting block */}
 
-      {!hideMainTitleForChat && (
+      {!hideMainElements && (
         <div className="text-center mt-8">
               <Button asChild variant="outline">
                   <Link href="/">
@@ -366,3 +406,4 @@ export default function ServicePage() {
     </div>
   );
 }
+
