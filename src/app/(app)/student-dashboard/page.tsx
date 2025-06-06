@@ -1,12 +1,106 @@
 
-// src/app/(app)/student-dashboard/page.tsx
+"use client";
+
+import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { School, BookOpen, MessageSquare, ShoppingCart, ArrowRight } from "lucide-react";
+import { School, BookOpen, MessageSquare, ShoppingCart, ArrowRight, Send, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from '@/lib/utils';
+import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
+
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'guru';
+  textEn: string;
+  textHi?: string;
+  timestamp: Date;
+}
 
 export default function StudentDashboardPage() {
+  const [gurujiInputValue, setGurujiInputValue] = useState('');
+  const [gurujiMessages, setGurujiMessages] = useState<ChatMessage[]>([]);
+  const [isGurujiLoading, setIsGurujiLoading] = useState(false);
+  const gurujiScrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Initial welcome message for the embedded chat
+    setGurujiMessages([
+      {
+        id: 'guruji-initial-dash',
+        role: 'guru',
+        textEn: "Namaste! How can I assist you on your dashboard today?",
+        textHi: "नमस्ते! आज मैं आपके डैशबोर्ड पर कैसे सहायता कर सकता हूँ?",
+        timestamp: new Date(),
+      }
+    ]);
+  }, []);
+
+  useEffect(() => {
+    if (gurujiScrollAreaRef.current) {
+      gurujiScrollAreaRef.current.scrollTo({ top: gurujiScrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+    }
+  }, [gurujiMessages]);
+
+  const handleGurujiSubmit = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmedInput = gurujiInputValue.trim();
+    if (!trimmedInput || isGurujiLoading) return;
+
+    const userMessage: ChatMessage = {
+      id: `user-dash-${Date.now()}`,
+      role: 'user',
+      textEn: trimmedInput,
+      timestamp: new Date(),
+    };
+    setGurujiMessages(prev => [...prev, userMessage]);
+    setGurujiInputValue('');
+    setIsGurujiLoading(true);
+
+    try {
+      const gurujiApiInput: AiGurujiInput = { userInput: trimmedInput };
+      const response = await askAiGuruji(gurujiApiInput);
+      
+      if (!response || typeof response.responseTextEn !== 'string' || typeof response.responseTextHi !== 'string') {
+        const errorResponse: ChatMessage = {
+          id: `guru-dash-error-structure-${Date.now()}`,
+          role: 'guru',
+          textEn: "I had a slight issue formulating my thoughts. Could you try asking differently?",
+          textHi: "मुझे अपने विचार बनाने में थोड़ी समस्या हुई। क्या आप अलग तरह से पूछ सकते हैं?",
+          timestamp: new Date(),
+        };
+        setGurujiMessages(prev => [...prev, errorResponse]);
+        return;
+      }
+
+      const guruResponse: ChatMessage = {
+        id: `guru-dash-${Date.now()}`,
+        role: 'guru',
+        textEn: response.responseTextEn,
+        textHi: response.responseTextHi,
+        timestamp: new Date(),
+      };
+      setGurujiMessages(prev => [...prev, guruResponse]);
+
+    } catch (error) {
+      console.error("Student Dashboard Guruji Error:", error);
+      const errorResponse: ChatMessage = {
+        id: `guru-dash-error-catch-${Date.now()}`,
+        role: 'guru',
+        textEn: "Sorry, an unexpected hiccup occurred. Please try again.",
+        textHi: "क्षमा करें, एक अप्रत्याशित परेशानी हुई। कृपया दोबारा पूछें।",
+        timestamp: new Date(),
+      };
+      setGurujiMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsGurujiLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <header className="text-center">
@@ -15,12 +109,12 @@ export default function StudentDashboardPage() {
           <BilingualText en="Student Dashboard" hi="छात्र डैशबोर्ड" />
         </h1>
         <p className="text-muted-foreground">
-          <BilingualText en="Welcome, Student! Access your learning tools here." hi="आपका स्वागत है, छात्र! अपने शिक्षण उपकरण यहाँ एक्सेस करें।" />
+          <BilingualText en="Welcome! Access your learning tools here." hi="आपका स्वागत है! अपने शिक्षण उपकरण यहाँ एक्सेस करें।" />
         </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow md:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline">
               <BookOpen className="text-accent h-6 w-6" />
@@ -44,31 +138,75 @@ export default function StudentDashboardPage() {
           </CardFooter>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-headline">
-              <MessageSquare className="text-primary h-6 w-6" />
-              <BilingualText en="Ask Guruji" hi="गुरुजी से पूछें" />
-            </CardTitle>
-            <CardDescription>
-              <BilingualText en="Get your doubts cleared by our AI assistant." hi="हमारे एआई सहायक से अपनी शंकाओं का समाधान पाएं।" />
-            </CardDescription>
+        {/* AI Guruji Chat Card - Modified for Chat */}
+        <Card className="hover:shadow-lg transition-shadow md:col-span-2 flex flex-col max-h-[500px]">
+          <CardHeader className="flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="guru animated"/>
+                <AvatarFallback>AG</AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle className="font-headline">
+                  <BilingualText en="Ask Guruji" hi="गुरुजी से पूछें" />
+                </CardTitle>
+                <CardDescription>
+                  <BilingualText en="Get your doubts cleared instantly." hi="अपनी शंकाओं का तुरंत समाधान पाएं।" />
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent>
-             <p className="text-muted-foreground text-sm">
-                <BilingualText en="[Placeholder for quick access to AI Guruji chat]" hi="[एआई गुरुजी चैट तक त्वरित पहुंच के लिए प्लेसहोल्डर]" />
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild className="w-full">
-              <Link href="/ai-guruji">
-                <BilingualText en="Chat with Guruji" hi="गुरुजी से चैट करें" /> <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+          <ScrollArea ref={gurujiScrollAreaRef} className="flex-grow p-4 space-y-3 bg-muted/20">
+            {gurujiMessages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  "p-2.5 rounded-lg max-w-[85%] shadow-sm text-sm flex flex-col",
+                  msg.role === 'user' ? "bg-primary text-primary-foreground self-end ml-auto" : "bg-card text-card-foreground self-start mr-auto border"
+                )}
+              >
+                <p className="whitespace-pre-wrap">{msg.textEn}</p>
+                {msg.role === 'guru' && msg.textHi && (
+                  <p className="text-xs whitespace-pre-wrap mt-1 opacity-80">{msg.textHi}</p>
+                )}
+              </div>
+            ))}
+            {isGurujiLoading && (
+              <div className="flex justify-start">
+                <div className="bg-card text-card-foreground self-start mr-auto p-2.5 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    <p className="text-xs text-muted-foreground"><BilingualText en="Guruji is thinking..." hi="गुरुजी सोच रहे हैं..."/></p>
+                </div>
+              </div>
+            )}
+          </ScrollArea>
+          <CardFooter className="p-3 border-t bg-card flex-shrink-0">
+            <form onSubmit={handleGurujiSubmit} className="flex items-center space-x-2 w-full">
+              <Textarea
+                placeholder_en="Ask Guruji anything..."
+                placeholder_hi="गुरुजी से कुछ भी पूछें..."
+                className="flex-grow resize-none min-h-[40px] max-h-[100px] text-sm"
+                rows={1}
+                value={gurujiInputValue}
+                onChange={(e) => setGurujiInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleGurujiSubmit();
+                  }
+                }}
+                disabled={isGurujiLoading}
+              />
+              <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0" disabled={isGurujiLoading || !gurujiInputValue.trim()}>
+                {isGurujiLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                <span className="sr-only"><BilingualText en="Send" hi="भेजें"/></span>
+              </Button>
+            </form>
           </CardFooter>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
+
+        <Card className="hover:shadow-lg transition-shadow md:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline">
               <ShoppingCart className="text-green-500 h-6 w-6" />
@@ -95,3 +233,13 @@ export default function StudentDashboardPage() {
     </div>
   );
 }
+
+// Add placeholder to Textarea component for bilingual support if not already done globally
+declare module 'react' {
+    interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
+  }
+
+    
