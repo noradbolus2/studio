@@ -13,11 +13,13 @@ import { BilingualText } from '@/components/shared/BilingualText';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/ui/input'; // Keep for other service types if needed, or remove if only Textarea is used for chat
+import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Send } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 
@@ -26,7 +28,15 @@ interface ServiceData {
   name: string;
   type: string;
   description?: string;
-  data?: any; // This can be more specific based on your needs
+  data?: {
+    redirectTo?: string;
+    avatarUrl?: string;
+    initialGreetingEn?: string;
+    initialGreetingHi?: string;
+    content?: string;
+    category?: string;
+    // Add other potential data fields here
+  };
 }
 
 const INFO_PREFIX = "INFO: ";
@@ -89,7 +99,7 @@ export default function ServicePage() {
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", initialGreetingEn: "Namaste! How can I help you today on this page?", initialGreetingHi: "नमस्ते! आज मैं इस पेज पर आपकी कैसे मदद कर सकता हूँ?"}},
-            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { category: "stationery_essentials" }},
+            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️" }},
             projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
             assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
             // Add more mock data entries for other serviceIds as needed
@@ -259,55 +269,76 @@ export default function ServicePage() {
       
       case 'chat_interface':
         return (
-          <div className="border p-4 rounded-md bg-muted/50 min-h-[450px] flex flex-col h-full">
-            <p className="text-center text-lg font-semibold mb-1">
-              <BilingualText en={`Chat with ${serviceData.name}`} hi={`${serviceData.name} के साथ चैट करें`} />
-            </p>
-            {serviceData.description && <p className="text-center text-sm text-muted-foreground mb-3"><BilingualText en={serviceData.description} hi={serviceData.description} /></p>}
-            
-            <ScrollArea className="flex-grow mb-3 p-2 border rounded-md bg-background min-h-[250px]">
+          <Card className="flex flex-col h-[calc(100vh-16rem)] md:h-[calc(100vh-12rem)] max-h-[600px] bg-background rounded-lg shadow-xl border">
+            <header className="p-4 border-b bg-card rounded-t-lg">
+              <div className="flex items-center justify-center space-x-3">
+                {serviceData.data?.avatarUrl && (
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint="service avatar" />
+                    <AvatarFallback>{serviceData.name.substring(0,2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                )}
+                <div>
+                  <h2 className="text-xl font-bold font-headline text-primary">
+                    <BilingualText en={serviceData.name} hi={serviceData.name} />
+                  </h2>
+                  {serviceData.description && (
+                    <p className="text-xs text-muted-foreground">
+                      <BilingualText en={serviceData.description} hi={serviceData.description} />
+                    </p>
+                  )}
+                </div>
+              </div>
+            </header>
+
+            <ScrollArea className="flex-grow overflow-y-auto p-4 space-y-4 bg-muted/20">
               {servicePageChatMessages.map((msg) => (
                 <Card
                     key={msg.id}
                     className={cn(
-                    "p-2.5 rounded-lg max-w-[85%] shadow-sm text-sm mb-2",
+                    "p-3 rounded-lg max-w-[80%] sm:max-w-[70%] shadow-sm",
                     msg.role === 'user' ? "bg-primary text-primary-foreground self-end ml-auto" : "bg-card text-card-foreground self-start mr-auto border"
                     )}
                 >
-                    <p className="whitespace-pre-wrap">{msg.textEn}</p>
+                    <p className="text-sm whitespace-pre-wrap">{msg.textEn}</p>
                     {msg.role === 'guru' && msg.textHi && (
-                    <p className="text-xs whitespace-pre-wrap mt-1 opacity-80">{msg.textHi}</p>
+                    <p className="text-sm whitespace-pre-wrap mt-1 opacity-90">{msg.textHi}</p>
                     )}
                 </Card>
               ))}
               {servicePageChatIsLoading && (
-                <div className="flex items-center space-x-2 p-2 justify-start">
-                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  <span className="text-xs text-muted-foreground"><BilingualText en="Thinking..." hi="सोच रहा है..."/></span>
+                <div className="flex justify-start">
+                    <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                        <p className="text-sm text-muted-foreground"><BilingualText en="Guruji is thinking..." hi="गुरुजी सोच रहे हैं..."/></p>
+                    </Card>
                 </div>
               )}
             </ScrollArea>
-            
-            <form onSubmit={handleServicePageChatSubmit} className="flex items-center space-x-2 mt-auto">
-              <Input 
-                type="text" 
-                value={servicePageChatInputValue}
-                onChange={(e) => setServicePageChatInputValue(e.target.value)}
-                placeholder="Ask something..."
-                className="flex-grow"
-                disabled={servicePageChatIsLoading}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleServicePageChatSubmit();
-                  }
-                }}
-              />
-              <Button type="submit" size="icon" disabled={servicePageChatIsLoading || !servicePageChatInputValue.trim()}>
-                {servicePageChatIsLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              </Button>
-            </form>
-          </div>
+
+            <footer className="p-3 border-t bg-card rounded-b-lg">
+              <form onSubmit={handleServicePageChatSubmit} className="flex items-center space-x-2">
+                <Textarea 
+                  value={servicePageChatInputValue}
+                  onChange={(e) => setServicePageChatInputValue(e.target.value)}
+                  placeholder="Ask your question..."
+                  className="flex-grow resize-none min-h-[40px] max-h-[120px] text-sm"
+                  rows={1}
+                  disabled={servicePageChatIsLoading}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleServicePageChatSubmit();
+                    }
+                  }}
+                />
+                <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0" disabled={servicePageChatIsLoading || !servicePageChatInputValue.trim()}>
+                  {servicePageChatIsLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                  <span className="sr-only"><BilingualText en="Send" hi="भेजें"/></span>
+                </Button>
+              </form>
+            </footer>
+          </Card>
         );
 
       case 'product_listing':
