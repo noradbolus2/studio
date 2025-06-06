@@ -2,7 +2,7 @@
 // Placeholder for Brain Scan Aura Report UI
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Zap, TrendingUp, TrendingDown, Smile } from "lucide-react";
+import { Brain, Zap, TrendingUp, TrendingDown, Smile, Sun } from "lucide-react"; // Added Sun import
 
 // Mock data - replace with actual data fetching
 const auraReportData = {
@@ -105,3 +105,4 @@ export default function BrainScanReportPage() {
     </div>
   );
 }
+
