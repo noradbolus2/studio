@@ -32,14 +32,14 @@ const gridItems = [
 
 const sampleQuotes = [
   { en: "The best way to predict the future is to create it.", authorEn: "Peter Drucker", hi: "भविष्य की भविष्यवाणी करने का सबसे अच्छा तरीका इसे बनाना है।", authorHi: "पीटर ड्रकर" },
-  { en: "Your limitation—it's only your imagination.", authorEn: "Unknown", hi: "आपकी सीमा-यह सिर्फ आपकी कल्पना है।", authorHi: "अज्ञात" },
-  { en: "Push yourself, because no one else is going to do it for you.", authorEn: "Unknown", hi: "खुद को धकेलो, क्योंकि कोई और तुम्हारे लिए यह नहीं करेगा।", authorHi: "अज्ञात" },
-  { en: "Great things never come from comfort zones.", authorEn: "Unknown", hi: "महान चीजें कभी भी आराम क्षेत्र से नहीं आती हैं।", authorHi: "अज्ञात" },
-  { en: "Dream it. Wish it. Do it.", authorEn: "Unknown", hi: "सपना देखो। इच्छा करो। कर डालो।", authorHi: "अज्ञात" },
-  { en: "Success doesn’t just find you. You have to go out and get it.", authorEn: "Unknown", hi: "सफलता तुम्हें ढूंढती नहीं है। तुम्हें बाहर जाकर उसे पाना होगा।", authorHi: "अज्ञात" },
-  { en: "The harder you work for something, the greater you’ll feel when you achieve it.", authorEn: "Unknown", hi: "आप किसी चीज़ के लिए जितनी मेहनत करते हैं, उसे हासिल करने पर उतना ही अच्छा महसूस करेंगे।", authorHi: "अज्ञात" },
-  { en: "Don't stop when you're tired. Stop when you're done.", authorEn: "Unknown", hi: "थकने पर मत रुको। जब काम पूरा हो जाए तब रुको।", authorHi: "अज्ञात" },
-  { en: "Wake up with determination. Go to bed with satisfaction.", authorEn: "Unknown", hi: "दृढ़ संकल्प के साथ जागो। संतुष्टि के साथ सो जाओ।", authorHi: "अज्ञात" },
+  { en: "Your limitation—it's only your imagination.", authorEn: "Anonymous", hi: "आपकी सीमा-यह सिर्फ आपकी कल्पना है।", authorHi: "गुमनाम" },
+  { en: "Push yourself, because no one else is going to do it for you.", authorEn: "Anonymous", hi: "खुद को धकेलो, क्योंकि कोई और तुम्हारे लिए यह नहीं करेगा।", authorHi: "गुमनाम" },
+  { en: "Great things never come from comfort zones.", authorEn: "Anonymous", hi: "महान चीजें कभी भी आराम क्षेत्र से नहीं आती हैं।", authorHi: "गुमनाम" },
+  { en: "Dream it. Wish it. Do it.", authorEn: "Anonymous", hi: "सपना देखो। इच्छा करो। कर डालो।", authorHi: "गुमनाम" },
+  { en: "Success doesn’t just find you. You have to go out and get it.", authorEn: "Anonymous", hi: "सफलता तुम्हें ढूंढती नहीं है। तुम्हें बाहर जाकर उसे पाना होगा।", authorHi: "गुमनाम" },
+  { en: "The harder you work for something, the greater you’ll feel when you achieve it.", authorEn: "Anonymous", hi: "आप किसी चीज़ के लिए जितनी मेहनत करते हैं, उसे हासिल करने पर उतना ही अच्छा महसूस करेंगे।", authorHi: "गुमनाम" },
+  { en: "Don't stop when you're tired. Stop when you're done.", authorEn: "Anonymous", hi: "थकने पर मत रुको। जब काम पूरा हो जाए तब रुको।", authorHi: "गुमनाम" },
+  { en: "Wake up with determination. Go to bed with satisfaction.", authorEn: "Anonymous", hi: "दृढ़ संकल्प के साथ जागो। संतुष्टि के साथ सो जाओ।", authorHi: "गुमनाम" },
   { en: "Do something today that your future self will thank you for.", authorEn: "Sean Patrick Flanery", hi: "आज कुछ ऐसा करो जिसके लिए तुम्हारा भविष्य का तुम धन्यवाद करोगे।", authorHi: "शॉन पैट्रिक फ्लैनरी" },
 ];
 
@@ -150,3 +150,4 @@ export default function HomePage() {
     </div>
   );
 }
+
