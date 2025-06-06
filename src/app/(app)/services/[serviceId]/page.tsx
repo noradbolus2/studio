@@ -97,7 +97,7 @@ export default function ServicePage() {
           await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
-            guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", initialGreetingEn: "Namaste! How can I help you today on this page?", initialGreetingHi: "नमस्ते! आज मैं इस पेज पर आपकी कैसे मदद कर सकता हूँ?"}},
+            guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?", initialGreetingHi: "नमस्ते! आज मैं इस पेज पर आपकी कैसे मदद कर सकता हूँ?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️" }},
             projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
             assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
@@ -268,12 +268,12 @@ export default function ServicePage() {
       
       case 'chat_interface':
         return (
-          <div className="flex flex-col h-[calc(100vh-16rem)] md:h-[calc(100vh-12rem)] max-h-[600px] bg-background rounded-lg shadow-xl border">
+          <div className="flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
             <header className="p-4 border-b text-center bg-card rounded-t-lg">
               <div className="flex items-center justify-center space-x-3">
                 {serviceData.data?.avatarUrl && (
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint="monk teaching" />
+                    <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data?.dataAiHint || "avatar"} />
                     <AvatarFallback>{serviceData.name.substring(0,2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                 )}
