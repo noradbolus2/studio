@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, useRef } from 'react';
 import { useParams } from 'next/navigation'; 
 // STEP 1: Import Firebase and your db instance.
 // Make sure you have created `src/lib/firebase.ts` as described in the instructions.
@@ -31,8 +31,8 @@ interface ServiceData {
     redirectTo?: string;
     avatarUrl?: string;
     dataAiHint?: string;
-    initialGreetingEn?: string; // Kept for initial display before language detection
-    initialGreetingHi?: string; // Kept for initial display before language detection
+    initialGreetingEn?: string; 
+    initialGreetingHi?: string; 
     content?: string;
     category?: string;
   };
@@ -43,7 +43,7 @@ const INFO_PREFIX = "INFO: ";
 interface ServiceChatMessage {
   id: string;
   role: 'user' | 'guru';
-  text: string; // Single text field
+  text: string; 
   timestamp: Date;
 }
 
@@ -85,7 +85,7 @@ export default function ServicePage() {
               setServicePageChatMessages([{ 
                 id: `guru-initial-${Date.now()}`, 
                 role: 'guru', 
-                text: fetchedData.data.initialGreetingEn, // Default to English initial greeting
+                text: fetchedData.data.initialGreetingEn, 
                 timestamp: new Date() 
               }]);
             }
@@ -349,3 +349,4 @@ export default function ServicePage() {
     </div>
   );
 }
+
