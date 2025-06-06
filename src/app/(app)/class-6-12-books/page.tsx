@@ -26,37 +26,36 @@ interface NcertBook {
 
 const allNcertBooks: NcertBook[] = [
   // Class 6
-  { id: 'c6_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 6, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "maths textbook", status: 'free' },
-  { id: 'c6_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 6, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "science textbook", status: 'free' },
-  { id: 'c6_history_e', titleEn: 'Our Pasts - I', titleHi: 'हमारे अतीत - I', class: 6, subjectEn: 'Social Science', subjectHi: 'सामाजिक विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "history textbook", status: 'free' },
-  { id: 'c6_math_h', titleEn: 'Mathematics (Hindi Med.)', titleHi: 'गणित', class: 6, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "maths textbook hindi", status: 'free' },
+  { id: 'c6_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 6, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1509869175650-a1d97972541a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'free' },
+  { id: 'c6_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 6, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1535127022272-dbe7ee35cf33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzY2llbmNlJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook", status: 'free' },
+  { id: 'c6_history_e', titleEn: 'Our Pasts - I', titleHi: 'हमारे अतीत - I', class: 6, subjectEn: 'Social Science', subjectHi: 'सामाजिक विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1597702383730-b93abf770373?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxoaXN0b3J5JTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "history textbook", status: 'free' },
+  { id: 'c6_math_h', titleEn: 'Mathematics (Hindi Med.)', titleHi: 'गणित', class: 6, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1616911389588-c75b7d4c5cc5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYXRocyUyMHRleHRib29rJTIwaGluZGl8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook hindi", status: 'free' },
   
   // Class 7
-  { id: 'c7_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 7, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "maths textbook", status: 'buy' },
-  { id: 'c7_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 7, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "science textbook", status: 'free' },
+  { id: 'c7_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 7, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1666281269793-da06484657e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'buy' },
+  { id: 'c7_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 7, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzY2llbmNlJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook", status: 'free' },
 
   // Class 8
-  { id: 'c8_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 8, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "maths textbook", status: 'free' },
-  { id: 'c8_science_h', titleEn: 'Science (Hindi Med.)', titleHi: 'विज्ञान', class: 8, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "science textbook hindi", status: 'buy' },
+  { id: 'c8_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 8, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'free' },
+  { id: 'c8_science_h', titleEn: 'Science (Hindi Med.)', titleHi: 'विज्ञान', class: 8, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzY2llbmNlJTIwdGV4dGJvb2slMjBoaW5kaXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook hindi", status: 'buy' },
 
   // Class 9
-  { id: 'c9_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 9, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "maths textbook", status: 'free' },
-  { id: 'c9_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 9, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "science textbook", status: 'free' },
-  { id: 'c9_sst_sb_e', titleEn: 'Social Studies', titleHi: 'सामाजिक अध्ययन', class: 9, subjectEn: 'Social Science', subjectHi: 'सामाजिक विज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "social studies textbook", status: 'free' },
-
+  { id: 'c9_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 9, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1509869175650-a1d97972541a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'free' },
+  { id: 'c9_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 9, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1475906089153-644d9452ce87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook", status: 'free' },
+  { id: 'c9_sst_sb_e', titleEn: 'Social Studies', titleHi: 'सामाजिक अध्ययन', class: 9, subjectEn: 'Social Science', subjectHi: 'सामाजिक विज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzb2NpYWwlMjBzdHVkaWVzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "social studies textbook", status: 'free' },
 
   // Class 10
-  { id: 'c10_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 10, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "maths textbook", status: 'buy' },
-  { id: 'c10_science_h', titleEn: 'Science (Hindi Med.)', titleHi: 'विज्ञान', class: 10, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "science textbook hindi", status: 'free' },
+  { id: 'c10_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 10, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'buy' },
+  { id: 'c10_science_h', titleEn: 'Science (Hindi Med.)', titleHi: 'विज्ञान', class: 10, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2slMjBoaW5kaXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook hindi", status: 'free' },
 
   // Class 11
-  { id: 'c11_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 11, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "physics textbook", status: 'free' },
-  { id: 'c11_chemistry1_h', titleEn: 'Chemistry Part-I (Hindi Med.)', titleHi: 'रसायन विज्ञान भाग-I', class: 11, subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "chemistry textbook hindi", status: 'buy' },
+  { id: 'c11_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 11, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1707510917424-2d66055df14d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwaHlzaWNzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "physics textbook", status: 'free' },
+  { id: 'c11_chemistry1_h', titleEn: 'Chemistry Part-I (Hindi Med.)', titleHi: 'रसायन विज्ञान भाग-I', class: 11, subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1616908842279-1fdbda128284?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGVtaXN0cnklMjB0ZXh0Ym9vayUyMGhpbmRpfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "chemistry textbook hindi", status: 'buy' },
 
   // Class 12
-  { id: 'c12_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 12, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "physics textbook", status: 'free' },
-  { id: 'c12_maths1_h', titleEn: 'Mathematics Part-I (Hindi Med.)', titleHi: 'गणित भाग-I', class: 12, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "maths textbook hindi", status: 'buy' },
-  { id: 'c12_biology_sb_e', titleEn: 'Biology', titleHi: 'जीवविज्ञान', class: 12, subjectEn: 'Biology', subjectHi: 'जीवविज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://placehold.co/180x240.png', dataAiHint: "biology textbook state", status: 'free' },
+  { id: 'c12_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 12, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1707510917424-2d66055df14d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwaHlzaWNzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "physics textbook", status: 'free' },
+  { id: 'c12_maths1_h', titleEn: 'Mathematics Part-I (Hindi Med.)', titleHi: 'गणित भाग-I', class: 12, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1602772576461-31b6d6dba5da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXRocyUyMHRleHRib29rJTIwaGluZGl8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook hindi", status: 'buy' },
+  { id: 'c12_biology_sb_e', titleEn: 'Biology', titleHi: 'जीवविज्ञान', class: 12, subjectEn: 'Biology', subjectHi: 'जीवविज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1747769005252-80e91287820a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxiaW9sb2d5JTIwdGV4dGJvb2slMjBzdGF0ZXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "biology textbook state", status: 'free' },
 ];
 
 const availableClasses = Array.from(new Set(allNcertBooks.map(book => book.class))).sort((a, b) => a - b);
@@ -163,7 +162,7 @@ export default function NcertBooksPage() {
             <Card key={book.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow flex flex-col">
               <CardHeader className="p-0">
                 <div className="aspect-[3/4] relative w-full bg-muted/30">
-                  <Image src={book.imageUrl} alt={book.titleEn} layout="fill" objectFit="contain" className="p-2" data-ai-hint={book.dataAiHint} />
+                  <Image src={book.imageUrl} alt={book.titleEn} layout="fill" objectFit="cover" className="p-2" data-ai-hint={book.dataAiHint} />
                 </div>
               </CardHeader>
               <CardContent className="p-3 space-y-1 flex-grow">
@@ -227,5 +226,7 @@ export default function NcertBooksPage() {
 //       placeholder_hi?: string;
 //     }
 //   }
+
+    
 
     
