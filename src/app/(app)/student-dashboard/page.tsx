@@ -143,7 +143,7 @@ export default function StudentDashboardPage() {
           <CardHeader className="flex-shrink-0">
             <div className="flex items-center gap-2">
               <Avatar className="h-10 w-10">
-                <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="guru animated"/>
+                <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="monk teaching"/>
                 <AvatarFallback>AG</AvatarFallback>
               </Avatar>
               <div>

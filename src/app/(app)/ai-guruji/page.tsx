@@ -120,7 +120,7 @@ export default function AiGurujiPage() {
       <header className="p-4 border-b text-center bg-card rounded-t-lg">
         <div className="flex items-center justify-center space-x-3">
            <Avatar className="h-10 w-10">
-            <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" />
+            <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="monk teaching" />
             <AvatarFallback>AG</AvatarFallback>
           </Avatar>
           <div>
@@ -157,7 +157,7 @@ export default function AiGurujiPage() {
         ))}
          {isLoading && (
           <div className="flex justify-start">
-            <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2">
+            <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 <p className="text-sm text-muted-foreground"><BilingualText en="Guruji is thinking..." hi="गुरुजी सोच रहे हैं..."/></p>
             </Card>
@@ -168,7 +168,7 @@ export default function AiGurujiPage() {
       <footer className="p-3 border-t bg-card rounded-b-lg">
         <form onSubmit={handleSubmit} className="flex items-center space-x-2">
           <Textarea
-            placeholder="Ask Guru Ji anything..."
+            placeholder="Ask Guruji anything..."
             className="flex-grow resize-none min-h-[40px] max-h-[120px] text-sm"
             rows={1}
             value={inputValue}

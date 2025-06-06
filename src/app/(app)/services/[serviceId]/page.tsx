@@ -13,7 +13,6 @@ import { BilingualText } from '@/components/shared/BilingualText';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Keep for other service types if needed, or remove if only Textarea is used for chat
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
@@ -269,12 +268,12 @@ export default function ServicePage() {
       
       case 'chat_interface':
         return (
-          <Card className="flex flex-col h-[calc(100vh-16rem)] md:h-[calc(100vh-12rem)] max-h-[600px] bg-background rounded-lg shadow-xl border">
-            <header className="p-4 border-b bg-card rounded-t-lg">
+          <div className="flex flex-col h-[calc(100vh-16rem)] md:h-[calc(100vh-12rem)] max-h-[600px] bg-background rounded-lg shadow-xl border">
+            <header className="p-4 border-b text-center bg-card rounded-t-lg">
               <div className="flex items-center justify-center space-x-3">
                 {serviceData.data?.avatarUrl && (
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint="service avatar" />
+                    <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint="monk teaching" />
                     <AvatarFallback>{serviceData.name.substring(0,2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                 )}
@@ -338,7 +337,7 @@ export default function ServicePage() {
                 </Button>
               </form>
             </footer>
-          </Card>
+          </div>
         );
 
       case 'product_listing':
