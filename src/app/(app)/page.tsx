@@ -120,7 +120,7 @@ export default function HomePage() {
           {gridItems.map((item) => (
             <Link href={item.href} key={item.id} passHref>
               <Card className="aspect-square flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-accent/10 hover:bg-accent/20 active:bg-accent/30 rounded-xl shadow-sm">
-                <div className="relative h-7 w-7 sm:h-8 sm:w-8 mb-1.5">
+                <div className="relative h-6 w-6 mb-1.5">
                   <Image
                     src={item.imageUrl}
                     alt={currentLanguage === 'en' ? item.labelEn : item.labelHi}
