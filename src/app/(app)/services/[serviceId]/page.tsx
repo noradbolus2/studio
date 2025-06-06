@@ -38,7 +38,7 @@ interface ServiceData {
   };
 }
 
-const INFO_PREFIX = "INFO: ";
+const INFO_PREFIX = "INFO:";
 
 interface ServiceChatMessage {
   id: string;
@@ -47,9 +47,13 @@ interface ServiceChatMessage {
   timestamp: Date;
 }
 
+type ServicePageParams = {
+  serviceId: string;
+};
+
 export default function ServicePage() {
-  const params = useParams();
-  const serviceId = params.serviceId as string; 
+  const params = useParams<ServicePageParams>();
+  const serviceId = params.serviceId; 
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,7 +77,7 @@ export default function ServicePage() {
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
-            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️" }},
+            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
             projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
             assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
           };
@@ -279,7 +283,7 @@ export default function ServicePage() {
                 <div className="flex justify-start">
                     <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                         <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <p className="text-sm text-muted-foreground"><BilingualText en="Thinking..." hi="सोच रहा हूँ..."/></p>
+                        <p className="text-sm text-muted-foreground"><BilingualText en="AI Guruji is pondering..." hi="एआई गुरुजी विचार कर रहे हैं..."/></p>
                     </Card>
                 </div>
               )}
@@ -321,32 +325,44 @@ export default function ServicePage() {
     }
   };
 
+  // Determine if the main title should be hidden for chat interface
+  const hideMainTitleForChat = serviceData?.type === 'chat_interface';
+
   return (
     <div className="space-y-6">
-      <header className="py-4">
-        <h1 className="text-3xl font-bold font-headline text-primary">
-           <BilingualText en={serviceData.name} hi={serviceData.name} />
-        </h1>
-        {serviceData.description && (
-          <p className="text-muted-foreground">
-            <BilingualText en={serviceData.description} hi={serviceData.description} />
-          </p>
-        )}
-      </header>
+      {!hideMainTitleForChat && (
+        <header className="py-4">
+          <h1 className="text-3xl font-bold font-headline text-primary">
+            <BilingualText en={serviceData?.name || "Service"} hi={serviceData?.name || "सेवा"} />
+          </h1>
+          {serviceData?.description && (
+            <p className="text-muted-foreground">
+              <BilingualText en={serviceData.description} hi={serviceData.description} />
+            </p>
+          )}
+        </header>
+      )}
 
-      <Card>
-        <CardContent className="pt-6">
-          {renderServiceContent()}
-        </CardContent>
-      </Card>
-       <div className="text-center mt-8">
-            <Button asChild variant="outline">
-                <Link href="/">
-                    <BilingualText en="Back to Home" hi="होम पर वापस जाएं"/>
-                </Link>
-            </Button>
-        </div>
+      {/* Conditionally render the Card wrapper or directly the chat interface */}
+      {serviceData?.type === 'chat_interface' ? (
+        renderServiceContent()
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            {renderServiceContent()}
+          </CardContent>
+        </Card>
+      )}
+
+      {!hideMainTitleForChat && (
+        <div className="text-center mt-8">
+              <Button asChild variant="outline">
+                  <Link href="/">
+                      <BilingualText en="Back to Home" hi="होम पर वापस जाएं"/>
+                  </Link>
+              </Button>
+          </div>
+      )}
     </div>
   );
 }
-

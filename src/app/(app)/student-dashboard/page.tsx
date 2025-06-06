@@ -165,7 +165,7 @@ export default function StudentDashboardPage() {
               <div className="flex justify-start">
                 <div className="bg-card text-card-foreground self-start mr-auto p-2.5 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    <p className="text-xs text-muted-foreground"><BilingualText en="Guruji is thinking..." hi="गुरुजी सोच रहे हैं..."/></p>
+                    <p className="text-xs text-muted-foreground"><BilingualText en="AI Guruji is pondering..." hi="एआई गुरुजी विचार कर रहे हैं..."/></p>
                 </div>
               </div>
             )}
