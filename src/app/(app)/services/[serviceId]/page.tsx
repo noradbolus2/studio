@@ -13,7 +13,7 @@ import { BilingualText } from '@/components/shared/BilingualText';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Added import for Input
+import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 
 // Define a type for your service data for better type safety
@@ -23,6 +23,8 @@ interface ServiceData {
   description?: string;
   data?: any; // This can be more specific based on your needs
 }
+
+const INFO_PREFIX = "INFO: ";
 
 export default function ServicePage() {
   const params = useParams();
@@ -47,8 +49,8 @@ export default function ServicePage() {
           //   setServiceData(docSnap.data() as ServiceData);
           // } else {
           //   console.log(`Document ${serviceId} does not exist in services collection.`);
-          //   setError("Content not available yet.");
-          //   setServiceData(null); // Explicitly set to null if not found
+          //   setError(`${INFO_PREFIX}Content for "${serviceId}" is not available yet in Firestore.`);
+          //   setServiceData(null); 
           // }
 
           // --- Mock data for demonstration until Firebase is connected ---
@@ -64,14 +66,14 @@ export default function ServicePage() {
           if (mockData[serviceId]) {
             setServiceData(mockData[serviceId]);
           } else {
-             setError("Content not available yet for this service. Please check your Firestore 'services' collection for a document with ID: " + serviceId);
+             setError(`${INFO_PREFIX}Content not available yet for the '${serviceId}' service. Please ensure it is configured in Firestore or mock data.`);
              setServiceData(null);
           }
           // --- End of mock data ---
 
         } catch (err) {
           console.error("Error fetching service data:", err);
-          setError("Failed to load content. Please try again.");
+          setError("Failed to load content. Please try again."); // This is a real error
           setServiceData(null);
         } finally {
           setLoading(false);
@@ -93,12 +95,21 @@ export default function ServicePage() {
     );
   }
 
-  if (error && !serviceData) { // Only show full error if no data could be shown at all
+  if (error && !serviceData) {
+    const isInfoError = error.startsWith(INFO_PREFIX);
+    const displayMessage = isInfoError ? error.substring(INFO_PREFIX.length) : error;
+    
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
-        <Alert variant="destructive" className="max-w-md text-center">
-          <AlertTitle><BilingualText en="Error" hi="त्रुटि" /></AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant={isInfoError ? "default" : "destructive"} className="max-w-md text-center">
+          <AlertTitle>
+            {isInfoError ? (
+              <BilingualText en="Content Information" hi="सामग्री जानकारी" />
+            ) : (
+              <BilingualText en="Error" hi="त्रुटि" />
+            )}
+          </AlertTitle>
+          <AlertDescription>{displayMessage}</AlertDescription>
         </Alert>
          <Button asChild variant="outline" className="mt-4">
             <Link href="/">
@@ -109,17 +120,15 @@ export default function ServicePage() {
     );
   }
   
-  if (!serviceData) {
-     // This case should ideally be covered by error state if fetch fails or doc doesn't exist
-     // But as a final fallback:
+  if (!serviceData) { // Fallback if error is somehow not set but data is null
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
         <Alert className="max-w-md text-center">
           <AlertTitle><BilingualText en="Content Unavailable" hi="सामग्री अनुपलब्ध" /></AlertTitle>
           <AlertDescription>
             <BilingualText 
-              en={`The content for "${serviceId}" is not available yet. Please check back later or ensure it's configured in Firebase.`} 
-              hi={`"${serviceId}" के लिए सामग्री अभी उपलब्ध नहीं है। कृपया बाद में देखें या सुनिश्चित करें कि यह Firebase में कॉन्फ़िगर किया गया है।`} />
+              en={`The content for "${serviceId}" could not be loaded. Please check back later.`} 
+              hi={`"${serviceId}" के लिए सामग्री लोड नहीं की जा सकी। कृपया बाद में देखें।`} />
           </AlertDescription>
         </Alert>
         <Button asChild variant="outline" className="mt-4">
@@ -136,8 +145,6 @@ export default function ServicePage() {
   const renderServiceContent = () => {
     switch (serviceData.type) {
       case 'books_list_page':
-        // Example: Redirect to an existing page or list books
-        // For now, just show a message and a link.
         if (serviceData.data?.redirectTo) {
           return (
             <div className="text-center">
@@ -153,8 +160,6 @@ export default function ServicePage() {
         return <p><BilingualText en="Book listing will appear here." hi="पुस्तक सूची यहाँ दिखाई देगी।" /></p>;
       
       case 'chat_interface':
-        // Example: Placeholder for AI Guruji chat
-        // You would integrate your AI Guruji chat component here
         return (
           <div className="border p-4 rounded-md bg-muted/50 min-h-[300px] flex flex-col justify-between">
             <p className="text-center text-lg font-semibold">
@@ -164,14 +169,12 @@ export default function ServicePage() {
             <div className="mt-4 p-3 bg-primary/10 rounded text-primary text-center">
                 {serviceData.data?.initialGreetingEn || "AI Chat Interface Placeholder"}
             </div>
-            <Input type="text" placeholder_en="Ask something..." placeholder_hi="कुछ पूछें..." className="mt-auto"/>
+            <Input type="text" placeholder="Ask something..." className="mt-auto"/>
           </div>
         );
 
       case 'product_listing':
          return <p><BilingualText en={`Products for ${serviceData.name} will be listed here.`} hi={`${serviceData.name} के लिए उत्पाद यहां सूचीबद्ध किए जाएंगे।`} /></p>;
-      
-      // Add more cases for other service types (e.g., 'interactive_report' for Brain Scan)
       
       default:
         return <p><BilingualText en="Content is being prepared." hi="सामग्री तैयार की जा रही है।" /></p>;
@@ -182,7 +185,7 @@ export default function ServicePage() {
     <div className="space-y-6">
       <header className="py-4">
         <h1 className="text-3xl font-bold font-headline text-primary">
-          <BilingualText en={serviceData.name} hi={serviceData.name} /> {/* Assuming name is same in both languages for now or fetched accordingly */}
+          <BilingualText en={serviceData.name} hi={serviceData.name} />
         </h1>
         {serviceData.description && (
           <p className="text-muted-foreground">
@@ -193,7 +196,7 @@ export default function ServicePage() {
 
       <Card>
         <CardContent className="pt-6">
-          {error && <Alert variant="destructive" className="mb-4"><AlertDescription>{error}</AlertDescription></Alert>}
+          {/* If error occurred during content rendering step, it could be shown here too if needed */}
           {renderServiceContent()}
         </CardContent>
       </Card>
