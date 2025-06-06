@@ -30,11 +30,11 @@ interface ServiceData {
   data?: {
     redirectTo?: string;
     avatarUrl?: string;
-    initialGreetingEn?: string;
-    initialGreetingHi?: string;
+    dataAiHint?: string;
+    initialGreetingEn?: string; // Kept for initial display before language detection
+    initialGreetingHi?: string; // Kept for initial display before language detection
     content?: string;
     category?: string;
-    // Add other potential data fields here
   };
 }
 
@@ -43,23 +43,22 @@ const INFO_PREFIX = "INFO: ";
 interface ServiceChatMessage {
   id: string;
   role: 'user' | 'guru';
-  textEn: string;
-  textHi?: string;
+  text: string; // Single text field
   timestamp: Date;
 }
 
 export default function ServicePage() {
   const params = useParams();
-  const serviceId = params.serviceId as string; // Get serviceId from URL
+  const serviceId = params.serviceId as string; 
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // State for the chat interface within this service page
   const [servicePageChatInputValue, setServicePageChatInputValue] = useState('');
   const [servicePageChatMessages, setServicePageChatMessages] = useState<ServiceChatMessage[]>([]);
   const [servicePageChatIsLoading, setServicePageChatIsLoading] = useState(false);
+  const servicePageChatScrollAreaRef = useRef<HTMLDivElement>(null);
 
 
   useEffect(() => {
@@ -67,41 +66,16 @@ export default function ServicePage() {
       const fetchServiceData = async () => {
         setLoading(true);
         setError(null);
-        setServicePageChatMessages([]); // Reset chat messages on new service load
+        setServicePageChatMessages([]); 
         try {
-          // STEP 2: Replace this with actual Firebase fetching logic
-          // Ensure you have initialized Firebase and imported 'db' and Firestore functions.
-          // const docRef = doc(db, "services", serviceId);
-          // const docSnap = await getDoc(docRef);
-
-          // if (docSnap.exists()) {
-          //   const fetchedData = docSnap.data() as ServiceData;
-          //   setServiceData(fetchedData);
-          //   if (fetchedData.type === 'chat_interface' && fetchedData.data?.initialGreetingEn) {
-          //     setServicePageChatMessages([{ 
-          //       id: `guru-initial-${Date.now()}`, 
-          //       role: 'guru', 
-          //       textEn: fetchedData.data.initialGreetingEn, 
-          //       textHi: fetchedData.data.initialGreetingHi,
-          //       timestamp: new Date() 
-          //     }]);
-          //   }
-          // } else {
-          //   console.log(`Document ${serviceId} does not exist in services collection.`);
-          //   setError(`${INFO_PREFIX}Content for "${serviceId}" is not available yet in Firestore.`);
-          //   setServiceData(null); 
-          // }
-
-          // --- Mock data for demonstration until Firebase is connected ---
           console.log(`Fetching mock data for serviceId: ${serviceId}`);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+          await new Promise(resolve => setTimeout(resolve, 1000)); 
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
-            guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?", initialGreetingHi: "नमस्ते! आज मैं इस पेज पर आपकी कैसे मदद कर सकता हूँ?"}},
+            guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️" }},
             projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
             assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
-            // Add more mock data entries for other serviceIds as needed
           };
 
           if (mockData[serviceId]) {
@@ -111,8 +85,7 @@ export default function ServicePage() {
               setServicePageChatMessages([{ 
                 id: `guru-initial-${Date.now()}`, 
                 role: 'guru', 
-                textEn: fetchedData.data.initialGreetingEn, 
-                textHi: fetchedData.data.initialGreetingHi,
+                text: fetchedData.data.initialGreetingEn, // Default to English initial greeting
                 timestamp: new Date() 
               }]);
             }
@@ -120,11 +93,10 @@ export default function ServicePage() {
              setError(`${INFO_PREFIX}Content not available yet for the '${serviceId}' service. Please ensure it is configured in Firestore or mock data.`);
              setServiceData(null);
           }
-          // --- End of mock data ---
 
         } catch (err) {
           console.error("Error fetching service data:", err);
-          setError("Failed to load content. Please try again."); // This is a real error
+          setError("Failed to load content. Please try again."); 
           setServiceData(null);
         } finally {
           setLoading(false);
@@ -134,6 +106,12 @@ export default function ServicePage() {
       fetchServiceData();
     }
   }, [serviceId]);
+  
+  useEffect(() => {
+    if (servicePageChatScrollAreaRef.current) {
+      servicePageChatScrollAreaRef.current.scrollTo({ top: servicePageChatScrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+    }
+  }, [servicePageChatMessages]);
 
   const handleServicePageChatSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
@@ -143,7 +121,7 @@ export default function ServicePage() {
     const userMessage: ServiceChatMessage = {
       id: `user-service-${Date.now()}`,
       role: 'user',
-      textEn: trimmedInput,
+      text: trimmedInput,
       timestamp: new Date(),
     };
     setServicePageChatMessages(prev => [...prev, userMessage]);
@@ -154,12 +132,11 @@ export default function ServicePage() {
       const gurujiInput: AiGurujiInput = { userInput: trimmedInput };
       const response = await askAiGuruji(gurujiInput);
       
-      if (!response || typeof response.responseTextEn !== 'string' || typeof response.responseTextHi !== 'string') {
+      if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
         const errorResponse: ServiceChatMessage = {
           id: `guru-service-error-structure-${Date.now()}`,
           role: 'guru',
-          textEn: "I had a slight issue formulating my thoughts. Could you try asking differently?",
-          textHi: "मुझे अपने विचार बनाने में थोड़ी समस्या हुई। क्या आप अलग तरह से पूछ सकते हैं?",
+          text: "I had a slight issue formulating my thoughts. Could you try asking differently?",
           timestamp: new Date(),
         };
         setServicePageChatMessages(prev => [...prev, errorResponse]);
@@ -169,8 +146,7 @@ export default function ServicePage() {
       const guruResponse: ServiceChatMessage = {
         id: `guru-service-${Date.now()}`,
         role: 'guru',
-        textEn: response.responseTextEn,
-        textHi: response.responseTextHi,
+        text: response.responseText,
         timestamp: new Date(),
       };
       setServicePageChatMessages(prev => [...prev, guruResponse]);
@@ -180,8 +156,7 @@ export default function ServicePage() {
       const errorResponse: ServiceChatMessage = {
         id: `guru-service-error-catch-${Date.now()}`,
         role: 'guru',
-        textEn: "Sorry, an unexpected hiccup occurred. Please try again.",
-        textHi: "क्षमा करें, एक अप्रत्याशित परेशानी हुई। कृपया दोबारा पूछें।",
+        text: "Sorry, an unexpected hiccup occurred. Please try again.",
         timestamp: new Date(),
       };
       setServicePageChatMessages(prev => [...prev, errorResponse]);
@@ -227,7 +202,7 @@ export default function ServicePage() {
     );
   }
   
-  if (!serviceData) { // Fallback if error is somehow not set but data is null
+  if (!serviceData) { 
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
         <Alert className="max-w-md text-center">
@@ -247,8 +222,6 @@ export default function ServicePage() {
     );
   }
 
-
-  // Render content based on serviceData.type
   const renderServiceContent = () => {
     switch (serviceData.type) {
       case 'books_list_page':
@@ -279,7 +252,7 @@ export default function ServicePage() {
                 )}
                 <div>
                   <h2 className="text-xl font-bold font-headline text-primary">
-                    <BilingualText en={serviceData.name} hi={serviceData.name} />
+                    <BilingualText en={serviceData.name} hi={serviceData.name} /> 
                   </h2>
                   {serviceData.description && (
                     <p className="text-xs text-muted-foreground">
@@ -290,7 +263,7 @@ export default function ServicePage() {
               </div>
             </header>
 
-            <ScrollArea className="flex-grow overflow-y-auto p-4 space-y-4 bg-muted/20">
+            <ScrollArea ref={servicePageChatScrollAreaRef} className="flex-grow overflow-y-auto p-4 space-y-4 bg-muted/20">
               {servicePageChatMessages.map((msg) => (
                 <Card
                     key={msg.id}
@@ -299,17 +272,14 @@ export default function ServicePage() {
                     msg.role === 'user' ? "bg-primary text-primary-foreground self-end ml-auto" : "bg-card text-card-foreground self-start mr-auto border"
                     )}
                 >
-                    <p className="text-sm whitespace-pre-wrap">{msg.textEn}</p>
-                    {msg.role === 'guru' && msg.textHi && (
-                    <p className="text-sm whitespace-pre-wrap mt-1 opacity-90">{msg.textHi}</p>
-                    )}
+                    <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
                 </Card>
               ))}
               {servicePageChatIsLoading && (
                 <div className="flex justify-start">
                     <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                         <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <p className="text-sm text-muted-foreground"><BilingualText en="Guruji is thinking..." hi="गुरुजी सोच रहे हैं..."/></p>
+                        <p className="text-sm text-muted-foreground"><BilingualText en="Thinking..." hi="सोच रहा हूँ..."/></p>
                     </Card>
                 </div>
               )}
@@ -320,7 +290,7 @@ export default function ServicePage() {
                 <Textarea 
                   value={servicePageChatInputValue}
                   onChange={(e) => setServicePageChatInputValue(e.target.value)}
-                  placeholder="Ask your question..."
+                  placeholder="Ask anything..."
                   className="flex-grow resize-none min-h-[40px] max-h-[120px] text-sm"
                   rows={1}
                   disabled={servicePageChatIsLoading}
@@ -355,11 +325,11 @@ export default function ServicePage() {
     <div className="space-y-6">
       <header className="py-4">
         <h1 className="text-3xl font-bold font-headline text-primary">
-          {serviceData.name} {/* Using direct name as it's fetched */}
+           <BilingualText en={serviceData.name} hi={serviceData.name} />
         </h1>
         {serviceData.description && (
           <p className="text-muted-foreground">
-            {serviceData.description} {/* Using direct description */}
+            <BilingualText en={serviceData.description} hi={serviceData.description} />
           </p>
         )}
       </header>
@@ -379,4 +349,3 @@ export default function ServicePage() {
     </div>
   );
 }
-

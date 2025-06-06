@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Mic, Send, Volume2, Loader2 } from "lucide-react";
+import { Mic, Send, Loader2 } from "lucide-react";
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -15,8 +15,7 @@ import { cn } from '@/lib/utils';
 interface Message {
   id: string;
   role: 'user' | 'guru';
-  textEn: string;
-  textHi?: string; // Optional for user, will be present for Guru
+  text: string; // Single text field for the message content
   timestamp: Date;
 }
 
@@ -29,8 +28,7 @@ export default function AiGurujiPage() {
   const initialGuruMessage: Message = {
     id: 'guru-initial',
     role: 'guru',
-    textEn: "Namaste! How can I help you with your studies today?",
-    textHi: "नमस्ते! आज मैं आपकी पढ़ाई में कैसे मदद कर सकता हूँ?",
+    text: "Namaste! How can I help you with your studies today?", // Default to English
     timestamp: new Date(),
   };
 
@@ -41,7 +39,6 @@ export default function AiGurujiPage() {
 
   useEffect(() => {
     if (scrollAreaRef.current) {
-      console.log("AI Guruji UI: Scrolling to bottom.");
       scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
@@ -53,19 +50,17 @@ export default function AiGurujiPage() {
     const trimmedInput = inputValue.trim();
     if (!trimmedInput || isLoading) {
       console.log('AI Guruji UI: handleSubmit aborted. Reason: empty input or already loading.');
-      if (!trimmedInput) console.log('Input was empty or whitespace.');
-      if (isLoading) console.log('Already loading.');
       return;
     }
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: 'user',
-      textEn: trimmedInput, // Use trimmed input for the message
+      text: trimmedInput,
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, userMessage]);
-    setInputValue(''); // Clear input field
+    setInputValue('');
     setIsLoading(true);
     console.log('AI Guruji UI: User message added to state. Input cleared. isLoading set to true.');
 
@@ -75,13 +70,12 @@ export default function AiGurujiPage() {
       const response = await askAiGuruji(gurujiInput);
       console.log('AI Guruji UI: Received response from askAiGuruji:', response);
       
-      if (!response || typeof response.responseTextEn !== 'string' || typeof response.responseTextHi !== 'string') {
+      if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
         console.error('AI Guruji UI: Invalid response structure from askAiGuruji:', response);
         const errorResponse: Message = {
           id: `guru-error-structure-${Date.now()}`,
           role: 'guru',
-          textEn: "I apologize, I seem to have formulated my thoughts a bit unusually. Could you ask again?",
-          textHi: "क्षमा करें, मेरे विचार थोड़े असामान्य रूप से बन गए। क्या आप दोबारा पूछ सकते हैं?",
+          text: "I apologize, I seem to have formulated my thoughts a bit unusually. Could you ask again?",
           timestamp: new Date(),
         };
         setMessages(prev => [...prev, errorResponse]);
@@ -91,8 +85,7 @@ export default function AiGurujiPage() {
       const guruResponse: Message = {
         id: `guru-${Date.now()}`,
         role: 'guru',
-        textEn: response.responseTextEn,
-        textHi: response.responseTextHi,
+        text: response.responseText,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, guruResponse]);
@@ -103,8 +96,7 @@ export default function AiGurujiPage() {
       const errorResponse: Message = {
         id: `guru-error-catch-${Date.now()}`,
         role: 'guru',
-        textEn: "I'm sorry, I encountered an unexpected hiccup. Could you please try asking again?",
-        textHi: "क्षमा करें, मुझे एक अप्रत्याशित परेशानी हुई। क्या आप कृपया दोबारा पूछ सकते हैं?",
+        text: "I'm sorry, I encountered an unexpected hiccup. Could you please try asking again?",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorResponse]);
@@ -143,16 +135,7 @@ export default function AiGurujiPage() {
               msg.role === 'user' ? "bg-primary text-primary-foreground self-end ml-auto" : "bg-card text-card-foreground self-start mr-auto border"
             )}
           >
-            <p className="text-sm whitespace-pre-wrap">{msg.textEn}</p>
-            {msg.role === 'guru' && msg.textHi && (
-              <>
-                <p className="text-sm whitespace-pre-wrap mt-1 opacity-90">{msg.textHi}</p>
-                <Button variant="ghost" size="sm" className={cn("mt-1 p-0 h-auto text-xs", msg.role === 'user' ? "text-primary-foreground/80 hover:text-primary-foreground" : "text-primary/80 hover:text-primary")}>
-                  <Volume2 className="mr-1 h-3 w-3" />
-                  <BilingualText en="Listen" hi="सुनें" />
-                </Button>
-              </>
-            )}
+            <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
           </Card>
         ))}
          {isLoading && (

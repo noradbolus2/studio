@@ -16,8 +16,7 @@ import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows
 interface ChatMessage {
   id: string;
   role: 'user' | 'guru';
-  textEn: string;
-  textHi?: string;
+  text: string; // Single text field
   timestamp: Date;
 }
 
@@ -28,13 +27,11 @@ export default function StudentDashboardPage() {
   const gurujiScrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initial welcome message for the embedded chat
     setGurujiMessages([
       {
         id: 'guruji-initial-dash',
         role: 'guru',
-        textEn: "Namaste! How can I assist you on your dashboard today?",
-        textHi: "नमस्ते! आज मैं आपके डैशबोर्ड पर कैसे सहायता कर सकता हूँ?",
+        text: "Namaste! How can I assist you on your dashboard today?",
         timestamp: new Date(),
       }
     ]);
@@ -54,7 +51,7 @@ export default function StudentDashboardPage() {
     const userMessage: ChatMessage = {
       id: `user-dash-${Date.now()}`,
       role: 'user',
-      textEn: trimmedInput,
+      text: trimmedInput,
       timestamp: new Date(),
     };
     setGurujiMessages(prev => [...prev, userMessage]);
@@ -65,12 +62,11 @@ export default function StudentDashboardPage() {
       const gurujiApiInput: AiGurujiInput = { userInput: trimmedInput };
       const response = await askAiGuruji(gurujiApiInput);
       
-      if (!response || typeof response.responseTextEn !== 'string' || typeof response.responseTextHi !== 'string') {
+      if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
         const errorResponse: ChatMessage = {
           id: `guru-dash-error-structure-${Date.now()}`,
           role: 'guru',
-          textEn: "I had a slight issue formulating my thoughts. Could you try asking differently?",
-          textHi: "मुझे अपने विचार बनाने में थोड़ी समस्या हुई। क्या आप अलग तरह से पूछ सकते हैं?",
+          text: "I had a slight issue formulating my thoughts. Could you try asking differently?",
           timestamp: new Date(),
         };
         setGurujiMessages(prev => [...prev, errorResponse]);
@@ -80,8 +76,7 @@ export default function StudentDashboardPage() {
       const guruResponse: ChatMessage = {
         id: `guru-dash-${Date.now()}`,
         role: 'guru',
-        textEn: response.responseTextEn,
-        textHi: response.responseTextHi,
+        text: response.responseText,
         timestamp: new Date(),
       };
       setGurujiMessages(prev => [...prev, guruResponse]);
@@ -91,8 +86,7 @@ export default function StudentDashboardPage() {
       const errorResponse: ChatMessage = {
         id: `guru-dash-error-catch-${Date.now()}`,
         role: 'guru',
-        textEn: "Sorry, an unexpected hiccup occurred. Please try again.",
-        textHi: "क्षमा करें, एक अप्रत्याशित परेशानी हुई। कृपया दोबारा पूछें।",
+        text: "Sorry, an unexpected hiccup occurred. Please try again.",
         timestamp: new Date(),
       };
       setGurujiMessages(prev => [...prev, errorResponse]);
@@ -138,7 +132,6 @@ export default function StudentDashboardPage() {
           </CardFooter>
         </Card>
 
-        {/* AI Guruji Chat Card - Modified for Chat */}
         <Card className="hover:shadow-lg transition-shadow md:col-span-2 flex flex-col max-h-[500px]">
           <CardHeader className="flex-shrink-0">
             <div className="flex items-center gap-2">
@@ -165,10 +158,7 @@ export default function StudentDashboardPage() {
                   msg.role === 'user' ? "bg-primary text-primary-foreground self-end ml-auto" : "bg-card text-card-foreground self-start mr-auto border"
                 )}
               >
-                <p className="whitespace-pre-wrap">{msg.textEn}</p>
-                {msg.role === 'guru' && msg.textHi && (
-                  <p className="text-xs whitespace-pre-wrap mt-1 opacity-80">{msg.textHi}</p>
-                )}
+                <p className="whitespace-pre-wrap">{msg.text}</p>
               </div>
             ))}
             {isGurujiLoading && (
@@ -241,5 +231,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
   }
-
-    

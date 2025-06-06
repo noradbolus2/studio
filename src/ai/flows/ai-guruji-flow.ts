@@ -17,8 +17,8 @@ const AiGurujiInputSchema = z.object({
 export type AiGurujiInput = z.infer<typeof AiGurujiInputSchema>;
 
 const AiGurujiOutputSchema = z.object({
-  responseTextEn: z.string().describe("AI Guruji's response in English."),
-  responseTextHi: z.string().describe("AI Guruji's response in Hindi or Hinglish."),
+  responseText: z.string().describe("AI Guruji's response in the detected language of the input."),
+  respondedInLanguage: z.enum(['en', 'hi', 'hng']).describe("The language AI Guruji responded in (en: English, hi: Hindi, hng: Hinglish)."),
 });
 export type AiGurujiOutput = z.infer<typeof AiGurujiOutputSchema>;
 
@@ -30,10 +30,9 @@ export async function askAiGuruji(input: AiGurujiInput): Promise<AiGurujiOutput>
     return result;
   } catch (error) {
     console.error('[Genkit Flow Wrapper - askAiGuruji] Error calling aiGurujiChatFlow:', error);
-    // Rethrow or return a structured error object
     return {
-        responseTextEn: "An unexpected error occurred while I was thinking. Please try again.",
-        responseTextHi: "मैं सोच रहा था कि एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।"
+        responseText: "An unexpected error occurred while I was thinking. Please try again.",
+        respondedInLanguage: "en"
     };
   }
 }
@@ -44,16 +43,21 @@ const prompt = ai.definePrompt({
   output: {schema: AiGurujiOutputSchema},
   prompt: `You are AI Guruji, a wise, patient, and exceptionally friendly spiritual teacher and study assistant for students in India (ages 10-21).
 Your personality is like a gentle, encouraging, and modern Guru who understands young people.
-Your primary language of response should be English, but you MUST also provide a simple Hindi or Hinglish translation/equivalent for your main points or the entire response if it's short.
-Respond to the student's query in a helpful, motivational, and slightly informal conversational tone.
-Explain concepts clearly, offer study tips, provide encouragement, or help with motivation.
-If the user asks in Hinglish, lean more into Hinglish for your Hindi part of the response.
-Keep responses concise, positive, and easy to understand. Avoid jargon. Use simple language.
+
+IMPORTANT LANGUAGE INSTRUCTIONS:
+1. Detect the primary language of the user's input: English, Hindi, or Hinglish (a mix of Hindi and English).
+2. Respond ONLY in the detected language.
+   - If the user writes in English, respond ONLY in English.
+   - If the user writes in Hindi, respond ONLY in Hindi.
+   - If the user writes in Hinglish, respond ONLY in Hinglish. Make your Hinglish natural and conversational.
+3. Your response should be helpful, motivational, and slightly informal, in a conversational tone.
+4. Explain concepts clearly, offer study tips, provide encouragement, or help with motivation.
+5. Keep responses concise, positive, and easy to understand. Avoid jargon. Use simple language.
 
 Format your output ONLY as a JSON object matching this schema, with no other text before or after the JSON object:
 {
-  "responseTextEn": "Your response in English.",
-  "responseTextHi": "Aapka jawaab Hindi ya Hinglish mein."
+  "responseText": "Your response in the detected language of the input.",
+  "respondedInLanguage": "en" // (or "hi" or "hng" based on YOUR response language)
 }
 
 User's query: {{{userInput}}}
@@ -75,24 +79,22 @@ const aiGurujiChatFlow = ai.defineFlow(
       if (!output) {
         console.error('[Genkit Flow - aiGurujiChatFlow] Output from prompt was null or undefined.');
         return {
-            responseTextEn: "I'm sorry, I couldn't process that. Could you try asking in a different way?",
-            responseTextHi: "Maaf kijiyega, main samajh nahin paaya. Kya aap alag tarah se pooch sakte hain?"
+            responseText: "I'm sorry, I couldn't process that. Could you try asking in a different way?",
+            respondedInLanguage: "en"
         };
       }
       
-      // Basic check if the output *looks* like our schema. 
-      // Zod parsing would be more robust if model doesn't strictly adhere.
-      if (typeof output.responseTextEn === 'string' && typeof output.responseTextHi === 'string') {
+      if (typeof output.responseText === 'string' && typeof output.respondedInLanguage === 'string' && ['en', 'hi', 'hng'].includes(output.respondedInLanguage)) {
         console.log('[Genkit Flow - aiGurujiChatFlow] Output structure seems valid. Returning output.');
         return output;
       }
       
-      console.error('[Genkit Flow - aiGurujiChatFlow] Output structure was not as expected. Output:', JSON.stringify(output));
+      console.warn('[Genkit Flow - aiGurujiChatFlow] Output structure was not as expected. Output:', JSON.stringify(output));
       // Attempt to parse if it's a string that might contain JSON
       if (typeof output === 'string') {
         try {
             const parsedOutput = JSON.parse(output as string);
-            if (typeof parsedOutput.responseTextEn === 'string' && typeof parsedOutput.responseTextHi === 'string') {
+            if (typeof parsedOutput.responseText === 'string' && typeof parsedOutput.respondedInLanguage === 'string' && ['en', 'hi', 'hng'].includes(parsedOutput.respondedInLanguage)) {
                 console.log('[Genkit Flow - aiGurujiChatFlow] Successfully parsed string output. Returning parsed output.');
                 return parsedOutput as AiGurujiOutput;
             }
@@ -102,14 +104,14 @@ const aiGurujiChatFlow = ai.defineFlow(
       }
 
       return {
-        responseTextEn: "Hmm, I'm having a little trouble formulating a response in the right way. Try again in a moment!",
-        responseTextHi: "Hmm, abhi thoda sa Fikr ho raha hai jawaab sahi tarike se dene mein. Thodi der mein koshish karein!"
+        responseText: "Hmm, I'm having a little trouble formulating a response in the right way. Try again in a moment!",
+        respondedInLanguage: "en"
       };
     } catch (flowError) {
       console.error('[Genkit Flow - aiGurujiChatFlow] Error during prompt execution or processing:', flowError);
       return {
-        responseTextEn: "Oops! A small glitch happened on my end. Could you rephrase or try again?",
-        responseTextHi: "उफ़! मेरी तरफ से एक छोटी सी गड़बड़ हो गई। क्या आप अपनी बात को दूसरी तरह से कह सकते हैं या पुनः प्रयास कर सकते हैं?"
+        responseText: "Oops! A small glitch happened on my end. Could you rephrase or try again?",
+        respondedInLanguage: "en"
       };
     }
   }
