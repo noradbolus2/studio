@@ -17,8 +17,8 @@ const AiGurujiInputSchema = z.object({
 export type AiGurujiInput = z.infer<typeof AiGurujiInputSchema>;
 
 const AiGurujiOutputSchema = z.object({
-  responseText: z.string().describe("AI Guruji's response in the detected language of the input."),
-  respondedInLanguage: z.enum(['en', 'hi', 'hng']).describe("The language AI Guruji responded in (en: English, hi: Hindi, hng: Hinglish)."),
+  responseText: z.string().describe("AI Guruji's response strictly in the detected language of the input."),
+  respondedInLanguage: z.enum(['en', 'hi', 'hng']).describe("The language AI Guruji responded in (en: English, hi: Hindi (Devanagari script), hng: Hinglish (Roman script))."),
 });
 export type AiGurujiOutput = z.infer<typeof AiGurujiOutputSchema>;
 
@@ -30,9 +30,11 @@ export async function askAiGuruji(input: AiGurujiInput): Promise<AiGurujiOutput>
     return result;
   } catch (error) {
     console.error('[Genkit Flow Wrapper - askAiGuruji] Error calling aiGurujiChatFlow:', error);
+    // Attempt to determine language from input for error message
+    const errorLanguage = input.userInput.match(/[\u0900-\u097F]/) ? 'hi' : 'en'; // Basic Devanagari check
     return {
-        responseText: "An unexpected error occurred while I was thinking. Please try again.",
-        respondedInLanguage: "en"
+        responseText: errorLanguage === 'hi' ? "मुझे क्षमा करें, एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।" : "I apologize, an unexpected error occurred. Please try again.",
+        respondedInLanguage: errorLanguage
     };
   }
 }
@@ -47,20 +49,25 @@ Your personality is like a gentle, encouraging, and modern Guru who truly unders
 Imagine you are having a friendly chat with a student. Use everyday language and examples they can connect with.
 Avoid overly formal language or sounding like a textbook. Your goal is to make the student feel comfortable, heard, and understood.
 
-IMPORTANT LANGUAGE INSTRUCTIONS:
-1. Detect the primary language of the user's input: English, Hindi, or Hinglish (a mix of Hindi and English).
-2. Respond ONLY in the detected language.
-   - If the user writes in English, respond ONLY in English.
-   - If the user writes in Hindi, respond ONLY in Hindi.
-   - If the user writes in Hinglish, respond ONLY in Hinglish. Your Hinglish should be natural, flowing, and conversational – like how friends talk.
-3. Your response should be helpful, motivational, and maintain that friendly, teacher-like conversational tone.
-4. Explain concepts clearly, offer study tips, provide encouragement, or help with motivation.
-5. Keep responses concise, positive, and easy to understand. Avoid jargon where possible; if you use a technical term, explain it simply.
+IMPORTANT LANGUAGE AND SCRIPT INSTRUCTIONS:
+1.  Detect the primary language of the user's input from these three options:
+    *   English (uses Roman script).
+    *   Hindi (uses Devanagari script).
+    *   Hinglish (colloquial Hindi words written in Roman script, often mixed with English words).
+2.  Your ` + "`responseText`" + ` MUST be strictly and exclusively in the single detected language.
+    *   If English is detected, respond ONLY in English using Roman script.
+    *   If Hindi is detected, respond ONLY in Hindi using Devanagari script.
+    *   If Hinglish is detected, respond ONLY in Hinglish using Roman script (even for Hindi words).
+3.  Your ` + "`respondedInLanguage`" + ` field in the JSON output must accurately be 'en', 'hi', or 'hng' based on the language of YOUR responseText.
+4.  CRITICAL: Do NOT mix scripts in your ` + "`responseText`" + `. For example, do not include Devanagari characters in an English or Hinglish response. Do not include Bengali, Tamil, or any other script characters in your response, even if they appear in the user's input. Your response should be pure to the detected primary language (English, Hindi, or Hinglish). If the user's input is heavily mixed with other scripts, focus on the part of the query that is clearly English, Hindi, or Hinglish to determine your response language.
+5.  Your response should be helpful, motivational, and maintain that friendly, teacher-like conversational tone.
+6.  Explain concepts clearly, offer study tips, provide encouragement, or help with motivation.
+7.  Keep responses concise, positive, and easy to understand. Avoid jargon where possible; if you use a technical term, explain it simply.
 
 Format your output ONLY as a JSON object matching this schema, with no other text before or after the JSON object:
 {
-  "responseText": "Your response in the detected language of the input.",
-  "respondedInLanguage": "en" // (or "hi" or "hng" based on YOUR response language)
+  "responseText": "Your response, strictly in the detected language and script.",
+  "respondedInLanguage": "en" // (or "hi" for Hindi in Devanagari, or "hng" for Hinglish in Roman script)
 }
 
 User's query: {{{userInput}}}
@@ -81,7 +88,6 @@ const aiGurujiChatFlow = ai.defineFlow(
 
       if (!output) {
         console.error('[Genkit Flow - aiGurujiChatFlow] Output from prompt was null or undefined.');
-        // Default to English for error messages if language context is lost
         const userLanguage = input.userInput.match(/[\u0900-\u097F]/) ? 'hi' : 'en'; 
         return {
             responseText: userLanguage === 'hi' ? "मुझे क्षमा करें, मैं समझ नहीं पाया। क्या आप दूसरी तरह से पूछ सकते हैं?" : "I'm sorry, I couldn't process that. Could you try asking in a different way?",
@@ -91,6 +97,16 @@ const aiGurujiChatFlow = ai.defineFlow(
       
       // Check if output is already a valid AiGurujiOutput object
       if (typeof output.responseText === 'string' && typeof output.respondedInLanguage === 'string' && ['en', 'hi', 'hng'].includes(output.respondedInLanguage)) {
+        // Further validation: ensure Hindi responses use Devanagari and Hinglish uses Roman.
+        // This is a basic check; more sophisticated script detection is complex.
+        if (output.respondedInLanguage === 'hi' && output.responseText.match(/[a-zA-Z]/) && !output.responseText.match(/[\u0900-\u097F]/)) {
+             console.warn('[Genkit Flow - aiGurujiChatFlow] Potential script mismatch: RespondedInLanguage is "hi" but responseText contains Roman characters and no Devanagari.');
+             // Decide if you want to correct or reject. For now, log and pass.
+        }
+        if (output.respondedInLanguage === 'hng' && output.responseText.match(/[\u0900-\u097F]/)) {
+             console.warn('[Genkit Flow - aiGurujiChatFlow] Potential script mismatch: RespondedInLanguage is "hng" but responseText contains Devanagari characters.');
+             // Decide if you want to correct or reject. For now, log and pass.
+        }
         console.log('[Genkit Flow - aiGurujiChatFlow] Output structure seems valid. Returning output.');
         return output;
       }
