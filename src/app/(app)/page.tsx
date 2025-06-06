@@ -3,9 +3,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // Added useEffect and useCallback
 import {
   Languages,
+  RefreshCw, // Icon for new quote button
 } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
@@ -29,13 +30,36 @@ const gridItems = [
   { id: 'liveclasses', href: '/services/liveclasses', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'online class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं' },
 ];
 
+const sampleQuotes = [
+  { en: "The best way to predict the future is to create it.", authorEn: "Peter Drucker", hi: "भविष्य की भविष्यवाणी करने का सबसे अच्छा तरीका इसे बनाना है।", authorHi: "पीटर ड्रकर" },
+  { en: "Your limitation—it's only your imagination.", authorEn: "Unknown", hi: "आपकी सीमा-यह सिर्फ आपकी कल्पना है।", authorHi: "अज्ञात" },
+  { en: "Push yourself, because no one else is going to do it for you.", authorEn: "Unknown", hi: "खुद को धकेलो, क्योंकि कोई और तुम्हारे लिए यह नहीं करेगा।", authorHi: "अज्ञात" },
+  { en: "Great things never come from comfort zones.", authorEn: "Unknown", hi: "महान चीजें कभी भी आराम क्षेत्र से नहीं आती हैं।", authorHi: "अज्ञात" },
+  { en: "Dream it. Wish it. Do it.", authorEn: "Unknown", hi: "सपना देखो। इच्छा करो। कर डालो।", authorHi: "अज्ञात" },
+  { en: "Success doesn’t just find you. You have to go out and get it.", authorEn: "Unknown", hi: "सफलता तुम्हें ढूंढती नहीं है। तुम्हें बाहर जाकर उसे पाना होगा।", authorHi: "अज्ञात" },
+  { en: "The harder you work for something, the greater you’ll feel when you achieve it.", authorEn: "Unknown", hi: "आप किसी चीज़ के लिए जितनी मेहनत करते हैं, उसे हासिल करने पर उतना ही अच्छा महसूस करेंगे।", authorHi: "अज्ञात" },
+  { en: "Don't stop when you're tired. Stop when you're done.", authorEn: "Unknown", hi: "थकने पर मत रुको। जब काम पूरा हो जाए तब रुको।", authorHi: "अज्ञात" },
+  { en: "Wake up with determination. Go to bed with satisfaction.", authorEn: "Unknown", hi: "दृढ़ संकल्प के साथ जागो। संतुष्टि के साथ सो जाओ।", authorHi: "अज्ञात" },
+  { en: "Do something today that your future self will thank you for.", authorEn: "Sean Patrick Flanery", hi: "आज कुछ ऐसा करो जिसके लिए तुम्हारा भविष्य का तुम धन्यवाद करोगे।", authorHi: "शॉन पैट्रिक फ्लैनरी" },
+];
+
 
 export default function HomePage() {
   const [currentLanguage, setCurrentLanguage] = useState<'en' | 'hi'>('en');
+  const [currentQuote, setCurrentQuote] = useState(sampleQuotes[0]);
 
   const toggleLanguage = () => {
     setCurrentLanguage(prev => (prev === 'en' ? 'hi' : 'en'));
   };
+
+  const selectRandomQuote = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * sampleQuotes.length);
+    setCurrentQuote(sampleQuotes[randomIndex]);
+  }, []); // Empty dependency array as sampleQuotes is constant
+
+  useEffect(() => {
+    selectRandomQuote(); // Select an initial quote on mount
+  }, [selectRandomQuote]);
 
   return (
     <div className="space-y-4 pb-8 relative">
@@ -65,14 +89,29 @@ export default function HomePage() {
       </header>
 
       {/* Special Section: Daily Quote / Brain Tip (Horizontal Scroll) */}
-      <ScrollArea className="w-full whitespace-nowrap pb-2.5 px-1">
-        <div className="flex space-x-4">
-          <MotivationalQuoteCard />
-          {/* Add more cards here for horizontal scroll if needed */}
-          {/* Example: <Card className="min-w-[280px]"><CardContent className="p-4">Another tip...</CardContent></Card> */}
+      <div className="px-1">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-semibold font-headline">
+            <BilingualText lang={currentLanguage} en="Daily Spark" hi="दैनिक चिंगारी" />
+          </h2>
+          <Button variant="outline" size="sm" onClick={selectRandomQuote} className="px-2 py-1 h-auto">
+            <RefreshCw size={14} className="mr-1.5" />
+            <BilingualText lang={currentLanguage} en="New Quote" hi="नया विचार" />
+          </Button>
         </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+        <ScrollArea className="w-full whitespace-nowrap pb-2.5">
+          <div className="flex space-x-4">
+            <MotivationalQuoteCard 
+              quoteText={currentLanguage === 'en' ? currentQuote.en : currentQuote.hi}
+              quoteAuthor={currentLanguage === 'en' ? currentQuote.authorEn : currentQuote.authorHi}
+              lang={currentLanguage}
+            />
+            {/* Add more cards here for horizontal scroll if needed */}
+            {/* Example: <Card className="min-w-[280px]"><CardContent className="p-4">Another tip...</CardContent></Card> */}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
 
 
       {/* 3x4 Grid of colorful rounded icons */}
