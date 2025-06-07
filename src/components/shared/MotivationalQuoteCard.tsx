@@ -11,7 +11,7 @@ interface MotivationalQuoteCardProps {
 
 export function MotivationalQuoteCard({ quoteText, quoteAuthor, lang = 'en' }: MotivationalQuoteCardProps) {
   return (
-    <Card className="shadow-lg_override bg-gradient-to-br from-primary/5 via-background to-background border-primary/20 min-w-[280px] max-w-md">
+    <Card className="shadow-lg bg-gradient-to-br from-primary/5 via-background to-background border-primary/20 min-w-[280px] max-w-md">
       <CardHeader className="flex flex-row items-center space-x-3 pb-3">
         <Lightbulb className="h-6 w-6 text-accent" />
         <CardTitle className="font-headline text-lg">
