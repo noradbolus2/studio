@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, ShoppingCart, UsersRound, UserCircle } from 'lucide-react';
+import { Home, BookOpen, ShoppingCart, UsersRound, User } from 'lucide-react'; // Changed UserCircle to User
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -11,7 +11,7 @@ const navItems = [
   { href: '/study', label: 'Study', icon: BookOpen },
   { href: '/delivery', label: 'Delivery', icon: ShoppingCart },
   { href: '/circle', label: 'Circle', icon: UsersRound },
-  { href: '/profile', label: 'Profile', icon: UserCircle },
+  { href: '/profile', label: 'Profile', icon: User }, // Changed UserCircle to User
 ];
 
 export function BottomNav() {
