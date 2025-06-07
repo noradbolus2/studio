@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
     Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Users, Edit3,
     ShoppingCart, Clock, Truck, Home, School as SchoolIconLucide, UploadCloud, Package, Image as ImageIcon, ExternalLink, UserCheck,
-    BookCopy, FlaskConical, BrainCircuit, FileArchive, ChevronLeft, Eye, LightbulbIcon
+    BookCopy, FlaskConical, BrainCircuit, FileArchive, ChevronLeft, Eye, LightbulbIcon, Apple
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -84,13 +84,13 @@ interface MockProject {
 }
 
 const projectCategories: { id: ProjectCategory; label: string; icon: LucideIcon }[] = [
-  { id: "homework", label: "Homework", icon: BookCopy },
+  { id: "homework", label: "School Homework", icon: BookCopy },
   { id: "science_model", label: "Science Models", icon: FlaskConical },
-  { id: "art_poster", label: "Art/Posters", icon: Palette },
-  { id: "essay_research", label: "Essays/Research", icon: FileText },
-  { id: "coding", label: "Coding Projects", icon: Code2 },
+  { id: "art_poster", label: "Art/Poster/Chart Work", icon: Palette },
+  { id: "essay_research", label: "Essay or Research Assignment", icon: FileText },
+  { id: "coding", label: "Coding Project", icon: Code2 },
   { id: "ai_idea", label: "Custom by AI", icon: BrainCircuit },
-  { id: "creator_made", label: "By Creator", icon: Users },
+  { id: "creator_made", label: "Made by Creator", icon: Users },
 ];
 
 const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams"];
@@ -135,8 +135,8 @@ export default function ServicePage() {
   const [activeTab, setActiveTab] = useState<ProjectCategory>(projectCategories[0].id);
   const [selectedProject, setSelectedProject] = useState<MockProject | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [howToProceed, setHowToProceed] = useState<'build_myself' | 'get_made'>('build_myself');
-  const [needMaterials, setNeedMaterials] = useState<'yes' | 'no'>('no');
+  // const [howToProceed, setHowToProceed] = useState<'build_myself' | 'get_made'>('build_myself'); // Not used currently, for future steps
+  // const [needMaterials, setNeedMaterials] = useState<'yes' | 'no'>('no'); // Not used currently, for future steps
 
 
   useEffect(() => {
@@ -157,8 +157,9 @@ export default function ServicePage() {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
-            projects: { name: "Projects Hub", type: "interactive_assignment_project_help", description: "AI assistance for completing your projects.", data: { avatarUrl: "https://placehold.co/100x100.png?text=🛠️", dataAiHint:"tools project" }},
-            assignments: { name: "Assignments Hub", type: "interactive_assignment_project_help", description: "AI assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png?text=📝", dataAiHint:"writing assignment" }},
+            studysnacks: { name: "Study Snacks", type: "product_listing", description: "Healthy snacks delivered for study sessions.", data: { redirectTo: "/delivery", category: "study_snacks", avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"apple fruit"}},
+            projects: { name: "Projects Assistant", type: "interactive_assignment_project_help", description: "Let Guruji AI help you plan and execute!", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"tools project" }},
+            assignments: { name: "Assignments Assistant", type: "interactive_assignment_project_help", description: "Let Guruji AI help you plan and execute!", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"writing assignment" }},
             testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from AI Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
             uniforms: {
               name: "Uniforms",
@@ -803,22 +804,22 @@ export default function ServicePage() {
       
       case 'info_page':
         const content = serviceData.data?.content || "Information will be displayed here.";
-        const parts = content.split('\n\n');
-        const gyaanTitlePart = parts[0]; // e.g., "🌟 Today's Guru Gyaan 🌟"
-        const quotePart = parts.length > 1 ? parts[1] : null; // e.g., "\"The journey...\""
-        const explanationPart = parts.length > 2 ? parts[2] : null;
-        const hashtagsLinePart = parts.length > 3 ? parts[3] : null;
+        const parts = content.split('\n\n'); // Split by double newline to separate sections
+        const gyaanTitlePart = parts.find(p => p.includes("🌟")); // Find the title part
+        const quotePart = parts.find(p => p.startsWith("\"") && p.endsWith("\"")); // Find the quote
+        const explanationPart = parts.find(p => p.length > 50 && !p.includes("🌟") && !p.startsWith("\"") && !p.startsWith("#")); // Find a longer text as explanation
+        const hashtagsLinePart = parts.find(p => p.startsWith("#")); // Find the line with hashtags
         const hashtagsList = hashtagsLinePart ? hashtagsLinePart.split(' ').filter(h => h.startsWith('#')) : [];
 
         return (
-            <Card className="shadow-xl bg-gradient-to-br from-primary/5 via-background to-accent/5">
+            <Card className="shadow-xl bg-gradient-to-br from-primary/10 via-background to-accent/10 border-primary/20">
                 <CardHeader className="items-center text-center border-b pb-4">
-                    <LightbulbIcon className="h-12 w-12 text-accent mb-2 animate-pulse-subtle" />
+                    <LightbulbIcon className="h-16 w-16 text-accent mb-3 animate-pulse" style={{ animationDuration: '2.5s' }} />
                     <CardTitle className="font-headline text-2xl text-primary">
                         {serviceData.name}
                     </CardTitle>
                     {serviceData.description && (
-                    <CardDescription className="text-base">
+                    <CardDescription className="text-base text-muted-foreground">
                         {serviceData.description}
                     </CardDescription>
                     )}
@@ -828,24 +829,25 @@ export default function ServicePage() {
                     <h2 className="text-xl font-semibold text-foreground">{gyaanTitlePart}</h2>
                     )}
                     {quotePart && (
-                    <blockquote className="text-lg italic text-primary border-l-4 border-primary pl-4 py-2 my-4 bg-primary/10 rounded-r-md">
+                    <blockquote className="text-lg italic text-primary border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 rounded-r-md">
                         {quotePart}
                     </blockquote>
                     )}
                     {explanationPart && (
-                    <p className="text-md text-muted-foreground leading-relaxed">
+                    <p className="text-md text-foreground leading-relaxed">
                         {explanationPart}
                     </p>
                     )}
                     {hashtagsList.length > 0 && (
                     <div className="mt-6 flex flex-wrap justify-center gap-2">
                         {hashtagsList.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-sm">
+                        <Badge key={index} variant="secondary" className="text-sm bg-accent/20 text-accent-foreground border-accent/30">
                             {tag}
                         </Badge>
                         ))}
                     </div>
                     )}
+                    {/* Fallback for content not matching specific parts */}
                     {!gyaanTitlePart && !quotePart && !explanationPart && hashtagsList.length === 0 && (
                          <p className="whitespace-pre-wrap text-sm text-foreground">{content}</p>
                     )}
@@ -935,4 +937,5 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
 

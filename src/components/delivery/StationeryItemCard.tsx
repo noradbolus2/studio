@@ -14,6 +14,7 @@ export interface StationeryItem {
   vendorEn: string;
   vendorHi: string;
   dataAiHint?: string;
+  categoryKey: string; // Added for filtering
 }
 
 interface StationeryItemCardProps {

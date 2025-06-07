@@ -7,29 +7,33 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { StationeryItemCard, type StationeryItem } from '@/components/delivery/StationeryItemCard';
 import { OrderConfirmationDialog } from '@/components/delivery/OrderConfirmationDialog';
-import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter } from 'lucide-react';
+import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter, Apple as AppleIcon } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 
 const categories = [
-  { id: 'all', nameEn: 'All', nameHi: 'सभी', icon: Package },
-  { id: 'notebooks', nameEn: 'Notebooks', nameHi: 'नोटबुक', icon: Notebook },
-  { id: 'pens', nameEn: 'Pens', nameHi: 'पेन', icon: PenTool },
-  { id: 'books', nameEn: 'Books', nameHi: 'किताबें', icon: Book },
-  { id: 'kits', nameEn: 'Kits', nameHi: 'किट', icon: Package },
+  { id: 'all', nameEn: 'All', nameHi: 'सभी', icon: Package, key: 'all' },
+  { id: 'notebooks', nameEn: 'Notebooks', nameHi: 'नोटबुक', icon: Notebook, key: 'notebook' },
+  { id: 'pens', nameEn: 'Pens', nameHi: 'पेन', icon: PenTool, key: 'pen' },
+  { id: 'books', nameEn: 'Books', nameHi: 'किताबें', icon: Book, key: 'book' },
+  { id: 'kits', nameEn: 'Kits', nameHi: 'किट', icon: Package, key: 'kit' },
+  { id: 'snacks', nameEn: 'Study Snacks', nameHi: 'स्टडी स्नैक्स', icon: AppleIcon, key: 'study_snack' },
 ];
 
 const sampleItems: StationeryItem[] = [
-  { id: '1', nameEn: 'Classmate Notebook', nameHi: 'क्लासमेट नोटबुक', price: 45, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Gupta Stationery', vendorHi: 'गुप्ता स्टेशनरी', dataAiHint: "notebook school" },
-  { id: '2', nameEn: 'Cello Gripper Pen', nameHi: 'सेलो ग्रिपर पेन', price: 10, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Anil Book Store', vendorHi: 'अनिल बुक स्टोर', dataAiHint: "pen writing" },
-  { id: '3', nameEn: 'NCERT Science Book', nameHi: 'एनसीईआरटी विज्ञान पुस्तक', price: 150, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Modern Books', vendorHi: 'मॉडर्न बुक्स', dataAiHint: "book science" },
-  { id: '4', nameEn: 'Geometry Box', nameHi: 'ज्यामिति बॉक्स', price: 80, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Student Needs', vendorHi: 'स्टूडेंट नीड्स', dataAiHint: "geometry kit" },
-  { id: '5', nameEn: 'Apsara Pencil Pack', nameHi: 'अप्सरा पेंसिल पैक', price: 50, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Gupta Stationery', vendorHi: 'गुप्ता स्टेशनरी', dataAiHint: "pencils drawing" },
-  { id: '6', nameEn: 'Sketch Book Large', nameHi: 'स्केच बुक बड़ी', price: 120, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Art Corner', vendorHi: 'आर्ट कॉर्नर', dataAiHint: "sketchbook art" },
+  { id: '1', nameEn: 'Classmate Notebook', nameHi: 'क्लासमेट नोटबुक', price: 45, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Gupta Stationery', vendorHi: 'गुप्ता स्टेशनरी', dataAiHint: "notebook school", categoryKey: "notebook" },
+  { id: '2', nameEn: 'Cello Gripper Pen', nameHi: 'सेलो ग्रिपर पेन', price: 10, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Anil Book Store', vendorHi: 'अनिल बुक स्टोर', dataAiHint: "pen writing", categoryKey: "pen" },
+  { id: '3', nameEn: 'NCERT Science Book', nameHi: 'एनसीईआरटी विज्ञान पुस्तक', price: 150, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Modern Books', vendorHi: 'मॉडर्न बुक्स', dataAiHint: "book science", categoryKey: "book" },
+  { id: '4', nameEn: 'Geometry Box', nameHi: 'ज्यामिति बॉक्स', price: 80, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Student Needs', vendorHi: 'स्टूडेंट नीड्स', dataAiHint: "geometry kit", categoryKey: "kit" },
+  { id: '5', nameEn: 'Apsara Pencil Pack', nameHi: 'अप्सरा पेंसिल पैक', price: 50, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Gupta Stationery', vendorHi: 'गुप्ता स्टेशनरी', dataAiHint: "pencils drawing", categoryKey: "pen" }, // Changed to pen for variety
+  { id: '6', nameEn: 'Sketch Book Large', nameHi: 'स्केच बुक बड़ी', price: 120, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Art Corner', vendorHi: 'आर्ट कॉर्नर', dataAiHint: "sketchbook art", categoryKey: "notebook" }, // Changed to notebook
+  { id: 'snack1', nameEn: 'Roasted Almonds (100g)', nameHi: 'भुने हुए बादाम (100 ग्राम)', price: 90, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Healthy Bites', vendorHi: 'हेल्दी बाइट्स', dataAiHint: "almonds snack", categoryKey: "study_snack" },
+  { id: 'snack2', nameEn: 'Fruit & Nut Bar', nameHi: 'फल और अखरोट बार', price: 35, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Energy Snacks Co.', vendorHi: 'एनर्जी स्नैक्स कंपनी', dataAiHint: "energy bar", categoryKey: "study_snack" },
+  { id: 'snack3', nameEn: 'Dark Chocolate (Small)', nameHi: 'डार्क चॉकलेट (छोटी)', price: 50, imageUrl: 'https://placehold.co/300x225.png', vendorEn: 'Sweet Treats', vendorHi: 'स्वीट ट्रीट्स', dataAiHint: "chocolate bar", categoryKey: "study_snack" },
 ];
 
 export default function DeliveryPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategoryKey, setSelectedCategoryKey] = useState('all');
   const [cart, setCart] = useState<StationeryItem[]>([]);
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
   const [confirmedOrderId, setConfirmedOrderId] = useState("");
@@ -50,7 +54,7 @@ export default function DeliveryPage() {
 
   const filteredItems = sampleItems.filter(item =>
     (item.nameEn.toLowerCase().includes(searchTerm.toLowerCase()) || item.nameHi.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedCategory === 'all' || item.id.includes(selectedCategory.slice(0,2))) // Basic category filter demo
+    (selectedCategoryKey === 'all' || item.categoryKey === selectedCategoryKey)
   );
   
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
@@ -84,10 +88,10 @@ export default function DeliveryPage() {
             {categories.map((category) => (
               <Button
                 key={category.id}
-                variant={selectedCategory === category.id ? 'default' : 'outline'}
+                variant={selectedCategoryKey === category.key ? 'default' : 'outline'}
                 size="sm"
                 className="rounded-full px-4 py-2 h-auto text-sm"
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => setSelectedCategoryKey(category.key)}
               >
                 <category.icon className="mr-2 h-4 w-4" />
                 <BilingualText en={category.nameEn} hi={category.nameHi} separator=" " hiClassName="hidden sm:inline"/>
@@ -164,4 +168,5 @@ export default function DeliveryPage() {
 // It won't stick to viewport top if there's content above it in the page.
 // For true sticky header, the layout might need restructuring or JS.
 // The current `-mx-4 px-4` trick is for full-bleed background for the sticky bar.
+
 
