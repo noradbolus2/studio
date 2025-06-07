@@ -4,26 +4,18 @@ import type { FC } from 'react';
 interface BilingualTextProps {
   en: string;
   hi: string;
-  lang?: 'en' | 'hi'; // New optional prop
+  lang?: 'en' | 'hi'; // Optional prop to force a language
   className?: string;
-  separator?: string;
+  // separator and hiClassName are no longer used by default but kept for potential specific overrides if lang prop is not used.
+  separator?: string; 
   hiClassName?: string;
 }
 
-export const BilingualText: FC<BilingualTextProps> = ({ en, hi, lang, className, separator = " / ", hiClassName = "text-sm text-muted-foreground opacity-80" }) => {
-  if (lang === 'en') {
-    return <span className={className}>{en}</span>;
-  }
+export const BilingualText: FC<BilingualTextProps> = ({ en, hi, lang, className }) => {
   if (lang === 'hi') {
     return <span className={className}>{hi}</span>;
   }
-  // Default behavior: show both if lang prop is not 'en' or 'hi'
-  return (
-    <span className={className}>
-      {en}
-      <span className={hiClassName}>
-        {separator}{hi}
-      </span>
-    </span>
-  );
+  // Default to English if lang is 'en' or lang is not provided
+  return <span className={className}>{en}</span>;
 };
+
