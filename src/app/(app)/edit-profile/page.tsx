@@ -48,6 +48,17 @@ const streams = ["Science", "Commerce", "Arts", "Other"];
 const genders = ["Male", "Female", "Other"];
 const examTargets = ["School Exams", "JEE (Main)", "JEE (Advanced)", "NEET (UG)", "CUET (UG)", "UPSC Civil Services", "NDA & NA", "SSC CGL", "SSC CHSL", "IBPS PO", "IBPS Clerk", "SBI PO", "CAT", "GATE", "CLAT", "Other Competitive Exam"];
 
+const indianStatesAndUTs = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", 
+  "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", 
+  "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
+  "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
+  "Dadra and Nagar Haveli and Daman and Diu", "Delhi (NCT)", "Jammu and Kashmir", 
+  "Ladakh", "Lakshadweep", "Puducherry"
+].sort();
+
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -91,9 +102,8 @@ export default function EditProfilePage() {
     setLoginType(typeParam);
     setIsSchoolLogin(typeParam === "school");
 
-    let currentDefaultValues: Partial<ProfileFormData> = { // Renamed to avoid confusion with useForm's defaultValues
+    let currentDefaultValues: Partial<ProfileFormData> = { 
       country: "India",
-      // Initialize all potentially undefined string fields to empty strings
       fullName: "",
       email: "",
       phoneNumber: "",
@@ -139,7 +149,6 @@ export default function EditProfilePage() {
       }
     }
     
-    // Ensure all fields in ProfileFormData are present, defaulting to empty strings if not set by logic above
     const allFieldsToReset: ProfileFormData = {
         fullName: currentDefaultValues.fullName || "",
         email: currentDefaultValues.email || "",
@@ -160,7 +169,7 @@ export default function EditProfilePage() {
 
     reset(allFieldsToReset); 
     setInitialDataLoading(false);
-  }, [searchParams, reset, loginType]);
+  }, [searchParams, reset]);
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
@@ -409,7 +418,22 @@ export default function EditProfilePage() {
               </div>
               <div>
                 <Label htmlFor="state"><BilingualText en="State" hi="राज्य" /></Label>
-                <Controller name="state" control={control} render={({ field }) => <Input id="state" {...field} placeholder_en="Your State" placeholder_hi="आपका राज्य" />} />
+                <Controller
+                  name="state"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="state">
+                        <SelectValue placeholder_en="Select State" placeholder_hi="राज्य चुनें" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {indianStatesAndUTs.map(s => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
               <div>
                 <Label htmlFor="country"><BilingualText en="Country" hi="देश" /></Label>
