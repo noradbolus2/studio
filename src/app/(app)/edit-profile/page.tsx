@@ -69,16 +69,16 @@ export default function EditProfilePage() {
 
 
   useEffect(() => {
-    const type = searchParams.get("loginType");
+    const typeParam = searchParams.get("loginType");
     const isNew = searchParams.get("isNewUser") === "true";
     
-    setLoginType(type);
-    setIsSchoolLogin(type === "school");
+    setLoginType(typeParam);
+    setIsSchoolLogin(typeParam === "school");
 
     // Simulate fetching and setting data
     let defaultValues: Partial<ProfileFormData> = { country: "India" };
 
-    if (type === "school") {
+    if (typeParam === "school") {
       defaultValues = {
         ...defaultValues,
         schoolId: searchParams.get("schoolId") || "",
@@ -87,7 +87,7 @@ export default function EditProfilePage() {
         className: searchParams.get("className") || "", // Prefilled
         email: searchParams.get("email") || "school.user@example.com", // Prefilled
       };
-    } else if (type === "direct") {
+    } else if (typeParam === "direct") {
       if (isNew) {
         // New direct user, mostly blank, but can prefill email if passed
         defaultValues = { ...defaultValues, email: searchParams.get("email") || "" };
@@ -176,7 +176,7 @@ export default function EditProfilePage() {
               </div>
               <div>
                 <Label htmlFor="email"><BilingualText en="Email" hi="ईमेल" />*</Label>
-                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={type === "direct" && !searchParams.get("isNewUser") === true} />} />
+                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={loginType === "direct" && !searchParams.get("isNewUser") === true} />} />
                 {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
               </div>
             </div>
