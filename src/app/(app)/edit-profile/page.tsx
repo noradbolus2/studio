@@ -42,7 +42,7 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
-const classes = ["6", "7", "8", "9", "10", "11", "12"];
+const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams"];
 const boards = ["CBSE", "ICSE", "State", "Other"];
 const streams = ["Science", "Commerce", "Arts", "Other"]; // "Other" for those not in 11/12 or different stream
 const genders = ["Male", "Female", "Other"];
@@ -95,9 +95,9 @@ export default function EditProfilePage() {
           fullName: "Existing User",
           email: searchParams.get("email") || "existing.user@example.com",
           phoneNumber: "9876543210",
-          className: "11",
+          className: "11 Science",
           board: "CBSE",
-          stream: "Science",
+          stream: "Science", // This will be set correctly if className is "11 Science"
           dateOfBirth: new Date(2005, 7, 15), // month is 0-indexed
           city: "Mumbai",
           state: "Maharashtra",
@@ -257,7 +257,7 @@ export default function EditProfilePage() {
                   )}
                 />
               </div>
-              {(watch("className") === "11" || watch("className") === "12") && (
+              {(watch("className")?.includes("11") || watch("className")?.includes("12")) && (
                 <div>
                   <Label htmlFor="stream"><BilingualText en="Stream" hi="स्ट्रीम" /></Label>
                    <Controller
@@ -375,3 +375,4 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
+
