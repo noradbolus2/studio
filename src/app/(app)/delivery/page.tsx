@@ -121,7 +121,7 @@ export default function DeliveryPage() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="font-semibold"><BilingualText en={`${cart.length} items`} hi={`${cart.length} आइटम`} /> </p>
-              <p className="text-lg font-bold text-primary">₹{cartTotal.toFixed(2)}</p>
+              <p className="text-lg font-bold text-primary">INR {cartTotal.toFixed(2)}</p>
             </div>
             <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={handlePlaceOrder}>
               <ShoppingBag className="mr-2 h-5 w-5" />
@@ -164,3 +164,4 @@ export default function DeliveryPage() {
 // It won't stick to viewport top if there's content above it in the page.
 // For true sticky header, the layout might need restructuring or JS.
 // The current `-mx-4 px-4` trick is for full-bleed background for the sticky bar.
+
