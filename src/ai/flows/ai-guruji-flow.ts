@@ -14,6 +14,12 @@ import {z} from 'genkit';
 const AiGurujiInputSchema = z.object({
   userInput: z.string().describe("The student's query or message to AI Guruji."),
   preferredLanguage: z.enum(['en', 'hi', 'hng']).optional().describe("The student's preferred language for the response (en: English, hi: Hindi (Devanagari script), hng: Hinglish (Roman script)). If not provided, language will be auto-detected."),
+  attachmentDataUri: z.string().optional().describe("Optional: A Base64 data URI of an attached image file. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
+  attachmentInfo: z.object({
+    name: z.string().describe("Name of the attached file."),
+    type: z.string().describe("MIME type of the attached file."),
+    isImage: z.boolean().describe("True if the attachment is an image, false otherwise."),
+  }).optional().describe("Optional: Information about the attached file."),
 });
 export type AiGurujiInput = z.infer<typeof AiGurujiInputSchema>;
 
@@ -26,6 +32,14 @@ export type AiGurujiOutput = z.infer<typeof AiGurujiOutputSchema>;
 export async function askAiGuruji(input: AiGurujiInput): Promise<AiGurujiOutput> {
   console.log('[Genkit Flow Wrapper - askAiGuruji] Function called with input:', JSON.stringify(input));
   try {
+    // Log if an attachment is present
+    if (input.attachmentInfo) {
+      console.log(`[Genkit Flow Wrapper - askAiGuruji] Attachment provided: ${input.attachmentInfo.name} (${input.attachmentInfo.type}), isImage: ${input.attachmentInfo.isImage}`);
+      if (input.attachmentInfo.isImage && input.attachmentDataUri) {
+        console.log(`[Genkit Flow Wrapper - askAiGuruji] Attachment is an image with data URI (length: ${input.attachmentDataUri.length})`);
+      }
+    }
+
     const result = await aiGurujiChatFlow(input);
     console.log('[Genkit Flow Wrapper - askAiGuruji] Flow returned:', JSON.stringify(result));
     return result;
@@ -89,14 +103,31 @@ Avoid overly formal language or sounding like a textbook. Your goal is to make t
 6.  Explain concepts clearly, offer study tips, provide encouragement, or help with motivation.
 7.  Keep responses concise, positive, and easy to understand. Avoid jargon where possible; if you use a technical term, explain it simply.
 
+User's query: {{{userInput}}}
+{{#if preferredLanguage}}User's preferred language: {{preferredLanguage}}{{/if}}
+
+{{#if attachmentInfo}}
+The user has also provided an attachment.
+File Name: {{attachmentInfo.name}}
+File Type: {{attachmentInfo.type}}
+{{#if attachmentInfo.isImage}}
+{{#if attachmentDataUri}}
+Attached Image:
+{{media url=attachmentDataUri}}
+Consider this image in your response.
+{{else}}
+(An image was attached, but its data is not available for direct viewing in this prompt.)
+{{/if}}
+{{else}}
+(This is a document attachment. Refer to its name and type if relevant to the query.)
+{{/if}}
+{{/if}}
+
 Format your output ONLY as a JSON object matching this schema, with no other text before or after the JSON object:
 {
   "responseText": "Your response, strictly in the chosen/detected language and script.",
   "respondedInLanguage": "{{#if preferredLanguage}}{{preferredLanguage}}{{else}}en{{/if}}" // This will be 'en', 'hi', or 'hng' based on chosen/detected language
 }
-
-User's query: {{{userInput}}}
-{{#if preferredLanguage}}User's preferred language: {{preferredLanguage}}{{/if}}
 `,
 });
 
@@ -194,5 +225,7 @@ const aiGurujiChatFlow = ai.defineFlow(
     }
   }
 );
+
+    
 
     
