@@ -49,7 +49,7 @@ type ServicePageParams = {
 
 export default function ServicePage() {
   const params = useParams<ServicePageParams>();
-  const serviceId = params.serviceId; 
+  const serviceId = params?.serviceId; // Added optional chaining for safety, though it should always be present
   const router = useRouter();
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
@@ -68,15 +68,15 @@ export default function ServicePage() {
       const fetchServiceData = async () => {
         setLoading(true);
         setError(null);
-        setIsRedirecting(false); // Reset redirecting state
+        setIsRedirecting(false); 
         setServicePageChatMessages([]); 
         try {
           console.log(`Fetching mock data for serviceId: ${serviceId}`);
-          await new Promise(resolve => setTimeout(resolve, 500)); // Reduced timeout for faster load/redirect
+          await new Promise(resolve => setTimeout(resolve, 300)); // Reduced timeout
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
-            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
+            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
             projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
             assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
           };
@@ -117,16 +117,16 @@ export default function ServicePage() {
   }, [servicePageChatMessages]);
 
   useEffect(() => {
-    if (serviceData && serviceData.type === 'books_list_page' && serviceData.data?.redirectTo && !loading && router) {
+    // Generic redirection logic if redirectTo is present
+    if (serviceData?.data?.redirectTo && !loading && router) {
+      console.log(`[ServicePage] Redirecting to: ${serviceData.data.redirectTo} for service: ${serviceId}`);
       setIsRedirecting(true);
       router.push(serviceData.data.redirectTo);
     } else {
-      // Reset if serviceData changes to something not requiring redirection
-      if (serviceData && serviceData.type !== 'books_list_page') {
-        setIsRedirecting(false);
-      }
+      // Reset redirecting state if no redirectTo path or if serviceData changes
+      setIsRedirecting(false);
     }
-  }, [serviceData, loading, router]);
+  }, [serviceData, loading, router, serviceId]);
 
 
   const handleServicePageChatSubmit = async (e?: FormEvent) => {
@@ -193,7 +193,7 @@ export default function ServicePage() {
     );
   }
 
-  if (isRedirecting && serviceData?.type === 'books_list_page' && serviceData.data?.redirectTo) {
+  if (isRedirecting && serviceData?.data?.redirectTo) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
         <LoadingSpinner size={48} />
@@ -254,25 +254,11 @@ export default function ServicePage() {
   }
 
   const renderServiceContent = () => {
-    switch (serviceData.type) {
-      case 'books_list_page':
-        // This case should ideally be handled by the isRedirecting block above.
-        // If somehow reached, it means redirection isn't configured or failed to initiate.
-        if (!serviceData.data?.redirectTo) {
-          return (
-            <Alert variant="default">
-              <AlertTitle><BilingualText en="Configuration Issue" hi="कॉन्फ़िगरेशन समस्या" /></AlertTitle>
-              <AlertDescription>
-                <BilingualText 
-                  en={`The service "${serviceData.name}" is intended for redirection but is not configured correctly.`} 
-                  hi={`सेवा "${serviceData.name}" रीडायरेक्शन के लिए है लेकिन सही ढंग से कॉन्फ़िगर नहीं है।`} 
-                />
-              </AlertDescription>
-            </Alert>
-          );
-        }
-        // Fallback if isRedirecting state didn't catch it (should be rare)
-        return (
+    // If redirection is configured, it should be handled by the isRedirecting block.
+    // This switch case will render content for pages that don't redirect.
+    if (serviceData.data?.redirectTo) {
+       // This should ideally not be reached if isRedirecting logic is working.
+       return (
             <div className="text-center py-10">
               <LoadingSpinner size={32} />
               <p className="mt-2 text-muted-foreground">
@@ -283,7 +269,9 @@ export default function ServicePage() {
               </p>
             </div>
         );
-      
+    }
+
+    switch (serviceData.type) {
       case 'chat_interface':
         return (
           <div className="flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
@@ -355,19 +343,36 @@ export default function ServicePage() {
           </div>
         );
 
-      case 'product_listing':
+      case 'product_listing': // This case will now only render if redirectTo is NOT set for this type.
          return <p><BilingualText en={`Products for ${serviceData.name} will be listed here.`} hi={`${serviceData.name} के लिए उत्पाद यहां सूचीबद्ध किए जाएंगे।`} /></p>;
       
       case 'info_page':
         return <p>{serviceData.data?.content || <BilingualText en="Information will be displayed here." hi="जानकारी यहाँ प्रदर्शित की जाएगी।" />}</p>;
+      
+      // Fallback for types that might be configured to redirect but redirectTo is missing
+      case 'books_list_page': 
+        if (!serviceData.data?.redirectTo) {
+            return (
+            <Alert variant="default">
+              <AlertTitle><BilingualText en="Configuration Issue" hi="कॉन्फ़िगरेशन समस्या" /></AlertTitle>
+              <AlertDescription>
+                <BilingualText 
+                  en={`The service "${serviceData.name}" is intended for redirection but is not configured correctly.`} 
+                  hi={`सेवा "${serviceData.name}" रीडायरेक्शन के लिए है लेकिन सही ढंग से कॉन्फ़िगर नहीं है।`} 
+                />
+              </AlertDescription>
+            </Alert>
+          );
+        }
+        // This should be caught by the isRedirecting block earlier if redirectTo exists
+        return null; 
       
       default:
         return <p><BilingualText en="Content is being prepared for this service type." hi="इस सेवा प्रकार के लिए सामग्री तैयार की जा रही है।" /></p>;
     }
   };
 
-  // Determine if the main title should be hidden for chat interface OR redirection
-  const hideMainElements = serviceData?.type === 'chat_interface' || (serviceData?.type === 'books_list_page' && !!serviceData.data?.redirectTo);
+  const hideMainElements = serviceData?.type === 'chat_interface' || !!serviceData?.data?.redirectTo;
 
   return (
     <div className="space-y-6">
@@ -384,15 +389,19 @@ export default function ServicePage() {
         </header>
       )}
 
-      {serviceData?.type === 'chat_interface' || (serviceData?.type === 'books_list_page' && !serviceData.data?.redirectTo) ? ( // Render chat or book list page with misconfiguration
-        renderServiceContent()
-      ) : !hideMainElements ? ( // For other types, wrap in a card if not hidden
-        <Card>
-          <CardContent className="pt-6">
-            {renderServiceContent()}
-          </CardContent>
-        </Card>
-      ) : null /* For books_list_page with redirectTo, content is handled by isRedirecting block */}
+      {/* Render content if it's not a type that inherently hides main elements OR if it is such a type but isn't configured to redirect */}
+      {(serviceData?.type === 'chat_interface' || !serviceData?.data?.redirectTo) ? (
+        serviceData?.type !== 'chat_interface' && !hideMainElements ? ( // For non-chat, non-redirecting types, wrap in a card
+          <Card>
+            <CardContent className="pt-6">
+              {renderServiceContent()}
+            </CardContent>
+          </Card>
+        ) : ( // For chat type, or other types if hideMainElements is true (e.g. misconfigured redirect)
+          renderServiceContent()
+        )
+      ) : null /* Content is hidden because it's a redirecting type and redirection is active/pending */ }
+
 
       {!hideMainElements && (
         <div className="text-center mt-8">
