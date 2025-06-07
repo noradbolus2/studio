@@ -43,7 +43,7 @@ export function StationeryItemCard({ item, onAddToCart }: StationeryItemCardProp
         <p className="text-xs text-muted-foreground">
             <BilingualText en={`By ${item.vendorEn}`} hi={`${item.vendorHi} द्वारा`} />
         </p>
-        <p className="text-sm font-bold text-primary">INR {item.price.toFixed(2)}</p>
+        <p className="text-sm font-bold text-primary">₹{item.price.toFixed(2)}</p>
       </CardContent>
       <CardFooter className="p-3 pt-0">
         <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => onAddToCart(item)}>
@@ -54,4 +54,5 @@ export function StationeryItemCard({ item, onAddToCart }: StationeryItemCardProp
     </Card>
   );
 }
+
 

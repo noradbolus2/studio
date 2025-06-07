@@ -609,8 +609,8 @@ export default function ServicePage() {
 
         return (
             <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
-                <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 shadow-sm">
-                    <CardHeader className="pb-3 pt-2">
+                 <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 shadow-sm -mx-4 px-4 rounded-none border-x-0 border-t-0"> {/* Full width sticky header */}
+                    <CardHeader className="pb-3 pt-2 px-0"> {/* Remove CardHeader padding for full width */}
                         <div className="flex items-center gap-3">
                             {serviceData.data?.avatarUrl && (
                             <Avatar className="h-10 w-10 border-2 border-primary">
@@ -628,8 +628,8 @@ export default function ServicePage() {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="pb-3 px-2">
-                        <div className="grid grid-cols-2 gap-3 mb-3">
+                    <CardContent className="pb-3 px-0"> {/* Remove CardContent padding for full width */}
+                        <div className="grid grid-cols-2 gap-3 mb-3 px-4"> {/* Add padding back to internal elements */}
                             <div>
                                 <Label htmlFor="projectClass" className="text-xs">Your Class</Label>
                                 <Select value={selectedClass} onValueChange={setSelectedClass}>
@@ -650,7 +650,7 @@ export default function ServicePage() {
                             </div>
                         </div>
 
-                        <ScrollArea className="w-full whitespace-nowrap pb-1">
+                        <ScrollArea className="w-full whitespace-nowrap pb-1 px-4"> {/* Add padding back to internal elements */}
                             <TabsList className="bg-muted/60">
                                 {projectCategories.map((cat) => (
                                 <TabsTrigger key={cat.id} value={cat.id} className="text-xs px-2.5 py-1.5 h-auto">
@@ -663,7 +663,7 @@ export default function ServicePage() {
                     </CardContent>
                 </Card>
                 
-                <div className="mt-4">
+                <div className="mt-4 px-0 md:px-0"> {/* Remove outer padding, handle inside specific content cards */}
                 {projectCategories.map((cat) => (
                     <TabsContent key={cat.id} value={cat.id} className="mt-0">
                         {cat.id === "ai_idea" && !selectedProject && (
@@ -937,5 +937,6 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
 
 
