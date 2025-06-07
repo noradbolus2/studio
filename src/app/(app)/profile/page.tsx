@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2 } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -141,14 +141,23 @@ export default function ProfilePage() {
             <CardTitle className="font-headline flex items-center gap-2"><Settings className="text-primary h-6 w-6"/> <BilingualText en="Settings & Preferences" hi="सेटिंग्स और प्राथमिकताएं" /></CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start gap-2">
-                <BilingualText en="App Settings" hi="ऐप सेटिंग्स" />
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+                <Link href="/settings/app">
+                    <Settings2 className="h-5 w-5 text-muted-foreground" />
+                    <BilingualText en="App Settings" hi="ऐप सेटिंग्स" />
+                </Link>
             </Button>
-            <Button variant="outline" className="w-full justify-start gap-2">
-                <BilingualText en="Notification Preferences" hi="अधिसूचना प्राथमिकताएं" />
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+                <Link href="/settings/notifications">
+                    <Bell className="h-5 w-5 text-muted-foreground" />
+                    <BilingualText en="Notification Preferences" hi="अधिसूचना प्राथमिकताएं" />
+                </Link>
             </Button>
-             <Button variant="outline" className="w-full justify-start gap-2">
-                <BilingualText en="Manage Linked Accounts" hi="जुड़े हुए खाते प्रबंधित करें" />
+             <Button asChild variant="outline" className="w-full justify-start gap-2">
+                <Link href="/settings/accounts">
+                    <Link2 className="h-5 w-5 text-muted-foreground" />
+                    <BilingualText en="Manage Linked Accounts" hi="जुड़े हुए खाते प्रबंधित करें" />
+                </Link>
             </Button>
         </CardContent>
       </Card>
