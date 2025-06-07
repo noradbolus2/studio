@@ -46,6 +46,8 @@ const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8"
 const boards = ["CBSE", "ICSE", "State", "Other"];
 const streams = ["Science", "Commerce", "Arts", "Other"]; // "Other" for those not in 11/12 or different stream
 const genders = ["Male", "Female", "Other"];
+const examTargets = ["School Exams", "JEE (Main)", "JEE (Advanced)", "NEET (UG)", "CUET (UG)", "UPSC Civil Services", "NDA & NA", "SSC CGL", "SSC CHSL", "IBPS PO", "IBPS Clerk", "SBI PO", "CAT", "GATE", "CLAT", "Other Competitive Exam"];
+
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -97,11 +99,12 @@ export default function EditProfilePage() {
           phoneNumber: "9876543210",
           className: "11 Science",
           board: "CBSE",
-          stream: "Science", // This will be set correctly if className is "11 Science"
-          dateOfBirth: new Date(2005, 7, 15), // month is 0-indexed
+          stream: "Science", 
+          dateOfBirth: new Date(2005, 7, 15), 
           city: "Mumbai",
           state: "Maharashtra",
           avatarUrl: "https://placehold.co/100x100.png",
+          examTarget: "JEE (Advanced)",
         };
       }
     }
@@ -329,8 +332,24 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <Label htmlFor="examTarget"><BilingualText en="Exam Target(s)" hi="परीक्षा लक्ष्य" /></Label>
-              <Controller name="examTarget" control={control} render={({ field }) => <Input id="examTarget" {...field} placeholder_en="e.g., NEET, JEE, CUET" placeholder_hi="उदा., NEET, JEE, CUET" />} />
+              <Label htmlFor="examTarget"><BilingualText en="Exam Target" hi="परीक्षा लक्ष्य" /></Label>
+              <Controller
+                name="examTarget"
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="examTarget">
+                      <SelectValue placeholder_en="Select Exam Target" placeholder_hi="परीक्षा लक्ष्य चुनें" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {examTargets.map(target => (
+                        <SelectItem key={target} value={target}>{target}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.examTarget && <p className="text-xs text-destructive mt-1">{errors.examTarget.message}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
