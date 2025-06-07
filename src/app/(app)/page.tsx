@@ -113,7 +113,7 @@ export default function HomePage() {
           {gridItems.map((item) => (
             <Link href={item.href} key={item.id} passHref>
               <Card className="aspect-square flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-accent/10 hover:bg-accent/20 active:bg-accent/30 rounded-xl shadow-sm">
-                <div className="relative h-5 w-5 mb-1.5">
+                <div className="relative h-4 w-4 mb-1">
                   <Image
                     src={item.imageUrl}
                     alt={currentLanguage === 'en' ? item.labelEn : item.labelHi}
@@ -123,7 +123,7 @@ export default function HomePage() {
                     data-ai-hint={item.dataAiHint}
                   />
                 </div>
-                <span className="text-xs sm:text-sm font-semibold text-primary leading-tight block h-7 overflow-hidden">
+                <span className="text-xs sm:text-sm font-semibold text-primary leading-tight block h-6 overflow-hidden">
                    <BilingualText lang={currentLanguage} en={item.labelEn} hi={item.labelHi} />
                 </span>
               </Card>
@@ -142,3 +142,4 @@ export default function HomePage() {
     </div>
   );
 }
+
