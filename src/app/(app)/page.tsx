@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react'; // Added React import here
+import React, { useState, useEffect, useRef } from 'react'; 
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { BilingualText } from '@/components/shared/BilingualText'; // Assuming this component is correctly set up for bilingual text
+import { BilingualText } from '@/components/shared/BilingualText'; 
 
 // Mock data
 const user = {
@@ -26,18 +26,18 @@ const user = {
 const location = "Modern School, Barakhamba";
 
 const heroSlides = [
-  { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "project help technology", bgColor: "bg-gradient-to-r from-blue-500 to-indigo-600", href:"/services/projects" },
-  { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "fast delivery books", bgColor: "bg-gradient-to-r from-green-500 to-emerald-600", href:"/delivery" },
-  { id: 3, titleEn: "OSO Guruji AI is Online", titleHi: "OSO गुरुजी AI ऑनलाइन हैं", descriptionEn: "Your 24/7 AI study partner", descriptionHi: "आपका 24/7 एआई अध्ययन भागीदार", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "ai robot teaching", bgColor: "bg-gradient-to-r from-purple-500 to-violet-600", href:"/ai-guruji" },
+  { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "project help technology", bgColor: "bg-gradient-to-r from-purple-500 to-violet-600", href:"/services/projects" },
+  { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "fast delivery books", bgColor: "bg-gradient-to-r from-yellow-400 to-amber-500", href:"/delivery" },
+  { id: 3, titleEn: "OSO Guruji AI is Online", titleHi: "OSO गुरुजी AI ऑनलाइन हैं", descriptionEn: "Your 24/7 AI study partner", descriptionHi: "आपका 24/7 एआई अध्ययन भागीदार", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "ai robot teaching", bgColor: "bg-gradient-to-r from-pink-500 to-rose-500", href:"/ai-guruji" },
 ];
 
 const quickCategories = [
-  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-indigo-600', bgColor: 'bg-indigo-100 hover:bg-indigo-200' },
-  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-amber-600', bgColor: 'bg-amber-100 hover:bg-amber-200' },
-  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-rose-600', bgColor: 'bg-rose-100 hover:bg-rose-200' },
-  { id: 'ai_guruji', labelEn: 'AI Guruji', labelHi: 'AI गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-sky-600', bgColor: 'bg-sky-100 hover:bg-sky-200' },
-  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-teal-600', bgColor: 'bg-teal-100 hover:bg-teal-200' },
-  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-fuchsia-600', bgColor: 'bg-fuchsia-100 hover:bg-fuchsia-200' },
+  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'ai_guruji', labelEn: 'AI Guruji', labelHi: 'AI गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
 ];
 
 const recommendations = [
@@ -63,9 +63,8 @@ const searchIcons = [
 export default function ModernHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en'); // Example language state
+  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en'); 
 
-  // For hero banner rotation
   const startSlideShow = () => {
     slideIntervalRef.current = setInterval(() => {
       setCurrentSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1));
@@ -89,18 +88,17 @@ export default function ModernHomePage() {
   
   const MemoizedImage = React.memo(Image);
 
-  // Example: Toggle language for demonstration
   const toggleLanguage = () => {
     setCurrentLang(prevLang => prevLang === 'en' ? 'hi' : 'en');
   };
 
 
   return (
-    <div className="space-y-6 pb-10 bg-slate-50 min-h-screen -m-4 p-4">
+    <div className="space-y-6 pb-10 bg-background min-h-screen -m-4 p-4">
       {/* Top Section */}
-      <header className="space-y-3 sticky top-0 bg-slate-50/80 backdrop-blur-sm z-40 py-3 -mx-4 px-4 shadow-sm">
+      <header className="space-y-3 sticky top-0 bg-background/80 backdrop-blur-sm z-40 py-3 -mx-4 px-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-5 w-5 text-primary" />
             <span className="font-medium truncate max-w-[200px]">{location}</span>
           </div>
@@ -117,20 +115,20 @@ export default function ModernHomePage() {
           </div>
         </div>
         <div className="px-0">
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-2xl font-bold text-foreground">
                 <BilingualText en={`Hello, ${user.name}`} hi={`नमस्ते, ${user.name}`} lang={currentLang} /> <Hand className="inline h-6 w-6 text-yellow-400" />
             </h1>
-            <p className="text-gray-500 text-sm"><BilingualText en="What do you need today?" hi="आज आपको क्या चाहिए?" lang={currentLang} /></p>
+            <p className="text-muted-foreground text-sm"><BilingualText en="What do you need today?" hi="आज आपको क्या चाहिए?" lang={currentLang} /></p>
         </div>
         <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input 
             type="search" 
             placeholder={currentLang === 'en' ? "Search for books, projects, stationery..." : "किताबें, प्रोजेक्ट, स्टेशनरी खोजें..."}
-            className="pl-10 h-12 text-base border-gray-300 focus:border-primary focus:ring-primary rounded-xl shadow-sm" 
+            className="pl-10 h-12 text-base border-border focus:border-primary focus:ring-primary rounded-xl shadow-sm" 
           />
         </div>
-         <div className="flex justify-around items-center pt-1 text-xs text-gray-600">
+         <div className="flex justify-around items-center pt-1 text-xs text-muted-foreground">
             {searchIcons.map(item => (
                 <Link href={item.href} key={item.labelEn} className="flex flex-col items-center gap-1 hover:text-primary transition-colors">
                     <item.icon className="h-5 w-5"/>
@@ -154,8 +152,8 @@ export default function ModernHomePage() {
             <Link href={slide.href} className="block w-full h-full">
               <MemoizedImage src={slide.imageUrl} alt={currentLang === 'en' ? slide.titleEn : slide.titleHi} layout="fill" objectFit="cover" className="absolute inset-0 z-0 opacity-30 data-ai-hint={slide.dataAiHint}" priority={index === 0}/>
               <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                <h2 className="text-2xl font-bold mb-1 shadow-black/50 text-shadow"><BilingualText en={slide.titleEn} hi={slide.titleHi} lang={currentLang} /></h2>
-                <p className="text-sm shadow-black/50 text-shadow-sm"><BilingualText en={slide.descriptionEn} hi={slide.descriptionHi} lang={currentLang} /></p>
+                <h2 className="text-2xl font-bold mb-1 text-shadow shadow-black/50"><BilingualText en={slide.titleEn} hi={slide.titleHi} lang={currentLang} /></h2>
+                <p className="text-sm text-shadow-sm shadow-black/50"><BilingualText en={slide.descriptionEn} hi={slide.descriptionHi} lang={currentLang} /></p>
                  <Button variant="outline" size="sm" className="mt-3 bg-white/20 hover:bg-white/30 border-white text-white backdrop-blur-sm">
                    <BilingualText en="Learn More" hi="और जानें" lang={currentLang} />
                  </Button>
@@ -177,7 +175,7 @@ export default function ModernHomePage() {
 
       {/* Quick Categories */}
       <section>
-        <h2 className="text-xl font-semibold text-gray-800 mb-3"><BilingualText en="Quick Categories" hi="त्वरित श्रेणियाँ" lang={currentLang}/></h2>
+        <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Quick Categories" hi="त्वरित श्रेणियाँ" lang={currentLang}/></h2>
         <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
           {quickCategories.map((category) => (
             <Link href={category.href} key={category.id}>
@@ -192,7 +190,7 @@ export default function ModernHomePage() {
 
       {/* Today’s Recommendations */}
       <section>
-        <h2 className="text-xl font-semibold text-gray-800 mb-3"><BilingualText en="Today's Recommendations" hi="आज की सिफारिशें" lang={currentLang}/></h2>
+        <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Today's Recommendations" hi="आज की सिफारिशें" lang={currentLang}/></h2>
         <ScrollArea className="w-full whitespace-nowrap pb-3">
           <div className="flex space-x-4">
             {recommendations.map((item) => (
@@ -204,10 +202,10 @@ export default function ModernHomePage() {
                   <CardContent className="p-2.5 flex-grow flex flex-col justify-between">
                     <div>
                         <p className="text-xs font-semibold text-primary truncate"><BilingualText en={item.typeEn} hi={item.typeHi} lang={currentLang}/></p>
-                        <h3 className="text-sm font-medium text-gray-800 leading-tight h-10 overflow-hidden mb-1"><BilingualText en={item.titleEn} hi={item.titleHi} lang={currentLang}/></h3>
-                        { (item.descriptionEn || item.descriptionHi) && <p className="text-xs text-gray-500 truncate"><BilingualText en={item.descriptionEn!} hi={item.descriptionHi!} lang={currentLang}/></p>}
+                        <h3 className="text-sm font-medium text-foreground leading-tight h-10 overflow-hidden mb-1"><BilingualText en={item.titleEn} hi={item.titleHi} lang={currentLang}/></h3>
+                        { (item.descriptionEn || item.descriptionHi) && <p className="text-xs text-muted-foreground truncate"><BilingualText en={item.descriptionEn!} hi={item.descriptionHi!} lang={currentLang}/></p>}
                     </div>
-                    <p className="text-sm font-bold text-gray-700 mt-1"><BilingualText en={item.priceEn} hi={item.priceHi} lang={currentLang}/></p>
+                    <p className="text-sm font-bold text-foreground mt-1"><BilingualText en={item.priceEn} hi={item.priceHi} lang={currentLang}/></p>
                   </CardContent>
                 </Card>
               </Link>
@@ -219,7 +217,7 @@ export default function ModernHomePage() {
 
       {/* Delivery Deals */}
       <section>
-        <h2 className="text-xl font-semibold text-gray-800 mb-3"><BilingualText en="Delivery Deals" hi="डिलीवरी डील्स" lang={currentLang}/></h2>
+        <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Delivery Deals" hi="डिलीवरी डील्स" lang={currentLang}/></h2>
          <ScrollArea className="w-full whitespace-nowrap pb-3">
             <div className="flex space-x-3">
                 {deliveryDeals.map((deal) => (

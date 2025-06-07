@@ -9,7 +9,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Truck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, Clock, Truck } from "lucide-react";
 import { BilingualText } from "../shared/BilingualText";
 
 interface OrderConfirmationDialogProps {
@@ -32,8 +33,12 @@ export function OrderConfirmationDialog({ isOpen, onClose, orderId }: OrderConfi
             <br />
             <BilingualText en="It will be delivered within 45 minutes." hi="यह 45 मिनट के भीतर डिलीवर हो जाएगा।" />
           </AlertDialogDescription>
+          <Badge variant="secondary" className="mt-3 bg-green-100 text-green-700 border-green-300 py-1 px-3">
+            <Clock className="mr-1.5 h-4 w-4"/> 
+            <BilingualText en="ETA: ~35 mins" hi="अनुमानित आगमन समय: ~35 मिनट"/>
+          </Badge>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex-col space-y-2 sm:flex-col sm:space-y-2 sm:space-x-0">
+        <AlertDialogFooter className="flex-col space-y-2 sm:flex-col sm:space-y-2 sm:space-x-0 pt-4">
           <AlertDialogAction asChild>
             <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
               <Truck className="mr-2 h-5 w-5" />

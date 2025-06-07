@@ -135,8 +135,6 @@ export default function ServicePage() {
   const [activeTab, setActiveTab] = useState<ProjectCategory>(projectCategories[0].id);
   const [selectedProject, setSelectedProject] = useState<MockProject | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState('');
-  // const [howToProceed, setHowToProceed] = useState<'build_myself' | 'get_made'>('build_myself'); // Not used currently, for future steps
-  // const [needMaterials, setNeedMaterials] = useState<'yes' | 'no'>('no'); // Not used currently, for future steps
 
 
   useEffect(() => {
@@ -158,8 +156,8 @@ export default function ServicePage() {
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
             studysnacks: { name: "Study Snacks", type: "product_listing", description: "Healthy snacks delivered for study sessions.", data: { redirectTo: "/delivery", category: "study_snacks", avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"apple fruit"}},
-            projects: { name: "Projects Assistant", type: "interactive_assignment_project_help", description: "Let Guruji AI help you plan and execute!", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"tools project" }},
-            assignments: { name: "Assignments Assistant", type: "interactive_assignment_project_help", description: "Let Guruji AI help you plan and execute!", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"writing assignment" }},
+            projects: { name: "Projects Assistant", type: "interactive_assignment_project_help", description: "Get help with school projects and assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"tools project" }},
+            assignments: { name: "Assignments Assistant", type: "interactive_assignment_project_help", description: "AI assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"writing assignment" }},
             testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from AI Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
             uniforms: {
               name: "Uniforms",
@@ -190,6 +188,12 @@ export default function ServicePage() {
                 timestamp: new Date() 
               }]);
             }
+             // Set active tab for project/assignment help based on serviceId
+            if (fetchedData.type === "interactive_assignment_project_help") {
+              if (serviceId === "projects") setActiveTab("science_model"); // Default to science model for "projects"
+              else if (serviceId === "assignments") setActiveTab("essay_research"); // Default to essay for "assignments"
+              else setActiveTab(projectCategories[0].id); // Fallback
+            }
           } else {
              setError(`${INFO_PREFIX}Content not available yet for the '${serviceId}' service. Please ensure it is configured in Firestore or mock data.`);
              setServiceData(null);
@@ -206,7 +210,7 @@ export default function ServicePage() {
 
       fetchServiceData();
     }
-  }, [serviceId]);
+  }, [serviceId, router]); // Added router to dependencies
   
   useEffect(() => {
     if (servicePageChatScrollAreaRef.current) {
@@ -340,13 +344,11 @@ export default function ServicePage() {
       toast({ title: "Description Needed", description: "Please describe your project topic or constraints.", variant: "destructive"});
       return;
     }
-    setServicePageChatIsLoading(true); // Reuse chat loading state for simplicity
+    setServicePageChatIsLoading(true); 
     toast({title: "AI Idea Generation (Simulated)", description: `Guruji is thinking of a brilliant idea for: ${ideaDescription.substring(0,50)}...`});
     
-    // Simulate AI call
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Mock response and set it as a selected project
     const mockAIProject: MockProject = {
       id: "ai-proj-dynamic",
       title: `AI Suggested: ${ideaDescription.substring(0,20)} Model`,
@@ -608,9 +610,9 @@ export default function ServicePage() {
         );
 
         return (
-            <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
-                 <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 shadow-sm -mx-4 px-4 rounded-none border-x-0 border-t-0"> {/* Full width sticky header */}
-                    <CardHeader className="pb-3 pt-2 px-0"> {/* Remove CardHeader padding for full width */}
+           <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
+                <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 shadow-sm -mx-4 px-4 rounded-none border-x-0 border-t-0">
+                    <CardHeader className="pb-3 pt-2 px-0">
                         <div className="flex items-center gap-3">
                             {serviceData.data?.avatarUrl && (
                             <Avatar className="h-10 w-10 border-2 border-primary">
@@ -628,8 +630,8 @@ export default function ServicePage() {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="pb-3 px-0"> {/* Remove CardContent padding for full width */}
-                        <div className="grid grid-cols-2 gap-3 mb-3 px-4"> {/* Add padding back to internal elements */}
+                    <CardContent className="pb-3 px-0">
+                        <div className="grid grid-cols-2 gap-3 mb-3 px-4">
                             <div>
                                 <Label htmlFor="projectClass" className="text-xs">Your Class</Label>
                                 <Select value={selectedClass} onValueChange={setSelectedClass}>
@@ -650,7 +652,7 @@ export default function ServicePage() {
                             </div>
                         </div>
 
-                        <ScrollArea className="w-full whitespace-nowrap pb-1 px-4"> {/* Add padding back to internal elements */}
+                        <ScrollArea className="w-full whitespace-nowrap pb-1 px-4">
                             <TabsList className="bg-muted/60">
                                 {projectCategories.map((cat) => (
                                 <TabsTrigger key={cat.id} value={cat.id} className="text-xs px-2.5 py-1.5 h-auto">
@@ -663,7 +665,7 @@ export default function ServicePage() {
                     </CardContent>
                 </Card>
                 
-                <div className="mt-4 px-0 md:px-0"> {/* Remove outer padding, handle inside specific content cards */}
+                <div className="mt-6 px-0 md:px-0">
                 {projectCategories.map((cat) => (
                     <TabsContent key={cat.id} value={cat.id} className="mt-0">
                         {cat.id === "ai_idea" && !selectedProject && (
@@ -677,7 +679,7 @@ export default function ServicePage() {
                                         <Textarea name="aiIdeaDescription" placeholder="Briefly describe your topic or constraints (e.g., 'water conservation for class 7 using household items')" className="min-h-[80px]"/>
                                     </CardContent>
                                     <CardFooter>
-                                        <Button type="submit" className="w-full" disabled={servicePageChatIsLoading}>
+                                        <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={servicePageChatIsLoading}>
                                             {servicePageChatIsLoading ? <LoadingSpinner /> : <Rocket className="mr-2"/>} Get AI Idea
                                         </Button>
                                     </CardFooter>
@@ -695,7 +697,7 @@ export default function ServicePage() {
                                      <Textarea placeholder="Describe the project you want made (e.g., 'Volcano model for Class 6, needs to erupt')" className="min-h-[80px] mt-2"/>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button className="w-full" onClick={() => toast({title: "Find Creator (Simulated)", description: "Searching for available creators."})}>
+                                    <Button className="w-full bg-primary text-primary-foreground" onClick={() => toast({title: "Find Creator (Simulated)", description: "Searching for available creators."})}>
                                         <UserCheck className="mr-2"/> Find a Creator
                                     </Button>
                                 </CardFooter>
@@ -754,7 +756,7 @@ export default function ServicePage() {
                                         <ul className="list-disc list-inside text-xs space-y-0.5 pl-4 text-muted-foreground">
                                             {selectedProject.materials.map(mat => <li key={mat.name}>{mat.name} (Qty: {mat.qty}) {mat.price ? `- approx. ₹${mat.price}` : ''}</li>)}
                                         </ul>
-                                        <Button size="sm" variant="outline" className="mt-2 w-full sm:w-auto text-primary border-primary hover:bg-primary/10" onClick={() => handleAddMaterialsToCart(selectedProject)}>
+                                        <Button size="sm" className="mt-2 w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleAddMaterialsToCart(selectedProject)}>
                                             <ShoppingCart size={14} className="mr-1.5"/> Add Materials to OSO Cart
                                         </Button>
                                     </div>
@@ -763,12 +765,12 @@ export default function ServicePage() {
 
                                     <div className="flex flex-col sm:flex-row gap-2">
                                         {selectedProject.tutorialUrl && (
-                                            <Button variant="default" className="flex-1 bg-primary/90 hover:bg-primary" onClick={() => handleBuildWithMe(selectedProject)}>
+                                            <Button variant="default" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => handleBuildWithMe(selectedProject)}>
                                                 <Eye size={16} className="mr-2"/> View 'Build With Me' Tutorial
                                             </Button>
                                         )}
                                         {selectedProject.creatorPrice && (
-                                            <Button variant="secondary" className="flex-1" onClick={() => handleGetCreatorService(selectedProject)}>
+                                            <Button variant="secondary" className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleGetCreatorService(selectedProject)}>
                                                 <Users size={16} className="mr-2"/> Get it Made by Creator (₹{selectedProject.creatorPrice})
                                             </Button>
                                         )}
@@ -781,7 +783,7 @@ export default function ServicePage() {
                                             <Button variant="outline" size="xs" className="text-xs px-2 h-7"><SchoolIconLucide size={12} className="mr-1"/> Use School</Button>
                                         </div>
                                         <Input placeholder="Or enter new address..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="h-9"/>
-                                        <Button size="sm" className="w-full mt-2 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => toast({title:"Proceeding to Payment (Simulated)", description: "Address: " + (deliveryAddress || "Default")})}>
+                                        <Button size="sm" className="w-full mt-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => toast({title:"Proceeding to Payment (Simulated)", description: "Address: " + (deliveryAddress || "Default")})}>
                                            <Truck size={14} className="mr-1.5"/> Proceed to Order/Payment
                                         </Button>
                                         <p className="text-xs text-muted-foreground text-center mt-2">Conceptual: Payment & Delivery Tracking</p>
@@ -804,11 +806,11 @@ export default function ServicePage() {
       
       case 'info_page':
         const content = serviceData.data?.content || "Information will be displayed here.";
-        const parts = content.split('\n\n'); // Split by double newline to separate sections
-        const gyaanTitlePart = parts.find(p => p.includes("🌟")); // Find the title part
-        const quotePart = parts.find(p => p.startsWith("\"") && p.endsWith("\"")); // Find the quote
-        const explanationPart = parts.find(p => p.length > 50 && !p.includes("🌟") && !p.startsWith("\"") && !p.startsWith("#")); // Find a longer text as explanation
-        const hashtagsLinePart = parts.find(p => p.startsWith("#")); // Find the line with hashtags
+        const parts = content.split('\n\n');
+        const gyaanTitlePart = parts.find(p => p.includes("🌟"));
+        const quotePart = parts.find(p => p.startsWith("\"") && p.endsWith("\""));
+        const explanationPart = parts.find(p => p.length > 50 && !p.includes("🌟") && !p.startsWith("\"") && !p.startsWith("#"));
+        const hashtagsLinePart = parts.find(p => p.startsWith("#"));
         const hashtagsList = hashtagsLinePart ? hashtagsLinePart.split(' ').filter(h => h.startsWith('#')) : [];
 
         return (
@@ -847,7 +849,6 @@ export default function ServicePage() {
                         ))}
                     </div>
                     )}
-                    {/* Fallback for content not matching specific parts */}
                     {!gyaanTitlePart && !quotePart && !explanationPart && hashtagsList.length === 0 && (
                          <p className="whitespace-pre-wrap text-sm text-foreground">{content}</p>
                     )}
@@ -919,7 +920,6 @@ export default function ServicePage() {
   );
 }
 
-// Add placeholder to Textarea component for bilingual support if not already done globally
 declare module 'react' {
     interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
       placeholder_en?: string;
@@ -930,13 +930,9 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-// Add placeholder to SelectValue for bilingual support
 declare module "@radix-ui/react-select" {
   interface SelectValueProps {
     placeholder_en?: string;
     placeholder_hi?: string;
   }
 }
-
-
-
