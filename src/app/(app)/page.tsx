@@ -3,10 +3,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, useCallback } from 'react'; // Added useEffect and useCallback
+import { useState, useEffect, useCallback } from 'react';
 import {
   Languages,
-  RefreshCw, // Icon for new quote button
+  RefreshCw, 
 } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
@@ -23,7 +23,7 @@ const gridItems = [
   { id: 'elibrary', href: '/services/elibrary', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'digital library', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी' },
   { id: 'studysnacks', href: '/services/studysnacks', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'healthy snacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स' },
   { id: 'lastminutekits', href: '/services/lastminutekits', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'exam kit', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट' },
-  { id: 'testseries', href: '/services/testseries', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'mock test', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' },
+  { id: 'testseries', href: '/test-series', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'mock test', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' }, // Updated href
   { id: 'parentmode', href: '/services/parentmode', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'parental app', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
   { id: 'dailygurugyaan', href: '/services/dailygurugyaan', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'daily wisdom', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान' },
   { id: 'guruji', href: '/services/guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ai tutor', labelEn: 'Guru Ji', labelHi: 'गुरु जी' },
@@ -55,15 +55,14 @@ export default function HomePage() {
   const selectRandomQuote = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * sampleQuotes.length);
     setCurrentQuote(sampleQuotes[randomIndex]);
-  }, []); // Empty dependency array as sampleQuotes is constant
+  }, []); 
 
   useEffect(() => {
-    selectRandomQuote(); // Select an initial quote on mount
+    selectRandomQuote(); 
   }, [selectRandomQuote]);
 
   return (
     <div className="space-y-4 pb-8 relative">
-      {/* Header: OSO logo & Subheading: “One Student, One App” */}
       <header className="flex items-center justify-between py-3 px-1 mb-3">
         <div className="flex items-center space-x-2">
           <Image
@@ -81,14 +80,12 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-        {/* Language Toggle Button */}
         <Button variant="ghost" size="icon" onClick={toggleLanguage} className="text-muted-foreground hover:text-primary">
           <Languages className="h-5 w-5" />
           <span className="sr-only"><BilingualText lang={currentLanguage} en="Toggle Language" hi="भाषा बदलें"/></span>
         </Button>
       </header>
 
-      {/* Special Section: Daily Quote / Brain Tip (Horizontal Scroll) */}
       <div className="px-1">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold font-headline">
@@ -106,15 +103,11 @@ export default function HomePage() {
               quoteAuthor={currentLanguage === 'en' ? currentQuote.authorEn : currentQuote.authorHi}
               lang={currentLanguage}
             />
-            {/* Add more cards here for horizontal scroll if needed */}
-            {/* Example: <Card className="min-w-[280px]"><CardContent className="p-4">Another tip...</CardContent></Card> */}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </div>
 
-
-      {/* 3x4 Grid of colorful rounded icons */}
       <section className="px-1">
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {gridItems.map((item) => (
@@ -139,7 +132,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Bottom banner: “Infinite Learning” (purple with white text) */}
       <footer className="mt-6 px-1">
         <div className="bg-purple-600 text-white text-center py-3 rounded-lg shadow-md">
           <span className="font-semibold text-sm tracking-wide">
@@ -150,4 +142,3 @@ export default function HomePage() {
     </div>
   );
 }
-
