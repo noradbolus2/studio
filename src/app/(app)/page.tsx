@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react'; 
@@ -6,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
-  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch
+  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { BilingualText } from '@/components/shared/BilingualText'; 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useToast } from '@/hooks/use-toast';
+
 
 // Mock data
 const user = {
@@ -23,7 +27,6 @@ const user = {
   avatarUrl: 'https://placehold.co/40x40.png',
   dataAiHint: 'student avatar male'
 };
-const location = "Modern School, Barakhamba";
 
 const heroSlides = [
   { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "project help technology", bgColor: "bg-gradient-to-r from-purple-500 to-violet-600", href:"/services/projects" },
@@ -60,10 +63,24 @@ const searchIcons = [
     {labelEn: "Guruji AI", labelHi: "गुरुजी AI", icon: Bot, href:"/ai-guruji"},
 ];
 
+const mockLocations = [
+    { id: "loc1", name: "Modern School, Barakhamba Road, Delhi", type: "School" },
+    { id: "loc2", name: "DPS, R.K. Puram, New Delhi", type: "School" },
+    { id: "loc3", name: "City Montessori School, Lucknow", type: "School" },
+    { id: "loc4", name: "My Home - Sector 15, Noida", type: "Home" },
+    { id: "loc5", name: "Karol Bagh, Delhi", type: "Area" },
+    { id: "loc6", name: "Indiranagar, Bengaluru", type: "Area" },
+];
+
 export default function ModernHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en'); 
+  const [location, setLocation] = useState("Modern School, Barakhamba");
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [locationSearchTerm, setLocationSearchTerm] = useState("");
+  const [selectedTempLocation, setSelectedTempLocation] = useState(location);
+  const { toast } = useToast();
 
   const startSlideShow = () => {
     slideIntervalRef.current = setInterval(() => {
@@ -92,16 +109,40 @@ export default function ModernHomePage() {
     setCurrentLang(prevLang => prevLang === 'en' ? 'hi' : 'en');
   };
 
+  const handleLocationConfirm = () => {
+    setLocation(selectedTempLocation);
+    setIsLocationModalOpen(false);
+    toast({
+      title: "Location Updated",
+      description: `Your location is now set to ${selectedTempLocation}.`,
+    });
+  };
+
+  const handleUseCurrentLocation = () => {
+    // Placeholder for actual geolocation logic
+    const detectedLocation = "My Current Area (Detected)";
+    setSelectedTempLocation(detectedLocation);
+    toast({
+      title: "Using Current Location (Simulated)",
+      description: `Location set to ${detectedLocation}. Confirm to save.`,
+    });
+  };
+
+  const filteredLocations = mockLocations.filter(loc =>
+    loc.name.toLowerCase().includes(locationSearchTerm.toLowerCase())
+  );
+
 
   return (
     <div className="space-y-6 pb-10 bg-background min-h-screen -m-4 p-4">
       {/* Top Section */}
       <header className="space-y-3 sticky top-0 bg-background/80 backdrop-blur-sm z-40 py-3 -mx-4 px-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+         <Button variant="ghost" onClick={() => setIsLocationModalOpen(true)} className="flex items-center gap-1.5 text-sm text-muted-foreground p-1 h-auto hover:bg-muted">
             <MapPin className="h-5 w-5 text-primary" />
-            <span className="font-medium truncate max-w-[200px]">{location}</span>
-          </div>
+            <span className="font-medium truncate max-w-[180px] sm:max-w-[220px] text-left">{location}</span>
+            <ChevronRight className="h-4 w-4 opacity-70 shrink-0" />
+          </Button>
           <div className="flex items-center gap-2">
             <Button onClick={toggleLanguage} variant="outline" size="sm" className="text-xs h-7 px-2">
               {currentLang === 'en' ? 'हिन्दी' : 'English'}
@@ -118,7 +159,7 @@ export default function ModernHomePage() {
             <h1 className="text-2xl font-bold text-foreground">
                 <BilingualText en={`Hello, ${user.name}`} hi={`नमस्ते, ${user.name}`} lang={currentLang} /> <Hand className="inline h-6 w-6 text-yellow-400" />
             </h1>
-            <p className="text-muted-foreground text-sm"><BilingualText en="What do you need today?" hi="आज आपको क्या चाहिए?" lang={currentLang} /></p>
+            <p className="text-muted-foreground text-sm"><BilingualText en="Ready to learn something new?" hi="कुछ नया सीखने के लिए तैयार हैं?" lang={currentLang} /></p>
         </div>
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -233,7 +274,57 @@ export default function ModernHomePage() {
             <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </section>
+
+      {/* Location Selection Modal */}
+      <Dialog open={isLocationModalOpen} onOpenChange={setIsLocationModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle><BilingualText en="Select Your Location" hi="अपना स्थान चुनें" lang={currentLang} /></DialogTitle>
+            <DialogDescription>
+              <BilingualText en="Choose your school or area for personalized content and faster delivery." hi="व्यक्तिगत सामग्री और तेजी से वितरण के लिए अपना स्कूल या क्षेत्र चुनें।" lang={currentLang} />
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Button variant="outline" onClick={handleUseCurrentLocation} className="w-full justify-start gap-2">
+              <LocateFixed className="h-4 w-4" /> <BilingualText en="Use My Current Location" hi="मेरे वर्तमान स्थान का उपयोग करें" lang={currentLang}/>
+            </Button>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={currentLang === 'en' ? "Search school or area..." : "स्कूल या क्षेत्र खोजें..."}
+                value={locationSearchTerm}
+                onChange={(e) => setLocationSearchTerm(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            <RadioGroup value={selectedTempLocation} onValueChange={setSelectedTempLocation}>
+              <ScrollArea className="h-[200px] w-full rounded-md border p-2">
+                {filteredLocations.length > 0 ? filteredLocations.map((loc) => (
+                  <div key={loc.id} className="flex items-center space-x-2 p-2 hover:bg-muted/50 rounded-md">
+                    <RadioGroupItem value={loc.name} id={loc.id} />
+                    <Label htmlFor={loc.id} className="font-normal cursor-pointer flex-1">
+                      {loc.name}
+                      <span className="text-xs text-muted-foreground ml-1">({loc.type})</span>
+                    </Label>
+                  </div>
+                )) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    <BilingualText en="No locations found for your search." hi="आपकी खोज के लिए कोई स्थान नहीं मिला।" lang={currentLang}/>
+                  </p>
+                )}
+                <ScrollBar orientation="vertical" />
+              </ScrollArea>
+            </RadioGroup>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <DialogClose asChild>
+              <Button type="button" variant="outline"><BilingualText en="Cancel" hi="रद्द करें" lang={currentLang}/></Button>
+            </DialogClose>
+            <Button type="button" onClick={handleLocationConfirm}><BilingualText en="Confirm Location" hi="स्थान की पुष्टि करें" lang={currentLang}/></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
-
