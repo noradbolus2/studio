@@ -41,7 +41,7 @@ export default function BrainScanReportPage() {
         <CardHeader className="items-center text-center">
           <div className="relative w-48 h-48 mb-4">
             {/* Placeholder for Aura Map UI - This would be a complex SVG or Canvas visualization */}
-            <div className="absolute inset-0 rounded-full bg-purple-200 animate-pulse-subtle opacity-30 data-ai-hint="aura map visualization""></div>
+            <div className="absolute inset-0 rounded-full bg-purple-200 animate-pulse-subtle opacity-30" data-ai-hint="aura map visualization"></div>
             <div className="absolute inset-4 rounded-full bg-blue-200 animate-pulse-subtle opacity-40 delay-100"></div>
             <div className="absolute inset-8 rounded-full bg-green-200 animate-pulse-subtle opacity-50 delay-200"></div>
             <div className="absolute inset-12 rounded-full bg-yellow-200 animate-pulse-subtle opacity-60 delay-300"></div>
