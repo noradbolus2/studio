@@ -1,146 +1,240 @@
 
 "use client";
 
+import React, { useState, useEffect, useRef } from 'react'; // Added React import here
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import {
-  ShoppingBag, // For Stationery
-  Brain,       // For Projects (conceptual thinking)
-  PencilLine,  // For Assignments
-  Shirt,       // For Uniforms
-  Library,     // For e-Library
-  Cookie,      // For Study Snacks
-  PackageSearch, // For Last Minute Kits
-  ClipboardList, // For Test Series
-  Users,       // For Parent Mode (could also be Shield)
-  Sparkles,    // For Daily Guru Gyaan
-  MessageCircleHeart, // For Guru Ji (friendly chat)
-  Youtube,     // For Live Classes
-  Languages,
-  RefreshCw,
+  MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
+  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch
 } from 'lucide-react';
 
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BilingualText } from '@/components/shared/BilingualText';
-import { MotivationalQuoteCard } from '@/components/shared/MotivationalQuoteCard';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-// Removed Image import as it's no longer used with Lucide icons
+import { cn } from '@/lib/utils';
+import { BilingualText } from '@/components/shared/BilingualText'; // Assuming this component is correctly set up for bilingual text
 
-const gridItems = [
-  { id: 'stationery', href: '/services/stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: ShoppingBag },
-  { id: 'projects', href: '/services/projects', labelEn: 'Projects', labelHi: 'परियोजनाएं', icon: Brain },
-  { id: 'assignments', href: '/services/assignments', labelEn: 'Assignments', labelHi: 'असाइनमेंट', icon: PencilLine },
-  { id: 'uniforms', href: '/services/uniforms', labelEn: 'Uniforms', labelHi: 'वर्दी', icon: Shirt },
-  { id: 'elibrary', href: '/services/elibrary', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी', icon: Library },
-  { id: 'studysnacks', href: '/services/studysnacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स', icon: Cookie },
-  { id: 'lastminutekits', href: '/services/lastminutekits', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट', icon: PackageSearch },
-  { id: "testseries", href: "/test-series", labelEn: "Test Series", labelHi: "टेस्ट सीरीज़", icon: ClipboardList },
-  { id: 'parentmode', href: '/services/parentmode', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड', icon: Users },
-  { id: 'dailygurugyaan', href: '/services/dailygurugyaan', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान', icon: Sparkles },
-  { id: 'guruji', href: '/ai-guruji', labelEn: 'Guru Ji', labelHi: 'गुरु जी', icon: MessageCircleHeart }, // Updated href
-  { id: 'liveclasses', href: '/services/liveclasses', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Youtube },
+// Mock data
+const user = {
+  name: 'Abhishek',
+  avatarUrl: 'https://placehold.co/40x40.png',
+  dataAiHint: 'student avatar male'
+};
+const location = "Modern School, Barakhamba";
+
+const heroSlides = [
+  { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "project help technology", bgColor: "bg-gradient-to-r from-blue-500 to-indigo-600", href:"/services/projects" },
+  { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "fast delivery books", bgColor: "bg-gradient-to-r from-green-500 to-emerald-600", href:"/delivery" },
+  { id: 3, titleEn: "OSO Guruji AI is Online", titleHi: "OSO गुरुजी AI ऑनलाइन हैं", descriptionEn: "Your 24/7 AI study partner", descriptionHi: "आपका 24/7 एआई अध्ययन भागीदार", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "ai robot teaching", bgColor: "bg-gradient-to-r from-purple-500 to-violet-600", href:"/ai-guruji" },
 ];
 
-const sampleQuotes = [
-  { en: "The best way to predict the future is to create it.", authorEn: "Peter Drucker", hi: "भविष्य की भविष्यवाणी करने का सबसे अच्छा तरीका इसे बनाना है।", authorHi: "पीटर ड्रकर" },
-  { en: "Your limitation—it's only your imagination.", authorEn: "Anonymous", hi: "आपकी सीमा-यह सिर्फ आपकी कल्पना है।", authorHi: "गुमनाम" },
-  { en: "Push yourself, because no one else is going to do it for you.", authorEn: "Anonymous", hi: "खुद को धकेलो, क्योंकि कोई और तुम्हारे लिए यह नहीं करेगा।", authorHi: "गुमनाम" },
-  { en: "Great things never come from comfort zones.", authorEn: "Anonymous", hi: "महान चीजें कभी भी आराम क्षेत्र से नहीं आती हैं।", authorHi: "गुमनाम" },
-  { en: "Dream it. Wish it. Do it.", authorEn: "Anonymous", hi: "सपना देखो। इच्छा करो। कर डालो।", authorHi: "गुमनाम" },
-  { en: "Success doesn’t just find you. You have to go out and get it.", authorEn: "Anonymous", hi: "सफलता तुम्हें ढूंढती नहीं है। तुम्हें बाहर जाकर उसे पाना होगा।", authorHi: "गुमनाम" },
-  { en: "The harder you work for something, the greater you’ll feel when you achieve it.", authorEn: "Anonymous", hi: "आप किसी चीज़ के लिए जितनी मेहनत करते हैं, उसे हासिल करने पर उतना ही अच्छा महसूस करेंगे।", authorHi: "गुमनाम" },
-  { en: "Don't stop when you're tired. Stop when you're done.", authorEn: "Anonymous", hi: "थकने पर मत रुको। जब काम पूरा हो जाए तब रुको।", authorHi: "गुमनाम" },
-  { en: "Wake up with determination. Go to bed with satisfaction.", authorEn: "Anonymous", hi: "दृढ़ संकल्प के साथ जागो। संतुष्टि के साथ सो जाओ।", authorHi: "गुमनाम" },
-  { en: "Do something today that your future self will thank you for.", authorEn: "Sean Patrick Flanery", hi: "आज कुछ ऐसा करो जिसके लिए तुम्हारा भविष्य का तुम धन्यवाद करोगे।", authorHi: "शॉन पैट्रिक फ्लैनरी" },
+const quickCategories = [
+  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-indigo-600', bgColor: 'bg-indigo-100 hover:bg-indigo-200' },
+  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-amber-600', bgColor: 'bg-amber-100 hover:bg-amber-200' },
+  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-rose-600', bgColor: 'bg-rose-100 hover:bg-rose-200' },
+  { id: 'ai_guruji', labelEn: 'AI Guruji', labelHi: 'AI गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-sky-600', bgColor: 'bg-sky-100 hover:bg-sky-200' },
+  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-teal-600', bgColor: 'bg-teal-100 hover:bg-teal-200' },
+  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-fuchsia-600', bgColor: 'bg-fuchsia-100 hover:bg-fuchsia-200' },
 ];
 
+const recommendations = [
+  { id: 'rec1', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Class 10 - Lakhmir Singh Science', titleHi: 'कक्षा 10 - लखमीर सिंह विज्ञान', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "science textbook", href: '/class-6-12-books', priceEn: '₹450', priceHi: '₹450' },
+  { id: 'rec2', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: '₹299', priceHi: '₹299' },
+  { id: 'rec3', typeEn: 'AI Tool', typeHi: 'AI उपकरण', titleEn: 'Ask Guruji: NEET Doubts', titleHi: 'गुरुजी से पूछें: NEET शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क' },
+  { id: 'rec4', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test', titleHi: 'JEE मुख्य मॉक टेस्ट', descriptionEn: 'Full Syllabus', descriptionHi: 'पूर्ण पाठ्यक्रम', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "online test interface", href: '/test-series', priceEn: '₹99', priceHi: '₹99' },
+];
 
-export default function HomePage() {
-  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'hi'>('en');
-  const [currentQuote, setCurrentQuote] = useState(sampleQuotes[0]);
+const deliveryDeals = [
+  { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, bgColor: "bg-orange-500", textColor: "text-white", dataAiHint:"charts diagram" },
+  { id: 'deal2', titleEn: "₹10 Off School Kits", titleHi: "स्कूल किट पर ₹10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, bgColor: "bg-teal-500", textColor: "text-white", dataAiHint:"school supplies kit" },
+  { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, bgColor: "bg-violet-500", textColor: "text-white", dataAiHint:"project materials box" },
+];
 
-  const toggleLanguage = () => {
-    setCurrentLanguage(prev => (prev === 'en' ? 'hi' : 'en'));
+const searchIcons = [
+    {labelEn: "Books", labelHi: "किताबें", icon: BookIcon, href:"/class-6-12-books"},
+    {labelEn: "Projects", labelHi: "प्रोजेक्ट", icon: Brain, href:"/services/projects"},
+    {labelEn: "Stationery", labelHi: "स्टेशनरी", icon: PackageIcon, href:"/delivery"},
+    {labelEn: "Guruji AI", labelHi: "गुरुजी AI", icon: Bot, href:"/ai-guruji"},
+];
+
+export default function ModernHomePage() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en'); // Example language state
+
+  // For hero banner rotation
+  const startSlideShow = () => {
+    slideIntervalRef.current = setInterval(() => {
+      setCurrentSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1));
+    }, 4000);
   };
 
-  const selectRandomQuote = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * sampleQuotes.length);
-    setCurrentQuote(sampleQuotes[randomIndex]);
-  }, []); 
-
   useEffect(() => {
-    selectRandomQuote(); 
-  }, [selectRandomQuote]);
+    startSlideShow();
+    return () => {
+      if (slideIntervalRef.current) {
+        clearInterval(slideIntervalRef.current);
+      }
+    };
+  }, []);
+
+  const jumpToSlide = (index: number) => {
+    setCurrentSlide(index);
+    if (slideIntervalRef.current) clearInterval(slideIntervalRef.current);
+    startSlideShow();
+  };
+  
+  const MemoizedImage = React.memo(Image);
+
+  // Example: Toggle language for demonstration
+  const toggleLanguage = () => {
+    setCurrentLang(prevLang => prevLang === 'en' ? 'hi' : 'en');
+  };
+
 
   return (
-    <div className="space-y-4 pb-8 relative">
-      <header className="flex items-center justify-between py-3 px-1 mb-3">
-        <div className="flex items-center space-x-2">
-           <div className="h-9 w-9 rounded-md bg-primary flex items-center justify-center">
-             {/* Placeholder for an actual logo or use a simple initial if no image is preferred */}
-            <span className="text-xl font-bold text-primary-foreground">O</span>
+    <div className="space-y-6 pb-10 bg-slate-50 min-h-screen -m-4 p-4">
+      {/* Top Section */}
+      <header className="space-y-3 sticky top-0 bg-slate-50/80 backdrop-blur-sm z-40 py-3 -mx-4 px-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <MapPin className="h-5 w-5 text-primary" />
+            <span className="font-medium truncate max-w-[200px]">{location}</span>
           </div>
-          <div>
-            <h1 className="text-xl font-bold font-headline text-primary">OSO App</h1>
-            <p className="text-xs text-muted-foreground">
-              <BilingualText lang={currentLanguage} en="One Student, One App" hi="एक छात्र, एक ऐप" />
-            </p>
+          <div className="flex items-center gap-2">
+            <Button onClick={toggleLanguage} variant="outline" size="sm" className="text-xs h-7 px-2">
+              {currentLang === 'en' ? 'हिन्दी' : 'English'}
+            </Button>
+            <Link href="/profile">
+              <Avatar className="h-8 w-8 border-2 border-primary">
+                <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint={user.dataAiHint} />
+                <AvatarFallback>{user.name.substring(0,1)}</AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={toggleLanguage} className="text-muted-foreground hover:text-primary">
-          <Languages className="h-5 w-5" />
-          <span className="sr-only"><BilingualText lang={currentLanguage} en="Toggle Language" hi="भाषा बदलें"/></span>
-        </Button>
+        <div className="px-0">
+            <h1 className="text-2xl font-bold text-gray-800">
+                <BilingualText en={`Hello, ${user.name}`} hi={`नमस्ते, ${user.name}`} lang={currentLang} /> <Hand className="inline h-6 w-6 text-yellow-400" />
+            </h1>
+            <p className="text-gray-500 text-sm"><BilingualText en="What do you need today?" hi="आज आपको क्या चाहिए?" lang={currentLang} /></p>
+        </div>
+        <div className="relative">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Input 
+            type="search" 
+            placeholder={currentLang === 'en' ? "Search for books, projects, stationery..." : "किताबें, प्रोजेक्ट, स्टेशनरी खोजें..."}
+            className="pl-10 h-12 text-base border-gray-300 focus:border-primary focus:ring-primary rounded-xl shadow-sm" 
+          />
+        </div>
+         <div className="flex justify-around items-center pt-1 text-xs text-gray-600">
+            {searchIcons.map(item => (
+                <Link href={item.href} key={item.labelEn} className="flex flex-col items-center gap-1 hover:text-primary transition-colors">
+                    <item.icon className="h-5 w-5"/>
+                    <span><BilingualText en={item.labelEn} hi={item.labelHi} lang={currentLang} separator=" "/></span>
+                </Link>
+            ))}
+        </div>
       </header>
 
-      <div className="px-1">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-semibold font-headline">
-            <BilingualText lang={currentLanguage} en="Daily Spark" hi="दैनिक चिंगारी" />
-          </h2>
-          <Button variant="outline" size="sm" onClick={selectRandomQuote} className="px-2 py-1 h-auto">
-            <RefreshCw size={14} className="mr-1.5" />
-            <BilingualText lang={currentLanguage} en="New Quote" hi="नया विचार" />
-          </Button>
-        </div>
-        <ScrollArea className="w-full whitespace-nowrap pb-2.5">
-          <div className="flex space-x-4">
-            <MotivationalQuoteCard 
-              quoteText={currentLanguage === 'en' ? currentQuote.en : currentQuote.hi}
-              quoteAuthor={currentLanguage === 'en' ? currentQuote.authorEn : currentQuote.authorHi}
-              lang={currentLanguage}
-            />
-            {/* Add more cards here if needed, e.g., quick study tip */}
+      {/* Hero Banner Carousel */}
+      <section className="relative w-full h-48 md:h-64 overflow-hidden rounded-xl shadow-lg">
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-1000 ease-in-out flex items-center justify-center text-white p-6 text-center",
+              slide.bgColor,
+              index === currentSlide ? "opacity-100 z-10" : "opacity-0"
+            )}
+          >
+            <Link href={slide.href} className="block w-full h-full">
+              <MemoizedImage src={slide.imageUrl} alt={currentLang === 'en' ? slide.titleEn : slide.titleHi} layout="fill" objectFit="cover" className="absolute inset-0 z-0 opacity-30 data-ai-hint={slide.dataAiHint}" priority={index === 0}/>
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <h2 className="text-2xl font-bold mb-1 shadow-black/50 text-shadow"><BilingualText en={slide.titleEn} hi={slide.titleHi} lang={currentLang} /></h2>
+                <p className="text-sm shadow-black/50 text-shadow-sm"><BilingualText en={slide.descriptionEn} hi={slide.descriptionHi} lang={currentLang} /></p>
+                 <Button variant="outline" size="sm" className="mt-3 bg-white/20 hover:bg-white/30 border-white text-white backdrop-blur-sm">
+                   <BilingualText en="Learn More" hi="और जानें" lang={currentLang} />
+                 </Button>
+              </div>
+            </Link>
           </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
+        ))}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => jumpToSlide(index)}
+              className={cn("h-2 w-2 rounded-full transition-all", currentSlide === index ? "w-4 bg-white" : "bg-white/50 hover:bg-white/75")}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </section>
 
-      <section className="px-1">
-        <div className="grid grid-cols-3 gap-3 sm:gap-4">
-          {gridItems.map((item) => (
-            <Link href={item.href} key={item.id} passHref>
-              <Card className="aspect-square group flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-accent/10 hover:bg-accent/20 active:bg-accent/30 rounded-xl shadow-sm">
-                <div className="relative h-8 w-8 mb-1 flex items-center justify-center rounded-full bg-accent/20 group-hover:bg-accent/30 transition-colors">
-                  <item.icon className="h-4 w-4 text-accent-foreground group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="text-xs font-medium text-foreground group-hover:text-accent-foreground transition-colors leading-tight block h-6">
-                   <BilingualText lang={currentLanguage} en={item.labelEn} hi={item.labelHi} />
-                </span>
+      {/* Quick Categories */}
+      <section>
+        <h2 className="text-xl font-semibold text-gray-800 mb-3"><BilingualText en="Quick Categories" hi="त्वरित श्रेणियाँ" lang={currentLang}/></h2>
+        <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
+          {quickCategories.map((category) => (
+            <Link href={category.href} key={category.id}>
+              <Card className={cn("text-center p-3 rounded-xl shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-center items-center", category.bgColor)}>
+                <category.icon className={cn("h-6 w-6 mx-auto mb-1", category.color)} />
+                <p className={cn("text-xs font-medium", category.color)}><BilingualText en={category.labelEn} hi={category.labelHi} lang={currentLang} separator=" "/></p>
               </Card>
             </Link>
           ))}
         </div>
       </section>
 
-      <footer className="mt-6 px-1">
-        <div className="bg-purple-600 text-white text-center py-3 rounded-lg shadow-md">
-          <span className="font-semibold text-sm tracking-wide">
-            <BilingualText lang={currentLanguage} en="Infinite Learning" hi="अनंत शिक्षा" separator=" ✨ " />
-          </span>
-        </div>
-      </footer>
+      {/* Today’s Recommendations */}
+      <section>
+        <h2 className="text-xl font-semibold text-gray-800 mb-3"><BilingualText en="Today's Recommendations" hi="आज की सिफारिशें" lang={currentLang}/></h2>
+        <ScrollArea className="w-full whitespace-nowrap pb-3">
+          <div className="flex space-x-4">
+            {recommendations.map((item) => (
+              <Link href={item.href} key={item.id} className="block min-w-[150px] max-w-[150px]">
+                <Card className="overflow-hidden rounded-lg shadow hover:shadow-lg transition-shadow h-full flex flex-col">
+                  <div className="aspect-[3/4] relative w-full">
+                    <MemoizedImage src={item.imageUrl} alt={currentLang === 'en' ? item.titleEn : item.titleHi} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint} />
+                  </div>
+                  <CardContent className="p-2.5 flex-grow flex flex-col justify-between">
+                    <div>
+                        <p className="text-xs font-semibold text-primary truncate"><BilingualText en={item.typeEn} hi={item.typeHi} lang={currentLang}/></p>
+                        <h3 className="text-sm font-medium text-gray-800 leading-tight h-10 overflow-hidden mb-1"><BilingualText en={item.titleEn} hi={item.titleHi} lang={currentLang}/></h3>
+                        { (item.descriptionEn || item.descriptionHi) && <p className="text-xs text-gray-500 truncate"><BilingualText en={item.descriptionEn!} hi={item.descriptionHi!} lang={currentLang}/></p>}
+                    </div>
+                    <p className="text-sm font-bold text-gray-700 mt-1"><BilingualText en={item.priceEn} hi={item.priceHi} lang={currentLang}/></p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </section>
+
+      {/* Delivery Deals */}
+      <section>
+        <h2 className="text-xl font-semibold text-gray-800 mb-3"><BilingualText en="Delivery Deals" hi="डिलीवरी डील्स" lang={currentLang}/></h2>
+         <ScrollArea className="w-full whitespace-nowrap pb-3">
+            <div className="flex space-x-3">
+                {deliveryDeals.map((deal) => (
+                <Card key={deal.id} className={cn("min-w-[200px] p-4 rounded-lg shadow-sm flex items-center gap-3", deal.bgColor, deal.textColor)}>
+                    <deal.icon className="h-8 w-8 shrink-0" />
+                    <div>
+                    <h3 className="text-sm font-bold"><BilingualText en={deal.titleEn} hi={deal.titleHi} lang={currentLang}/></h3>
+                    <p className="text-xs opacity-90"><BilingualText en={deal.descriptionEn} hi={deal.descriptionHi} lang={currentLang}/></p>
+                    </div>
+                </Card>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </section>
     </div>
   );
 }
