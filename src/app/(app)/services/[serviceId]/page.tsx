@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'; // Added ScrollBar import
 import { Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Edit3, Users2, ShoppingCart, Clock, Truck, Home, SchoolIcon, UploadCloud } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -236,7 +236,7 @@ export default function ServicePage() {
     const mockStudentInput: TestSeriesRecommendationInput = {
         studentName: "Aarav",
         examType: "NEET UG",
-        // preferredLanguage: 'en', // Or 'hi', or 'hng', or leave undefined for default Hinglish
+        preferredLanguage: 'en', // Default to English for this UI
         lastTestPerformances: [
             { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
             { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
