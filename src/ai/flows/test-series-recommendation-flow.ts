@@ -23,7 +23,7 @@ const AvailableTestSetSchema = z.object({
   level: z.string().describe('Difficulty level, e.g., "Medium", "Tough", "Hard".'),
 });
 
-export const TestSeriesRecommendationInputSchema = z.object({
+const TestSeriesRecommendationInputSchema = z.object({
   studentName: z.string().describe("The student's name."),
   examType: z.string().describe("The exam the student is preparing for (e.g., SBI PO, NEET, Class 10)."),
   lastTestPerformances: z.array(PastTestPerformanceSchema).describe("Student's last 3 test performances."),
@@ -36,7 +36,7 @@ const RecommendedTestDetailSchema = z.object({
     reason: z.string().describe('Brief reason for recommending this test, in Hinglish.'),
 });
 
-export const TestSeriesRecommendationOutputSchema = z.object({
+const TestSeriesRecommendationOutputSchema = z.object({
   gurujiAdvice: z.string().describe("OSO Guruji's complete advice and recommendations in Hinglish, including reasons for each test and a motivational line at the end."),
   recommendedTests: z.array(RecommendedTestDetailSchema).describe('A structured list of 2-3 recommended test series with titles and reasons.'),
 });
@@ -69,7 +69,7 @@ Available Test Sets in Database:
 
 Now, based on the student's weak areas from past performance and the available test sets, please do the following:
 
-1.  **Generate ` + "`gurujiAdvice`" + `**: This should be your complete response in Hinglish.
+1.  **Generate \`gurujiAdvice\`**: This should be your complete response in Hinglish.
     *   Start by addressing the student by name.
     *   Analyze their performance in a friendly, constructive way.
     *   Recommend 2-3 specific test series from the "Available Test Sets" list that they should attempt next.
@@ -78,16 +78,16 @@ Now, based on the student's weak areas from past performance and the available t
     *   End with a short, punchy motivational "Guruji line" like "Ab waqt aa gaya hai dikhane ka dum 💪" or "Practice makes a student perfect! 😉".
     *   Use emojis lightly (e.g., 🎯📚🧠💪😉).
 
-2.  **Populate ` + "`recommendedTests`" + ` array**:
-    *   For each test you recommended in your ` + "`gurujiAdvice`" + `, add an object to this array.
+2.  **Populate \`recommendedTests\` array**:
+    *   For each test you recommended in your \`gurujiAdvice\`, add an object to this array.
     *   Each object should have:
-        *   ` + "`title`" + `: The exact title of the recommended test series from the available list.
-        *   ` + "`reason`" + `: A concise reason (in Hinglish, 1-2 sentences) why this specific test is being recommended for this student. This should align with what you said in ` + "`gurujiAdvice`" + `.
+        *   \`title\`: The exact title of the recommended test series from the available list.
+        *   \`reason\`: A concise reason (in Hinglish, 1-2 sentences) why this specific test is being recommended for this student. This should align with what you said in \`gurujiAdvice\`.
 
 IMPORTANT:
 *   Your entire output MUST be a single JSON object that strictly matches the TestSeriesRecommendationOutputSchema.
-*   The ` + "`gurujiAdvice`" + ` should be a single string containing your full Hinglish response.
-*   The ` + "`recommendedTests`" + ` array should contain structured details for the tests you mentioned in ` + "`gurujiAdvice`" + `.
+*   The \`gurujiAdvice\` should be a single string containing your full Hinglish response.
+*   The \`recommendedTests\` array should contain structured details for the tests you mentioned in \`gurujiAdvice\`.
 
 Okay Guruji, please provide your recommendations now!
 `,
