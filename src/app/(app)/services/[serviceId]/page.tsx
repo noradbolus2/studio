@@ -14,15 +14,19 @@ import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Send, Target, BookOpen, Brain, Rocket, FileText } from 'lucide-react';
+import { Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Edit3, Users2, ShoppingCart, Clock, Truck, Home, SchoolIcon, UploadCloud } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 // Define a type for your service data for better type safety
 interface ServiceData {
   name: string;
-  type: string; // e.g., "chat_interface", "product_listing", "info_page", "test_recommendation_interface"
+  type: string; // e.g., "chat_interface", "product_listing", "info_page", "test_recommendation_interface", "interactive_assignment_project_help"
   description?: string;
   data?: {
     redirectTo?: string;
@@ -48,6 +52,21 @@ type ServicePageParams = {
   serviceId: string;
 };
 
+// Mock data for the new interactive assignment/project help
+const projectTypes = [
+  { id: "homework", label: "School Homework", icon: Edit3 },
+  { id: "science_model", label: "Working Science Model", icon: Brain },
+  { id: "art_work", label: "Art/Poster/Chart Work", icon: Palette },
+  { id: "coding_project", label: "Coding Project", icon: Code2 },
+  { id: "essay", label: "Essay or Research Assignment", icon: FileText },
+  { id: "ai_idea", label: "Custom AI-Generated Idea", icon: Rocket },
+  { id: "creator_made", label: "Get it made by a Creator", icon: Users2 }
+];
+
+const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Competitive Exams"];
+const subjects = ["Maths", "Science", "English", "Social Studies", "Hindi", "Physics", "Chemistry", "Biology", "Computer Science", "Art", "General Knowledge", "Current Affairs"];
+
+
 export default function ServicePage() {
   const routeParams = useParams<ServicePageParams>(); 
   const serviceId = routeParams?.serviceId;
@@ -69,6 +88,15 @@ export default function ServicePage() {
   const [isTestRecommendationLoading, setIsTestRecommendationLoading] = useState(false);
   const [testRecommendationError, setTestRecommendationError] = useState<string | null>(null);
 
+  // For interactive_assignment_project_help
+  const [projectClass, setProjectClass] = useState('');
+  const [projectSubject, setProjectSubject] = useState('');
+  const [projectType, setProjectType] = useState('');
+  const [buildOption, setBuildOption] = useState('self');
+  const [materialsOption, setMaterialsOption] = useState('no');
+  const [showAiPlan, setShowAiPlan] = useState(false);
+  const [isAiPlanLoading, setIsAiPlanLoading] = useState(false);
+
 
   useEffect(() => {
     if (serviceId) {
@@ -79,6 +107,7 @@ export default function ServicePage() {
         setServicePageChatMessages([]); 
         setTestRecommendations(null);
         setTestRecommendationError(null);
+        setShowAiPlan(false); // Reset AI plan visibility
 
         try {
           console.log(`Fetching mock data for serviceId: ${serviceId}`);
@@ -87,8 +116,8 @@ export default function ServicePage() {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
-            projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
-            assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
+            projects: { name: "Projects", type: "interactive_assignment_project_help", description: "Get AI-powered help for your school projects.", data: { avatarUrl: "https://placehold.co/100x100.png?text=🛠️", dataAiHint:"tools project" }},
+            assignments: { name: "Assignments", type: "interactive_assignment_project_help", description: "AI assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png?text=📝", dataAiHint:"writing assignment" }},
             testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from AI Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
             uniforms: {
               name: "Uniforms",
@@ -231,6 +260,19 @@ export default function ServicePage() {
     } finally {
         setIsTestRecommendationLoading(false);
     }
+  };
+
+  const handleAskGurujiForProjectPlan = async () => {
+    if (!projectClass || !projectSubject || !projectType) {
+        // Basic validation
+        alert("Please select Class, Subject, and Type of Help.");
+        return;
+    }
+    setIsAiPlanLoading(true);
+    // Simulate AI call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setShowAiPlan(true);
+    setIsAiPlanLoading(false);
   };
 
 
@@ -453,7 +495,7 @@ export default function ServicePage() {
                                                 <CardContent className="p-3 text-xs text-muted-foreground">
                                                     <p className="mb-2">{test.reason}</p>
                                                 </CardContent>
-                                                <CardFooter className="p-3 bg-card border-t">
+                                                 <CardFooter className="p-3 bg-card border-t">
                                                      <Button asChild size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                                                         <Link href={`/attempt-test?title=${encodeURIComponent(test.title)}`}>
                                                             Attempt Test
@@ -475,10 +517,160 @@ export default function ServicePage() {
                         disabled={isTestRecommendationLoading}
                     >
                         {isTestRecommendationLoading ? <LoadingSpinner size={20}/> : 
-                            testRecommendations ? "Get Fresh Recommendations" : "Ask Guruji for Recommendations"
+                           "Ask Guruji for Recommendations"
                         }
                     </Button>
                 </CardFooter>
+            </Card>
+        );
+
+      case 'interactive_assignment_project_help':
+        return (
+            <Card className="w-full">
+                <CardHeader>
+                     <div className="flex items-center gap-3">
+                        {serviceData.data?.avatarUrl && (
+                        <Avatar className="h-12 w-12 border-2 border-primary">
+                            <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
+                            <AvatarFallback>{serviceData.name.substring(0,1)}G</AvatarFallback>
+                        </Avatar>
+                        )}
+                        <div>
+                            <CardTitle className="text-xl font-headline text-primary">
+                                <BilingualText en={`${serviceData.name} Assistant`} hi={`${serviceData.name} सहायक`} />
+                            </CardTitle>
+                            <CardDescription>
+                                <BilingualText en="Let Guruji AI help you plan and execute!" hi="गुरुजी एआई को आपकी योजना बनाने और निष्पादित करने में मदद करने दें!" />
+                            </CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="projectClass"><BilingualText en="Your Class" hi="आपकी कक्षा" /></Label>
+                             <Select value={projectClass} onValueChange={setProjectClass}>
+                                <SelectTrigger id="projectClass"><SelectValue placeholder={<BilingualText en="Select Class" hi="कक्षा चुनें"/>}/></SelectTrigger>
+                                <SelectContent>
+                                    {classes.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label htmlFor="projectSubject"><BilingualText en="Subject" hi="विषय" /></Label>
+                            <Select value={projectSubject} onValueChange={setProjectSubject}>
+                                <SelectTrigger id="projectSubject"><SelectValue placeholder={<BilingualText en="Select Subject" hi="विषय चुनें"/>}/></SelectTrigger>
+                                <SelectContent>
+                                    {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <Label><BilingualText en="Type of Help Needed" hi="आवश्यक सहायता का प्रकार" /></Label>
+                        <ScrollArea className="w-full whitespace-nowrap py-2">
+                            <div className="flex space-x-2">
+                            {projectTypes.map((type) => (
+                                <Button
+                                key={type.id}
+                                variant={projectType === type.id ? "default" : "outline"}
+                                size="sm"
+                                className="h-auto p-2 flex flex-col items-center justify-center space-y-1 w-24 h-24"
+                                onClick={() => setProjectType(type.id)}
+                                >
+                                <type.icon className="h-6 w-6 mb-1" />
+                                <span className="text-xs text-center whitespace-normal leading-tight">{type.label}</span>
+                                </Button>
+                            ))}
+                            </div>
+                            <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label><BilingualText en="How to proceed?" hi="कैसे आगे बढ़ें?" /></Label>
+                            <RadioGroup value={buildOption} onValueChange={setBuildOption} className="mt-1 space-y-1">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="self" id="self" />
+                                    <Label htmlFor="self" className="font-normal"><BilingualText en="Build it myself" hi="मैं खुद बनाऊंगा/बनाऊंगी" /></Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="creator" id="creator" />
+                                    <Label htmlFor="creator" className="font-normal"><BilingualText en="Get it made by OSO Creator" hi="OSO क्रिएटर से बनवाएं" /></Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div>
+                            <Label><BilingualText en="Need Materials Delivered?" hi="सामग्री की डिलीवरी चाहिए?" /></Label>
+                             <RadioGroup value={materialsOption} onValueChange={setMaterialsOption} className="mt-1 space-y-1">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="yes" id="mat_yes" />
+                                    <Label htmlFor="mat_yes" className="font-normal"><BilingualText en="Yes, list and order" hi="हां, सूची बनाएं और ऑर्डर करें" /></Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id="mat_no" />
+                                    <Label htmlFor="mat_no" className="font-normal"><BilingualText en="No, I have them" hi="नहीं, मेरे पास हैं" /></Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                    </div>
+
+                    <Button onClick={handleAskGurujiForProjectPlan} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isAiPlanLoading}>
+                        {isAiPlanLoading ? <LoadingSpinner /> : <Rocket className="mr-2" />}
+                        <BilingualText en="Ask Guruji AI for Ideas & Plan" hi="गुरुजी एआई से विचार और योजना पूछें" />
+                    </Button>
+
+                    {showAiPlan && (
+                        <Card className="mt-6 bg-muted/50 p-4">
+                            <h3 className="text-lg font-semibold text-primary mb-3 font-headline flex items-center">
+                                <Brain className="mr-2"/> <BilingualText en="Guruji AI's Plan" hi="गुरुजी एआई की योजना" />
+                            </h3>
+                            <div className="space-y-3 text-sm">
+                                <p><strong className="font-medium"><BilingualText en="🧪 Project Idea (Class 8 – Science)" hi="🧪 प्रोजेक्ट आइडिया (कक्षा 8 - विज्ञान)" />:</strong> <BilingualText en="Working Model of Hydraulic Lift" hi="हाइड्रोलिक लिफ्ट का वर्किंग मॉडल" /></p>
+                                <p><strong className="font-medium">📦 <BilingualText en="You need" hi="आपको चाहिए" />:</strong> <BilingualText en="2 syringes, plastic tube, cardboard, fevicol" hi="2 सिरिंज, प्लास्टिक ट्यूब, कार्डबोर्ड, फेविकोल" /></p>
+                                <p><strong className="font-medium"><Clock className="inline mr-1" size={16}/> <BilingualText en="Estimated Time" hi="अनुमानित समय" />:</strong> <BilingualText en="2 hours" hi="2 घंटे" /></p>
+                                
+                                {materialsOption === 'yes' && (
+                                    <Button variant="outline" size="sm" className="w-full mt-2">
+                                        <ShoppingCart className="mr-2" size={16}/> <BilingualText en="Add all materials to cart from OSO Store" hi="सभी सामग्री OSO स्टोर से कार्ट में डालें" />
+                                    </Button>
+                                )}
+                                {buildOption === 'creator' && (
+                                    <Card className="p-3 mt-2 border-accent bg-accent/10">
+                                        <p className="text-sm font-medium text-accent-foreground">🧑‍🎨 <BilingualText en="Want this project made by our Top Student Creator (₹99) and delivered in 2 days?" hi="क्या आप यह प्रोजेक्ट हमारे शीर्ष छात्र क्रिएटर (₹99) से बनवाना और 2 दिनों में डिलीवर करवाना चाहते हैं?" /></p>
+                                        <Button variant="default" size="sm" className="w-full mt-2 bg-accent text-accent-foreground hover:bg-accent/90">
+                                            <BilingualText en="Find a Creator" hi="क्रिएटर खोजें" />
+                                        </Button>
+                                    </Card>
+                                )}
+                                <div className="border-t pt-3 mt-3 space-y-2">
+                                     <Label><BilingualText en="Enter Address for Delivery/Creator Service" hi="डिलीवरी/क्रिएटर सेवा के लिए पता दर्ज करें"/></Label>
+                                     <div className="flex items-center space-x-2">
+                                         <Button variant="outline" size="sm"><Home className="mr-2" size={16}/> Use Home</Button>
+                                         <Button variant="outline" size="sm"><SchoolIcon className="mr-2" size={16}/> Use School</Button>
+                                     </div>
+                                     <Input placeholder_en="Or enter new address..." placeholder_hi="या नया पता दर्ज करें..."/>
+                                     <Label><BilingualText en="Payment Options" hi="भुगतान विकल्प"/></Label>
+                                     <Select>
+                                         <SelectTrigger><SelectValue placeholder={<BilingualText en="Select Payment Method" hi="भुगतान विधि चुनें"/>}/></SelectTrigger>
+                                         <SelectContent>
+                                            <SelectItem value="upi">UPI</SelectItem>
+                                            <SelectItem value="oso_credits">OSO Credits</SelectItem>
+                                            <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
+                                         </SelectContent>
+                                     </Select>
+                                     <Button className="w-full"><BilingualText en="Confirm & Proceed" hi="पुष्टि करें और आगे बढ़ें"/></Button>
+                                </div>
+                                <div className="border-t pt-3 mt-3 space-y-2">
+                                    <Button variant="outline" className="w-full"><Truck className="mr-2" size={16}/> <BilingualText en="Track Delivery/Progress" hi="डिलीवरी/प्रगति ट्रैक करें"/></Button>
+                                    <Button variant="secondary" className="w-full"><UploadCloud className="mr-2" size={16}/> <BilingualText en="Submit to Teacher (OSO School Panel)" hi="शिक्षक को सबमिट करें (OSO स्कूल पैनल)"/></Button>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+                </CardContent>
             </Card>
         );
 
@@ -510,7 +702,10 @@ export default function ServicePage() {
     }
   };
 
-  const hideMainElements = serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || !!serviceData?.data?.redirectTo;
+  const hideMainElements = serviceData?.type === 'chat_interface' 
+    || serviceData?.type === 'test_recommendation_interface' 
+    || serviceData?.type === 'interactive_assignment_project_help'
+    || !!serviceData?.data?.redirectTo;
 
   return (
     <div className="space-y-6">
@@ -527,8 +722,8 @@ export default function ServicePage() {
         </header>
       )}
 
-      { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || !serviceData?.data?.redirectTo) ? (
-        (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && !hideMainElements) ? ( 
+      { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || serviceData?.type === 'interactive_assignment_project_help' || !serviceData?.data?.redirectTo) ? (
+        (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && serviceData?.type !== 'interactive_assignment_project_help' && !hideMainElements) ? ( 
           <Card>
             <CardContent className="pt-6">
               {renderServiceContent()}
@@ -559,5 +754,15 @@ declare module 'react' {
       placeholder_en?: string;
       placeholder_hi?: string;
     }
+    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
+}
+// Add placeholder to SelectValue for bilingual support
+declare module "@radix-ui/react-select" {
+  interface SelectValueProps {
+    placeholder_en?: string;
+    placeholder_hi?: string;
   }
-
+}
