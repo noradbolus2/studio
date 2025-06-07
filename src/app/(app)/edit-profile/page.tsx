@@ -28,7 +28,7 @@ const profileSchema = z.object({
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").optional().or(z.literal('')),
   schoolName: z.string().optional(),
   schoolId: z.string().optional(),
-  className: z.string().optional(), // Using string for Select component
+  className: z.string().optional(), 
   board: z.string().optional(),
   stream: z.string().optional(),
   dateOfBirth: z.date().optional(),
@@ -37,14 +37,14 @@ const profileSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().default("India"),
-  avatarUrl: z.string().optional(), // For storing the URL
+  avatarUrl: z.string().optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams"];
 const boards = ["CBSE", "ICSE", "State", "Other"];
-const streams = ["Science", "Commerce", "Arts", "Other"]; // "Other" for those not in 11/12 or different stream
+const streams = ["Science", "Commerce", "Arts", "Other"]; 
 const genders = ["Male", "Female", "Other"];
 const examTargets = ["School Exams", "JEE (Main)", "JEE (Advanced)", "NEET (UG)", "CUET (UG)", "UPSC Civil Services", "NDA & NA", "SSC CGL", "SSC CHSL", "IBPS PO", "IBPS Clerk", "SBI PO", "CAT", "GATE", "CLAT", "Other Competitive Exam"];
 
@@ -63,7 +63,21 @@ export default function EditProfilePage() {
   const { control, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+      schoolName: "",
+      schoolId: "",
+      className: "", 
+      board: "",
+      stream: "",
+      dateOfBirth: undefined, 
+      gender: "",
+      examTarget: "",
+      city: "",
+      state: "",
       country: "India",
+      avatarUrl: "",
     },
   });
   
@@ -77,12 +91,28 @@ export default function EditProfilePage() {
     setLoginType(typeParam);
     setIsSchoolLogin(typeParam === "school");
 
-    let defaultValues: Partial<ProfileFormData> = { country: "India" };
+    let currentDefaultValues: Partial<ProfileFormData> = { // Renamed to avoid confusion with useForm's defaultValues
+      country: "India",
+      // Initialize all potentially undefined string fields to empty strings
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+      schoolName: "",
+      schoolId: "",
+      className: "",
+      board: "",
+      stream: "",
+      city: "",
+      state: "",
+      avatarUrl: "",
+      gender: "",
+      examTarget: "",
+    };
 
     if (typeParam === "school") {
-      defaultValues = {
-        ...defaultValues,
-        schoolId: searchParams.get("schoolId") || "",
+      currentDefaultValues = {
+        ...currentDefaultValues,
+        schoolId: searchParams.get("schoolId") || "", 
         fullName: searchParams.get("fullName") || "Mock School User", 
         schoolName: searchParams.get("schoolName") || "Mock School Name", 
         className: searchParams.get("className") || "", 
@@ -90,10 +120,10 @@ export default function EditProfilePage() {
       };
     } else if (typeParam === "direct") {
       if (isNew) {
-        defaultValues = { ...defaultValues, email: searchParams.get("email") || "" };
+        currentDefaultValues = { ...currentDefaultValues, email: searchParams.get("email") || "" };
       } else {
-        defaultValues = {
-          ...defaultValues,
+        currentDefaultValues = {
+          ...currentDefaultValues,
           fullName: "Existing User",
           email: searchParams.get("email") || "existing.user@example.com",
           phoneNumber: "9876543210",
@@ -108,9 +138,29 @@ export default function EditProfilePage() {
         };
       }
     }
-    reset(defaultValues); 
+    
+    // Ensure all fields in ProfileFormData are present, defaulting to empty strings if not set by logic above
+    const allFieldsToReset: ProfileFormData = {
+        fullName: currentDefaultValues.fullName || "",
+        email: currentDefaultValues.email || "",
+        phoneNumber: currentDefaultValues.phoneNumber || "",
+        schoolName: currentDefaultValues.schoolName || "",
+        schoolId: currentDefaultValues.schoolId || "",
+        className: currentDefaultValues.className || "",
+        board: currentDefaultValues.board || "",
+        stream: currentDefaultValues.stream || "",
+        dateOfBirth: currentDefaultValues.dateOfBirth, 
+        gender: currentDefaultValues.gender || "", 
+        examTarget: currentDefaultValues.examTarget || "", 
+        city: currentDefaultValues.city || "",
+        state: currentDefaultValues.state || "",
+        country: currentDefaultValues.country || "India",
+        avatarUrl: currentDefaultValues.avatarUrl || "",
+    };
+
+    reset(allFieldsToReset); 
     setInitialDataLoading(false);
-  }, [searchParams, reset]);
+  }, [searchParams, reset, loginType]);
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
