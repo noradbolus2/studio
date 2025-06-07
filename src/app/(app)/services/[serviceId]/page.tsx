@@ -27,6 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from '@/components/ui/badge';
 
 
 // Define a type for your service data for better type safety
@@ -607,7 +608,7 @@ export default function ServicePage() {
 
         return (
             <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
-                <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 -mx-1 px-1 shadow-sm">
+                <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 shadow-sm">
                     <CardHeader className="pb-3 pt-2">
                         <div className="flex items-center gap-3">
                             {serviceData.data?.avatarUrl && (
@@ -661,7 +662,7 @@ export default function ServicePage() {
                     </CardContent>
                 </Card>
                 
-                <div className="px-1 mt-4">
+                <div className="mt-4">
                 {projectCategories.map((cat) => (
                     <TabsContent key={cat.id} value={cat.id} className="mt-0">
                         {cat.id === "ai_idea" && !selectedProject && (
@@ -801,17 +802,53 @@ export default function ServicePage() {
          return <p>Products for {serviceData.name} will be listed here.</p>;
       
       case 'info_page':
+        const content = serviceData.data?.content || "Information will be displayed here.";
+        const parts = content.split('\n\n');
+        const gyaanTitlePart = parts[0]; // e.g., "🌟 Today's Guru Gyaan 🌟"
+        const quotePart = parts.length > 1 ? parts[1] : null; // e.g., "\"The journey...\""
+        const explanationPart = parts.length > 2 ? parts[2] : null;
+        const hashtagsLinePart = parts.length > 3 ? parts[3] : null;
+        const hashtagsList = hashtagsLinePart ? hashtagsLinePart.split(' ').filter(h => h.startsWith('#')) : [];
+
         return (
-            <Card className="mx-1">
-                <CardHeader>
-                    <CardTitle className="font-headline text-primary flex items-center gap-2">
-                        <LightbulbIcon className="h-6 w-6" />
+            <Card className="shadow-xl bg-gradient-to-br from-primary/5 via-background to-accent/5">
+                <CardHeader className="items-center text-center border-b pb-4">
+                    <LightbulbIcon className="h-12 w-12 text-accent mb-2 animate-pulse-subtle" />
+                    <CardTitle className="font-headline text-2xl text-primary">
                         {serviceData.name}
                     </CardTitle>
-                    {serviceData.description && <CardDescription>{serviceData.description}</CardDescription>}
+                    {serviceData.description && (
+                    <CardDescription className="text-base">
+                        {serviceData.description}
+                    </CardDescription>
+                    )}
                 </CardHeader>
-                <CardContent>
-                    <p className="whitespace-pre-wrap text-sm text-foreground">{serviceData.data?.content || "Information will be displayed here."}</p>
+                <CardContent className="p-6 text-center space-y-6">
+                    {gyaanTitlePart && (
+                    <h2 className="text-xl font-semibold text-foreground">{gyaanTitlePart}</h2>
+                    )}
+                    {quotePart && (
+                    <blockquote className="text-lg italic text-primary border-l-4 border-primary pl-4 py-2 my-4 bg-primary/10 rounded-r-md">
+                        {quotePart}
+                    </blockquote>
+                    )}
+                    {explanationPart && (
+                    <p className="text-md text-muted-foreground leading-relaxed">
+                        {explanationPart}
+                    </p>
+                    )}
+                    {hashtagsList.length > 0 && (
+                    <div className="mt-6 flex flex-wrap justify-center gap-2">
+                        {hashtagsList.map((tag, index) => (
+                        <Badge key={index} variant="secondary" className="text-sm">
+                            {tag}
+                        </Badge>
+                        ))}
+                    </div>
+                    )}
+                    {!gyaanTitlePart && !quotePart && !explanationPart && hashtagsList.length === 0 && (
+                         <p className="whitespace-pre-wrap text-sm text-foreground">{content}</p>
+                    )}
                 </CardContent>
             </Card>
         );
@@ -856,7 +893,7 @@ export default function ServicePage() {
 
       { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || serviceData?.type === 'interactive_assignment_project_help' || serviceData?.type === 'info_page' || !serviceData?.data?.redirectTo) ? (
         (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && serviceData?.type !== 'interactive_assignment_project_help' && !hideMainElements && serviceData?.type !== 'info_page') ? ( 
-          <Card className="mx-1">
+          <Card>
             <CardContent className="pt-6">
               {renderServiceContent()}
             </CardContent>
