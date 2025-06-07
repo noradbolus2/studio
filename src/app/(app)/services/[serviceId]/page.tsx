@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Send, Target, BookOpen, Brain } from 'lucide-react';
+import { Loader2, Send, Target, BookOpen, Brain, Rocket, FileText } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -396,52 +396,64 @@ export default function ServicePage() {
                         </Avatar>
                         )}
                         <div>
-                            <CardTitle className="text-xl font-headline text-primary"><BilingualText en="AI Test Advisor" hi="एआई टेस्ट सलाहकार"/></CardTitle>
-                            <CardDescription><BilingualText en="Get smart test recommendations from OSO Guruji." hi="OSO गुरुजी से स्मार्ट टेस्ट सुझाव प्राप्त करें।"/></CardDescription>
+                            <CardTitle className="text-xl font-headline text-primary">AI Test Advisor</CardTitle>
+                            <CardDescription>Get smart test recommendations from OSO Guruji.</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {!testRecommendations && !isTestRecommendationLoading && (
                         <p className="text-sm text-muted-foreground text-center py-4">
-                            <BilingualText 
-                                en="Click the button below to get personalized test series suggestions based on a sample student profile." 
-                                hi="नमूना छात्र प्रोफ़ाइल के आधार पर व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करने के लिए नीचे दिए गए बटन पर क्लिक करें।"
-                            />
+                            Click the button below to get personalized test series suggestions based on a sample student profile.
                         </p>
                     )}
                     {isTestRecommendationLoading && (
                         <div className="flex flex-col items-center justify-center p-6 space-y-3">
                             <LoadingSpinner size={32}/>
-                            <p className="text-muted-foreground"><BilingualText en="AI Guruji is analyzing and preparing recommendations..." hi="एआई गुरुजी विश्लेषण कर रहे हैं और सुझाव तैयार कर रहे हैं..."/></p>
+                            <p className="text-muted-foreground">AI Guruji is analyzing and preparing recommendations...</p>
                         </div>
                     )}
                     {testRecommendationError && (
                         <Alert variant="destructive">
-                            <AlertTitle><BilingualText en="Recommendation Error" hi="सुझाव त्रुटि" /></AlertTitle>
+                            <AlertTitle>Recommendation Error</AlertTitle>
                             <AlertDescription>{testRecommendationError}</AlertDescription>
                         </Alert>
                     )}
                     {testRecommendations && (
                         <div className="space-y-6">
                             <Card className="bg-muted/30 p-4">
-                                <h3 className="text-lg font-semibold text-primary mb-2 font-headline">
-                                    <BilingualText en="Guruji's Advice" hi="गुरुजी की सलाह"/>
+                                <h3 className="text-lg font-semibold text-primary mb-2 font-headline flex items-center gap-2">
+                                    <Rocket size={20} /> Guruji's Advice
                                 </h3>
                                 <p className="text-sm whitespace-pre-wrap">{testRecommendations.gurujiAdvice}</p>
                             </Card>
                             
                             {testRecommendations.recommendedTests.length > 0 && (
                                 <div>
-                                    <h4 className="text-md font-semibold mb-2"><BilingualText en="Recommended Tests for You:" hi="आपके लिए अनुशंसित टेस्ट:"/></h4>
-                                    <ul className="space-y-3">
+                                    <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
+                                       <FileText size={18}/> Recommended Tests for You:
+                                    </h4>
+                                    <div className="space-y-3">
                                         {testRecommendations.recommendedTests.map((test, index) => (
-                                            <li key={index} className="p-3 border rounded-lg bg-card shadow-sm">
-                                                <p className="font-medium text-primary flex items-center gap-2"><Target size={16}/>{test.title}</p>
-                                                <p className="text-xs text-muted-foreground pl-6">{test.reason}</p>
-                                            </li>
+                                            <Card key={index} className="overflow-hidden border hover:shadow-md transition-shadow">
+                                                <CardHeader className="p-3 bg-card">
+                                                    <CardTitle className="text-md font-semibold text-primary flex items-center gap-2">
+                                                        <Target size={18}/> {test.title}
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="p-3 text-xs text-muted-foreground">
+                                                    <p className="mb-2">{test.reason}</p>
+                                                </CardContent>
+                                                <CardFooter className="p-3 bg-card border-t">
+                                                     <Button asChild size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                                                        <Link href={`/attempt-test?title=${encodeURIComponent(test.title)}`}>
+                                                            Attempt Test
+                                                        </Link>
+                                                    </Button>
+                                                </CardFooter>
+                                            </Card>
                                         ))}
-                                    </ul>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -454,10 +466,9 @@ export default function ServicePage() {
                         disabled={isTestRecommendationLoading}
                     >
                         {isTestRecommendationLoading ? <LoadingSpinner size={20}/> : 
-                            testRecommendations ? <BilingualText en="Get Fresh Recommendations" hi="नई सिफारिशें प्राप्त करें"/> : <BilingualText en="Ask Guruji for Recommendations" hi="गुरुजी से सिफारिशें पूछें"/>
+                            testRecommendations ? "Get Fresh Recommendations" : "Ask Guruji for Recommendations"
                         }
                     </Button>
-                    {/* Future: Add a button to "Input My Performance" that would lead to a form */}
                 </CardFooter>
             </Card>
         );
