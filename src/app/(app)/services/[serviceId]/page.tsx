@@ -7,13 +7,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
+import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, Target, BookOpen, Brain } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -21,7 +22,7 @@ import { cn } from '@/lib/utils';
 // Define a type for your service data for better type safety
 interface ServiceData {
   name: string;
-  type: string;
+  type: string; // e.g., "chat_interface", "product_listing", "info_page", "test_recommendation_interface"
   description?: string;
   data?: {
     redirectTo?: string;
@@ -30,7 +31,7 @@ interface ServiceData {
     initialGreetingEn?: string; 
     initialGreetingHi?: string; 
     content?: string;
-    category?: string;
+    category?: string; // For product_listing, to pre-filter
   };
 }
 
@@ -49,7 +50,7 @@ type ServicePageParams = {
 
 export default function ServicePage() {
   const params = useParams<ServicePageParams>();
-  const serviceId = params?.serviceId; // Added optional chaining for safety, though it should always be present
+  const serviceId = params?.serviceId;
   const router = useRouter();
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
@@ -57,10 +58,16 @@ export default function ServicePage() {
   const [error, setError] = useState<string | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
+  // For chat_interface type
   const [servicePageChatInputValue, setServicePageChatInputValue] = useState('');
   const [servicePageChatMessages, setServicePageChatMessages] = useState<ServiceChatMessage[]>([]);
   const [servicePageChatIsLoading, setServicePageChatIsLoading] = useState(false);
   const servicePageChatScrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // For test_recommendation_interface type
+  const [testRecommendations, setTestRecommendations] = useState<TestSeriesRecommendationOutput | null>(null);
+  const [isTestRecommendationLoading, setIsTestRecommendationLoading] = useState(false);
+  const [testRecommendationError, setTestRecommendationError] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -70,15 +77,19 @@ export default function ServicePage() {
         setError(null);
         setIsRedirecting(false); 
         setServicePageChatMessages([]); 
+        setTestRecommendations(null);
+        setTestRecommendationError(null);
+
         try {
           console.log(`Fetching mock data for serviceId: ${serviceId}`);
-          await new Promise(resolve => setTimeout(resolve, 300)); // Reduced timeout
+          await new Promise(resolve => setTimeout(resolve, 300)); 
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
             projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
             assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
+            testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from AI Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
           };
 
           if (mockData[serviceId]) {
@@ -117,13 +128,11 @@ export default function ServicePage() {
   }, [servicePageChatMessages]);
 
   useEffect(() => {
-    // Generic redirection logic if redirectTo is present
     if (serviceData?.data?.redirectTo && !loading && router) {
       console.log(`[ServicePage] Redirecting to: ${serviceData.data.redirectTo} for service: ${serviceId}`);
       setIsRedirecting(true);
       router.push(serviceData.data.redirectTo);
     } else {
-      // Reset redirecting state if no redirectTo path or if serviceData changes
       setIsRedirecting(false);
     }
   }, [serviceData, loading, router, serviceId]);
@@ -178,6 +187,40 @@ export default function ServicePage() {
       setServicePageChatMessages(prev => [...prev, errorResponse]);
     } finally {
       setServicePageChatIsLoading(false);
+    }
+  };
+
+  const handleGetTestRecommendations = async () => {
+    setIsTestRecommendationLoading(true);
+    setTestRecommendationError(null);
+    setTestRecommendations(null);
+
+    // Mock input for demonstration
+    const mockStudentInput: TestSeriesRecommendationInput = {
+        studentName: "Aarav",
+        examType: "NEET UG",
+        lastTestPerformances: [
+            { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
+            { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
+            { title: "Chemistry Full Syllabus Test 1", score: "90/180", weakTopics: ["Organic Chemistry Reactions", "Chemical Bonding"] }
+        ],
+        availableTestSets: [
+            { title: "NEET Full Syllabus Mock Test Series (Set A)", subject: "All", level: "Medium" },
+            { title: "NEET Biology - Genetics Special", subject: "Biology", level: "Hard" },
+            { title: "NEET Physics - Mechanics Booster", subject: "Physics", level: "Medium" },
+            { title: "NEET Chemistry - Organic Mastery", subject: "Chemistry", level: "Tough" },
+            { title: "JEE Advanced Physics Challenge", subject: "Physics", level: "Very Hard"},
+        ]
+    };
+
+    try {
+        const result = await getTestSeriesRecommendations(mockStudentInput);
+        setTestRecommendations(result);
+    } catch (err: any) {
+        console.error("Error getting test recommendations:", err);
+        setTestRecommendationError(err.message || "Failed to get recommendations. AI Guruji might be busy.");
+    } finally {
+        setIsTestRecommendationLoading(false);
     }
   };
 
@@ -254,10 +297,7 @@ export default function ServicePage() {
   }
 
   const renderServiceContent = () => {
-    // If redirection is configured, it should be handled by the isRedirecting block.
-    // This switch case will render content for pages that don't redirect.
     if (serviceData.data?.redirectTo) {
-       // This should ideally not be reached if isRedirecting logic is working.
        return (
             <div className="text-center py-10">
               <LoadingSpinner size={32} />
@@ -323,7 +363,8 @@ export default function ServicePage() {
                 <Textarea 
                   value={servicePageChatInputValue}
                   onChange={(e) => setServicePageChatInputValue(e.target.value)}
-                  placeholder="Ask anything..."
+                  placeholder_en="Ask anything..."
+                  placeholder_hi="कुछ भी पूछें..."
                   className="flex-grow resize-none min-h-[40px] max-h-[120px] text-sm"
                   rows={1}
                   disabled={servicePageChatIsLoading}
@@ -343,13 +384,91 @@ export default function ServicePage() {
           </div>
         );
 
-      case 'product_listing': // This case will now only render if redirectTo is NOT set for this type.
+      case 'test_recommendation_interface':
+        return (
+            <Card className="w-full">
+                <CardHeader>
+                    <div className="flex items-center gap-3">
+                        {serviceData.data?.avatarUrl && (
+                        <Avatar className="h-12 w-12 border-2 border-primary">
+                            <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
+                            <AvatarFallback>{serviceData.name.substring(0,1)}G</AvatarFallback>
+                        </Avatar>
+                        )}
+                        <div>
+                            <CardTitle className="text-xl font-headline text-primary"><BilingualText en="AI Test Advisor" hi="एआई टेस्ट सलाहकार"/></CardTitle>
+                            <CardDescription><BilingualText en="Get smart test recommendations from OSO Guruji." hi="OSO गुरुजी से स्मार्ट टेस्ट सुझाव प्राप्त करें।"/></CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {!testRecommendations && !isTestRecommendationLoading && (
+                        <p className="text-sm text-muted-foreground text-center py-4">
+                            <BilingualText 
+                                en="Click the button below to get personalized test series suggestions based on a sample student profile." 
+                                hi="नमूना छात्र प्रोफ़ाइल के आधार पर व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करने के लिए नीचे दिए गए बटन पर क्लिक करें।"
+                            />
+                        </p>
+                    )}
+                    {isTestRecommendationLoading && (
+                        <div className="flex flex-col items-center justify-center p-6 space-y-3">
+                            <LoadingSpinner size={32}/>
+                            <p className="text-muted-foreground"><BilingualText en="AI Guruji is analyzing and preparing recommendations..." hi="एआई गुरुजी विश्लेषण कर रहे हैं और सुझाव तैयार कर रहे हैं..."/></p>
+                        </div>
+                    )}
+                    {testRecommendationError && (
+                        <Alert variant="destructive">
+                            <AlertTitle><BilingualText en="Recommendation Error" hi="सुझाव त्रुटि" /></AlertTitle>
+                            <AlertDescription>{testRecommendationError}</AlertDescription>
+                        </Alert>
+                    )}
+                    {testRecommendations && (
+                        <div className="space-y-6">
+                            <Card className="bg-muted/30 p-4">
+                                <h3 className="text-lg font-semibold text-primary mb-2 font-headline">
+                                    <BilingualText en="Guruji's Advice" hi="गुरुजी की सलाह"/>
+                                </h3>
+                                <p className="text-sm whitespace-pre-wrap">{testRecommendations.gurujiAdvice}</p>
+                            </Card>
+                            
+                            {testRecommendations.recommendedTests.length > 0 && (
+                                <div>
+                                    <h4 className="text-md font-semibold mb-2"><BilingualText en="Recommended Tests for You:" hi="आपके लिए अनुशंसित टेस्ट:"/></h4>
+                                    <ul className="space-y-3">
+                                        {testRecommendations.recommendedTests.map((test, index) => (
+                                            <li key={index} className="p-3 border rounded-lg bg-card shadow-sm">
+                                                <p className="font-medium text-primary flex items-center gap-2"><Target size={16}/>{test.title}</p>
+                                                <p className="text-xs text-muted-foreground pl-6">{test.reason}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </CardContent>
+                <CardFooter className="flex-col space-y-3">
+                    <Button 
+                        onClick={handleGetTestRecommendations} 
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
+                        disabled={isTestRecommendationLoading}
+                    >
+                        {isTestRecommendationLoading ? <LoadingSpinner size={20}/> : 
+                            testRecommendations ? <BilingualText en="Get Fresh Recommendations" hi="नई सिफारिशें प्राप्त करें"/> : <BilingualText en="Ask Guruji for Recommendations" hi="गुरुजी से सिफारिशें पूछें"/>
+                        }
+                    </Button>
+                    {/* Future: Add a button to "Input My Performance" that would lead to a form */}
+                </CardFooter>
+            </Card>
+        );
+
+
+      case 'product_listing': 
          return <p><BilingualText en={`Products for ${serviceData.name} will be listed here.`} hi={`${serviceData.name} के लिए उत्पाद यहां सूचीबद्ध किए जाएंगे।`} /></p>;
       
       case 'info_page':
         return <p>{serviceData.data?.content || <BilingualText en="Information will be displayed here." hi="जानकारी यहाँ प्रदर्शित की जाएगी।" />}</p>;
       
-      // Fallback for types that might be configured to redirect but redirectTo is missing
       case 'books_list_page': 
         if (!serviceData.data?.redirectTo) {
             return (
@@ -364,7 +483,6 @@ export default function ServicePage() {
             </Alert>
           );
         }
-        // This should be caught by the isRedirecting block earlier if redirectTo exists
         return null; 
       
       default:
@@ -372,7 +490,7 @@ export default function ServicePage() {
     }
   };
 
-  const hideMainElements = serviceData?.type === 'chat_interface' || !!serviceData?.data?.redirectTo;
+  const hideMainElements = serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || !!serviceData?.data?.redirectTo;
 
   return (
     <div className="space-y-6">
@@ -389,18 +507,17 @@ export default function ServicePage() {
         </header>
       )}
 
-      {/* Render content if it's not a type that inherently hides main elements OR if it is such a type but isn't configured to redirect */}
-      {(serviceData?.type === 'chat_interface' || !serviceData?.data?.redirectTo) ? (
-        serviceData?.type !== 'chat_interface' && !hideMainElements ? ( // For non-chat, non-redirecting types, wrap in a card
+      { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || !serviceData?.data?.redirectTo) ? (
+        (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && !hideMainElements) ? ( 
           <Card>
             <CardContent className="pt-6">
               {renderServiceContent()}
             </CardContent>
           </Card>
-        ) : ( // For chat type, or other types if hideMainElements is true (e.g. misconfigured redirect)
+        ) : ( 
           renderServiceContent()
         )
-      ) : null /* Content is hidden because it's a redirecting type and redirection is active/pending */ }
+      ) : null }
 
 
       {!hideMainElements && (
@@ -415,4 +532,12 @@ export default function ServicePage() {
     </div>
   );
 }
+
+// Add placeholder to Textarea component for bilingual support if not already done globally
+declare module 'react' {
+    interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
+  }
 
