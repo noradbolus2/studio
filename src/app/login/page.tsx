@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -112,7 +111,7 @@ export default function LoginPage() {
         <form onSubmit={handleSchoolIdLogin} className="space-y-4">
             <div>
                 <Label htmlFor="schoolId"><BilingualText en="Enter Your School ID" hi="अपनी स्कूल आईडी दर्ज करें" /></Label>
-                <Input id="schoolId" type="text" placeholder_en="e.g., YourSchool123" placeholder_hi="उदा., आपकास्कूल123" value={schoolId} onChange={(e) => setSchoolId(e.target.value)} required />
+                <Input id="schoolId" type="text" placeholder="e.g., YourSchool123 / उदा., आपकास्कूल123" value={schoolId} onChange={(e) => setSchoolId(e.target.value)} required />
             </div>
             <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-base">
                 <ShieldCheck className="mr-2 h-5 w-5" /> <BilingualText en="Login with School ID" hi="स्कूल आईडी से लॉगिन करें" />
@@ -145,7 +144,7 @@ export default function LoginPage() {
         <form onSubmit={handleDirectLogin} className="space-y-4">
             <div>
                 <Label htmlFor="email"><Mail className="inline mr-1 h-4 w-4" /><BilingualText en="Email" hi="ईमेल" /></Label>
-                <Input id="email" type="email" placeholder_en="your.email@example.com" placeholder_hi="आपका.ईमेल@उदाहरण.कॉम" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input id="email" type="email" placeholder="your.email@example.com / आपका.ईमेल@उदाहरण.कॉम" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div>
                 <Label htmlFor="password"><KeyRound className="inline mr-1 h-4 w-4" /><BilingualText en="Password" hi="पासवर्ड" /></Label>
@@ -189,7 +188,7 @@ export default function LoginPage() {
         case "initialSelection": return <BilingualText en="Welcome to OSO App!" hi="OSO ऐप में आपका स्वागत है!" />;
         case "studentLoginOptions": return <BilingualText en="Student Login/Signup" hi="छात्र लॉगिन/साइनअप" />;
         case "schoolIdLogin": return <BilingualText en="School ID Login" hi="स्कूल आईडी लॉगिन" />;
-        case "directLogin": return <BilingualText en="OSO Direct Login/Signup" hi="OSO डायरेक्ट लॉगिन/साइनअप" />; // Updated title
+        case "directLogin": return <BilingualText en="OSO Direct Login/Signup" hi="OSO डायरेक्ट लॉगिन/साइनअप" />;
         case "otherRolesLogin": return <BilingualText en="Vendor / Rider Login" hi="विक्रेता / राइडर लॉगिन" />;
         default: return <BilingualText en="Login / Signup" hi="लॉगिन / साइनअप" />;
     }
@@ -229,12 +228,4 @@ export default function LoginPage() {
       </Card>
     </div>
   );
-}
-
-// Add placeholder to Input component for bilingual support if not already done
-declare module 'react' {
-    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
-      placeholder_en?: string;
-      placeholder_hi?: string;
-    }
 }
