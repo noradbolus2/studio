@@ -77,6 +77,16 @@ const mockLocations = [
     { id: "loc4", name: "My Home - Sector 15, Noida", type: "Home" },
     { id: "loc5", name: "Karol Bagh, Delhi", type: "Area" },
     { id: "loc6", name: "Indiranagar, Bengaluru", type: "Area" },
+    { id: "loc7", name: "IIT Delhi, Hauz Khas", type: "University" },
+    { id: "loc8", name: "St. Stephen's College, Delhi University", type: "College" },
+    { id: "loc9", name: "Anna University, Chennai", type: "University" },
+    { id: "loc10", name: "Christ University, Bengaluru", type: "University" },
+    { id: "loc11", name: "Koramangala, Bengaluru", type: "Area" },
+    { id: "loc12", name: "Bandra West, Mumbai", type: "Area" },
+    { id: "loc13", name: "Jadavpur University, Kolkata", type: "University" },
+    { id: "loc14", name: "Loyola College, Chennai", type: "College" },
+    { id: "loc15", name: "Park Street Area, Kolkata", type: "Area" },
+    { id: "loc16", name: "BITS Pilani, Rajasthan", type: "University" },
 ];
 
 export default function ModernHomePage() {
