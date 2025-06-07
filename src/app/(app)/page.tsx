@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react'; 
@@ -5,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
-  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic
+  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic, Lightbulb, Music2
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -54,6 +55,12 @@ const deliveryDeals = [
   { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, bgColor: "bg-orange-500", textColor: "text-white", dataAiHint:"charts diagram" },
   { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, bgColor: "bg-teal-500", textColor: "text-white", dataAiHint:"school supplies kit" },
   { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, bgColor: "bg-violet-500", textColor: "text-white", dataAiHint:"project materials box" },
+];
+
+const studyBoosters = [
+  { id: 'sb1', titleEn: "AI Doubt Solver", titleHi: "AI शंका समाधान", descriptionEn: "Clear concepts 24/7", descriptionHi: "अवधारणाएँ 24/7 स्पष्ट करें", icon: Lightbulb, bgColor: "bg-sky-500", textColor: "text-white", dataAiHint:"ai learning lightbulb", href: "/ai-guruji" },
+  { id: 'sb2', titleEn: "Quick Revision Notes", titleHi: "त्वरित रिवीजन नोट्स", descriptionEn: "Key topics summarized", descriptionHi: "मुख्य विषय सारांशित", icon: ClipboardList, bgColor: "bg-green-500", textColor: "text-white", dataAiHint:"notes study checklist", href: "/study/my-notes" },
+  { id: 'sb3', titleEn: "Focus Zone Music", titleHi: "फोकस ज़ोन संगीत", descriptionEn: "Beats for deep study", descriptionHi: "गहन अध्ययन के लिए बीट्स", icon: Music2, bgColor: "bg-indigo-500", textColor: "text-white", dataAiHint:"headphones music study", href: "/study/focus-music" },
 ];
 
 const searchIcons = [
@@ -275,6 +282,33 @@ export default function ModernHomePage() {
         </ScrollArea>
       </section>
 
+      {/* Study Boosters Section */}
+      <section>
+        <h2 className="text-xl font-semibold text-foreground mb-3">
+          <BilingualText en="Study Boosters" hi="अध्ययन बूस्टर" lang={currentLang}/>
+        </h2>
+        <ScrollArea className="w-full whitespace-nowrap pb-3">
+          <div className="flex space-x-3">
+            {studyBoosters.map((booster) => {
+              const CardWrapper = booster.href ? Link : 'div';
+              return (
+                <CardWrapper href={booster.href || '#'} key={booster.id} className={cn("block min-w-[200px] max-w-[240px]", booster.href ? "hover:opacity-90 transition-opacity" : "")}>
+                  <Card className={cn("p-4 rounded-lg shadow-sm flex items-center gap-3 h-full", booster.bgColor, booster.textColor)}>
+                    <booster.icon className="h-8 w-8 shrink-0" />
+                    <div>
+                      <h3 className="text-sm font-bold"><BilingualText en={booster.titleEn} hi={booster.titleHi} lang={currentLang}/></h3>
+                      <p className="text-xs opacity-90"><BilingualText en={booster.descriptionEn} hi={booster.descriptionHi} lang={currentLang}/></p>
+                    </div>
+                  </Card>
+                </CardWrapper>
+              );
+            })}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </section>
+
+
       {/* Location Selection Modal */}
       <Dialog open={isLocationModalOpen} onOpenChange={setIsLocationModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
@@ -328,3 +362,4 @@ export default function ModernHomePage() {
     </div>
   );
 }
+
