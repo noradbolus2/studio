@@ -49,8 +49,8 @@ type ServicePageParams = {
 };
 
 export default function ServicePage() {
-  const params = useParams<ServicePageParams>();
-  const serviceId = params?.serviceId;
+  const routeParams = useParams<ServicePageParams>(); // Renamed 'params' to 'routeParams'
+  const serviceId = routeParams?.serviceId;
   const router = useRouter();
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
@@ -199,6 +199,7 @@ export default function ServicePage() {
     const mockStudentInput: TestSeriesRecommendationInput = {
         studentName: "Aarav",
         examType: "NEET UG",
+        // preferredLanguage: 'en', // Or 'hi', or 'hng', or leave undefined for default Hinglish
         lastTestPerformances: [
             { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
             { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
@@ -284,7 +285,7 @@ export default function ServicePage() {
           <AlertDescription>
             <BilingualText 
               en={`The content for "${serviceId}" could not be loaded. Please check back later.`} 
-              hi={`"${serviceId}" के लिए सामग्री लोड नहीं की जा सकी। कृपया बाद में देखें।`} />
+              hi={`"${serviceId || 'this service'}" के लिए सामग्री लोड नहीं की जा सकी। कृपया बाद में देखें।`} />
           </AlertDescription>
         </Alert>
         <Button asChild variant="outline" className="mt-4">
