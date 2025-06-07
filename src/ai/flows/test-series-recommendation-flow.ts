@@ -104,7 +104,7 @@ Now, based on the student's weak areas from past performance and the available t
         *   \`reason\`: A concise reason (1-2 sentences) why this specific test is being recommended for this student. This MUST be in the same language and script as your \`gurujiAdvice\`.
 
 3.  **Set \`respondedInLanguage\` field**:
-    *   This MUST be 'en', 'hi', or 'hng' based on the language you used for ` + "`gurujiAdvice`" + ` and ` + "`reason`" + ` fields, according to the 'preferredLanguage' input.
+    *   This MUST be 'en', 'hi', or 'hng' based on the language you used for \`gurujiAdvice\` and \`reason\` fields, according to the 'preferredLanguage' input.
 
 IMPORTANT INSTRUCTIONS:
 *   Your entire output MUST be a single, valid JSON object that strictly matches the TestSeriesRecommendationOutputSchemaInternal. Do NOT add any text before or after the JSON object.

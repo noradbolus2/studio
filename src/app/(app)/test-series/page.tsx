@@ -1,11 +1,17 @@
 
-"use client"; // Added "use client" as Link and Button are used
+"use client"; 
 
+import { useState } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Target, BrainCircuit } from "lucide-react"; // Using BrainCircuit for AI
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Target, BrainCircuit, Rocket, FileText } from "lucide-react"; 
 import Link from "next/link";
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
+import { useToast } from '@/hooks/use-toast';
+
 
 // Mock data for test series categories
 const testCategories = [
@@ -16,6 +22,52 @@ const testCategories = [
 ];
 
 export default function TestSeriesPage() {
+  const [recommendations, setRecommendations] = useState<TestSeriesRecommendationOutput | null>(null);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+  const [recommendationError, setRecommendationError] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleGetRecommendations = async () => {
+    setIsLoadingRecommendations(true);
+    setRecommendationError(null);
+    setRecommendations(null);
+
+    // Mock input for the Genkit flow
+    const mockStudentInput: TestSeriesRecommendationInput = {
+        studentName: "Aarav",
+        examType: "NEET UG",
+        preferredLanguage: 'en', // Or 'hi' or 'hng'
+        lastTestPerformances: [
+            { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
+            { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
+            { title: "Chemistry Full Syllabus Test 1", score: "90/180", weakTopics: ["Organic Chemistry Reactions", "Chemical Bonding"] }
+        ],
+        availableTestSets: [
+            { title: "NEET Full Syllabus Mock Test Series (Set A)", subject: "All", level: "Medium" },
+            { title: "NEET Biology - Genetics Special", subject: "Biology", level: "Hard" },
+            { title: "NEET Physics - Mechanics Booster", subject: "Physics", level: "Medium" },
+            { title: "NEET Chemistry - Organic Mastery", subject: "Chemistry", level: "Tough" },
+            { title: "JEE Advanced Physics Challenge", subject: "Physics", level: "Very Hard"}, // Irrelevant for NEET
+        ]
+    };
+
+    try {
+        const result = await getTestSeriesRecommendations(mockStudentInput);
+        setRecommendations(result);
+    } catch (err: any) {
+        console.error("Error getting test recommendations:", err);
+        setRecommendationError(err.message || "Failed to get recommendations. AI Guruji might be busy.");
+        toast({
+            title: "Recommendation Error",
+            description: err.message || "AI Guruji couldn't fetch recommendations right now. Please try again.",
+            variant: "destructive"
+        });
+    } finally {
+        setIsLoadingRecommendations(false);
+    }
+  };
+
+
   return (
     <div className="space-y-8">
       <header>
@@ -28,7 +80,7 @@ export default function TestSeriesPage() {
         </p>
       </header>
 
-      {/* Link to AI Recommendations */}
+      {/* AI Recommendations Section */}
       <Card className="bg-primary/5 border-primary/20 hover:shadow-lg transition-shadow">
         <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline text-primary">
@@ -36,18 +88,82 @@ export default function TestSeriesPage() {
                 <BilingualText en="AI-Powered Recommendations" hi="एआई-संचालित सिफारिशें" />
             </CardTitle>
             <CardDescription>
-                <BilingualText en="Get personalized test series suggestions from OSO Guruji." hi="OSO गुरुजी से व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करें।" />
+                <BilingualText en="Get personalized test series suggestions from OSO Guruji based on your (mock) performance." hi="OSO गुरुजी से अपने (मॉक) प्रदर्शन के आधार पर व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करें।" />
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Link href="/services/testseries">
-                    <BilingualText en="Get Guruji's Advice" hi="गुरुजी की सलाह लें" />
-                </Link>
+            <Button onClick={handleGetRecommendations} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoadingRecommendations}>
+                {isLoadingRecommendations ? <LoadingSpinner size={20}/> : <Rocket className="mr-2 h-5 w-5" />}
+                <BilingualText en="Ask Guruji for Recommendations" hi="गुरुजी से सिफारिशें पूछें" />
             </Button>
         </CardContent>
       </Card>
 
+      {isLoadingRecommendations && (
+        <div className="flex flex-col items-center justify-center py-10 space-y-3">
+          <LoadingSpinner size={32} />
+          <p className="text-muted-foreground"><BilingualText en="AI Guruji is analyzing your profile..." hi="एआई गुरुजी आपकी प्रोफ़ाइल का विश्लेषण कर रहे हैं..." /></p>
+        </div>
+      )}
+
+      {recommendationError && !isLoadingRecommendations && (
+         <Alert variant="destructive">
+            <AlertTitle><BilingualText en="Error Fetching Recommendations" hi="सिफारिशें प्राप्त करने में त्रुटि" /></AlertTitle>
+            <AlertDescription>{recommendationError}</AlertDescription>
+        </Alert>
+      )}
+
+      {recommendations && !isLoadingRecommendations && (
+        <Card className="shadow-lg">
+            <CardHeader>
+                <CardTitle className="text-xl font-headline text-primary"><BilingualText en="Guruji's Advice for You" hi="आपके लिए गुरुजी की सलाह"/></CardTitle>
+                <CardDescription>
+                    <BilingualText en={`Language: ${recommendations.respondedInLanguage.toUpperCase()}`} hi={`भाषा: ${recommendations.respondedInLanguage.toUpperCase()}`} />
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <Card className="bg-muted/30 p-4">
+                    <p className="text-sm whitespace-pre-wrap">{recommendations.gurujiAdvice}</p>
+                </Card>
+                
+                {recommendations.recommendedTests.length > 0 && (
+                    <div>
+                        <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
+                           <FileText size={18}/> <BilingualText en="Recommended Tests:" hi="अनुशंसित परीक्षण:" />
+                        </h4>
+                        <div className="space-y-3">
+                            {recommendations.recommendedTests.map((test, index) => (
+                                <Card key={index} className="overflow-hidden border hover:shadow-md transition-shadow">
+                                    <CardHeader className="p-3 bg-card">
+                                        <CardTitle className="text-md font-semibold text-primary flex items-center gap-2">
+                                            <Target size={18}/> {test.title}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-3 text-xs text-muted-foreground">
+                                        <p className="mb-2">{test.reason}</p>
+                                    </CardContent>
+                                     <CardFooter className="p-3 bg-card border-t">
+                                         <Button asChild size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                                            {/* This link is a placeholder, adjust as needed for actual test attempt page */}
+                                            <Link href={`/attempt-test?title=${encodeURIComponent(test.title)}`}>
+                                                <BilingualText en="Attempt Test" hi="टेस्ट दें"/>
+                                            </Link>
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                 {recommendations.recommendedTests.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-3"><BilingualText en="Guruji didn't find specific tests for you right now, but gave some general advice. Keep learning!" hi="गुरुजी को अभी आपके लिए कोई विशिष्ट परीक्षण नहीं मिला, लेकिन कुछ सामान्य सलाह दी। सीखते रहें!"/></p>
+                 )}
+            </CardContent>
+        </Card>
+      )}
+
+
+      {/* Static Test Categories */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {testCategories.map(category => (
             <Card key={category.id} className="hover:shadow-lg transition-shadow">
@@ -76,3 +192,4 @@ export default function TestSeriesPage() {
     </div>
   );
 }
+
