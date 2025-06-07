@@ -49,15 +49,23 @@ const genders = ["Male", "Female", "Other"];
 const examTargets = ["School Exams", "JEE (Main)", "JEE (Advanced)", "NEET (UG)", "CUET (UG)", "UPSC Civil Services", "NDA & NA", "SSC CGL", "SSC CHSL", "IBPS PO", "IBPS Clerk", "SBI PO", "CAT", "GATE", "CLAT", "Other Competitive Exam"];
 
 const indianStatesAndUTs = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", 
-  "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", 
-  "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
-  "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
-  "Dadra and Nagar Haveli and Daman and Diu", "Delhi (NCT)", "Jammu and Kashmir", 
-  "Ladakh", "Lakshadweep", "Puducherry"
+  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", 
+  "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi (NCT)", "Goa", "Gujarat", "Haryana", 
+  "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", 
+  "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", 
+  "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
+  "West Bengal"
 ].sort();
+
+// Sample data: State -> Cities/Districts. 
+// In a real app, this would be a much larger dataset, likely fetched from a backend.
+const stateCityData: Record<string, string[]> = {
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
+  "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi", "Belagavi"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi"],
+  "Delhi (NCT)": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
+};
 
 
 export default function EditProfilePage() {
@@ -70,6 +78,7 @@ export default function EditProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [citiesForSelectedState, setCitiesForSelectedState] = useState<string[]>([]);
 
   const { control, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -79,10 +88,10 @@ export default function EditProfilePage() {
       phoneNumber: "",
       schoolName: "",
       schoolId: "",
-      className: "", 
+      className: "",
       board: "",
       stream: "",
-      dateOfBirth: undefined, 
+      dateOfBirth: undefined,
       gender: "",
       examTarget: "",
       city: "",
@@ -93,7 +102,7 @@ export default function EditProfilePage() {
   });
   
   const avatarUrlPreview = watch("avatarUrl");
-
+  const selectedState = watch("state");
 
   useEffect(() => {
     const typeParam = searchParams.get("loginType");
@@ -141,7 +150,7 @@ export default function EditProfilePage() {
           board: "CBSE",
           stream: "Science", 
           dateOfBirth: new Date(2005, 7, 15), 
-          city: "Mumbai",
+          city: "Mumbai", // Will be overridden by state logic if Maharashtra is selected
           state: "Maharashtra",
           avatarUrl: "https://placehold.co/100x100.png",
           examTarget: "JEE (Advanced)",
@@ -170,6 +179,17 @@ export default function EditProfilePage() {
     reset(allFieldsToReset); 
     setInitialDataLoading(false);
   }, [searchParams, reset]);
+
+  useEffect(() => {
+    if (selectedState) {
+      setCitiesForSelectedState(stateCityData[selectedState] || []);
+      setValue('city', '', { shouldValidate: true }); // Reset city when state changes
+    } else {
+      setCitiesForSelectedState([]);
+      setValue('city', '', { shouldValidate: true });
+    }
+  }, [selectedState, setValue]);
+
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
@@ -413,10 +433,6 @@ export default function EditProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="city"><BilingualText en="City" hi="शहर" /></Label>
-                <Controller name="city" control={control} render={({ field }) => <Input id="city" {...field} placeholder_en="Your City" placeholder_hi="आपका शहर" />} />
-              </div>
-              <div>
                 <Label htmlFor="state"><BilingualText en="State" hi="राज्य" /></Label>
                 <Controller
                   name="state"
@@ -434,6 +450,30 @@ export default function EditProfilePage() {
                     </Select>
                   )}
                 />
+              </div>
+               <div>
+                <Label htmlFor="city"><BilingualText en="City / District" hi="शहर / जिला" /></Label>
+                <Controller
+                  name="city"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={!selectedState || citiesForSelectedState.length === 0}
+                    >
+                      <SelectTrigger id="city">
+                        <SelectValue placeholder_en={!selectedState ? "Select State first" : "Select City/District"} placeholder_hi={!selectedState ? "पहले राज्य चुनें" : "शहर/जिला चुनें"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {citiesForSelectedState.map(c => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                 {citiesForSelectedState.length === 0 && selectedState && <p className="text-xs text-muted-foreground mt-1">No cities listed for {selectedState}. Select another state or type manually (if feature enabled).</p>}
               </div>
               <div>
                 <Label htmlFor="country"><BilingualText en="Country" hi="देश" /></Label>
