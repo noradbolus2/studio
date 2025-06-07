@@ -4,10 +4,10 @@
 import React, { useState, useEffect, useRef, type FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation'; // Added useRouter
+import { useRouter } from 'next/navigation'; 
 import {
   MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
-  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic, Lightbulb, Music2, GraduationCap
+  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic, Lightbulb, Music2, GraduationCap, Video
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
+import { ClassCard, type LiveClass } from '@/components/live-class/ClassCard';
 
 
 // Mock data
@@ -48,6 +49,7 @@ const quickCategories = [
   { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
   { id: 'competitive_bookstore', labelEn: 'Exam Books', labelHi: 'परीक्षा पुस्तकें', icon: Award, href: '/competitive-bookstore', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
   { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' }, // Added Schedule Class
 ];
 
 const recommendations = [
@@ -83,17 +85,15 @@ const mockLocations = [
     { id: "loc4", name: "My Home - Sector 15, Noida", type: "Home" },
     { id: "loc5", name: "Karol Bagh, Delhi", type: "Area" },
     { id: "loc6", name: "Indiranagar, Bengaluru", type: "Area" },
-    { id: "loc7", name: "IIT Delhi, Hauz Khas", type: "University" },
-    { id: "loc8", name: "St. Stephen's College, Delhi University", type: "College" },
-    { id: "loc9", name: "Anna University, Chennai", type: "University" },
-    { id: "loc10", name: "Christ University, Bengaluru", type: "University" },
-    { id: "loc11", name: "Koramangala, Bengaluru", type: "Area" },
-    { id: "loc12", name: "Bandra West, Mumbai", type: "Area" },
-    { id: "loc13", name: "Jadavpur University, Kolkata", type: "University" },
-    { id: "loc14", name: "Loyola College, Chennai", type: "College" },
-    { id: "loc15", name: "Park Street Area, Kolkata", type: "Area" },
-    { id: "loc16", name: "BITS Pilani, Rajasthan", type: "University" },
 ];
+
+const mockLiveClasses: LiveClass[] = [
+  { id: 'live1', titleEn: 'Live: Solving Complex Equations', titleHi: 'लाइव: जटिल समीकरणों का समाधान', subjectEn: 'Maths', subjectHi: 'गणित', creatorNameEn: 'Prof. Algebra', creatorNameHi: 'प्रो. बीजगणित', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'maths equation live', status: 'live', dateTime: new Date().toISOString(), viewers: 102, classLevel: 'JEE', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'math teacher avatar' },
+  { id: 'upcoming1', titleEn: 'Organic Chemistry Basics', titleHi: 'कार्बनिक रसायन विज्ञान की मूल बातें', subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', creatorNameEn: 'Dr. Chem', creatorNameHi: 'डॉ. केम', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'chemistry lecture', status: 'upcoming', countdown: 'Tomorrow 6 PM', dateTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), classLevel: 'NEET', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'chemistry teacher' },
+  { id: 'upcoming2', titleEn: 'Physics: Laws of Motion', titleHi: 'भौतिकी: गति के नियम', subjectEn: 'Physics', subjectHi: 'भौतिकी', creatorNameEn: 'Newton Jr.', creatorNameHi: 'न्यूटन जूनियर', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'physics gravity apple', status: 'upcoming', countdown: 'In 2 hours', dateTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), classLevel: 'Class 11', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'physics professor' },
+  { id: 'recorded1', titleEn: 'Intro to Python Programming', titleHi: 'पायथन प्रोग्रामिंग का परिचय', subjectEn: 'Computer Science', subjectHi: 'कंप्यूटर विज्ञान', creatorNameEn: 'Code Master', creatorNameHi: 'कोड मास्टर', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'python code screen', status: 'recorded', duration: '55min', dateTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'All Ages', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'coder avatar' },
+];
+
 
 export default function ModernHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -104,8 +104,8 @@ export default function ModernHomePage() {
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
   const [selectedTempLocation, setSelectedTempLocation] = useState(location);
   const { toast } = useToast();
-  const router = useRouter(); // Initialize router
-  const [searchQuery, setSearchQuery] = useState(''); // State for search input
+  const router = useRouter(); 
+  const [searchQuery, setSearchQuery] = useState(''); 
 
   const startSlideShow = () => {
     slideIntervalRef.current = setInterval(() => {
@@ -144,7 +144,6 @@ export default function ModernHomePage() {
   };
 
   const handleUseCurrentLocation = () => {
-    // Placeholder for actual geolocation logic
     const detectedLocation = "My Current Area (Detected)";
     setSelectedTempLocation(detectedLocation);
     toast({
@@ -163,10 +162,13 @@ export default function ModernHomePage() {
     }
   };
 
+  const liveNowClasses = mockLiveClasses.filter(c => c.status === 'live');
+  const upcomingClasses = mockLiveClasses.filter(c => c.status === 'upcoming').sort((a,b) => new Date(a.dateTime!).getTime() - new Date(b.dateTime!).getTime());
+  const recordedClasses = mockLiveClasses.filter(c => c.status === 'recorded').sort((a,b) => new Date(b.dateTime!).getTime() - new Date(a.dateTime!).getTime());
+
 
   return (
     <div className="space-y-6 pb-10 bg-background min-h-screen -m-4 p-4">
-      {/* Top Section */}
       <header className="space-y-3 sticky top-0 bg-background/80 backdrop-blur-sm z-40 py-3 -mx-4 px-4 shadow-sm">
         <div className="flex items-center justify-between">
          <Button variant="ghost" onClick={() => setIsLocationModalOpen(true)} className="flex items-center gap-1.5 text-sm text-muted-foreground p-1 h-auto hover:bg-muted">
@@ -217,7 +219,6 @@ export default function ModernHomePage() {
         </div>
       </header>
 
-      {/* Hero Banner Carousel */}
       <section className="relative w-full h-48 md:h-64 overflow-hidden rounded-xl shadow-lg">
         {heroSlides.map((slide, index) => (
           <div
@@ -251,11 +252,62 @@ export default function ModernHomePage() {
           ))}
         </div>
       </section>
+      
+      <section>
+        <div className="flex justify-between items-center mb-3">
+            <h2 className="text-xl font-semibold text-foreground"><BilingualText en="Live Classes" hi="लाइव कक्षाएं" lang={currentLang}/></h2>
+            <Link href="/live-classes/all" className="text-sm text-primary hover:underline">
+                <BilingualText en="View All" hi="सभी देखें" lang={currentLang}/> <ChevronRight className="inline h-4 w-4"/>
+            </Link>
+        </div>
+        {liveNowClasses.length > 0 && (
+            <div className="mb-4">
+                <h3 className="text-md font-medium text-red-500 mb-2 flex items-center">
+                    <RadioTower size={18} className="mr-1.5 animate-pulse"/> <BilingualText en="Live Now" hi="अभी लाइव" lang={currentLang}/>
+                </h3>
+                <ScrollArea className="w-full whitespace-nowrap pb-2.5">
+                    <div className="flex space-x-4">
+                        {liveNowClasses.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px]"/>)}
+                    </div>
+                    <ScrollBar orientation="horizontal"/>
+                </ScrollArea>
+            </div>
+        )}
+        {upcomingClasses.length > 0 && (
+             <div className="mb-4">
+                <h3 className="text-md font-medium text-foreground mb-2 flex items-center">
+                    <Timer size={18} className="mr-1.5 text-primary"/> <BilingualText en="Upcoming Classes" hi="आगामी कक्षाएं" lang={currentLang}/>
+                </h3>
+                <ScrollArea className="w-full whitespace-nowrap pb-2.5">
+                    <div className="flex space-x-4">
+                        {upcomingClasses.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px]"/>)}
+                    </div>
+                    <ScrollBar orientation="horizontal"/>
+                </ScrollArea>
+            </div>
+        )}
+        {recordedClasses.length > 0 && (
+            <div>
+                <h3 className="text-md font-medium text-foreground mb-2 flex items-center">
+                     <PlaySquare size={18} className="mr-1.5 text-primary"/> <BilingualText en="Recently Completed" hi="हाल ही में संपन्न" lang={currentLang}/>
+                </h3>
+                 <ScrollArea className="w-full whitespace-nowrap pb-2.5">
+                    <div className="flex space-x-4">
+                        {recordedClasses.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px]"/>)}
+                    </div>
+                    <ScrollBar orientation="horizontal"/>
+                </ScrollArea>
+            </div>
+        )}
+         {liveNowClasses.length === 0 && upcomingClasses.length === 0 && recordedClasses.length === 0 && (
+             <p className="text-sm text-muted-foreground text-center py-4"><BilingualText en="No live classes scheduled currently. Check back soon!" hi="वर्तमान में कोई लाइव कक्षाएं निर्धारित नहीं हैं। जल्द ही वापस देखें!" lang={currentLang}/></p>
+         )}
+      </section>
 
-      {/* Quick Categories */}
+
       <section>
         <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Quick Categories" hi="त्वरित श्रेणियाँ" lang={currentLang}/></h2>
-        <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
           {quickCategories.map((category) => (
             <Link href={category.href} key={category.id}>
               <Card className={cn("text-center p-3 rounded-xl shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-center items-center", category.bgColor)}>
@@ -267,7 +319,6 @@ export default function ModernHomePage() {
         </div>
       </section>
 
-      {/* Today’s Recommendations */}
       <section>
         <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Today's Recommendations" hi="आज की सिफारिशें" lang={currentLang}/></h2>
         <ScrollArea className="w-full whitespace-nowrap pb-3">
@@ -294,7 +345,6 @@ export default function ModernHomePage() {
         </ScrollArea>
       </section>
 
-      {/* Delivery Deals */}
       <section>
         <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Delivery Deals" hi="डिलीवरी डील्स" lang={currentLang}/></h2>
          <ScrollArea className="w-full whitespace-nowrap pb-3">
@@ -313,7 +363,6 @@ export default function ModernHomePage() {
         </ScrollArea>
       </section>
 
-      {/* Study Boosters Section */}
       <section>
         <h2 className="text-xl font-semibold text-foreground mb-3">
           <BilingualText en="Study Boosters" hi="अध्ययन बूस्टर" lang={currentLang}/>
@@ -339,8 +388,6 @@ export default function ModernHomePage() {
         </ScrollArea>
       </section>
 
-
-      {/* Location Selection Modal */}
       <Dialog open={isLocationModalOpen} onOpenChange={setIsLocationModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
