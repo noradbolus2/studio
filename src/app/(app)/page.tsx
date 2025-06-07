@@ -2,12 +2,24 @@
 "use client";
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 import {
   Languages,
-  RefreshCw, 
+  RefreshCw,
+  PenTool, // For Stationery
+  ClipboardList, // For Projects
+  FileText, // For Assignments
+  Shirt, // For Uniforms
+  Library, // For e-Library
+  Apple, // For Study Snacks
+  PackageCheck, // For Last Minute Kits
+  Target, // For Test Series
+  Users, // For Parent Mode
+  Lightbulb, // For Daily Guru Gyaan
+  Brain, // For Guru Ji
+  Presentation, // For Live Classes (or Youtube, Tv2 etc.)
 } from 'lucide-react';
+import Image from 'next/image'; // Keep for OSO App Logo if needed
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,18 +28,18 @@ import { MotivationalQuoteCard } from '@/components/shared/MotivationalQuoteCard
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const gridItems = [
-  { id: 'stationery', href: '/services/stationery', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'stationery items', labelEn: 'Stationery', labelHi: 'स्टेशनरी' },
-  { id: 'projects', href: '/services/projects', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school project', labelEn: 'Projects', labelHi: 'परियोजनाएं' },
-  { id: 'assignments', href: '/services/assignments', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'homework assignment', labelEn: 'Assignments', labelHi: 'असाइनमेंट' },
-  { id: 'uniforms', href: '/services/uniforms', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'school uniform', labelEn: 'Uniforms', labelHi: 'वर्दी' },
-  { id: 'elibrary', href: '/services/elibrary', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'digital library', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी' },
-  { id: 'studysnacks', href: '/services/studysnacks', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'healthy snacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स' },
-  { id: 'lastminutekits', href: '/services/lastminutekits', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'exam kit', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट' },
-  { id: 'testseries', href: '/test-series', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'mock test', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़' }, // Updated href
-  { id: 'parentmode', href: '/services/parentmode', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'parental app', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
-  { id: 'dailygurugyaan', href: '/services/dailygurugyaan', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'daily wisdom', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान' },
-  { id: 'guruji', href: '/services/guruji', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'ai tutor', labelEn: 'Guru Ji', labelHi: 'गुरु जी' },
-  { id: 'liveclasses', href: '/services/liveclasses', imageUrl: 'https://placehold.co/60x60.png', dataAiHint: 'online class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं' },
+  { id: 'stationery', href: '/services/stationery', icon: PenTool, labelEn: 'Stationery', labelHi: 'स्टेशनरी' },
+  { id: 'projects', href: '/services/projects', icon: ClipboardList, labelEn: 'Projects', labelHi: 'परियोजनाएं' },
+  { id: 'assignments', href: '/services/assignments', icon: FileText, labelEn: 'Assignments', labelHi: 'असाइनमेंट' },
+  { id: 'uniforms', href: '/services/uniforms', icon: Shirt, labelEn: 'Uniforms', labelHi: 'वर्दी' },
+  { id: 'elibrary', href: '/services/elibrary', icon: Library, labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी' },
+  { id: 'studysnacks', href: '/services/studysnacks', icon: Apple, labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स' },
+  { id: 'lastminutekits', href: '/services/lastminutekits', icon: PackageCheck, labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट' },
+  { id: "testseries", href: "/test-series", icon: Target, labelEn: "Test Series", labelHi: "टेस्ट सीरीज़" },
+  { id: 'parentmode', href: '/services/parentmode', icon: Users, labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड' },
+  { id: 'dailygurugyaan', href: '/services/dailygurugyaan', icon: Lightbulb, labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान' },
+  { id: 'guruji', href: '/services/guruji', icon: Brain, labelEn: 'Guru Ji', labelHi: 'गुरु जी' },
+  { id: 'liveclasses', href: '/services/liveclasses', icon: Presentation, labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं' },
 ];
 
 const sampleQuotes = [
@@ -112,18 +124,11 @@ export default function HomePage() {
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {gridItems.map((item) => (
             <Link href={item.href} key={item.id} passHref>
-              <Card className="aspect-square flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-accent/10 hover:bg-accent/20 active:bg-accent/30 rounded-xl shadow-sm">
-                <div className="relative h-4 w-4 mb-1">
-                  <Image
-                    src={item.imageUrl}
-                    alt={currentLanguage === 'en' ? item.labelEn : item.labelHi}
-                    layout="fill"
-                    objectFit="contain"
-                    className="rounded-sm"
-                    data-ai-hint={item.dataAiHint}
-                  />
+              <Card className="aspect-square group flex flex-col items-center justify-center p-3 text-center hover:shadow-md transition-shadow cursor-pointer bg-card hover:bg-primary/5 active:bg-primary/10 rounded-lg shadow-sm">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors">
+                  <item.icon className="h-5 w-5 text-primary" />
                 </div>
-                <span className="text-xs sm:text-sm font-semibold text-primary leading-tight block h-6 overflow-hidden">
+                <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors leading-tight block">
                    <BilingualText lang={currentLanguage} en={item.labelEn} hi={item.labelHi} />
                 </span>
               </Card>
@@ -142,4 +147,3 @@ export default function HomePage() {
     </div>
   );
 }
-
