@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'; // Added ScrollBar import
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Edit3, Users2, ShoppingCart, Clock, Truck, Home, SchoolIcon, UploadCloud } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -537,10 +537,10 @@ export default function ServicePage() {
                         )}
                         <div>
                             <CardTitle className="text-xl font-headline text-primary">
-                                <BilingualText en={`${serviceData.name} Assistant`} hi={`${serviceData.name} सहायक`} />
+                                {`${serviceData.name} Assistant`}
                             </CardTitle>
                             <CardDescription>
-                                <BilingualText en="Let Guruji AI help you plan and execute!" hi="गुरुजी एआई को आपकी योजना बनाने और निष्पादित करने में मदद करने दें!" />
+                                Let Guruji AI help you plan and execute!
                             </CardDescription>
                         </div>
                     </div>
@@ -548,18 +548,18 @@ export default function ServicePage() {
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="projectClass"><BilingualText en="Your Class" hi="आपकी कक्षा" /></Label>
+                            <Label htmlFor="projectClass">Your Class</Label>
                              <Select value={projectClass} onValueChange={setProjectClass}>
-                                <SelectTrigger id="projectClass"><SelectValue placeholder={<BilingualText en="Select Class" hi="कक्षा चुनें"/>}/></SelectTrigger>
+                                <SelectTrigger id="projectClass"><SelectValue placeholder="Select Class"/></SelectTrigger>
                                 <SelectContent>
                                     {classes.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
                         <div>
-                            <Label htmlFor="projectSubject"><BilingualText en="Subject" hi="विषय" /></Label>
+                            <Label htmlFor="projectSubject">Subject</Label>
                             <Select value={projectSubject} onValueChange={setProjectSubject}>
-                                <SelectTrigger id="projectSubject"><SelectValue placeholder={<BilingualText en="Select Subject" hi="विषय चुनें"/>}/></SelectTrigger>
+                                <SelectTrigger id="projectSubject"><SelectValue placeholder="Select Subject"/></SelectTrigger>
                                 <SelectContent>
                                     {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                                 </SelectContent>
@@ -568,7 +568,7 @@ export default function ServicePage() {
                     </div>
 
                     <div>
-                        <Label><BilingualText en="Type of Help Needed" hi="आवश्यक सहायता का प्रकार" /></Label>
+                        <Label>Type of Help Needed</Label>
                         <ScrollArea className="w-full whitespace-nowrap py-2">
                             <div className="flex space-x-2">
                             {projectTypes.map((type) => (
@@ -590,28 +590,28 @@ export default function ServicePage() {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label><BilingualText en="How to proceed?" hi="कैसे आगे बढ़ें?" /></Label>
+                            <Label>How to proceed?</Label>
                             <RadioGroup value={buildOption} onValueChange={setBuildOption} className="mt-1 space-y-1">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="self" id="self" />
-                                    <Label htmlFor="self" className="font-normal"><BilingualText en="Build it myself" hi="मैं खुद बनाऊंगा/बनाऊंगी" /></Label>
+                                    <Label htmlFor="self" className="font-normal">Build it myself</Label>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="creator" id="creator" />
-                                    <Label htmlFor="creator" className="font-normal"><BilingualText en="Get it made by OSO Creator" hi="OSO क्रिएटर से बनवाएं" /></Label>
+                                    <Label htmlFor="creator" className="font-normal">Get it made by OSO Creator</Label>
                                 </div>
                             </RadioGroup>
                         </div>
                         <div>
-                            <Label><BilingualText en="Need Materials Delivered?" hi="सामग्री की डिलीवरी चाहिए?" /></Label>
+                            <Label>Need Materials Delivered?</Label>
                              <RadioGroup value={materialsOption} onValueChange={setMaterialsOption} className="mt-1 space-y-1">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="yes" id="mat_yes" />
-                                    <Label htmlFor="mat_yes" className="font-normal"><BilingualText en="Yes, list and order" hi="हां, सूची बनाएं और ऑर्डर करें" /></Label>
+                                    <Label htmlFor="mat_yes" className="font-normal">Yes, list and order</Label>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="no" id="mat_no" />
-                                    <Label htmlFor="mat_no" className="font-normal"><BilingualText en="No, I have them" hi="नहीं, मेरे पास हैं" /></Label>
+                                    <Label htmlFor="mat_no" className="font-normal">No, I have them</Label>
                                 </div>
                             </RadioGroup>
                         </div>
@@ -619,53 +619,53 @@ export default function ServicePage() {
 
                     <Button onClick={handleAskGurujiForProjectPlan} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isAiPlanLoading}>
                         {isAiPlanLoading ? <LoadingSpinner /> : <Rocket className="mr-2" />}
-                        <BilingualText en="Ask Guruji AI for Ideas & Plan" hi="गुरुजी एआई से विचार और योजना पूछें" />
+                        Ask Guruji AI for Ideas & Plan
                     </Button>
 
                     {showAiPlan && (
                         <Card className="mt-6 bg-muted/50 p-4">
                             <h3 className="text-lg font-semibold text-primary mb-3 font-headline flex items-center">
-                                <Brain className="mr-2"/> <BilingualText en="Guruji AI's Plan" hi="गुरुजी एआई की योजना" />
+                                <Brain className="mr-2"/> Guruji AI's Plan
                             </h3>
                             <div className="space-y-3 text-sm">
-                                <p><strong className="font-medium"><BilingualText en="🧪 Project Idea (Class 8 – Science)" hi="🧪 प्रोजेक्ट आइडिया (कक्षा 8 - विज्ञान)" />:</strong> <BilingualText en="Working Model of Hydraulic Lift" hi="हाइड्रोलिक लिफ्ट का वर्किंग मॉडल" /></p>
-                                <p><strong className="font-medium">📦 <BilingualText en="You need" hi="आपको चाहिए" />:</strong> <BilingualText en="2 syringes, plastic tube, cardboard, fevicol" hi="2 सिरिंज, प्लास्टिक ट्यूब, कार्डबोर्ड, फेविकोल" /></p>
-                                <p><strong className="font-medium"><Clock className="inline mr-1" size={16}/> <BilingualText en="Estimated Time" hi="अनुमानित समय" />:</strong> <BilingualText en="2 hours" hi="2 घंटे" /></p>
+                                <p><strong className="font-medium">🧪 Project Idea (Class 8 – Science):</strong> Working Model of Hydraulic Lift</p>
+                                <p><strong className="font-medium">📦 You need:</strong> 2 syringes, plastic tube, cardboard, fevicol</p>
+                                <p><strong className="font-medium"><Clock className="inline mr-1" size={16}/> Estimated Time:</strong> 2 hours</p>
                                 
                                 {materialsOption === 'yes' && (
                                     <Button variant="outline" size="sm" className="w-full mt-2">
-                                        <ShoppingCart className="mr-2" size={16}/> <BilingualText en="Add all materials to cart from OSO Store" hi="सभी सामग्री OSO स्टोर से कार्ट में डालें" />
+                                        <ShoppingCart className="mr-2" size={16}/> Add all materials to cart from OSO Store
                                     </Button>
                                 )}
                                 {buildOption === 'creator' && (
                                     <Card className="p-3 mt-2 border-accent bg-accent/10">
-                                        <p className="text-sm font-medium text-accent-foreground">🧑‍🎨 <BilingualText en="Want this project made by our Top Student Creator (₹99) and delivered in 2 days?" hi="क्या आप यह प्रोजेक्ट हमारे शीर्ष छात्र क्रिएटर (₹99) से बनवाना और 2 दिनों में डिलीवर करवाना चाहते हैं?" /></p>
+                                        <p className="text-sm font-medium text-accent-foreground">🧑‍🎨 Want this project made by our Top Student Creator (₹99) and delivered in 2 days?</p>
                                         <Button variant="default" size="sm" className="w-full mt-2 bg-accent text-accent-foreground hover:bg-accent/90">
-                                            <BilingualText en="Find a Creator" hi="क्रिएटर खोजें" />
+                                            Find a Creator
                                         </Button>
                                     </Card>
                                 )}
                                 <div className="border-t pt-3 mt-3 space-y-2">
-                                     <Label><BilingualText en="Enter Address for Delivery/Creator Service" hi="डिलीवरी/क्रिएटर सेवा के लिए पता दर्ज करें"/></Label>
+                                     <Label>Enter Address for Delivery/Creator Service</Label>
                                      <div className="flex items-center space-x-2">
                                          <Button variant="outline" size="sm"><Home className="mr-2" size={16}/> Use Home</Button>
                                          <Button variant="outline" size="sm"><SchoolIcon className="mr-2" size={16}/> Use School</Button>
                                      </div>
-                                     <Input placeholder_en="Or enter new address..." placeholder_hi="या नया पता दर्ज करें..."/>
-                                     <Label><BilingualText en="Payment Options" hi="भुगतान विकल्प"/></Label>
+                                     <Input placeholder="Or enter new address..."/>
+                                     <Label>Payment Options</Label>
                                      <Select>
-                                         <SelectTrigger><SelectValue placeholder={<BilingualText en="Select Payment Method" hi="भुगतान विधि चुनें"/>}/></SelectTrigger>
+                                         <SelectTrigger><SelectValue placeholder="Select Payment Method"/></SelectTrigger>
                                          <SelectContent>
                                             <SelectItem value="upi">UPI</SelectItem>
                                             <SelectItem value="oso_credits">OSO Credits</SelectItem>
                                             <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
                                          </SelectContent>
                                      </Select>
-                                     <Button className="w-full"><BilingualText en="Confirm & Proceed" hi="पुष्टि करें और आगे बढ़ें"/></Button>
+                                     <Button className="w-full">Confirm & Proceed</Button>
                                 </div>
                                 <div className="border-t pt-3 mt-3 space-y-2">
-                                    <Button variant="outline" className="w-full"><Truck className="mr-2" size={16}/> <BilingualText en="Track Delivery/Progress" hi="डिलीवरी/प्रगति ट्रैक करें"/></Button>
-                                    <Button variant="secondary" className="w-full"><UploadCloud className="mr-2" size={16}/> <BilingualText en="Submit to Teacher (OSO School Panel)" hi="शिक्षक को सबमिट करें (OSO स्कूल पैनल)"/></Button>
+                                    <Button variant="outline" className="w-full"><Truck className="mr-2" size={16}/> Track Delivery/Progress</Button>
+                                    <Button variant="secondary" className="w-full"><UploadCloud className="mr-2" size={16}/> Submit to Teacher (OSO School Panel)</Button>
                                 </div>
                             </div>
                         </Card>
@@ -766,3 +766,4 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
