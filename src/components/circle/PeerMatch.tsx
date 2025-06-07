@@ -1,6 +1,7 @@
 
 "use client";
 
+import React from 'react'; // Changed from import * as React
 import { useState, type FormEvent } from 'react';
 import { aiPeerMatch, type AiPeerMatchInput, type AiPeerMatchOutput } from '@/ai/flows/ai-peer-match';
 import { Button } from '@/components/ui/button';
@@ -45,6 +46,7 @@ export function PeerMatch() {
   };
 
   return (
+    // Removed React.Fragment as Card is a single root element
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-headline">
@@ -96,7 +98,7 @@ export function PeerMatch() {
           {results.matches.map((match, index) => (
             <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardContent className="p-4 flex items-start space-x-4">
-                <Image src={`https://placehold.co/60x60.png?text=${match.name.substring(0,1)}`} alt={match.name} width={60} height={60} className="rounded-full border data-ai-hint="student avatar"" />
+                <Image src={`https://placehold.co/60x60.png?text=${match.name.substring(0,1)}`} alt={match.name} width={60} height={60} className="rounded-full border" data-ai-hint="student avatar" />
                 <div className="flex-grow">
                   <h4 className="font-semibold text-md text-primary">{match.name}</h4>
                   <div className="text-sm text-muted-foreground space-y-1 mt-1">
