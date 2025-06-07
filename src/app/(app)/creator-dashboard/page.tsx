@@ -55,11 +55,11 @@ export default function CreatorDashboardPage() {
 
   const getStatusBadgeVariant = (status: OrderStatus): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-      case "Pending Acceptance": return "default"; // Blue/Primary
-      case "Accepted": return "secondary"; // Gray
-      case "In Progress": return "outline"; // Yellowish (Accent)
-      case "Dispatched": return "secondary"; // Greenish
-      case "Completed": return "default"; // Success / Green
+      case "Pending Acceptance": return "default"; 
+      case "Accepted": return "secondary"; 
+      case "In Progress": return "outline"; 
+      case "Dispatched": return "secondary"; 
+      case "Completed": return "default"; 
       case "Cancelled": return "destructive";
       default: return "outline";
     }
