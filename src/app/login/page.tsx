@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShieldCheck, UserPlus, Users, Briefcase, Bike, School, LogIn, ArrowLeft, Mail, Phone } from "lucide-react";
+import { ShieldCheck, UserPlus, Users, Briefcase, Bike, School, LogIn, ArrowLeft, Mail, Phone, KeyRound } from "lucide-react"; // Added KeyRound
 import Image from "next/image";
 import Link from "next/link";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -126,33 +126,41 @@ export default function LoginPage() {
         <Button variant="ghost" size="sm" onClick={() => setCurrentStep("studentLoginOptions")} className="mb-0 text-muted-foreground self-start px-0">
             <ArrowLeft className="mr-2 h-4 w-4" /> <BilingualText en="Back to student options" hi="छात्र विकल्पों पर वापस"/>
         </Button>
-        <form onSubmit={handleDirectLogin} className="space-y-4">
-            <div>
-                <Label htmlFor="email"><Mail className="inline mr-1 h-4 w-4" /><BilingualText en="Email" hi="ईमेल" /></Label>
-                <Input id="email" type="email" placeholder_en="your.email@example.com" placeholder_hi="आपका.ईमेल@उदाहरण.कॉम" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div>
-                <Label htmlFor="password"><BilingualText en="Password" hi="पासवर्ड" /></Label>
-                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:gap-2 space-y-2 sm:space-y-0">
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-base">
-                    <LogIn className="mr-2 h-5 w-5" /> <BilingualText en="Login" hi="लॉग इन करें" />
-                </Button>
-                <Button type="button" onClick={handleDirectSignup} variant="outline" className="w-full py-3 text-base">
-                    <UserPlus className="mr-2 h-5 w-5" /> <BilingualText en="Sign Up" hi="साइन अप करें" />
-                </Button>
-            </div>
-        </form>
+        
+        <Button 
+            variant="default" 
+            className="w-full justify-center gap-2 py-3 text-base bg-blue-600 hover:bg-blue-700 text-white" 
+            onClick={() => toast({title: "Coming Soon!", description:"Phone OTP login will be available soon."})}
+        >
+            <Phone className="h-5 w-5" /> <BilingualText en="Login/Signup with Phone OTP" hi="फ़ोन OTP से लॉगिन/साइनअप करें" />
+        </Button>
+
         <div className="relative my-2">
             <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
             <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground"><BilingualText en="OR" hi="या" /></span>
             </div>
         </div>
-        <Button variant="outline" className="w-full justify-center gap-2 py-3 text-base border-blue-500 text-blue-600 hover:bg-blue-500/10 hover:text-blue-600" onClick={() => toast({title: "Coming Soon!", description:"Phone OTP login will be available soon."})}>
-            <Phone className="h-5 w-5" /> <BilingualText en="Login/Signup with Phone OTP" hi="फ़ोन OTP से लॉगिन/साइनअप करें" />
-        </Button>
+
+        <form onSubmit={handleDirectLogin} className="space-y-4">
+            <div>
+                <Label htmlFor="email"><Mail className="inline mr-1 h-4 w-4" /><BilingualText en="Email" hi="ईमेल" /></Label>
+                <Input id="email" type="email" placeholder_en="your.email@example.com" placeholder_hi="आपका.ईमेल@उदाहरण.कॉम" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div>
+                <Label htmlFor="password"><KeyRound className="inline mr-1 h-4 w-4" /><BilingualText en="Password" hi="पासवर्ड" /></Label>
+                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:gap-2 space-y-2 sm:space-y-0">
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-base">
+                    <LogIn className="mr-2 h-5 w-5" /> <BilingualText en="Login with Email" hi="ईमेल से लॉग इन करें" />
+                </Button>
+                <Button type="button" onClick={handleDirectSignup} variant="outline" className="w-full py-3 text-base">
+                    <UserPlus className="mr-2 h-5 w-5" /> <BilingualText en="Sign Up with Email" hi="ईमेल से साइन अप करें" />
+                </Button>
+            </div>
+        </form>
+        
         <div className="text-center text-sm mt-2">
             <BilingualText en="Forgot password?" hi="पासवर्ड भूल गए?" />{' '}
             <Link href="#" className="font-medium text-primary hover:underline">
@@ -181,7 +189,7 @@ export default function LoginPage() {
         case "initialSelection": return <BilingualText en="Welcome to OSO App!" hi="OSO ऐप में आपका स्वागत है!" />;
         case "studentLoginOptions": return <BilingualText en="Student Login/Signup" hi="छात्र लॉगिन/साइनअप" />;
         case "schoolIdLogin": return <BilingualText en="School ID Login" hi="स्कूल आईडी लॉगिन" />;
-        case "directLogin": return <BilingualText en="OSO App Login/Signup" hi="OSO ऐप लॉगिन/साइनअप" />;
+        case "directLogin": return <BilingualText en="OSO Direct Login/Signup" hi="OSO डायरेक्ट लॉगिन/साइनअप" />; // Updated title
         case "otherRolesLogin": return <BilingualText en="Vendor / Rider Login" hi="विक्रेता / राइडर लॉगिन" />;
         default: return <BilingualText en="Login / Signup" hi="लॉगिन / साइनअप" />;
     }
@@ -196,6 +204,8 @@ export default function LoginPage() {
           <CardDescription>
              {currentStep === "initialSelection" ? 
                 <BilingualText en="Please select how you'd like to continue." hi="कृपया चुनें कि आप कैसे जारी रखना चाहते हैं।" /> :
+             currentStep === "directLogin" ?
+                <BilingualText en="Use Phone OTP or Email to continue." hi="जारी रखने के लिए फ़ोन OTP या ईमेल का उपयोग करें।" /> :
                 <BilingualText en="Continue your OSO journey." hi="अपनी OSO यात्रा जारी रखें।" />
              }
           </CardDescription>
@@ -228,5 +238,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-
-    
