@@ -85,7 +85,7 @@ export default function RiderDashboardPage() {
                 <CardDescription><BilingualText en="Your current earnings and history." hi="आपकी वर्तमान कमाई और इतिहास।" /></CardDescription>
             </CardHeader>
             <CardContent>
-                <p className="text-lg font-bold text-green-600">₹250.00</p>
+                <p className="text-lg font-bold text-green-600">INR 250.00</p>
                 <p className="text-xs text-muted-foreground"><BilingualText en="Today's Earnings" hi="आज की कमाई" /></p>
                 <Button variant="link" className="p-0 h-auto mt-2 text-orange-600"><BilingualText en="View Earning History" hi="कमाई का इतिहास देखें" /></Button>
             </CardContent>

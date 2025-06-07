@@ -80,7 +80,7 @@ export default function VendorDashboardPage() {
           </CardHeader>
           <CardContent>
              <p className="text-muted-foreground text-sm">
-                <BilingualText en="Total earnings this month: ₹12,500" hi="इस महीने की कुल कमाई: ₹12,500" />
+                <BilingualText en="Total earnings this month: INR 12,500" hi="इस महीने की कुल कमाई: INR 12,500" />
             </p>
           </CardContent>
           <CardFooter>

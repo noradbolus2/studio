@@ -41,15 +41,15 @@ const quickCategories = [
 ];
 
 const recommendations = [
-  { id: 'rec1', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Class 10 - Lakhmir Singh Science', titleHi: 'कक्षा 10 - लखमीर सिंह विज्ञान', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "science textbook", href: '/class-6-12-books', priceEn: '₹450', priceHi: '₹450' },
-  { id: 'rec2', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: '₹299', priceHi: '₹299' },
+  { id: 'rec1', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Class 10 - Lakhmir Singh Science', titleHi: 'कक्षा 10 - लखमीर सिंह विज्ञान', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "science textbook", href: '/class-6-12-books', priceEn: 'INR 450', priceHi: 'INR 450' },
+  { id: 'rec2', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: 'INR 299', priceHi: 'INR 299' },
   { id: 'rec3', typeEn: 'AI Tool', typeHi: 'AI उपकरण', titleEn: 'Ask Guruji: NEET Doubts', titleHi: 'गुरुजी से पूछें: NEET शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क' },
-  { id: 'rec4', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test', titleHi: 'JEE मुख्य मॉक टेस्ट', descriptionEn: 'Full Syllabus', descriptionHi: 'पूर्ण पाठ्यक्रम', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "online test interface", href: '/test-series', priceEn: '₹99', priceHi: '₹99' },
+  { id: 'rec4', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test', titleHi: 'JEE मुख्य मॉक टेस्ट', descriptionEn: 'Full Syllabus', descriptionHi: 'पूर्ण पाठ्यक्रम', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 99', priceHi: 'INR 99' },
 ];
 
 const deliveryDeals = [
   { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, bgColor: "bg-orange-500", textColor: "text-white", dataAiHint:"charts diagram" },
-  { id: 'deal2', titleEn: "₹10 Off School Kits", titleHi: "स्कूल किट पर ₹10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, bgColor: "bg-teal-500", textColor: "text-white", dataAiHint:"school supplies kit" },
+  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, bgColor: "bg-teal-500", textColor: "text-white", dataAiHint:"school supplies kit" },
   { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, bgColor: "bg-violet-500", textColor: "text-white", dataAiHint:"project materials box" },
 ];
 

@@ -118,7 +118,7 @@ export default function CollegePredictorPage() {
                 </div>
             </div>
             <div>
-                <Label htmlFor="budget" className="flex items-center gap-1"><IndianRupee size={14}/> <BilingualText en="Annual Budget (₹)" hi="वार्षिक बजट (₹)" />*</Label>
+                <Label htmlFor="budget" className="flex items-center gap-1"><IndianRupee size={14}/> <BilingualText en="Annual Budget (INR)" hi="वार्षिक बजट (INR)" />*</Label>
                 <Input id="budget" name="budget" type="number" min="0" value={formData.budget || ''} onChange={handleInputChange} placeholder="e.g., 200000 for 2 Lakhs" required/>
             </div>
             <div>
@@ -163,7 +163,7 @@ export default function CollegePredictorPage() {
                     </CardHeader>
                     <CardContent className="p-4 space-y-2 text-sm">
                         <p><strong className="font-medium"><BilingualText en="Courses:" hi="पाठ्यक्रम:"/></strong> {college.coursesOffered.join(', ')}</p>
-                        <p><strong className="font-medium"><BilingualText en="Est. Fee:" hi="अनुमानित शुल्क:"/></strong> {college.estimatedAnnualFee.replace("INR", "₹")}</p>
+                        <p><strong className="font-medium"><BilingualText en="Est. Fee:" hi="अनुमानित शुल्क:"/></strong> {college.estimatedAnnualFee}</p>
                         <div className="flex items-center gap-2">
                             <strong className="font-medium"><BilingualText en="Admission Chance:" hi="प्रवेश संभावना:"/></strong> 
                             <Badge variant={getChanceBadgeVariant(college.admissionChance)}>{college.admissionChance}</Badge>

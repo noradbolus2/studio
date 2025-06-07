@@ -754,7 +754,7 @@ export default function ServicePage() {
                                     <div>
                                         <h4 className="font-semibold text-sm mb-1.5 flex items-center"><Package size={16} className="mr-1.5 opacity-70"/>Materials Needed:</h4>
                                         <ul className="list-disc list-inside text-xs space-y-0.5 pl-4 text-muted-foreground">
-                                            {selectedProject.materials.map(mat => <li key={mat.name}>{mat.name} (Qty: {mat.qty}) {mat.price ? `- approx. ₹${mat.price}` : ''}</li>)}
+                                            {selectedProject.materials.map(mat => <li key={mat.name}>{mat.name} (Qty: {mat.qty}) {mat.price ? `- approx. INR ${mat.price}` : ''}</li>)}
                                         </ul>
                                         <Button size="sm" className="mt-2 w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleAddMaterialsToCart(selectedProject)}>
                                             <ShoppingCart size={14} className="mr-1.5"/> Add Materials to OSO Cart
@@ -771,7 +771,7 @@ export default function ServicePage() {
                                         )}
                                         {selectedProject.creatorPrice && (
                                             <Button variant="secondary" className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleGetCreatorService(selectedProject)}>
-                                                <Users size={16} className="mr-2"/> Get it Made by Creator (₹{selectedProject.creatorPrice})
+                                                <Users size={16} className="mr-2"/> Get it Made by Creator (INR {selectedProject.creatorPrice})
                                             </Button>
                                         )}
                                     </div>
@@ -936,3 +936,4 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+

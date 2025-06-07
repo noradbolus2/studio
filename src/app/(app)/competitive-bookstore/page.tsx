@@ -124,7 +124,7 @@ export default function CompetitiveBookstorePage() {
                 </CardTitle>
                 <p className="text-xs text-muted-foreground"><BilingualText en={`Exam: ${book.exam}`} hi={`परीक्षा: ${book.exam}`} /></p>
                 <p className="text-xs text-muted-foreground"><BilingualText en={`By ${book.publisher}`} hi={`${book.publisher} द्वारा`} /></p>
-                <p className="text-md font-bold text-primary">₹{book.price}</p>
+                <p className="text-md font-bold text-primary">INR {book.price}</p>
               </CardContent>
               <CardFooter className="p-2 pt-0 flex flex-col space-y-1.5">
                 <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90 text-xs h-8">

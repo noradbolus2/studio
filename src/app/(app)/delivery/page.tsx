@@ -125,7 +125,7 @@ export default function DeliveryPage() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="font-semibold"><BilingualText en={`${cart.length} items`} hi={`${cart.length} आइटम`} /> </p>
-              <p className="text-lg font-bold text-primary">₹{cartTotal.toFixed(2)}</p>
+              <p className="text-lg font-bold text-primary">INR {cartTotal.toFixed(2)}</p>
             </div>
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handlePlaceOrder}>
               <ShoppingBag className="mr-2 h-5 w-5" />
@@ -144,3 +144,4 @@ export default function DeliveryPage() {
     </div>
   );
 }
+
