@@ -11,18 +11,18 @@ interface MotivationalQuoteCardProps {
 
 export function MotivationalQuoteCard({ quoteText, quoteAuthor, lang = 'en' }: MotivationalQuoteCardProps) {
   return (
-    <Card className="shadow-lg bg-gradient-to-br from-primary/5 via-background to-background border-primary/20 min-w-[280px] max-w-md">
-      <CardHeader className="flex flex-row items-center space-x-3 pb-3">
+    <Card className="shadow-lg bg-primary text-primary-foreground min-w-[280px] max-w-md">
+      <CardHeader className="flex flex-row items-center justify-center space-x-3 pb-3">
         <Lightbulb className="h-6 w-6 text-accent" />
-        <CardTitle className="font-headline text-lg">
+        <CardTitle className="font-headline text-lg text-primary-foreground">
           <BilingualText lang={lang} en="Quote of the Day" hi="आज का विचार" />
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <blockquote className="text-base italic text-foreground">
+      <CardContent className="text-center">
+        <blockquote className="text-base italic text-primary-foreground">
           <span className="block mb-2">{`"${quoteText}"`}</span>
         </blockquote>
-        <p className="text-right text-sm text-muted-foreground mt-2">
+        <p className="text-sm text-primary-foreground/90 mt-2">
           - {quoteAuthor}
         </p>
       </CardContent>
