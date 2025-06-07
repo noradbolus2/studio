@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, type ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,12 +56,12 @@ export default function EditProfilePage() {
   const [isSchoolLogin, setIsSchoolLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [initialDataLoading, setInitialDataLoading] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { control, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       country: "India",
-      // Initialize other fields as needed, especially if fetching existing user data
     },
   });
   
@@ -75,24 +75,21 @@ export default function EditProfilePage() {
     setLoginType(typeParam);
     setIsSchoolLogin(typeParam === "school");
 
-    // Simulate fetching and setting data
     let defaultValues: Partial<ProfileFormData> = { country: "India" };
 
     if (typeParam === "school") {
       defaultValues = {
         ...defaultValues,
         schoolId: searchParams.get("schoolId") || "",
-        fullName: searchParams.get("fullName") || "Mock School User", // Prefilled
-        schoolName: searchParams.get("schoolName") || "Mock School Name", // Prefilled
-        className: searchParams.get("className") || "", // Prefilled
-        email: searchParams.get("email") || "school.user@example.com", // Prefilled
+        fullName: searchParams.get("fullName") || "Mock School User", 
+        schoolName: searchParams.get("schoolName") || "Mock School Name", 
+        className: searchParams.get("className") || "", 
+        email: searchParams.get("email") || "school.user@example.com", 
       };
     } else if (typeParam === "direct") {
       if (isNew) {
-        // New direct user, mostly blank, but can prefill email if passed
         defaultValues = { ...defaultValues, email: searchParams.get("email") || "" };
       } else {
-        // Existing direct user, simulate fetching their data
         defaultValues = {
           ...defaultValues,
           fullName: "Existing User",
@@ -101,36 +98,58 @@ export default function EditProfilePage() {
           className: "11",
           board: "CBSE",
           stream: "Science",
-          // dateOfBirth: new Date(2005, 7, 15), // month is 0-indexed
+          dateOfBirth: new Date(2005, 7, 15), // month is 0-indexed
           city: "Mumbai",
           state: "Maharashtra",
           avatarUrl: "https://placehold.co/100x100.png",
         };
       }
     }
-    reset(defaultValues); // Reset form with default/fetched values
+    reset(defaultValues); 
     setInitialDataLoading(false);
   }, [searchParams, reset]);
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
     console.log("Profile Data to Save:", data);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     toast({
       title: "Profile Saved (Simulated)",
       description: "Your profile information has been updated.",
     });
     setIsLoading(false);
-    router.push("/profile"); // Redirect to profile display page after save
+    router.push("/profile"); 
   };
   
-  const handleAvatarUpload = () => {
-    // Placeholder for file input logic
-    // In a real app, this would open a file dialog, upload to Firebase Storage, then set avatarUrl
-    const mockUploadedUrl = `https://placehold.co/150x150.png?text=${watch('fullName')?.substring(0,1) || 'U'}&time=${Date.now()}`;
-    setValue('avatarUrl', mockUploadedUrl, { shouldValidate: true });
-    toast({ title: "Avatar Updated (Simulated)", description: "New avatar placeholder set." });
+  const handleAvatarUploadButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please select an image file (e.g., JPG, PNG).",
+          variant: "destructive",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setValue('avatarUrl', reader.result as string, { shouldValidate: true });
+        toast({ title: "Avatar Preview Updated", description: "New avatar is shown. Save profile to keep changes." });
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Error Reading File",
+          description: "Could not read the selected image file.",
+          variant: "destructive",
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
 
@@ -162,7 +181,14 @@ export default function EditProfilePage() {
                 <AvatarImage src={avatarUrlPreview || `https://placehold.co/100x100.png?text=${watch('fullName')?.substring(0,1) || 'U'}`} alt={watch('fullName')} data-ai-hint="user avatar" />
                 <AvatarFallback>{watch('fullName')?.substring(0,2).toUpperCase() || "NA"}</AvatarFallback>
               </Avatar>
-              <Button type="button" variant="outline" size="sm" onClick={handleAvatarUpload}>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/png, image/jpeg, image/gif"
+              />
+              <Button type="button" variant="outline" size="sm" onClick={handleAvatarUploadButtonClick}>
                 <Camera className="mr-2 h-4 w-4" />
                 <BilingualText en="Change Picture" hi=" तस्वीर बदलें" />
               </Button>
@@ -343,5 +369,9 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
-
-    
+declare module 'react' {
+    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
+}
