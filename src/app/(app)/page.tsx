@@ -46,6 +46,8 @@ const quickCategories = [
   { id: 'brain_scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
   { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
   { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'competitive_bookstore', labelEn: 'Exam Books', labelHi: 'परीक्षा पुस्तकें', icon: Award, href: '/competitive-bookstore', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
+  { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' },
 ];
 
 const recommendations = [
