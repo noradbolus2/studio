@@ -7,7 +7,10 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation'; 
 import {
   MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
-  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic, Lightbulb, Music2, GraduationCap, Video
+  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic, Lightbulb, Music2, GraduationCap, Video,
+  RadioTower, // Added
+  Timer,      // Added
+  PlaySquare  // Added
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
