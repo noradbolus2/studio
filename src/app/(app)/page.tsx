@@ -4,30 +4,42 @@
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
 import {
+  ShoppingBag, // For Stationery
+  Brain,       // For Projects (conceptual thinking)
+  PencilLine,  // For Assignments
+  Shirt,       // For Uniforms
+  Library,     // For e-Library
+  Cookie,      // For Study Snacks
+  PackageSearch, // For Last Minute Kits
+  ClipboardList, // For Test Series
+  Users,       // For Parent Mode (could also be Shield)
+  Sparkles,    // For Daily Guru Gyaan
+  MessageCircleHeart, // For Guru Ji (friendly chat)
+  Youtube,     // For Live Classes
   Languages,
   RefreshCw,
 } from 'lucide-react';
-import Image from 'next/image';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { MotivationalQuoteCard } from '@/components/shared/MotivationalQuoteCard';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+// Removed Image import as it's no longer used with Lucide icons
 
 const gridItems = [
-  { id: 'stationery', href: '/services/stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'stationery items' },
-  { id: 'projects', href: '/services/projects', labelEn: 'Projects', labelHi: 'परियोजनाएं', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'project work' },
-  { id: 'assignments', href: '/services/assignments', labelEn: 'Assignments', labelHi: 'असाइनमेंट', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'assignment notebook' },
-  { id: 'uniforms', href: '/services/uniforms', labelEn: 'Uniforms', labelHi: 'वर्दी', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'school uniform' },
-  { id: 'elibrary', href: '/services/elibrary', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'digital library' },
-  { id: 'studysnacks', href: '/services/studysnacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'healthy snacks' },
-  { id: 'lastminutekits', href: '/services/lastminutekits', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'exam kit' },
-  { id: "testseries", href: "/test-series", labelEn: "Test Series", labelHi: "टेस्ट सीरीज़", imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'test paper' },
-  { id: 'parentmode', href: '/services/parentmode', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'parent child' },
-  { id: 'dailygurugyaan', href: '/services/dailygurugyaan', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'wisdom quote' },
-  { id: 'guruji', href: '/services/guruji', labelEn: 'Guru Ji', labelHi: 'गुरु जी', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'teacher mentor' },
-  { id: 'liveclasses', href: '/services/liveclasses', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', imageUrl: 'https://placehold.co/80x80.png', dataAiHint: 'online class' },
+  { id: 'stationery', href: '/services/stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: ShoppingBag },
+  { id: 'projects', href: '/services/projects', labelEn: 'Projects', labelHi: 'परियोजनाएं', icon: Brain },
+  { id: 'assignments', href: '/services/assignments', labelEn: 'Assignments', labelHi: 'असाइनमेंट', icon: PencilLine },
+  { id: 'uniforms', href: '/services/uniforms', labelEn: 'Uniforms', labelHi: 'वर्दी', icon: Shirt },
+  { id: 'elibrary', href: '/services/elibrary', labelEn: 'e-Library', labelHi: 'ई-लाइब्रेरी', icon: Library },
+  { id: 'studysnacks', href: '/services/studysnacks', labelEn: 'Study Snacks', labelHi: 'स्टडी स्नैक्स', icon: Cookie },
+  { id: 'lastminutekits', href: '/services/lastminutekits', labelEn: 'Last Minute Kits', labelHi: 'अंतिम मिनट किट', icon: PackageSearch },
+  { id: "testseries", href: "/test-series", labelEn: "Test Series", labelHi: "टेस्ट सीरीज़", icon: ClipboardList },
+  { id: 'parentmode', href: '/services/parentmode', labelEn: 'Parent Mode', labelHi: 'पेरेंट मोड', icon: Users },
+  { id: 'dailygurugyaan', href: '/services/dailygurugyaan', labelEn: 'Daily Guru Gyaan', labelHi: 'दैनिक गुरु ज्ञान', icon: Sparkles },
+  { id: 'guruji', href: '/ai-guruji', labelEn: 'Guru Ji', labelHi: 'गुरु जी', icon: MessageCircleHeart }, // Updated href
+  { id: 'liveclasses', href: '/services/liveclasses', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Youtube },
 ];
 
 const sampleQuotes = [
@@ -65,14 +77,10 @@ export default function HomePage() {
     <div className="space-y-4 pb-8 relative">
       <header className="flex items-center justify-between py-3 px-1 mb-3">
         <div className="flex items-center space-x-2">
-          <Image
-            src="https://placehold.co/40x40.png"
-            alt="OSO App Logo"
-            width={36}
-            height={36}
-            className="rounded-md"
-            data-ai-hint="app logo"
-          />
+           <div className="h-9 w-9 rounded-md bg-primary flex items-center justify-center">
+             {/* Placeholder for an actual logo or use a simple initial if no image is preferred */}
+            <span className="text-xl font-bold text-primary-foreground">O</span>
+          </div>
           <div>
             <h1 className="text-xl font-bold font-headline text-primary">OSO App</h1>
             <p className="text-xs text-muted-foreground">
@@ -103,6 +111,7 @@ export default function HomePage() {
               quoteAuthor={currentLanguage === 'en' ? currentQuote.authorEn : currentQuote.authorHi}
               lang={currentLanguage}
             />
+            {/* Add more cards here if needed, e.g., quick study tip */}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -112,17 +121,11 @@ export default function HomePage() {
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {gridItems.map((item) => (
             <Link href={item.href} key={item.id} passHref>
-              <Card className="aspect-square group flex flex-col items-center justify-center p-3 text-center hover:shadow-md transition-shadow cursor-pointer bg-card hover:bg-primary/5 active:bg-primary/10 rounded-lg shadow-sm">
-                <div className="relative h-12 w-12 mb-2 rounded-md overflow-hidden group-hover:scale-105 transition-transform">
-                  <Image 
-                    src={item.imageUrl} 
-                    alt={item.labelEn} 
-                    layout="fill" 
-                    objectFit="cover" 
-                    data-ai-hint={item.dataAiHint} 
-                  />
+              <Card className="aspect-square group flex flex-col items-center justify-center p-2.5 text-center hover:shadow-lg transition-shadow cursor-pointer bg-accent/10 hover:bg-accent/20 active:bg-accent/30 rounded-xl shadow-sm">
+                <div className="relative h-8 w-8 mb-1 flex items-center justify-center rounded-full bg-accent/20 group-hover:bg-accent/30 transition-colors">
+                  <item.icon className="h-4 w-4 text-accent-foreground group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors leading-tight block h-6">
+                <span className="text-xs font-medium text-foreground group-hover:text-accent-foreground transition-colors leading-tight block h-6">
                    <BilingualText lang={currentLanguage} en={item.labelEn} hi={item.labelHi} />
                 </span>
               </Card>
@@ -141,4 +144,3 @@ export default function HomePage() {
     </div>
   );
 }
-
