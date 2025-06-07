@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { getMindDiaryReflection, type MindDiaryReflectionInput, type MindDiaryReflectionOutput } from '@/ai/flows/mind-diary-reflection-flow';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Label } from "@/components/ui/label";
 
 
 interface MoodEntry {
