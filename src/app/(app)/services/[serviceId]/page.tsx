@@ -12,12 +12,12 @@ import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'; // ScrollBar import confirmed
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
     Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Users, Edit3,
     ShoppingCart, Clock, Truck, Home, School as SchoolIconLucide, UploadCloud, Package, Image as ImageIcon, ExternalLink, UserCheck,
-    BookCopy, FlaskConical, BrainCircuit, FileArchive, ChevronLeft, Eye
+    BookCopy, FlaskConical, BrainCircuit, FileArchive, ChevronLeft, Eye, LightbulbIcon
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -147,7 +147,7 @@ export default function ServicePage() {
         setServicePageChatMessages([]); 
         setTestRecommendations(null);
         setTestRecommendationError(null);
-        setSelectedProject(null); // Reset selected project
+        setSelectedProject(null); 
 
         try {
           console.log(`Fetching mock data for serviceId: ${serviceId}`);
@@ -156,7 +156,7 @@ export default function ServicePage() {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
-            projects: { name: "Projects Hub", type: "interactive_assignment_project_help", description: "Get AI-powered help for your school projects.", data: { avatarUrl: "https://placehold.co/100x100.png?text=🛠️", dataAiHint:"tools project" }},
+            projects: { name: "Projects Hub", type: "interactive_assignment_project_help", description: "AI assistance for completing your projects.", data: { avatarUrl: "https://placehold.co/100x100.png?text=🛠️", dataAiHint:"tools project" }},
             assignments: { name: "Assignments Hub", type: "interactive_assignment_project_help", description: "AI assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png?text=📝", dataAiHint:"writing assignment" }},
             testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from AI Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
             uniforms: {
@@ -165,6 +165,14 @@ export default function ServicePage() {
               description: "Find and order school uniforms.",
               data: {
                 content: "Welcome to the Uniforms section! Here you can find information about school uniforms available through OSO App.\n\nWe are working with local vendors to bring you a wide selection of school-specific uniforms, including shirts, trousers, skirts, blazers, and sports attire.\n\nCurrently, online ordering for uniforms is under development. Please check back soon or contact your school's preferred vendor for purchases.\n\nKey features coming soon:\n- Browse by school\n- Size charts and guides\n- Secure online payment\n- Home delivery options"
+              }
+            },
+            dailygurugyaan: {
+              name: "Daily Guru Gyaan",
+              type: "info_page",
+              description: "A daily dose of wisdom from Guruji.",
+              data: {
+                content: "🌟 Today's Guru Gyaan 🌟\n\n\"The journey of a thousand miles begins with a single step.\"\n\nDon't be overwhelmed by the size of your goals. Focus on taking that first small action today. Consistent effort, no matter how small, leads to great achievements. Believe in yourself and keep moving forward! 🙏\n\n#Motivation #StudyTips #GuruJiWisdom"
               }
             },
           };
@@ -321,6 +329,38 @@ export default function ServicePage() {
         description: `Loading tutorial for "${project.title}". Feature coming soon! URL: ${project.tutorialUrl || 'N/A'}`,
     });
   }
+
+  const handleProjectIdeaSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const ideaDescription = (form.elements.namedItem('aiIdeaDescription') as HTMLTextAreaElement)?.value;
+    if (!ideaDescription.trim()) {
+      toast({ title: "Description Needed", description: "Please describe your project topic or constraints.", variant: "destructive"});
+      return;
+    }
+    setServicePageChatIsLoading(true); // Reuse chat loading state for simplicity
+    toast({title: "AI Idea Generation (Simulated)", description: `Guruji is thinking of a brilliant idea for: ${ideaDescription.substring(0,50)}...`});
+    
+    // Simulate AI call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Mock response and set it as a selected project
+    const mockAIProject: MockProject = {
+      id: "ai-proj-dynamic",
+      title: `AI Suggested: ${ideaDescription.substring(0,20)} Model`,
+      category: "ai_idea",
+      sampleImageUrl: "https://placehold.co/600x400.png",
+      dataAiHint: "ai generated idea",
+      description: `An AI-generated project idea based on your input: "${ideaDescription}". This could involve building a small prototype or a research paper.`,
+      materials: [
+        { name: "Basic Craft Supplies (AI will suggest specifics)", qty: "Varies" },
+        { name: "Online Research Access", qty: 1 },
+      ],
+      estimatedTime: "Varies (AI will estimate)",
+    };
+    setSelectedProject(mockAIProject);
+    setServicePageChatIsLoading(false);
+  };
 
 
   if (loading) {
@@ -566,194 +606,194 @@ export default function ServicePage() {
         );
 
         return (
-            <div className="space-y-6">
-                <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
-                    <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 -mx-1 px-1 shadow-sm">
-                        <CardHeader className="pb-3 pt-2">
-                            <div className="flex items-center gap-3">
-                                {serviceData.data?.avatarUrl && (
-                                <Avatar className="h-10 w-10 border-2 border-primary">
-                                    <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
-                                    <AvatarFallback>{serviceData.name.substring(0,1).toUpperCase()}</AvatarFallback>
-                                </Avatar>
-                                )}
-                                <div>
-                                    <CardTitle className="text-lg font-headline text-primary">
-                                        {serviceData.name}
-                                    </CardTitle>
-                                    <CardDescription className="text-xs">
-                                        {serviceData.description || "Get expert help for your school work."}
-                                    </CardDescription>
-                                </div>
+            <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
+                <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 -mx-1 px-1 shadow-sm">
+                    <CardHeader className="pb-3 pt-2">
+                        <div className="flex items-center gap-3">
+                            {serviceData.data?.avatarUrl && (
+                            <Avatar className="h-10 w-10 border-2 border-primary">
+                                <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
+                                <AvatarFallback>{serviceData.name.substring(0,1).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            )}
+                            <div>
+                                <CardTitle className="text-lg font-headline text-primary">
+                                    {serviceData.name}
+                                </CardTitle>
+                                <CardDescription className="text-xs">
+                                    {serviceData.description || "Let Guruji AI help you plan and execute!"}
+                                </CardDescription>
                             </div>
-                        </CardHeader>
-                        <CardContent className="pb-3 px-2">
-                            <div className="grid grid-cols-2 gap-3 mb-3">
-                                <div>
-                                    <Label htmlFor="projectClass" className="text-xs">Your Class</Label>
-                                    <Select value={selectedClass} onValueChange={setSelectedClass}>
-                                        <SelectTrigger id="projectClass" className="h-9"><SelectValue placeholder="Select Class"/></SelectTrigger>
-                                        <SelectContent>
-                                            {classes.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Label htmlFor="projectSubject" className="text-xs">Subject</Label>
-                                    <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                                        <SelectTrigger id="projectSubject" className="h-9"><SelectValue placeholder="Select Subject"/></SelectTrigger>
-                                        <SelectContent>
-                                            {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="pb-3 px-2">
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <Label htmlFor="projectClass" className="text-xs">Your Class</Label>
+                                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                                    <SelectTrigger id="projectClass" className="h-9"><SelectValue placeholder="Select Class"/></SelectTrigger>
+                                    <SelectContent>
+                                        {classes.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
                             </div>
+                            <div>
+                                <Label htmlFor="projectSubject" className="text-xs">Subject</Label>
+                                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                                    <SelectTrigger id="projectSubject" className="h-9"><SelectValue placeholder="Select Subject"/></SelectTrigger>
+                                    <SelectContent>
+                                        {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
 
-                            <ScrollArea className="w-full whitespace-nowrap pb-1">
-                                <TabsList className="bg-muted/60">
-                                    {projectCategories.map((cat) => (
-                                    <TabsTrigger key={cat.id} value={cat.id} className="text-xs px-2.5 py-1.5 h-auto">
-                                        <cat.icon className="h-4 w-4 mr-1.5 opacity-80" /> {cat.label}
-                                    </TabsTrigger>
-                                    ))}
-                                </TabsList>
-                                <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
-                        </CardContent>
-                    </Card>
-                    
-                    <div className="px-1 mt-4">
-                    {projectCategories.map((cat) => (
-                        <TabsContent key={cat.id} value={cat.id} className="mt-0">
-                            {cat.id === "ai_idea" && !selectedProject && (
-                                <Card className="text-center">
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center justify-center gap-2"><BrainCircuit className="text-primary"/> AI Project Idea Generator</CardTitle>
-                                        <CardDescription>Stuck? Let Guruji AI suggest a unique project idea for you!</CardDescription>
-                                    </CardHeader>
+                        <ScrollArea className="w-full whitespace-nowrap pb-1">
+                            <TabsList className="bg-muted/60">
+                                {projectCategories.map((cat) => (
+                                <TabsTrigger key={cat.id} value={cat.id} className="text-xs px-2.5 py-1.5 h-auto">
+                                    <cat.icon className="h-4 w-4 mr-1.5 opacity-80" /> {cat.label}
+                                </TabsTrigger>
+                                ))}
+                            </TabsList>
+                            <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
+                
+                <div className="px-1 mt-4">
+                {projectCategories.map((cat) => (
+                    <TabsContent key={cat.id} value={cat.id} className="mt-0">
+                        {cat.id === "ai_idea" && !selectedProject && (
+                            <Card className="text-center">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center justify-center gap-2"><BrainCircuit className="text-primary"/> AI Project Idea Generator</CardTitle>
+                                    <CardDescription>Stuck? Let Guruji AI suggest a unique project idea for you!</CardDescription>
+                                </CardHeader>
+                                <form onSubmit={handleProjectIdeaSubmit}>
                                     <CardContent>
-                                        <Textarea placeholder="Briefly describe your topic or constraints (e.g., 'water conservation for class 7 using household items')" className="min-h-[80px]"/>
+                                        <Textarea name="aiIdeaDescription" placeholder="Briefly describe your topic or constraints (e.g., 'water conservation for class 7 using household items')" className="min-h-[80px]"/>
                                     </CardContent>
                                     <CardFooter>
-                                        <Button className="w-full" onClick={() => toast({title: "AI Idea Generation (Simulated)", description: "Guruji is thinking of a brilliant idea for you!"})}>
-                                            <Rocket className="mr-2"/> Get AI Idea
+                                        <Button type="submit" className="w-full" disabled={servicePageChatIsLoading}>
+                                            {servicePageChatIsLoading ? <LoadingSpinner /> : <Rocket className="mr-2"/>} Get AI Idea
                                         </Button>
                                     </CardFooter>
-                                </Card>
-                            )}
-                             {cat.id === "creator_made" && !selectedProject && (
-                                <Card className="text-center">
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center justify-center gap-2"><Users className="text-primary"/> Get it Made by an OSO Creator</CardTitle>
-                                        <CardDescription>Browse projects our talented student creators can make for you or request a custom one.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                         <p className="text-muted-foreground text-sm">Feature coming soon! Describe your project needs to find a creator.</p>
-                                         <Textarea placeholder="Describe the project you want made (e.g., 'Volcano model for Class 6, needs to erupt')" className="min-h-[80px] mt-2"/>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button className="w-full" onClick={() => toast({title: "Find Creator (Simulated)", description: "Searching for available creators."})}>
-                                            <UserCheck className="mr-2"/> Find a Creator
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            )}
-                            {(cat.id !== "ai_idea" && cat.id !== "creator_made") && (
-                                <>
-                                    {!selectedProject && (
-                                        filteredProjects.length > 0 ? (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                {filteredProjects.map(proj => (
-                                                    <Card key={proj.id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow group" onClick={() => setSelectedProject(proj)}>
-                                                        <CardHeader className="p-0">
-                                                            <div className="aspect-video relative bg-muted">
-                                                                <Image src={proj.sampleImageUrl} alt={proj.title} layout="fill" objectFit="cover" data-ai-hint={proj.dataAiHint}/>
-                                                            </div>
-                                                        </CardHeader>
-                                                        <CardContent className="p-3">
-                                                            <h3 className="font-semibold text-sm leading-tight truncate group-hover:text-primary">{proj.title}</h3>
-                                                            <p className="text-xs text-muted-foreground truncate">{proj.description}</p>
-                                                        </CardContent>
-                                                        <CardFooter className="p-3 pt-0">
-                                                            <Button variant="outline" size="sm" className="w-full text-xs">View Details</Button>
-                                                        </CardFooter>
-                                                    </Card>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <Card className="text-center py-8">
-                                                <FileArchive size={32} className="mx-auto text-muted-foreground mb-2" />
-                                                <p className="text-muted-foreground">No {cat.label.toLowerCase()} found for the selected class/subject. Try other filters or the "Custom by AI" tab!</p>
-                                            </Card>
-                                        )
-                                    )}
-                                </>
-                            )}
-                            {/* Common Selected Project View - Placed once outside the category map if activeTab matches selectedProject.category */}
-                            {selectedProject && selectedProject.category === activeTab && (
-                                <Card className="shadow-xl border-primary/50">
-                                    <CardHeader className="bg-muted/20">
-                                        <div className="flex justify-between items-start">
-                                            <CardTitle className="text-xl font-headline text-primary">{selectedProject.title}</CardTitle>
-                                            <Button variant="ghost" size="sm" onClick={() => setSelectedProject(null)} className="text-xs">
-                                                <ChevronLeft size={14} className="mr-1"/> Back to list
-                                            </Button>
+                                </form>
+                            </Card>
+                        )}
+                         {cat.id === "creator_made" && !selectedProject && (
+                            <Card className="text-center">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center justify-center gap-2"><Users className="text-primary"/> Get it Made by an OSO Creator</CardTitle>
+                                    <CardDescription>Browse projects our talented student creators can make for you or request a custom one.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                     <p className="text-muted-foreground text-sm">Feature coming soon! Describe your project needs to find a creator.</p>
+                                     <Textarea placeholder="Describe the project you want made (e.g., 'Volcano model for Class 6, needs to erupt')" className="min-h-[80px] mt-2"/>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button className="w-full" onClick={() => toast({title: "Find Creator (Simulated)", description: "Searching for available creators."})}>
+                                        <UserCheck className="mr-2"/> Find a Creator
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )}
+                        {(cat.id !== "ai_idea" && cat.id !== "creator_made") && (
+                            <>
+                                {!selectedProject && (
+                                    filteredProjects.length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {filteredProjects.map(proj => (
+                                                <Card key={proj.id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow group" onClick={() => setSelectedProject(proj)}>
+                                                    <CardHeader className="p-0">
+                                                        <div className="aspect-video relative bg-muted">
+                                                            <Image src={proj.sampleImageUrl} alt={proj.title} layout="fill" objectFit="cover" data-ai-hint={proj.dataAiHint}/>
+                                                        </div>
+                                                    </CardHeader>
+                                                    <CardContent className="p-3">
+                                                        <h3 className="font-semibold text-sm leading-tight truncate group-hover:text-primary">{proj.title}</h3>
+                                                        <p className="text-xs text-muted-foreground truncate">{proj.description}</p>
+                                                    </CardContent>
+                                                    <CardFooter className="p-3 pt-0">
+                                                        <Button variant="outline" size="sm" className="w-full text-xs">View Details</Button>
+                                                    </CardFooter>
+                                                </Card>
+                                            ))}
                                         </div>
-                                        <CardDescription>{selectedProject.description}</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4 pt-4">
-                                        <div className="aspect-video relative bg-muted rounded-md overflow-hidden shadow-inner">
-                                             <Image src={selectedProject.sampleImageUrl} alt={selectedProject.title} layout="fill" objectFit="cover" data-ai-hint={selectedProject.dataAiHint} />
-                                        </div>
-                                        
-                                        <div>
-                                            <h4 className="font-semibold text-sm mb-1.5 flex items-center"><Package size={16} className="mr-1.5 opacity-70"/>Materials Needed:</h4>
-                                            <ul className="list-disc list-inside text-xs space-y-0.5 pl-4 text-muted-foreground">
-                                                {selectedProject.materials.map(mat => <li key={mat.name}>{mat.name} (Qty: {mat.qty}) {mat.price ? `- approx. ₹${mat.price}` : ''}</li>)}
-                                            </ul>
-                                            <Button size="sm" variant="outline" className="mt-2 w-full sm:w-auto text-primary border-primary hover:bg-primary/10" onClick={() => handleAddMaterialsToCart(selectedProject)}>
-                                                <ShoppingCart size={14} className="mr-1.5"/> Add Materials to OSO Cart
-                                            </Button>
-                                        </div>
-
-                                        {selectedProject.estimatedTime && <p className="text-xs text-muted-foreground"><Clock size={12} className="inline mr-1"/>Estimated Time: {selectedProject.estimatedTime}</p>}
-
-                                        <div className="flex flex-col sm:flex-row gap-2">
-                                            {selectedProject.tutorialUrl && (
-                                                <Button variant="default" className="flex-1 bg-primary/90 hover:bg-primary" onClick={() => handleBuildWithMe(selectedProject)}>
-                                                    <Eye size={16} className="mr-2"/> View 'Build With Me' Tutorial
-                                                </Button>
-                                            )}
-                                            {selectedProject.creatorPrice && (
-                                                <Button variant="secondary" className="flex-1" onClick={() => handleGetCreatorService(selectedProject)}>
-                                                    <Users size={16} className="mr-2"/> Get it Made by Creator (₹{selectedProject.creatorPrice})
-                                                </Button>
-                                            )}
-                                        </div>
-                                        
-                                        <Card className="bg-muted/30 p-3">
-                                            <Label className="text-xs font-medium">Delivery Address (for materials/creator service)</Label>
-                                            <div className="flex items-center space-x-2 mt-1 mb-2">
-                                                <Button variant="outline" size="xs" className="text-xs px-2 h-7"><Home size={12} className="mr-1"/> Use Home</Button>
-                                                <Button variant="outline" size="xs" className="text-xs px-2 h-7"><SchoolIconLucide size={12} className="mr-1"/> Use School</Button>
-                                            </div>
-                                            <Input placeholder="Or enter new address..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="h-9"/>
-                                            <Button size="sm" className="w-full mt-2 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => toast({title:"Proceeding to Payment (Simulated)", description: "Address: " + (deliveryAddress || "Default")})}>
-                                               <Truck size={14} className="mr-1.5"/> Proceed to Order/Payment
-                                            </Button>
-                                            <p className="text-xs text-muted-foreground text-center mt-2">Conceptual: Payment & Delivery Tracking</p>
+                                    ) : (
+                                        <Card className="text-center py-8">
+                                            <FileArchive size={32} className="mx-auto text-muted-foreground mb-2" />
+                                            <p className="text-muted-foreground">No {cat.label.toLowerCase()} found for the selected class/subject. Try other filters or the "Custom by AI" tab!</p>
                                         </Card>
-                                         <Button variant="outline" className="w-full" onClick={() => toast({title: "Submit to Teacher (Simulated)", description: "Requires school integration."})}>
-                                            <UploadCloud size={16} className="mr-2"/> Submit to Teacher Panel
+                                    )
+                                )}
+                            </>
+                        )}
+                        
+                        {selectedProject && selectedProject.category === activeTab && (
+                            <Card className="shadow-xl border-primary/50">
+                                <CardHeader className="bg-muted/20">
+                                    <div className="flex justify-between items-start">
+                                        <CardTitle className="text-xl font-headline text-primary">{selectedProject.title}</CardTitle>
+                                        <Button variant="ghost" size="sm" onClick={() => setSelectedProject(null)} className="text-xs">
+                                            <ChevronLeft size={14} className="mr-1"/> Back to list
                                         </Button>
-                                    </CardContent>
-                                </Card>
-                            )}
-                        </TabsContent>
-                    ))}
-                    </div>
-                </Tabs>
-            </div>
+                                    </div>
+                                    <CardDescription>{selectedProject.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4 pt-4">
+                                    <div className="aspect-video relative bg-muted rounded-md overflow-hidden shadow-inner">
+                                         <Image src={selectedProject.sampleImageUrl} alt={selectedProject.title} layout="fill" objectFit="cover" data-ai-hint={selectedProject.dataAiHint} />
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="font-semibold text-sm mb-1.5 flex items-center"><Package size={16} className="mr-1.5 opacity-70"/>Materials Needed:</h4>
+                                        <ul className="list-disc list-inside text-xs space-y-0.5 pl-4 text-muted-foreground">
+                                            {selectedProject.materials.map(mat => <li key={mat.name}>{mat.name} (Qty: {mat.qty}) {mat.price ? `- approx. ₹${mat.price}` : ''}</li>)}
+                                        </ul>
+                                        <Button size="sm" variant="outline" className="mt-2 w-full sm:w-auto text-primary border-primary hover:bg-primary/10" onClick={() => handleAddMaterialsToCart(selectedProject)}>
+                                            <ShoppingCart size={14} className="mr-1.5"/> Add Materials to OSO Cart
+                                        </Button>
+                                    </div>
+
+                                    {selectedProject.estimatedTime && <p className="text-xs text-muted-foreground"><Clock size={12} className="inline mr-1"/>Estimated Time: {selectedProject.estimatedTime}</p>}
+
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                        {selectedProject.tutorialUrl && (
+                                            <Button variant="default" className="flex-1 bg-primary/90 hover:bg-primary" onClick={() => handleBuildWithMe(selectedProject)}>
+                                                <Eye size={16} className="mr-2"/> View 'Build With Me' Tutorial
+                                            </Button>
+                                        )}
+                                        {selectedProject.creatorPrice && (
+                                            <Button variant="secondary" className="flex-1" onClick={() => handleGetCreatorService(selectedProject)}>
+                                                <Users size={16} className="mr-2"/> Get it Made by Creator (₹{selectedProject.creatorPrice})
+                                            </Button>
+                                        )}
+                                    </div>
+                                    
+                                    <Card className="bg-muted/30 p-3">
+                                        <Label className="text-xs font-medium">Delivery Address (for materials/creator service)</Label>
+                                        <div className="flex items-center space-x-2 mt-1 mb-2">
+                                            <Button variant="outline" size="xs" className="text-xs px-2 h-7"><Home size={12} className="mr-1"/> Use Home</Button>
+                                            <Button variant="outline" size="xs" className="text-xs px-2 h-7"><SchoolIconLucide size={12} className="mr-1"/> Use School</Button>
+                                        </div>
+                                        <Input placeholder="Or enter new address..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="h-9"/>
+                                        <Button size="sm" className="w-full mt-2 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => toast({title:"Proceeding to Payment (Simulated)", description: "Address: " + (deliveryAddress || "Default")})}>
+                                           <Truck size={14} className="mr-1.5"/> Proceed to Order/Payment
+                                        </Button>
+                                        <p className="text-xs text-muted-foreground text-center mt-2">Conceptual: Payment & Delivery Tracking</p>
+                                    </Card>
+                                     <Button variant="outline" className="w-full" onClick={() => toast({title: "Submit to Teacher (Simulated)", description: "Requires school integration."})}>
+                                        <UploadCloud size={16} className="mr-2"/> Submit to Teacher Panel
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </TabsContent>
+                ))}
+                </div>
+            </Tabs>
         );
 
 
@@ -761,7 +801,20 @@ export default function ServicePage() {
          return <p>Products for {serviceData.name} will be listed here.</p>;
       
       case 'info_page':
-        return <p className="whitespace-pre-wrap">{serviceData.data?.content || "Information will be displayed here."}</p>;
+        return (
+            <Card className="mx-1">
+                <CardHeader>
+                    <CardTitle className="font-headline text-primary flex items-center gap-2">
+                        <LightbulbIcon className="h-6 w-6" />
+                        {serviceData.name}
+                    </CardTitle>
+                    {serviceData.description && <CardDescription>{serviceData.description}</CardDescription>}
+                </CardHeader>
+                <CardContent>
+                    <p className="whitespace-pre-wrap text-sm text-foreground">{serviceData.data?.content || "Information will be displayed here."}</p>
+                </CardContent>
+            </Card>
+        );
       
       case 'books_list_page': 
         if (!serviceData.data?.redirectTo) {
@@ -787,8 +840,8 @@ export default function ServicePage() {
     || !!serviceData?.data?.redirectTo;
 
   return (
-    <div className="space-y-0_override"> {/* Adjusted base spacing */}
-      {!hideMainElements && (
+    <div className="space-y-0_override"> 
+      {!hideMainElements && serviceData?.type !== 'info_page' && (
         <header className="py-4 px-1">
           <h1 className="text-3xl font-bold font-headline text-primary">
             {serviceData?.name || "Service"}
@@ -801,8 +854,8 @@ export default function ServicePage() {
         </header>
       )}
 
-      { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || serviceData?.type === 'interactive_assignment_project_help' || !serviceData?.data?.redirectTo) ? (
-        (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && serviceData?.type !== 'interactive_assignment_project_help' && !hideMainElements) ? ( 
+      { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || serviceData?.type === 'interactive_assignment_project_help' || serviceData?.type === 'info_page' || !serviceData?.data?.redirectTo) ? (
+        (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && serviceData?.type !== 'interactive_assignment_project_help' && !hideMainElements && serviceData?.type !== 'info_page') ? ( 
           <Card className="mx-1">
             <CardContent className="pt-6">
               {renderServiceContent()}
@@ -814,7 +867,7 @@ export default function ServicePage() {
       ) : null }
 
 
-      {!hideMainElements && (
+      {!hideMainElements && serviceData?.type !== 'info_page' &&(
         <div className="text-center mt-8 px-1">
               <Button asChild variant="outline">
                   <Link href="/">
