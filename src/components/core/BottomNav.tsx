@@ -3,14 +3,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Truck, Bot, User } from 'lucide-react';
+import { Home, BookOpen, Truck, Bot, User, Sparkles } from 'lucide-react'; // Added Sparkles
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react'; // Import useState and useEffect
+import { useState, useEffect } from 'react'; 
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/study', label: 'Study', icon: BookOpen },
-  { href: '/delivery', label: 'Orders', icon: Truck },
+  { href: '/creator-marketplace', label: 'Projects', icon: Sparkles }, // Changed Delivery to Projects
   { href: '/ai-guruji', label: 'AI', icon: Bot },
   { href: '/profile', label: 'Me', icon: User },
 ];
@@ -27,15 +27,13 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t border-border shadow- ऊपर flex md:hidden z-50">
       {navItems.map((item) => {
         let itemIsActive = false;
-        // Only calculate the true active state if the component has mounted on the client
         if (isClient) {
           itemIsActive = (pathname === item.href) ||
                        (item.href === "/ai-guruji" && pathname.startsWith("/ai-guruji")) ||
-                       (item.href === "/study" && pathname.startsWith("/study"));
+                       (item.href === "/study" && pathname.startsWith("/study")) ||
+                       (item.href === "/creator-marketplace" && pathname.startsWith("/creator-marketplace")); // Added for creator marketplace
         }
-        // During SSR and initial client render (before useEffect sets isClient to true),
-        // itemIsActive will be false, ensuring server and client renders match.
-
+        
         return (
           <Link href={item.href} key={item.label} legacyBehavior>
             <a
@@ -59,3 +57,5 @@ export function BottomNav() {
     </nav>
   );
 }
+
+    
