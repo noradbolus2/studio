@@ -49,7 +49,7 @@ type ServicePageParams = {
 };
 
 export default function ServicePage() {
-  const routeParams = useParams<ServicePageParams>(); // Renamed 'params' to 'routeParams'
+  const routeParams = useParams<ServicePageParams>(); 
   const serviceId = routeParams?.serviceId;
   const router = useRouter();
 
@@ -90,6 +90,14 @@ export default function ServicePage() {
             projects: { name: "Projects", type: "info_page", description: "Get help with school projects.", data: { content: "Information about project help will be displayed here." }},
             assignments: { name: "Assignments", type: "info_page", description: "Assistance with assignments.", data: { content: "Details about assignment help services." }},
             testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from AI Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
+            uniforms: {
+              name: "Uniforms",
+              type: "info_page",
+              description: "Find and order school uniforms.",
+              data: {
+                content: "Welcome to the Uniforms section! Here you can find information about school uniforms available through OSO App.\n\nWe are working with local vendors to bring you a wide selection of school-specific uniforms, including shirts, trousers, skirts, blazers, and sports attire.\n\nCurrently, online ordering for uniforms is under development. Please check back soon or contact your school's preferred vendor for purchases.\n\nKey features coming soon:\n- Browse by school\n- Size charts and guides\n- Secure online payment\n- Home delivery options"
+              }
+            },
           };
 
           if (mockData[serviceId]) {
@@ -479,7 +487,7 @@ export default function ServicePage() {
          return <p><BilingualText en={`Products for ${serviceData.name} will be listed here.`} hi={`${serviceData.name} के लिए उत्पाद यहां सूचीबद्ध किए जाएंगे।`} /></p>;
       
       case 'info_page':
-        return <p>{serviceData.data?.content || <BilingualText en="Information will be displayed here." hi="जानकारी यहाँ प्रदर्शित की जाएगी।" />}</p>;
+        return <p className="whitespace-pre-wrap">{serviceData.data?.content || <BilingualText en="Information will be displayed here." hi="जानकारी यहाँ प्रदर्शित की जाएगी।" />}</p>;
       
       case 'books_list_page': 
         if (!serviceData.data?.redirectTo) {
