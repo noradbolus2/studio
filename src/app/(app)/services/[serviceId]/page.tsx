@@ -108,8 +108,7 @@ const mockProjects: MockProject[] = [
 
 
 export default function ServicePage() {
-  const routeParams = useParams<ServicePageParams>(); 
-  const serviceId = routeParams?.serviceId;
+  const { serviceId } = useParams<ServicePageParams>(); 
   const router = useRouter();
   const { toast } = useToast();
 
@@ -210,7 +209,7 @@ export default function ServicePage() {
 
       fetchServiceData();
     }
-  }, [serviceId, router]); // Added router to dependencies
+  }, [serviceId, router]); 
   
   useEffect(() => {
     if (servicePageChatScrollAreaRef.current) {
