@@ -1,9 +1,10 @@
 
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react'; 
+import React, { useState, useEffect, useRef, type FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation'; // Added useRouter
 import {
   MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
   FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Search, Mic, Lightbulb, Music2
@@ -15,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { BilingualText } from '@/components/shared/BilingualText'; 
+import { BilingualText } from '@/components/shared/BilingualText';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -92,12 +93,14 @@ const mockLocations = [
 export default function ModernHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en'); 
+  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
   const [location, setLocation] = useState("Modern School, Barakhamba");
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
   const [selectedTempLocation, setSelectedTempLocation] = useState(location);
   const { toast } = useToast();
+  const router = useRouter(); // Initialize router
+  const [searchQuery, setSearchQuery] = useState(''); // State for search input
 
   const startSlideShow = () => {
     slideIntervalRef.current = setInterval(() => {
@@ -119,7 +122,7 @@ export default function ModernHomePage() {
     if (slideIntervalRef.current) clearInterval(slideIntervalRef.current);
     startSlideShow();
   };
-  
+
   const MemoizedImage = React.memo(Image);
 
   const toggleLanguage = () => {
@@ -148,6 +151,12 @@ export default function ModernHomePage() {
   const filteredLocations = mockLocations.filter(loc =>
     loc.name.toLowerCase().includes(locationSearchTerm.toLowerCase())
   );
+
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      router.push(`/search-results?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
 
   return (
@@ -180,10 +189,17 @@ export default function ModernHomePage() {
         </div>
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input 
-            type="search" 
+          <Input
+            type="search"
             placeholder={currentLang === 'en' ? "Search for books, projects, stationery..." : "किताबें, प्रोजेक्ट, स्टेशनरी खोजें..."}
-            className="pl-10 h-12 text-base border-border focus:border-primary focus:ring-primary rounded-xl shadow-sm" 
+            className="pl-10 h-12 text-base border-border focus:border-primary focus:ring-primary rounded-xl shadow-sm"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearchSubmit();
+              }
+            }}
           />
         </div>
          <div className="flex justify-around items-center pt-1 text-xs text-muted-foreground">
