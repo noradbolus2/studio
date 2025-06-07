@@ -1,11 +1,9 @@
-
 "use client";
 
-import { useEffect, useState, type FormEvent, useRef } from 'react';
+import { useEffect, useState, type FormEvent, useRef, type ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation'; 
 
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { BilingualText } from '@/components/shared/BilingualText';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,13 +12,20 @@ import Link from 'next/link';
 import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Edit3, Users2, ShoppingCart, Clock, Truck, Home, SchoolIcon, UploadCloud } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+    Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Users, Edit3,
+    ShoppingCart, Clock, Truck, Home, School as SchoolIconLucide, UploadCloud, Package, Image as ImageIcon, ExternalLink, UserCheck,
+    BookCopy, FlaskConical, BrainCircuit, FileArchive
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Image from 'next/image';
+import { useToast } from "@/hooks/use-toast";
 
 
 // Define a type for your service data for better type safety
@@ -52,25 +57,57 @@ type ServicePageParams = {
   serviceId: string;
 };
 
-// Mock data for the new interactive assignment/project help
-const projectTypes = [
-  { id: "homework", label: "School Homework", icon: Edit3 },
-  { id: "science_model", label: "Working Science Model", icon: Brain },
-  { id: "art_work", label: "Art/Poster/Chart Work", icon: Palette },
-  { id: "coding_project", label: "Coding Project", icon: Code2 },
-  { id: "essay", label: "Essay or Research Assignment", icon: FileText },
-  { id: "ai_idea", label: "Custom AI-Generated Idea", icon: Rocket },
-  { id: "creator_made", label: "Get it made by a Creator", icon: Users2 }
+// --- New Types for Interactive Assignment/Project Help ---
+interface ProjectMaterial {
+  name: string;
+  qty: number | string; 
+  price?: number; // Optional price per material
+}
+
+type ProjectCategory = "homework" | "science_model" | "art_poster" | "essay_research" | "coding" | "ai_idea" | "creator_made";
+
+interface MockProject {
+  id: string;
+  title: string;
+  category: ProjectCategory;
+  classFilter?: string[]; 
+  subjectFilter?: string[]; 
+  sampleImageUrl: string;
+  dataAiHint: string;
+  description: string;
+  materials: ProjectMaterial[];
+  tutorialUrl?: string; 
+  creatorPrice?: number; 
+  estimatedTime?: string; 
+}
+
+const projectCategories: { id: ProjectCategory; label: string; icon: LucideIcon }[] = [
+  { id: "homework", label: "Homework", icon: BookCopy },
+  { id: "science_model", label: "Science Models", icon: FlaskConical },
+  { id: "art_poster", label: "Art/Posters", icon: Palette },
+  { id: "essay_research", label: "Essays/Research", icon: FileText },
+  { id: "coding", label: "Coding Projects", icon: Code2 },
+  { id: "ai_idea", label: "Custom by AI", icon: BrainCircuit },
+  { id: "creator_made", label: "By Creator", icon: Users },
 ];
 
-const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Competitive Exams"];
-const subjects = ["Maths", "Science", "English", "Social Studies", "Hindi", "Physics", "Chemistry", "Biology", "Computer Science", "Art", "General Knowledge", "Current Affairs"];
+const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams"];
+const subjects = ["All", "Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "Art", "General Knowledge", "Current Affairs"];
+
+const mockProjects: MockProject[] = [
+  { id: "proj1", title: "Working Model of Hydraulic Lift", category: "science_model", classFilter: ["7","8","9"], subjectFilter: ["Science", "Physics"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "hydraulic lift science", description: "Learn Pascal's Law by building a functional hydraulic lift model using simple syringes and tubes.", materials: [{ name: "Large Syringe (20ml)", qty: 2, price: 15 }, { name: "Small Syringe (5ml)", qty: 2, price:10 }, { name: "Flexible Plastic Tube (1 meter)", qty: 1, price:20 }, { name: "Cardboard Sheets", qty: 2, price: 5 }, { name: "Craft Glue", qty: 1, price:10 }], tutorialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", creatorPrice: 149, estimatedTime: "3 hours" },
+  { id: "proj2", title: "Solar System Diorama", category: "art_poster", classFilter: ["4","5","6"], subjectFilter: ["Science", "Art"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "solar system model", description: "Create a beautiful 3D model of our solar system for your classroom.", materials: [{ name: "Thermocol Balls (various sizes)", qty: 10, price:50 }, { name: "Acrylic Paints", qty: 1, price:80 }, { name: "Chart Paper (Black)", qty: 1, price:10 }, {name: "String", qty:1, price:5}], creatorPrice: 199, estimatedTime: "4 hours" },
+  { id: "proj3", title: "Essay: Impact of AI on Society", category: "essay_research", classFilter: ["10", "11 Arts", "12 Arts"], subjectFilter: ["English", "Social Studies", "Computer Science"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "essay writing ai", description: "Research and write a compelling essay on the societal impacts of Artificial Intelligence.", materials: [{ name: "Research Access (OSO e-Library)", qty: "Subscription", price:0 }], tutorialUrl: "#", estimatedTime: "Research + 2 hours writing" },
+  { id: "proj4", title: "Basic Python Calculator", category: "coding", classFilter: ["9","10","11 Science", "12 Science"], subjectFilter: ["Computer Science"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "python code computer", description: "Develop a simple calculator application using Python programming language.", materials: [{ name: "Python IDE (e.g., VS Code)", qty: 1, price:0 }], tutorialUrl: "#", creatorPrice: 249, estimatedTime: "5 hours coding" },
+  { id: "hw1", title: "Algebra Worksheet (Ch 3)", category: "homework", classFilter: ["8"], subjectFilter: ["Maths"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "maths worksheet", description: "Complete the algebra practice problems from Chapter 3.", materials: [{name: "Notebook", qty:1}, {name:"Pen", qty:1}], estimatedTime: "1 hour"},
+];
 
 
 export default function ServicePage() {
   const routeParams = useParams<ServicePageParams>(); 
   const serviceId = routeParams?.serviceId;
   const router = useRouter();
+  const { toast } = useToast();
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,13 +126,11 @@ export default function ServicePage() {
   const [testRecommendationError, setTestRecommendationError] = useState<string | null>(null);
 
   // For interactive_assignment_project_help
-  const [projectClass, setProjectClass] = useState('');
-  const [projectSubject, setProjectSubject] = useState('');
-  const [projectType, setProjectType] = useState('');
-  const [buildOption, setBuildOption] = useState('self');
-  const [materialsOption, setMaterialsOption] = useState('no');
-  const [showAiPlan, setShowAiPlan] = useState(false);
-  const [isAiPlanLoading, setIsAiPlanLoading] = useState(false);
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('All');
+  const [activeTab, setActiveTab] = useState<ProjectCategory>(projectCategories[0].id);
+  const [selectedProject, setSelectedProject] = useState<MockProject | null>(null);
+  const [deliveryAddress, setDeliveryAddress] = useState('');
 
 
   useEffect(() => {
@@ -107,7 +142,7 @@ export default function ServicePage() {
         setServicePageChatMessages([]); 
         setTestRecommendations(null);
         setTestRecommendationError(null);
-        setShowAiPlan(false); // Reset AI plan visibility
+        setSelectedProject(null); // Reset selected project
 
         try {
           console.log(`Fetching mock data for serviceId: ${serviceId}`);
@@ -232,11 +267,10 @@ export default function ServicePage() {
     setTestRecommendationError(null);
     setTestRecommendations(null);
 
-    // Mock input for demonstration
     const mockStudentInput: TestSeriesRecommendationInput = {
         studentName: "Aarav",
         examType: "NEET UG",
-        preferredLanguage: 'en', // Default to English for this UI
+        preferredLanguage: 'en',
         lastTestPerformances: [
             { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
             { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
@@ -261,19 +295,27 @@ export default function ServicePage() {
         setIsTestRecommendationLoading(false);
     }
   };
-
-  const handleAskGurujiForProjectPlan = async () => {
-    if (!projectClass || !projectSubject || !projectType) {
-        // Basic validation
-        alert("Please select Class, Subject, and Type of Help.");
-        return;
-    }
-    setIsAiPlanLoading(true);
-    // Simulate AI call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setShowAiPlan(true);
-    setIsAiPlanLoading(false);
+  
+  const handleAddMaterialsToCart = (project: MockProject) => {
+    toast({
+        title: "Materials Added to Cart (Simulated)",
+        description: `${project.materials.map(m => `${m.name} (Qty: ${m.qty})`).join(', ')} added for ${project.title}.`,
+    });
   };
+
+  const handleGetCreatorService = (project: MockProject) => {
+     toast({
+        title: "Find a Creator (Simulated)",
+        description: `Looking for creators for "${project.title}". This feature is coming soon!`,
+    });
+  };
+
+  const handleBuildWithMe = (project: MockProject) => {
+     toast({
+        title: "'Build With Me' Tutorial (Simulated)",
+        description: `Loading tutorial for "${project.title}". Feature coming soon! URL: ${project.tutorialUrl || 'N/A'}`,
+    });
+  }
 
 
   if (loading) {
@@ -281,7 +323,7 @@ export default function ServicePage() {
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
         <LoadingSpinner size={48} />
         <p className="mt-4 text-muted-foreground">
-          <BilingualText en="Loading content..." hi="सामग्री लोड हो रही है..." />
+          Loading content...
         </p>
       </div>
     );
@@ -292,10 +334,7 @@ export default function ServicePage() {
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
         <LoadingSpinner size={48} />
         <p className="mt-4 text-muted-foreground">
-          <BilingualText 
-            en={`Redirecting to ${serviceData.name}...`} 
-            hi={`${serviceData.name} पर रीडायरेक्ट किया जा रहा है...`} 
-          />
+          Redirecting to {serviceData.name}...
         </p>
       </div>
     );
@@ -310,17 +349,13 @@ export default function ServicePage() {
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
         <Alert variant={isInfoError ? "default" : "destructive"} className="max-w-md text-center">
           <AlertTitle>
-            {isInfoError ? (
-              <BilingualText en="Content Information" hi="सामग्री जानकारी" />
-            ) : (
-              <BilingualText en="Error" hi="त्रुटि" />
-            )}
+            {isInfoError ? "Content Information" : "Error"}
           </AlertTitle>
           <AlertDescription>{displayMessage}</AlertDescription>
         </Alert>
          <Button asChild variant="outline" className="mt-4">
             <Link href="/">
-                <BilingualText en="Go to Home" hi="होम पर जाएं"/>
+                Go to Home
             </Link>
         </Button>
       </div>
@@ -331,16 +366,14 @@ export default function ServicePage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
         <Alert className="max-w-md text-center">
-          <AlertTitle><BilingualText en="Content Unavailable" hi="सामग्री अनुपलब्ध" /></AlertTitle>
+          <AlertTitle>Content Unavailable</AlertTitle>
           <AlertDescription>
-            <BilingualText 
-              en={`The content for "${serviceId}" could not be loaded. Please check back later.`} 
-              hi={`"${serviceId || 'this service'}" के लिए सामग्री लोड नहीं की जा सकी। कृपया बाद में देखें।`} />
+            The content for "{serviceId}" could not be loaded. Please check back later.
           </AlertDescription>
         </Alert>
         <Button asChild variant="outline" className="mt-4">
             <Link href="/">
-                <BilingualText en="Go to Home" hi="होम पर जाएं"/>
+                Go to Home
             </Link>
         </Button>
       </div>
@@ -353,10 +386,7 @@ export default function ServicePage() {
             <div className="text-center py-10">
               <LoadingSpinner size={32} />
               <p className="mt-2 text-muted-foreground">
-                <BilingualText 
-                    en={`Preparing to go to ${serviceData.name}...`} 
-                    hi={`${serviceData.name} पर जाने की तैयारी हो रही है...`} 
-                />
+                Preparing to go to {serviceData.name}...
               </p>
             </div>
         );
@@ -376,11 +406,11 @@ export default function ServicePage() {
                 )}
                 <div>
                   <h2 className="text-xl font-bold font-headline text-primary">
-                    <BilingualText en={serviceData.name} hi={serviceData.name} /> 
+                    {serviceData.name}
                   </h2>
                   {serviceData.description && (
                     <p className="text-xs text-muted-foreground">
-                      <BilingualText en={serviceData.description} hi={serviceData.description} />
+                      {serviceData.description}
                     </p>
                   )}
                 </div>
@@ -403,7 +433,7 @@ export default function ServicePage() {
                 <div className="flex justify-start">
                     <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                         <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <p className="text-sm text-muted-foreground"><BilingualText en="AI Guruji is pondering..." hi="एआई गुरुजी विचार कर रहे हैं..."/></p>
+                        <p className="text-sm text-muted-foreground">AI Guruji is pondering...</p>
                     </Card>
                 </div>
               )}
@@ -414,8 +444,7 @@ export default function ServicePage() {
                 <Textarea 
                   value={servicePageChatInputValue}
                   onChange={(e) => setServicePageChatInputValue(e.target.value)}
-                  placeholder_en="Ask anything..."
-                  placeholder_hi="कुछ भी पूछें..."
+                  placeholder="Ask anything..."
                   className="flex-grow resize-none min-h-[40px] max-h-[120px] text-sm"
                   rows={1}
                   disabled={servicePageChatIsLoading}
@@ -428,7 +457,7 @@ export default function ServicePage() {
                 />
                 <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0" disabled={servicePageChatIsLoading || !servicePageChatInputValue.trim()}>
                   {servicePageChatIsLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-                  <span className="sr-only"><BilingualText en="Send" hi="भेजें"/></span>
+                  <span className="sr-only">Send</span>
                 </Button>
               </form>
             </footer>
@@ -525,172 +554,210 @@ export default function ServicePage() {
         );
 
       case 'interactive_assignment_project_help':
+        const filteredProjects = mockProjects.filter(p => 
+            p.category === activeTab &&
+            (!selectedClass || p.classFilter?.includes(selectedClass.replace("Class ","")) || p.classFilter?.includes(selectedClass)) &&
+            (selectedSubject === 'All' || p.subjectFilter?.includes(selectedSubject))
+        );
+
         return (
-            <Card className="w-full">
-                <CardHeader>
-                     <div className="flex items-center gap-3">
-                        {serviceData.data?.avatarUrl && (
-                        <Avatar className="h-12 w-12 border-2 border-primary">
-                            <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
-                            <AvatarFallback>{serviceData.name.substring(0,1)}G</AvatarFallback>
-                        </Avatar>
-                        )}
-                        <div>
-                            <CardTitle className="text-xl font-headline text-primary">
-                                {`${serviceData.name} Assistant`}
-                            </CardTitle>
-                            <CardDescription>
-                                Let Guruji AI help you plan and execute!
-                            </CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="projectClass">Your Class</Label>
-                             <Select value={projectClass} onValueChange={setProjectClass}>
-                                <SelectTrigger id="projectClass"><SelectValue placeholder="Select Class"/></SelectTrigger>
-                                <SelectContent>
-                                    {classes.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Label htmlFor="projectSubject">Subject</Label>
-                            <Select value={projectSubject} onValueChange={setProjectSubject}>
-                                <SelectTrigger id="projectSubject"><SelectValue placeholder="Select Subject"/></SelectTrigger>
-                                <SelectContent>
-                                    {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <Label>Type of Help Needed</Label>
-                        <ScrollArea className="w-full whitespace-nowrap py-2">
-                            <div className="flex space-x-2">
-                            {projectTypes.map((type) => (
-                                <Button
-                                key={type.id}
-                                variant={projectType === type.id ? "default" : "outline"}
-                                size="sm"
-                                className="h-auto p-2 flex flex-col items-center justify-center space-y-1 w-24 h-24"
-                                onClick={() => setProjectType(type.id)}
-                                >
-                                <type.icon className="h-6 w-6 mb-1" />
-                                <span className="text-xs text-center whitespace-normal leading-tight">{type.label}</span>
-                                </Button>
-                            ))}
+            <div className="space-y-6">
+                <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 -mx-1 px-1">
+                    <CardHeader className="pb-3 pt-2">
+                        <div className="flex items-center gap-3">
+                            {serviceData.data?.avatarUrl && (
+                            <Avatar className="h-10 w-10 border-2 border-primary">
+                                <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
+                                <AvatarFallback>{serviceData.name.substring(0,1).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            )}
+                            <div>
+                                <CardTitle className="text-lg font-headline text-primary">
+                                    {serviceData.name} Hub
+                                </CardTitle>
+                                <CardDescription className="text-xs">
+                                    Get expert help for your school work.
+                                </CardDescription>
                             </div>
-                            <ScrollBar orientation="horizontal" />
-                        </ScrollArea>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <Label>How to proceed?</Label>
-                            <RadioGroup value={buildOption} onValueChange={setBuildOption} className="mt-1 space-y-1">
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="self" id="self" />
-                                    <Label htmlFor="self" className="font-normal">Build it myself</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="creator" id="creator" />
-                                    <Label htmlFor="creator" className="font-normal">Get it made by OSO Creator</Label>
-                                </div>
-                            </RadioGroup>
                         </div>
-                        <div>
-                            <Label>Need Materials Delivered?</Label>
-                             <RadioGroup value={materialsOption} onValueChange={setMaterialsOption} className="mt-1 space-y-1">
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="yes" id="mat_yes" />
-                                    <Label htmlFor="mat_yes" className="font-normal">Yes, list and order</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="no" id="mat_no" />
-                                    <Label htmlFor="mat_no" className="font-normal">No, I have them</Label>
-                                </div>
-                            </RadioGroup>
+                    </CardHeader>
+                    <CardContent className="pb-3 px-2">
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <Label htmlFor="projectClass" className="text-xs">Your Class</Label>
+                                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                                    <SelectTrigger id="projectClass" className="h-9"><SelectValue placeholder="Select Class"/></SelectTrigger>
+                                    <SelectContent>
+                                        {classes.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <Label htmlFor="projectSubject" className="text-xs">Subject</Label>
+                                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                                    <SelectTrigger id="projectSubject" className="h-9"><SelectValue placeholder="Select Subject"/></SelectTrigger>
+                                    <SelectContent>
+                                        {subjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
-                    </div>
 
-                    <Button onClick={handleAskGurujiForProjectPlan} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isAiPlanLoading}>
-                        {isAiPlanLoading ? <LoadingSpinner /> : <Rocket className="mr-2" />}
-                        Ask Guruji AI for Ideas & Plan
-                    </Button>
-
-                    {showAiPlan && (
-                        <Card className="mt-6 bg-muted/50 p-4">
-                            <h3 className="text-lg font-semibold text-primary mb-3 font-headline flex items-center">
-                                <Brain className="mr-2"/> Guruji AI's Plan
-                            </h3>
-                            <div className="space-y-3 text-sm">
-                                <p><strong className="font-medium">🧪 Project Idea (Class 8 – Science):</strong> Working Model of Hydraulic Lift</p>
-                                <p><strong className="font-medium">📦 You need:</strong> 2 syringes, plastic tube, cardboard, fevicol</p>
-                                <p><strong className="font-medium"><Clock className="inline mr-1" size={16}/> Estimated Time:</strong> 2 hours</p>
-                                
-                                {materialsOption === 'yes' && (
-                                    <Button variant="outline" size="sm" className="w-full mt-2">
-                                        <ShoppingCart className="mr-2" size={16}/> Add all materials to cart from OSO Store
+                        <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
+                            <ScrollArea className="w-full whitespace-nowrap pb-1">
+                                <TabsList className="bg-muted/60">
+                                    {projectCategories.map((cat) => (
+                                    <TabsTrigger key={cat.id} value={cat.id} className="text-xs px-2.5 py-1.5 h-auto">
+                                        <cat.icon className="h-4 w-4 mr-1.5 opacity-80" /> {cat.label}
+                                    </TabsTrigger>
+                                    ))}
+                                </TabsList>
+                                <ScrollBar orientation="horizontal" />
+                            </ScrollArea>
+                        </Tabs>
+                    </CardContent>
+                </Card>
+                
+                <div className="px-1">
+                {projectCategories.map((cat) => (
+                    <TabsContent key={cat.id} value={cat.id} className="mt-0">
+                        {cat.id === "ai_idea" && (
+                            <Card className="text-center">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center justify-center gap-2"><BrainCircuit className="text-primary"/> AI Project Idea Generator</CardTitle>
+                                    <CardDescription>Stuck? Let Guruji AI suggest a unique project idea for you!</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Textarea placeholder="Briefly describe your topic or constraints (e.g., 'water conservation for class 7 using household items')" className="min-h-[80px]"/>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button className="w-full" onClick={() => toast({title: "AI Idea Generation (Simulated)", description: "Guruji is thinking of a brilliant idea for you!"})}>
+                                        <Rocket className="mr-2"/> Get AI Idea
                                     </Button>
+                                </CardFooter>
+                            </Card>
+                        )}
+                         {cat.id === "creator_made" && (
+                            <Card className="text-center">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center justify-center gap-2"><Users className="text-primary"/> Get it Made by an OSO Creator</CardTitle>
+                                    <CardDescription>Browse projects our talented student creators can make for you.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                     <p className="text-muted-foreground">Feature coming soon! Describe your project needs to find a creator.</p>
+                                     <Textarea placeholder="Describe the project you want made (e.g., 'Volcano model for Class 6, needs to erupt')" className="min-h-[80px] mt-2"/>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button className="w-full" onClick={() => toast({title: "Find Creator (Simulated)", description: "Searching for available creators."})}>
+                                        <UserCheck className="mr-2"/> Find a Creator
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )}
+                        {(cat.id !== "ai_idea" && cat.id !== "creator_made") && (
+                            <>
+                                {!selectedProject && (
+                                    filteredProjects.length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {filteredProjects.map(proj => (
+                                                <Card key={proj.id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setSelectedProject(proj)}>
+                                                    <CardHeader className="p-0">
+                                                        <div className="aspect-video relative bg-muted">
+                                                            <Image src={proj.sampleImageUrl} alt={proj.title} layout="fill" objectFit="cover" data-ai-hint={proj.dataAiHint}/>
+                                                        </div>
+                                                    </CardHeader>
+                                                    <CardContent className="p-3">
+                                                        <h3 className="font-semibold text-sm leading-tight truncate group-hover:text-primary">{proj.title}</h3>
+                                                        <p className="text-xs text-muted-foreground truncate">{proj.description}</p>
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-center text-muted-foreground py-8">No {cat.label.toLowerCase()} found for the selected class/subject. Try other filters or the "Custom by AI" tab!</p>
+                                    )
                                 )}
-                                {buildOption === 'creator' && (
-                                    <Card className="p-3 mt-2 border-accent bg-accent/10">
-                                        <p className="text-sm font-medium text-accent-foreground">🧑‍🎨 Want this project made by our Top Student Creator (₹99) and delivered in 2 days?</p>
-                                        <Button variant="default" size="sm" className="w-full mt-2 bg-accent text-accent-foreground hover:bg-accent/90">
-                                            Find a Creator
-                                        </Button>
+
+                                {selectedProject && selectedProject.category === activeTab && (
+                                    <Card className="shadow-xl">
+                                        <CardHeader>
+                                            <div className="flex justify-between items-start">
+                                                <CardTitle className="text-xl font-headline text-primary">{selectedProject.title}</CardTitle>
+                                                <Button variant="ghost" size="sm" onClick={() => setSelectedProject(null)}>Back to list</Button>
+                                            </div>
+                                            <CardDescription>{selectedProject.description}</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="aspect-video relative bg-muted rounded-md overflow-hidden">
+                                                 <Image src={selectedProject.sampleImageUrl} alt={selectedProject.title} layout="fill" objectFit="cover" data-ai-hint={selectedProject.dataAiHint} />
+                                            </div>
+                                            
+                                            <div>
+                                                <h4 className="font-semibold text-sm mb-1.5 flex items-center"><Package size={16} className="mr-1.5 opacity-70"/>Materials Needed:</h4>
+                                                <ul className="list-disc list-inside text-xs space-y-0.5 pl-4 text-muted-foreground">
+                                                    {selectedProject.materials.map(mat => <li key={mat.name}>{mat.name} (Qty: {mat.qty}) {mat.price ? `- approx. ₹${mat.price}` : ''}</li>)}
+                                                </ul>
+                                                <Button size="sm" variant="outline" className="mt-2 w-full sm:w-auto" onClick={() => handleAddMaterialsToCart(selectedProject)}>
+                                                    <ShoppingCart size={14} className="mr-1.5"/> Add Materials to OSO Cart
+                                                </Button>
+                                            </div>
+
+                                            {selectedProject.estimatedTime && <p className="text-xs text-muted-foreground"><Clock size={12} className="inline mr-1"/>Estimated Time: {selectedProject.estimatedTime}</p>}
+
+                                            <div className="flex flex-col sm:flex-row gap-2">
+                                                {selectedProject.tutorialUrl && (
+                                                    <Button variant="default" className="flex-1 bg-primary/90 hover:bg-primary" onClick={() => handleBuildWithMe(selectedProject)}>
+                                                        <BookOpen size={16} className="mr-2"/> Build With Me (Tutorial)
+                                                    </Button>
+                                                )}
+                                                {selectedProject.creatorPrice && (
+                                                    <Button variant="secondary" className="flex-1" onClick={() => handleGetCreatorService(selectedProject)}>
+                                                        <Users size={16} className="mr-2"/> Get it Made by Creator (₹{selectedProject.creatorPrice})
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            {/* Conceptual Order/Submit Flow */}
+                                            <Card className="bg-muted/30 p-3">
+                                                <Label className="text-xs">Delivery Address (for materials/creator service)</Label>
+                                                <div className="flex items-center space-x-2 mt-1 mb-2">
+                                                    <Button variant="outline" size="xs" className="text-xs px-2 h-7"><Home size={12} className="mr-1"/> Use Home</Button>
+                                                    <Button variant="outline" size="xs" className="text-xs px-2 h-7"><SchoolIconLucide size={12} className="mr-1"/> Use School</Button>
+                                                </div>
+                                                <Input placeholder="Or enter new address..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="h-9"/>
+                                                <Button size="sm" className="w-full mt-2" onClick={() => toast({title:"Proceeding to Payment (Simulated)", description: "Address: " + (deliveryAddress || "Default")})}>
+                                                    Proceed to Payment
+                                                </Button>
+                                                <p className="text-xs text-muted-foreground text-center mt-2">Conceptual: Payment, Delivery Tracking</p>
+                                            </Card>
+                                             <Button variant="outline" className="w-full" onClick={() => toast({title: "Submit to Teacher (Simulated)", description: "Requires school integration."})}>
+                                                <UploadCloud size={16} className="mr-2"/> Submit to Teacher Panel
+                                            </Button>
+                                        </CardContent>
                                     </Card>
                                 )}
-                                <div className="border-t pt-3 mt-3 space-y-2">
-                                     <Label>Enter Address for Delivery/Creator Service</Label>
-                                     <div className="flex items-center space-x-2">
-                                         <Button variant="outline" size="sm"><Home className="mr-2" size={16}/> Use Home</Button>
-                                         <Button variant="outline" size="sm"><SchoolIcon className="mr-2" size={16}/> Use School</Button>
-                                     </div>
-                                     <Input placeholder="Or enter new address..."/>
-                                     <Label>Payment Options</Label>
-                                     <Select>
-                                         <SelectTrigger><SelectValue placeholder="Select Payment Method"/></SelectTrigger>
-                                         <SelectContent>
-                                            <SelectItem value="upi">UPI</SelectItem>
-                                            <SelectItem value="oso_credits">OSO Credits</SelectItem>
-                                            <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
-                                         </SelectContent>
-                                     </Select>
-                                     <Button className="w-full">Confirm & Proceed</Button>
-                                </div>
-                                <div className="border-t pt-3 mt-3 space-y-2">
-                                    <Button variant="outline" className="w-full"><Truck className="mr-2" size={16}/> Track Delivery/Progress</Button>
-                                    <Button variant="secondary" className="w-full"><UploadCloud className="mr-2" size={16}/> Submit to Teacher (OSO School Panel)</Button>
-                                </div>
-                            </div>
-                        </Card>
-                    )}
-                </CardContent>
-            </Card>
+                            </>
+                        )}
+                    </TabsContent>
+                ))}
+                </div>
+            </div>
         );
 
 
       case 'product_listing': 
-         return <p><BilingualText en={`Products for ${serviceData.name} will be listed here.`} hi={`${serviceData.name} के लिए उत्पाद यहां सूचीबद्ध किए जाएंगे।`} /></p>;
+         return <p>Products for {serviceData.name} will be listed here.</p>;
       
       case 'info_page':
-        return <p className="whitespace-pre-wrap">{serviceData.data?.content || <BilingualText en="Information will be displayed here." hi="जानकारी यहाँ प्रदर्शित की जाएगी।" />}</p>;
+        return <p className="whitespace-pre-wrap">{serviceData.data?.content || "Information will be displayed here."}</p>;
       
       case 'books_list_page': 
         if (!serviceData.data?.redirectTo) {
             return (
             <Alert variant="default">
-              <AlertTitle><BilingualText en="Configuration Issue" hi="कॉन्फ़िगरेशन समस्या" /></AlertTitle>
+              <AlertTitle>Configuration Issue</AlertTitle>
               <AlertDescription>
-                <BilingualText 
-                  en={`The service "${serviceData.name}" is intended for redirection but is not configured correctly.`} 
-                  hi={`सेवा "${serviceData.name}" रीडायरेक्शन के लिए है लेकिन सही ढंग से कॉन्फ़िगर नहीं है।`} 
-                />
+                The service "{serviceData.name}" is intended for redirection but is not configured correctly.
               </AlertDescription>
             </Alert>
           );
@@ -698,7 +765,7 @@ export default function ServicePage() {
         return null; 
       
       default:
-        return <p><BilingualText en="Content is being prepared for this service type." hi="इस सेवा प्रकार के लिए सामग्री तैयार की जा रही है।" /></p>;
+        return <p>Content is being prepared for this service type.</p>;
     }
   };
 
@@ -708,15 +775,15 @@ export default function ServicePage() {
     || !!serviceData?.data?.redirectTo;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-0_override"> {/* Adjusted base spacing */}
       {!hideMainElements && (
-        <header className="py-4">
+        <header className="py-4 px-1">
           <h1 className="text-3xl font-bold font-headline text-primary">
-            <BilingualText en={serviceData?.name || "Service"} hi={serviceData?.name || "सेवा"} />
+            {serviceData?.name || "Service"}
           </h1>
           {serviceData?.description && (
             <p className="text-muted-foreground">
-              <BilingualText en={serviceData.description} hi={serviceData.description} />
+              {serviceData.description}
             </p>
           )}
         </header>
@@ -724,7 +791,7 @@ export default function ServicePage() {
 
       { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || serviceData?.type === 'interactive_assignment_project_help' || !serviceData?.data?.redirectTo) ? (
         (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && serviceData?.type !== 'interactive_assignment_project_help' && !hideMainElements) ? ( 
-          <Card>
+          <Card className="mx-1">
             <CardContent className="pt-6">
               {renderServiceContent()}
             </CardContent>
@@ -736,10 +803,10 @@ export default function ServicePage() {
 
 
       {!hideMainElements && (
-        <div className="text-center mt-8">
+        <div className="text-center mt-8 px-1">
               <Button asChild variant="outline">
                   <Link href="/">
-                      <BilingualText en="Back to Home" hi="होम पर वापस जाएं"/>
+                      Back to Home
                   </Link>
               </Button>
           </div>
