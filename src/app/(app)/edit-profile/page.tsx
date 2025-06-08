@@ -46,7 +46,50 @@ const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8"
 const boards = ["CBSE", "ICSE", "State", "Other"];
 const streams = ["Science", "Commerce", "Arts", "Other"]; 
 const genders = ["Male", "Female", "Other"];
-const examTargets = ["School Exams", "JEE (Main)", "JEE (Advanced)", "NEET (UG)", "CUET (UG)", "UPSC Civil Services", "NDA & NA", "SSC CGL", "SSC CHSL", "IBPS PO", "IBPS Clerk", "SBI PO", "CAT", "GATE", "CLAT", "Other Competitive Exam"];
+
+const examTargets = [
+  "School Exams",
+  // Engineering
+  "JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "SRMJEEE", "MET (Manipal)", "COMEDK UGET", "KIITEE", "WBJEE", "MHT CET (Engineering)", "GUJCET", "AP EAMCET (Engineering)", "TS EAMCET (Engineering)", "KCET (Engineering)", "GATE (for PG/PSU)", "State Engineering Entrance Exams",
+  // Medical
+  "NEET UG (MBBS, BDS, AYUSH, B.V.Sc)", "NEET PG (MD, MS, PG Diploma)", "INI CET (AIIMS, JIPMER, PGIMER, NIMHANS)", "NEET SS (DM, MCh)", "FMGE (Foreign Medical Graduate Examination)", "AIIMS Nursing", "Indian Army B.Sc Nursing / MNS", "State Nursing Entrances", "AIAPGET (PG AYUSH)",
+  // Management
+  "CAT", "XAT", "CMAT", "SNAP", "NMAT by GMAC", "MAT", "ATMA", "IIFT", "TISSNET", "IBSAT", "MICAT", "GMAT (Indian B-schools)",
+  // Law
+  "CLAT (UG)", "CLAT (PG)", "AILET (UG)", "AILET (PG)", "LSAT India", "SLAT (Symbiosis)", "MH CET Law", "AP LAWCET", "TS LAWCET", "Kerala KLEE", "State Judicial Services Examination (PCS-J)",
+  // Civil Services & Govt Jobs
+  "UPSC Civil Services Examination (IAS, IPS, IFS, etc.)", "UPSC Indian Forest Service (IFoS)", "UPSC Engineering Services (ESE/IES)", "UPSC Geo-Scientist", "UPSC Combined Medical Services (CMS)", "UPSC CAPF (AC)",
+  "SSC CGL", "SSC CHSL", "SSC JE", "SSC Stenographer", "SSC MTS", "SSC GD Constable", "SSC CPO",
+  "IBPS PO", "IBPS Clerk", "IBPS SO", "IBPS RRB (Officer)", "IBPS RRB (Assistant)",
+  "SBI PO", "SBI Clerk", "SBI SO",
+  "RBI Grade B Officer", "RBI Assistant", "NABARD Grade A/B", "LIC AAO/ADO", "UIIC/NIACL Exams", "ESIC Exams", "FCI Exams",
+  "RRB NTPC", "RRB JE", "RRB ALP & Technician", "RRB Group D",
+  "State PSCs (General)", "State Level Police Recruitment", "High Court Exams",
+  // Defence
+  "NDA & NA Examination", "CDS Examination", "AFCAT", "INET", "Indian Army TES", "Indian Navy Sailors (SSR, AA, MR)", "Indian Air Force Airmen (Group X & Y)", "Indian Coast Guard (Navik, Yantrik)", "Territorial Army",
+  // General University Entrance
+  "CUET UG", "CUET PG", "JMI Entrance Exam", "AMU Entrance Exam",
+  // Design & Architecture
+  "NID DAT", "UCEED", "CEED", "NIFT Entrance Exam", "NATA", "JEE Main Paper 2 (B.Arch/B.Plan)", "AIEED",
+  // Hotel Management
+  "NCHM JEE", "State IHM Entrances", "Private Hotel Management Entrances",
+  // Agriculture & Veterinary Science
+  "ICAR AIEEA (UG/PG/PhD)", "State Agriculture University Entrances",
+  // Teaching
+  "CTET", "State TETs", "UGC NET (Assistant Professor & JRF)", "CSIR UGC NET (JRF & Lectureship)", "SET/SLET (Lectureship)", "KVS Recruitment (TGT, PGT, PRT)", "NVS Recruitment (TGT, PGT)", "DSSSB (Teacher)", "B.Ed. Entrance Exams",
+  // Pharmacy
+  "GPAT (M.Pharm)", "State CETs (B.Pharm)", "NIPER JEE",
+  // Research Fellowships & PhD
+  "ICMR JRF", "DBT JRF", "University/Institute PhD Entrances",
+  // Commerce & Finance Professional
+  "CA (Foundation)", "CA (Intermediate)", "CA (Final)",
+  "CS (CSEET)", "CS (Executive)", "CS (Professional)",
+  "CMA (Foundation)", "CMA (Intermediate)", "CMA (Final)",
+  // School Level Olympiads & Talent Search
+  "NTSE", "KVPY (Scholarship Program)", "SOF Olympiads (e.g., NSO, IMO, IEO)", "Homi Bhabha Balvaidnyanik Spardha",
+  "Other Competitive Exam"
+].sort();
+
 
 const indianStatesAndUTs = [
   "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", 
@@ -57,8 +100,6 @@ const indianStatesAndUTs = [
   "West Bengal"
 ].sort();
 
-// Sample data: State -> Cities/Districts. 
-// In a real app, this would be a much larger dataset, likely fetched from a backend.
 const stateCityData: Record<string, string[]> = {
   "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
   "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi", "Belagavi"],
@@ -150,10 +191,10 @@ export default function EditProfilePage() {
           board: "CBSE",
           stream: "Science", 
           dateOfBirth: new Date(2005, 7, 15), 
-          city: "Mumbai", // Will be overridden by state logic if Maharashtra is selected
+          city: "Mumbai", 
           state: "Maharashtra",
           avatarUrl: "https://placehold.co/100x100.png",
-          examTarget: "JEE (Advanced)",
+          examTarget: "JEE Advanced",
         };
       }
     }
@@ -183,7 +224,7 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (selectedState) {
       setCitiesForSelectedState(stateCityData[selectedState] || []);
-      setValue('city', '', { shouldValidate: true }); // Reset city when state changes
+      setValue('city', '', { shouldValidate: true }); 
     } else {
       setCitiesForSelectedState([]);
       setValue('city', '', { shouldValidate: true });
@@ -494,8 +535,6 @@ export default function EditProfilePage() {
   );
 }
 
-// For placeholder_en and placeholder_hi in SelectValue (this is a conceptual extension as SelectValue doesn't directly support dual placeholders)
-// A custom component would be needed or use a single language placeholder. For now, the default placeholder for SelectValue will be used.
 declare module "@radix-ui/react-select" {
   interface SelectValueProps {
     placeholder_en?: string;

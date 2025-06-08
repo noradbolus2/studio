@@ -13,11 +13,16 @@ import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type 
 import { useToast } from '@/hooks/use-toast';
 
 
-// Mock data for test series categories
 const testCategories = [
-  { id: "jee", nameEn: "JEE Main & Advanced", nameHi: "जेईई मुख्य और एडवांस्ड", descriptionEn: "Full syllabus mock tests, previous year papers.", descriptionHi: "पूर्ण पाठ्यक्रम मॉक टेस्ट, पिछले वर्ष के प्रश्नपत्र।"},
-  { id: "neet", nameEn: "NEET UG", nameHi: "नीट यूजी", descriptionEn: "Subject-wise tests, all India ranking.", descriptionHi: "विषयवार टेस्ट, अखिल भारतीय रैंकिंग।"},
-  { id: "cuet", nameEn: "CUET", nameHi: "सीयूईटी", descriptionEn: "Practice tests for all sections.", descriptionHi: "सभी वर्गों के लिए अभ्यास परीक्षण।"},
+  { id: "engineering", nameEn: "Engineering (JEE, BITSAT, etc.)", nameHi: "इंजीनियरिंग (जेईई, बिटसैट, आदि)", descriptionEn: "Full syllabus mock tests, previous year papers.", descriptionHi: "पूर्ण पाठ्यक्रम मॉक टेस्ट, पिछले वर्ष के प्रश्नपत्र।"},
+  { id: "medical", nameEn: "Medical (NEET UG/PG, AIIMS)", nameHi: "मेडिकल (नीट यूजी/पीजी, एम्स)", descriptionEn: "Subject-wise tests, all India ranking.", descriptionHi: "विषयवार टेस्ट, अखिल भारतीय रैंकिंग।"},
+  { id: "management", nameEn: "MBA & Management (CAT, XAT)", nameHi: "एमबीए और प्रबंधन (कैट, एक्सएटी)", descriptionEn: "Practice tests for top B-schools.", descriptionHi: "शीर्ष बी-स्कूलों के लिए अभ्यास परीक्षण।"},
+  { id: "law", nameEn: "Law (CLAT, AILET)", nameHi: "कानून (क्लैट, एआईएलईटी)", descriptionEn: "Mock tests for national law universities.", descriptionHi: "राष्ट्रीय विधि विश्वविद्यालयों के लिए मॉक टेस्ट।"},
+  { id: "upsc_civil_services", nameEn: "UPSC & Civil Services", nameHi: "यूपीएससी और सिविल सेवा", descriptionEn: "Prelims and Mains oriented test series.", descriptionHi: "प्रारंभिक और मुख्य परीक्षा उन्मुख टेस्ट सीरीज़।"},
+  { id: "ssc_banking", nameEn: "SSC & Banking", nameHi: "एसएससी और बैंकिंग", descriptionEn: "Tier-wise tests for govt. jobs.", descriptionHi: "सरकारी नौकरियों के लिए टियर-वार टेस्ट।"},
+  { id: "defence", nameEn: "Defence (NDA, CDS)", nameHi: "रक्षा (एनडीए, सीडीएस)", descriptionEn: "Prepare for officer cadre entries.", descriptionHi: "अधिकारी कैडर प्रविष्टियों के लिए तैयारी करें।"},
+  { id: "cuet_general_uni", nameEn: "CUET & University Entrance", nameHi: "सीयूईटी और विश्वविद्यालय प्रवेश", descriptionEn: "Practice tests for all sections.", descriptionHi: "सभी वर्गों के लिए अभ्यास परीक्षण।"},
+  { id: "teaching", nameEn: "Teaching Exams (CTET, NET)", nameHi: "शिक्षण परीक्षा (सीटीईटी, नेट)", descriptionEn: "Eligibility tests for teachers.", descriptionHi: "शिक्षकों के लिए पात्रता परीक्षा।"},
   { id: "boards", nameEn: "Class 10 & 12 Boards", nameHi: "कक्षा 10 और 12 बोर्ड", descriptionEn: "Chapter tests and model papers.", descriptionHi: "अध्याय परीक्षण और मॉडल पेपर।"},
 ];
 
@@ -32,22 +37,23 @@ export default function TestSeriesPage() {
     setRecommendationError(null);
     setRecommendations(null);
 
-    // Mock input for the Genkit flow
     const mockStudentInput: TestSeriesRecommendationInput = {
         studentName: "Aarav",
-        examType: "NEET UG",
-        preferredLanguage: 'en', // Or 'hi' or 'hng'
+        examType: "NEET UG", // Example exam, can be changed
+        preferredLanguage: 'en', 
         lastTestPerformances: [
             { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
             { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
             { title: "Chemistry Full Syllabus Test 1", score: "90/180", weakTopics: ["Organic Chemistry Reactions", "Chemical Bonding"] }
         ],
-        availableTestSets: [
+        availableTestSets: [ // This list should ideally be dynamic or larger
             { title: "NEET Full Syllabus Mock Test Series (Set A)", subject: "All", level: "Medium" },
             { title: "NEET Biology - Genetics Special", subject: "Biology", level: "Hard" },
             { title: "NEET Physics - Mechanics Booster", subject: "Physics", level: "Medium" },
             { title: "NEET Chemistry - Organic Mastery", subject: "Chemistry", level: "Tough" },
-            { title: "JEE Advanced Physics Challenge", subject: "Physics", level: "Very Hard"}, // Irrelevant for NEET
+            { title: "JEE Advanced Physics Challenge", subject: "Physics", level: "Very Hard"}, 
+            { title: "CAT Quant Mock Series", subject: "Quantitative Aptitude", level: "Medium"},
+            { title: "UPSC Prelims GS Paper 1 Mock", subject: "General Studies", level: "Hard"},
         ]
     };
 
@@ -80,7 +86,6 @@ export default function TestSeriesPage() {
         </p>
       </header>
 
-      {/* Recommendations Section */}
       <Card className="bg-primary/5 border-primary/20 hover:shadow-lg transition-shadow">
         <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline text-primary">
@@ -144,7 +149,6 @@ export default function TestSeriesPage() {
                                     </CardContent>
                                      <CardFooter className="p-3 bg-card border-t">
                                          <Button asChild size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                                            {/* This link is a placeholder, adjust as needed for actual test attempt page */}
                                             <Link href={`/attempt-test?title=${encodeURIComponent(test.title)}`}>
                                                 <BilingualText en="Attempt Test" hi="टेस्ट दें"/>
                                             </Link>
@@ -162,8 +166,6 @@ export default function TestSeriesPage() {
         </Card>
       )}
 
-
-      {/* Static Test Categories */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {testCategories.map(category => (
             <Card key={category.id} className="hover:shadow-lg transition-shadow">
@@ -172,7 +174,6 @@ export default function TestSeriesPage() {
                     <CardDescription><BilingualText en={category.descriptionEn} hi={category.descriptionHi} /></CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {/* Button could link to /test-series/[category.id] in the future */}
                     <Button className="w-full"><BilingualText en="View Tests" hi="टेस्ट देखें" /></Button>
                 </CardContent>
             </Card>
@@ -192,5 +193,4 @@ export default function TestSeriesPage() {
     </div>
   );
 }
-
 
