@@ -448,7 +448,7 @@ export default function EditProfilePage() {
                           selected={field.value}
                           onSelect={field.onChange}
                           initialFocus
-                          captionLayout="dropdown-buttons"
+                          captionLayout="buttons"
                           fromYear={1990}
                           toYear={new Date().getFullYear()}
                         />
