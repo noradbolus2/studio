@@ -1,18 +1,18 @@
 
 'use server';
 /**
- * @fileOverview AI Guruji chat flow.
+ * @fileOverview Guruji chat flow.
  *
- * - askAiGuruji - A function that handles student queries.
- * - AiGurujiInput - The input type for the askAiGuruji function.
- * - AiGurujiOutput - The return type for the askAiGuruji function.
+ * - askGuruji - A function that handles student queries.
+ * - GurujiInput - The input type for the askGuruji function.
+ * - GurujiOutput - The return type for the askGuruji function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const AiGurujiInputSchema = z.object({
-  userInput: z.string().describe("The student's query or message to AI Guruji."),
+const GurujiInputSchema = z.object({
+  userInput: z.string().describe("The student's query or message to Guruji."),
   preferredLanguage: z.enum(['en', 'hi', 'hng']).optional().describe("The student's preferred language for the response (en: English, hi: Hindi (Devanagari script), hng: Hinglish (Roman script)). If not provided, language will be auto-detected or default to Hinglish."),
   attachmentDataUri: z.string().optional().describe("Optional: A Base64 data URI of an attached image file. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
   attachmentInfo: z.object({
@@ -21,26 +21,26 @@ const AiGurujiInputSchema = z.object({
     isImage: z.boolean().describe("True if the attachment is an image, false otherwise."),
   }).optional().describe("Optional: Information about the attached file."),
 });
-export type AiGurujiInput = z.infer<typeof AiGurujiInputSchema>;
+export type GurujiInput = z.infer<typeof GurujiInputSchema>;
 
-const AiGurujiOutputSchema = z.object({
-  responseText: z.string().describe("AI Guruji's response strictly in the chosen or detected language, reflecting the appropriate Guru role."),
-  respondedInLanguage: z.enum(['en', 'hi', 'hng']).describe("The language AI Guruji responded in (en: English, hi: Hindi (Devanagari script), hng: Hinglish (Roman script))."),
+const GurujiOutputSchema = z.object({
+  responseText: z.string().describe("Guruji's response strictly in the chosen or detected language, reflecting the appropriate Guru role."),
+  respondedInLanguage: z.enum(['en', 'hi', 'hng']).describe("The language Guruji responded in (en: English, hi: Hindi (Devanagari script), hng: Hinglish (Roman script))."),
 });
-export type AiGurujiOutput = z.infer<typeof AiGurujiOutputSchema>;
+export type GurujiOutput = z.infer<typeof GurujiOutputSchema>;
 
-export async function askAiGuruji(input: AiGurujiInput): Promise<AiGurujiOutput> {
-  console.log('[Genkit Flow Wrapper - askAiGuruji] Function called with input:', JSON.stringify(input));
+export async function askGuruji(input: GurujiInput): Promise<GurujiOutput> {
+  console.log('[Genkit Flow Wrapper - askGuruji] Function called with input:', JSON.stringify(input));
   try {
     if (input.attachmentInfo) {
-      console.log(`[Genkit Flow Wrapper - askAiGuruji] Attachment provided: ${input.attachmentInfo.name} (${input.attachmentInfo.type}), isImage: ${input.attachmentInfo.isImage}`);
+      console.log(`[Genkit Flow Wrapper - askGuruji] Attachment provided: ${input.attachmentInfo.name} (${input.attachmentInfo.type}), isImage: ${input.attachmentInfo.isImage}`);
     }
 
-    const result = await aiGurujiChatFlow(input);
-    console.log('[Genkit Flow Wrapper - askAiGuruji] Flow returned:', JSON.stringify(result));
+    const result = await gurujiChatFlow(input);
+    console.log('[Genkit Flow Wrapper - askGuruji] Flow returned:', JSON.stringify(result));
     return result;
   } catch (error) {
-    console.error('[Genkit Flow Wrapper - askAiGuruji] Error calling aiGurujiChatFlow:', error);
+    console.error('[Genkit Flow Wrapper - askGuruji] Error calling gurujiChatFlow:', error);
     let errorLanguage: 'en' | 'hi' | 'hng' = input.preferredLanguage || (input.userInput.match(/[\u0900-\u097F]/) ? 'hi' : 'hng');
     
     let errorText = "My dear student, I apologize, an unexpected error occurred. Please try again.";
@@ -58,9 +58,9 @@ export async function askAiGuruji(input: AiGurujiInput): Promise<AiGurujiOutput>
 }
 
 const prompt = ai.definePrompt({
-  name: 'aiGurujiPrompt',
-  input: {schema: AiGurujiInputSchema},
-  output: {schema: AiGurujiOutputSchema},
+  name: 'gurujiPrompt',
+  input: {schema: GurujiInputSchema},
+  output: {schema: GurujiOutputSchema},
   prompt: `You are OSO Guruji™, a unique digital guardian, friend, and mentor for students in India (ages 10-21).
 Your core philosophy is "AI + Love + Logic". You are not just a chatbot; you guide, understand, and support.
 Your personality is like a gentle, encouraging, modern Guru who truly understands young people and their world.
@@ -147,20 +147,20 @@ If no preferred language, and you detect Hindi from user input, set respondedInL
 `,
 });
 
-const aiGurujiChatFlow = ai.defineFlow(
+const gurujiChatFlow = ai.defineFlow(
   {
-    name: 'aiGurujiChatFlow',
-    inputSchema: AiGurujiInputSchema,
-    outputSchema: AiGurujiOutputSchema,
+    name: 'gurujiChatFlow',
+    inputSchema: GurujiInputSchema,
+    outputSchema: GurujiOutputSchema,
   },
   async (input) => {
-    console.log('[Genkit Flow - aiGurujiChatFlow] Flow started with input:', JSON.stringify(input));
+    console.log('[Genkit Flow - gurujiChatFlow] Flow started with input:', JSON.stringify(input));
     try {
       const {output} = await prompt(input);
-      console.log('[Genkit Flow - aiGurujiChatFlow] Raw output from prompt:', JSON.stringify(output));
+      console.log('[Genkit Flow - gurujiChatFlow] Raw output from prompt:', JSON.stringify(output));
 
       if (!output) {
-        console.error('[Genkit Flow - aiGurujiChatFlow] Output from prompt was null or undefined.');
+        console.error('[Genkit Flow - gurujiChatFlow] Output from prompt was null or undefined.');
         let errorLanguage: 'en' | 'hi' | 'hng' = input.preferredLanguage || (input.userInput.match(/[\u0900-\u097F]/) ? 'hi' : 'hng');
         
         let errorText = "I'm sorry, I couldn't process that. Could you try asking in a different way?";
@@ -179,26 +179,26 @@ const aiGurujiChatFlow = ai.defineFlow(
       if (typeof output.responseText === 'string' && typeof output.respondedInLanguage === 'string' && ['en', 'hi', 'hng'].includes(output.respondedInLanguage)) {
          // Further script validation (optional, can be refined)
         if (output.respondedInLanguage === 'hi' && output.responseText.match(/[a-zA-Z]/) && !output.responseText.match(/[\u0900-\u097F]/)) {
-             console.warn('[Genkit Flow - aiGurujiChatFlow] Potential script mismatch: RespondedInLanguage is "hi" but responseText contains Roman characters and no Devanagari.');
+             console.warn('[Genkit Flow - gurujiChatFlow] Potential script mismatch: RespondedInLanguage is "hi" but responseText contains Roman characters and no Devanagari.');
         }
         if (output.respondedInLanguage === 'hng' && output.responseText.match(/[\u0900-\u097F]/)) {
-             console.warn('[Genkit Flow - aiGurujiChatFlow] Potential script mismatch: RespondedInLanguage is "hng" but responseText contains Devanagari characters.');
+             console.warn('[Genkit Flow - gurujiChatFlow] Potential script mismatch: RespondedInLanguage is "hng" but responseText contains Devanagari characters.');
         }
-        console.log('[Genkit Flow - aiGurujiChatFlow] Output structure seems valid. Returning output.');
+        console.log('[Genkit Flow - gurujiChatFlow] Output structure seems valid. Returning output.');
         return output;
       }
       
       // Attempt to parse if output is a stringified JSON
-      console.warn('[Genkit Flow - aiGurujiChatFlow] Output structure was not as expected. Output:', JSON.stringify(output));
+      console.warn('[Genkit Flow - gurujiChatFlow] Output structure was not as expected. Output:', JSON.stringify(output));
       if (typeof output === 'string') {
         try {
             const parsedOutput = JSON.parse(output as string);
             if (typeof parsedOutput.responseText === 'string' && typeof parsedOutput.respondedInLanguage === 'string' && ['en', 'hi', 'hng'].includes(parsedOutput.respondedInLanguage)) {
-                console.log('[Genkit Flow - aiGurujiChatFlow] Successfully parsed string output. Returning parsed output.');
-                return parsedOutput as AiGurujiOutput;
+                console.log('[Genkit Flow - gurujiChatFlow] Successfully parsed string output. Returning parsed output.');
+                return parsedOutput as GurujiOutput;
             }
         } catch (e) {
-            console.error('[Genkit Flow - aiGurujiChatFlow] Failed to parse string output as JSON:', e);
+            console.error('[Genkit Flow - gurujiChatFlow] Failed to parse string output as JSON:', e);
         }
       }
       
@@ -216,7 +216,7 @@ const aiGurujiChatFlow = ai.defineFlow(
       };
 
     } catch (flowError) {
-      console.error('[Genkit Flow - aiGurujiChatFlow] Error during prompt execution or processing:', flowError);
+      console.error('[Genkit Flow - gurujiChatFlow] Error during prompt execution or processing:', flowError);
       let errorLanguage: 'en' | 'hi' | 'hng' = input.preferredLanguage || (input.userInput.match(/[\u0900-\u097F]/) ? 'hi' : 'hng');
       let errorText = "Oops! A small glitch happened on my end. Could you rephrase or try again?";
       if (errorLanguage === 'hi') {
@@ -231,3 +231,4 @@ const aiGurujiChatFlow = ai.defineFlow(
     }
   }
 );
+

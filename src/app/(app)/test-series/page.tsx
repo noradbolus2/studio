@@ -56,10 +56,10 @@ export default function TestSeriesPage() {
         setRecommendations(result);
     } catch (err: any) {
         console.error("Error getting test recommendations:", err);
-        setRecommendationError(err.message || "Failed to get recommendations. AI Guruji might be busy.");
+        setRecommendationError(err.message || "Failed to get recommendations. Guruji might be busy.");
         toast({
             title: "Recommendation Error",
-            description: err.message || "AI Guruji couldn't fetch recommendations right now. Please try again.",
+            description: err.message || "Guruji couldn't fetch recommendations right now. Please try again.",
             variant: "destructive"
         });
     } finally {
@@ -80,15 +80,15 @@ export default function TestSeriesPage() {
         </p>
       </header>
 
-      {/* AI Recommendations Section */}
+      {/* Recommendations Section */}
       <Card className="bg-primary/5 border-primary/20 hover:shadow-lg transition-shadow">
         <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline text-primary">
                 <BrainCircuit className="h-7 w-7"/>
-                <BilingualText en="AI-Powered Recommendations" hi="एआई-संचालित सिफारिशें" />
+                <BilingualText en="Guruji's Recommendations" hi="गुरुजी की सिफारिशें" />
             </CardTitle>
             <CardDescription>
-                <BilingualText en="Get personalized test series suggestions from OSO Guruji based on your (mock) performance." hi="OSO गुरुजी से अपने (मॉक) प्रदर्शन के आधार पर व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करें।" />
+                <BilingualText en="Get personalized test series suggestions from Guruji based on your (mock) performance." hi="गुरुजी से अपने (मॉक) प्रदर्शन के आधार पर व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करें।" />
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,7 +102,7 @@ export default function TestSeriesPage() {
       {isLoadingRecommendations && (
         <div className="flex flex-col items-center justify-center py-10 space-y-3">
           <LoadingSpinner size={32} />
-          <p className="text-muted-foreground"><BilingualText en="AI Guruji is analyzing your profile..." hi="एआई गुरुजी आपकी प्रोफ़ाइल का विश्लेषण कर रहे हैं..." /></p>
+          <p className="text-muted-foreground"><BilingualText en="Guruji is analyzing your profile..." hi="गुरुजी आपकी प्रोफ़ाइल का विश्लेषण कर रहे हैं..." /></p>
         </div>
       )}
 
@@ -192,4 +192,5 @@ export default function TestSeriesPage() {
     </div>
   );
 }
+
 

@@ -52,7 +52,7 @@ const prompt = ai.definePrompt({
   name: 'testSeriesRecommendationPrompt',
   input: {schema: TestSeriesRecommendationInputSchemaInternal},
   output: {schema: TestSeriesRecommendationOutputSchemaInternal},
-  prompt: `You are OSO Guruji AI – a wise, friendly, and experienced Indian education mentor. Your specialty is giving personalized test series recommendations to students based on their past performance, subjects studied, and preparation level.
+  prompt: `You are OSO Guruji – a wise, friendly, and experienced Indian education mentor. Your specialty is giving personalized test series recommendations to students based on their past performance, subjects studied, and preparation level.
 You speak naturally, like a real Indian teacher would. Your tone should be motivating, slightly humorous, and always encouraging. Your goal is to provide actionable advice with personal attention.
 
 **LANGUAGE AND SCRIPT INSTRUCTIONS:**
@@ -126,18 +126,18 @@ const testSeriesRecommendationFlow = ai.defineFlow(
   async (input) => {
     // Determine the language to use for fallback messages
     const langForFallback = input.preferredLanguage || 'hng';
-    let defaultErrorMsg = "AI Guruji was unable to generate test recommendations at this time. Output was null.";
+    let defaultErrorMsg = "Guruji was unable to generate test recommendations at this time. Output was null.";
     if (langForFallback === 'hi') {
-        defaultErrorMsg = "एआई गुरुजी इस समय परीक्षण अनुशंसाएँ उत्पन्न करने में असमर्थ थे। आउटपुट शून्य था।";
+        defaultErrorMsg = "गुरुजी इस समय परीक्षण अनुशंसाएँ उत्पन्न करने में असमर्थ थे। आउटपुट शून्य था।";
     } else if (langForFallback === 'hng') {
-        defaultErrorMsg = "AI Guruji abhi test recommendations generate nahi kar paaye. Output null tha.";
+        defaultErrorMsg = "Guruji abhi test recommendations generate nahi kar paaye. Output null tha.";
     }
 
-    let defaultStructureErrorMsg = "AI Guruji's response structure was not as expected. Missing key fields.";
+    let defaultStructureErrorMsg = "Guruji's response structure was not as expected. Missing key fields.";
      if (langForFallback === 'hi') {
-        defaultStructureErrorMsg = "एआई गुरुजी की प्रतिक्रिया संरचना अपेक्षा के अनुरूप नहीं थी। मुख्य फ़ील्ड गायब हैं।";
+        defaultStructureErrorMsg = "गुरुजी की प्रतिक्रिया संरचना अपेक्षा के अनुरूप नहीं थी। मुख्य फ़ील्ड गायब हैं।";
     } else if (langForFallback === 'hng') {
-        defaultStructureErrorMsg = "AI Guruji ka response structure expected jaisa nahi tha. Important fields missing hain.";
+        defaultStructureErrorMsg = "Guruji ka response structure expected jaisa nahi tha. Important fields missing hain.";
     }
 
 
@@ -153,7 +153,7 @@ const testSeriesRecommendationFlow = ai.defineFlow(
     // Further validation: ensure respondedInLanguage matches expectation from input
     const expectedLang = input.preferredLanguage || 'hng';
     if (output.respondedInLanguage !== expectedLang) {
-        console.warn(`Language mismatch: Input preferredLanguage was '${expectedLang}', but AI responded in '${output.respondedInLanguage}'.`);
+        console.warn(`Language mismatch: Input preferredLanguage was '${expectedLang}', but responded in '${output.respondedInLanguage}'.`);
         // Optionally, you could try to force set it, but it's better if the LLM respects it.
         // output.respondedInLanguage = expectedLang; // Be cautious with this.
     }
@@ -162,3 +162,4 @@ const testSeriesRecommendationFlow = ai.defineFlow(
 );
 
     
+

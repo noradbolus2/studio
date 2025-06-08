@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
-import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
+import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -152,12 +152,12 @@ export default function ServicePage() {
           await new Promise(resolve => setTimeout(resolve, 300)); 
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
-            guruji: { name: "AI Guruji", type: "chat_interface", description: "Your personal AI study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
+            guruji: { name: "Guruji", type: "chat_interface", description: "Your personal study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
             studysnacks: { name: "Study Snacks", type: "product_listing", description: "Healthy snacks delivered for study sessions.", data: { redirectTo: "/delivery", category: "study_snacks", avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"apple fruit"}},
             projects: { name: "Projects Assistant", type: "interactive_assignment_project_help", description: "Get help with school projects and assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"tools project" }},
-            assignments: { name: "Assignments Assistant", type: "interactive_assignment_project_help", description: "AI assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"writing assignment" }},
-            testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from AI Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
+            assignments: { name: "Assignments Assistant", type: "interactive_assignment_project_help", description: "Assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"writing assignment" }},
+            testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
             uniforms: {
               name: "Uniforms",
               type: "info_page",
@@ -244,8 +244,8 @@ export default function ServicePage() {
     setServicePageChatIsLoading(true);
 
     try {
-      const gurujiInput: AiGurujiInput = { userInput: trimmedInput };
-      const response = await askAiGuruji(gurujiInput);
+      const gurujiInput: GurujiInput = { userInput: trimmedInput };
+      const response = await askGuruji(gurujiInput);
       
       if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
         const errorResponse: ServiceChatMessage = {
@@ -308,7 +308,7 @@ export default function ServicePage() {
         setTestRecommendations(result);
     } catch (err: any) {
         console.error("Error getting test recommendations:", err);
-        setTestRecommendationError(err.message || "Failed to get recommendations. AI Guruji might be busy.");
+        setTestRecommendationError(err.message || "Failed to get recommendations. Guruji might be busy.");
     } finally {
         setIsTestRecommendationLoading(false);
     }
@@ -344,22 +344,22 @@ export default function ServicePage() {
       return;
     }
     setServicePageChatIsLoading(true); 
-    toast({title: "AI Idea Generation (Simulated)", description: `Guruji is thinking of a brilliant idea for: ${ideaDescription.substring(0,50)}...`});
+    toast({title: "Guruji Idea Generation (Simulated)", description: `Guruji is thinking of a brilliant idea for: ${ideaDescription.substring(0,50)}...`});
     
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const mockAIProject: MockProject = {
       id: "ai-proj-dynamic",
-      title: `AI Suggested: ${ideaDescription.substring(0,20)} Model`,
+      title: `Guruji Suggested: ${ideaDescription.substring(0,20)} Model`,
       category: "ai_idea",
       sampleImageUrl: "https://placehold.co/600x400.png",
       dataAiHint: "ai generated idea",
-      description: `An AI-generated project idea based on your input: "${ideaDescription}". This could involve building a small prototype or a research paper.`,
+      description: `A Guruji-generated project idea based on your input: "${ideaDescription}". This could involve building a small prototype or a research paper.`,
       materials: [
-        { name: "Basic Craft Supplies (AI will suggest specifics)", qty: "Varies" },
+        { name: "Basic Craft Supplies (Guruji will suggest specifics)", qty: "Varies" },
         { name: "Online Research Access", qty: 1 },
       ],
-      estimatedTime: "Varies (AI will estimate)",
+      estimatedTime: "Varies (Guruji will estimate)",
     };
     setSelectedProject(mockAIProject);
     setServicePageChatIsLoading(false);
@@ -481,7 +481,7 @@ export default function ServicePage() {
                 <div className="flex justify-start">
                     <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                         <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <p className="text-sm text-muted-foreground">AI Guruji is pondering...</p>
+                        <p className="text-sm text-muted-foreground">Guruji is pondering...</p>
                     </Card>
                 </div>
               )}
@@ -524,8 +524,8 @@ export default function ServicePage() {
                         </Avatar>
                         )}
                         <div>
-                            <CardTitle className="text-xl font-headline text-primary">AI Test Advisor</CardTitle>
-                            <CardDescription>Get smart test recommendations from OSO Guruji.</CardDescription>
+                            <CardTitle className="text-xl font-headline text-primary">Test Advisor</CardTitle>
+                            <CardDescription>Get smart test recommendations from Guruji.</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
@@ -538,7 +538,7 @@ export default function ServicePage() {
                     {isTestRecommendationLoading && (
                         <div className="flex flex-col items-center justify-center p-6 space-y-3">
                             <LoadingSpinner size={32}/>
-                            <p className="text-muted-foreground">AI Guruji is analyzing and preparing recommendations...</p>
+                            <p className="text-muted-foreground">Guruji is analyzing and preparing recommendations...</p>
                         </div>
                     )}
                     {testRecommendationError && (
@@ -624,7 +624,7 @@ export default function ServicePage() {
                                     {serviceData.name}
                                 </CardTitle>
                                 <CardDescription className="text-xs">
-                                    {serviceData.description || "Let Guruji AI help you plan and execute!"}
+                                    {serviceData.description || "Let Guruji help you plan and execute!"}
                                 </CardDescription>
                             </div>
                         </div>
@@ -670,8 +670,8 @@ export default function ServicePage() {
                         {cat.id === "ai_idea" && !selectedProject && (
                             <Card className="text-center">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center justify-center gap-2"><BrainCircuit className="text-primary"/> AI Project Idea Generator</CardTitle>
-                                    <CardDescription>Stuck? Let Guruji AI suggest a unique project idea for you!</CardDescription>
+                                    <CardTitle className="flex items-center justify-center gap-2"><BrainCircuit className="text-primary"/> Guruji Project Idea Generator</CardTitle>
+                                    <CardDescription>Stuck? Let Guruji suggest a unique project idea for you!</CardDescription>
                                 </CardHeader>
                                 <form onSubmit={handleProjectIdeaSubmit}>
                                     <CardContent>
@@ -679,7 +679,7 @@ export default function ServicePage() {
                                     </CardContent>
                                     <CardFooter>
                                         <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={servicePageChatIsLoading}>
-                                            {servicePageChatIsLoading ? <LoadingSpinner /> : <Rocket className="mr-2"/>} Get AI Idea
+                                            {servicePageChatIsLoading ? <LoadingSpinner /> : <Rocket className="mr-2"/>} Get Guruji Idea
                                         </Button>
                                     </CardFooter>
                                 </form>
@@ -935,4 +935,5 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
 

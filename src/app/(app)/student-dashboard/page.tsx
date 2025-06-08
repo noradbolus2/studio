@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
-import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
+import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow';
 
 interface ChatMessage {
   id: string;
@@ -59,8 +59,8 @@ export default function StudentDashboardPage() {
     setIsGurujiLoading(true);
 
     try {
-      const gurujiApiInput: AiGurujiInput = { userInput: trimmedInput };
-      const response = await askAiGuruji(gurujiApiInput);
+      const gurujiApiInput: GurujiInput = { userInput: trimmedInput };
+      const response = await askGuruji(gurujiApiInput);
       
       if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
         const errorResponse: ChatMessage = {
@@ -137,7 +137,7 @@ export default function StudentDashboardPage() {
             <div className="flex items-center gap-2">
               <Avatar className="h-10 w-10">
                 <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="monk teaching"/>
-                <AvatarFallback>AG</AvatarFallback>
+                <AvatarFallback>GU</AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle className="font-headline">
@@ -165,7 +165,7 @@ export default function StudentDashboardPage() {
               <div className="flex justify-start">
                 <div className="bg-card text-card-foreground self-start mr-auto p-2.5 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    <p className="text-xs text-muted-foreground"><BilingualText en="AI Guruji is pondering..." hi="एआई गुरुजी विचार कर रहे हैं..."/></p>
+                    <p className="text-xs text-muted-foreground"><BilingualText en="Guruji is pondering..." hi="गुरुजी विचार कर रहे हैं..."/></p>
                 </div>
               </div>
             )}
@@ -231,3 +231,4 @@ declare module 'react' {
       placeholder_hi?: string;
     }
   }
+

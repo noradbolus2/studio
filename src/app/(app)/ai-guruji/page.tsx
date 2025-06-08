@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mic, Send, Loader2, Paperclip, XCircle, FileText, Image as ImageIcon } from "lucide-react";
-import { askAiGuruji, type AiGurujiInput, type AiGurujiOutput } from '@/ai/flows/ai-guruji-flow';
+import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -128,7 +128,7 @@ export default function AiGurujiPage() {
     setIsLoading(true);
 
     try {
-      const gurujiInput: AiGurujiInput = { userInput: trimmedInput };
+      const gurujiInput: GurujiInput = { userInput: trimmedInput };
       if (attachmentPreview) {
         gurujiInput.attachmentInfo = {
           name: attachmentPreview.name,
@@ -140,10 +140,10 @@ export default function AiGurujiPage() {
         }
       }
       
-      const response = await askAiGuruji(gurujiInput);
+      const response = await askGuruji(gurujiInput);
       
       if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
-        console.error('AI Guruji UI: Invalid response structure from askAiGuruji:', response);
+        console.error('Guruji UI: Invalid response structure from askGuruji:', response);
         const errorResponse: Message = {
           id: `guru-error-structure-${Date.now()}`,
           role: 'guru',
@@ -163,7 +163,7 @@ export default function AiGurujiPage() {
       setMessages(prev => [...prev, guruResponse]);
 
     } catch (error) {
-      console.error("AI Guruji UI: Error encountered while calling AI Guruji flow:", error);
+      console.error("Guruji UI: Error encountered while calling Guruji flow:", error);
       const errorResponse: Message = {
         id: `guru-error-catch-${Date.now()}`,
         role: 'guru',
@@ -183,11 +183,11 @@ export default function AiGurujiPage() {
         <div className="flex items-center justify-center space-x-3">
            <Avatar className="h-10 w-10">
             <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="monk teaching" />
-            <AvatarFallback>AG</AvatarFallback>
+            <AvatarFallback>GU</AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-xl font-bold font-headline text-primary">
-              <BilingualText en="AI Guruji" hi="एआई गुरुजी" />
+              <BilingualText en="Guruji" hi="गुरुजी" />
             </h1>
             <p className="text-xs text-muted-foreground">
               <BilingualText en="Your personal AI study assistant" hi="आपका व्यक्तिगत एआई अध्ययन सहायक" />
@@ -219,7 +219,7 @@ export default function AiGurujiPage() {
           <div className="flex justify-start">
             <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground"><BilingualText en="AI Guruji is pondering..." hi="एआई गुरुजी विचार कर रहे हैं..."/></p>
+                <p className="text-sm text-muted-foreground"><BilingualText en="Guruji is pondering..." hi="गुरुजी विचार कर रहे हैं..."/></p>
             </Card>
           </div>
         )}
