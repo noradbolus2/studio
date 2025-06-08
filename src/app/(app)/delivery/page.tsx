@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { StationeryItemCard, type StationeryItem } from '@/components/delivery/StationeryItemCard';
 import { OrderConfirmationDialog } from '@/components/delivery/OrderConfirmationDialog';
+import { CheckoutDialog } from '@/components/delivery/CheckoutDialog'; // Added import
 import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter, Apple as AppleIcon } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
-import { Card, CardContent } from "@/components/ui/card"; // Added this import
+import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from '@/hooks/use-toast'; // Added import
 
 const categories = [
   { id: 'all', nameEn: 'All', nameHi: 'सभी', icon: Package, key: 'all' },
@@ -38,19 +40,41 @@ export default function DeliveryPage() {
   const [cart, setCart] = useState<StationeryItem[]>([]);
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
   const [confirmedOrderId, setConfirmedOrderId] = useState("");
+  const [isCheckoutDialogOpen, setIsCheckoutDialogOpen] = useState(false); // New state for checkout dialog
+  const { toast } = useToast(); // Added toast
 
   const handleAddToCart = (item: StationeryItem) => {
     setCart((prevCart) => [...prevCart, item]);
-    // Potentially show a toast message
+    toast({
+        title: "Item Added",
+        description: `${item.nameEn} added to your cart.`,
+    });
   };
 
-  const handlePlaceOrder = () => {
-    if (cart.length === 0) return; // Prevent placing empty order
+  const handleOpenCheckout = () => {
+    if (cart.length === 0) {
+        toast({
+            title: "Empty Cart",
+            description: "Please add items to your cart before proceeding.",
+            variant: "destructive"
+        });
+        return;
+    }
+    setIsCheckoutDialogOpen(true);
+  };
+
+  const handleConfirmOrderFromCheckout = (details: { address: string; coupon?: string }) => {
     // Simulate order placement
+    console.log("Order Details:", details);
     const newOrderId = `OSO${Math.floor(Math.random() * 90000) + 10000}`;
     setConfirmedOrderId(newOrderId);
     setIsOrderConfirmed(true);
     setCart([]); // Clear cart after order
+    setIsCheckoutDialogOpen(false); // Close checkout dialog
+    toast({
+        title: "Order Placed!",
+        description: `Your order ${newOrderId} for delivery to ${details.address} is confirmed.`,
+    });
   };
 
   const filteredItems = sampleItems.filter(item =>
@@ -128,13 +152,21 @@ export default function DeliveryPage() {
               <p className="font-semibold"><BilingualText en={`${cart.length} items`} hi={`${cart.length} आइटम`} /> </p>
               <p className="text-lg font-bold text-primary">INR {cartTotal.toFixed(2)}</p>
             </div>
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handlePlaceOrder}>
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleOpenCheckout}>
               <ShoppingBag className="mr-2 h-5 w-5" />
-              <BilingualText en="Place Order" hi="ऑर्डर दें" />
+              <BilingualText en="Proceed to Checkout" hi="चेकआउट के लिए आगे बढ़ें" />
             </Button>
           </CardContent>
         </Card>
       )}
+      
+      <CheckoutDialog
+        isOpen={isCheckoutDialogOpen}
+        onClose={() => setIsCheckoutDialogOpen(false)}
+        cartItems={cart}
+        cartTotal={cartTotal}
+        onConfirmOrder={handleConfirmOrderFromCheckout}
+      />
       
       <OrderConfirmationDialog 
         isOpen={isOrderConfirmed} 
@@ -146,3 +178,9 @@ export default function DeliveryPage() {
   );
 }
 
+declare module 'react' {
+    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
+}
