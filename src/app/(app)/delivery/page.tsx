@@ -9,6 +9,7 @@ import { StationeryItemCard, type StationeryItem } from '@/components/delivery/S
 import { OrderConfirmationDialog } from '@/components/delivery/OrderConfirmationDialog';
 import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter, Apple as AppleIcon } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
+import { Card, CardContent } from "@/components/ui/card"; // Added this import
 
 const categories = [
   { id: 'all', nameEn: 'All', nameHi: 'सभी', icon: Package, key: 'all' },
