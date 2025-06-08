@@ -1,44 +1,28 @@
 
 "use client";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Image from "next/image";
-import { BookOpen, Users, School, ShoppingBag, Bike, Languages } from "lucide-react";
+import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-
-interface LoginRoleButtonProps {
-  icon: React.ElementType;
-  labelEn: string;
-  labelHi: string;
-  action: () => void;
-  bgColorClass: string;
-  glowClass: string;
-  hoverGlowClass: string;
-  lang: 'en' | 'hi';
-}
-
-const LoginRoleButton: React.FC<LoginRoleButtonProps> = ({ icon: Icon, labelEn, labelHi, action, bgColorClass, glowClass, hoverGlowClass, lang }) => {
-  return (
-    <button
-      onClick={action}
-      className={cn(
-        "w-full flex items-center justify-center text-white font-bold uppercase text-base py-4 px-6 rounded-2xl transition-all duration-300 ease-in-out transform hover:scale-105",
-        bgColorClass,
-        glowClass,
-        hoverGlowClass
-      )}
-    >
-      <Icon className="h-6 w-6 mr-3" />
-      <BilingualText en={labelEn} hi={labelHi} lang={lang} />
-    </button>
-  );
-};
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 export default function LoginPage() {
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
+  const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -46,95 +30,167 @@ export default function LoginPage() {
     setCurrentLang(prevLang => (prevLang === 'en' ? 'hi' : 'en'));
   };
 
-  const handleStudentLogin = () => {
-    toast({ title: "Student Entry", description: "Proceeding to student profile setup..." });
-    router.push("/edit-profile?loginType=direct&isNewUser=true&email=new.student@example.com"); 
-  };
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  const handleParentLogin = () => {
-    toast({ title: "Parent Login", description: "Proceeding to parent dashboard..." });
-    router.push("/parent-mode");
-  };
+    if (mode === 'signUp') {
+      if (password !== confirmPassword) {
+        toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" });
+        setIsLoading(false);
+        return;
+      }
+      if (!fullName.trim() || !email.trim() || !password.trim()) {
+        toast({ title: "Error", description: "All fields are required for sign up.", variant: "destructive" });
+        setIsLoading(false);
+        return;
+      }
+      // Simulate sign up: Store credentials (insecurely for prototype)
+      localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName }));
+      localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName }));
+      // Initialize basic profile data
+      localStorage.setItem('userProfileData', JSON.stringify({ email, fullName, avatarUrl: '', country: 'India' }));
 
-  const handleSchoolLogin = () => {
-    toast({ title: "School Login", description: "Redirecting to OSO School Partner App..." });
-    // In a real app, this would be an actual redirect: window.location.href = "https://school.osoapp.com";
-    console.log("Redirecting to School Partner App (Simulated)");
+      toast({ title: "Sign Up Successful", description: "Welcome! Please complete your profile." });
+      router.push(`/edit-profile?email=${encodeURIComponent(email)}&fullName=${encodeURIComponent(fullName)}&isNewUser=true`);
+    } else { // Sign In
+      if (!email.trim() || !password.trim()) {
+        toast({ title: "Error", description: "Email and password are required.", variant: "destructive" });
+        setIsLoading(false);
+        return;
+      }
+      const storedCredentialsString = localStorage.getItem(`userCredentials_${email}`);
+      if (storedCredentialsString) {
+        const storedCredentials = JSON.parse(storedCredentialsString);
+        if (storedCredentials.password === password) {
+          localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName }));
+          toast({ title: "Sign In Successful", description: "Welcome back!" });
+          router.push('/');
+        } else {
+          toast({ title: "Sign In Failed", description: "Invalid credentials.", variant: "destructive" });
+        }
+      } else {
+        toast({ title: "Sign In Failed", description: "User not found. Please sign up.", variant: "destructive" });
+      }
+    }
+    // Simulating network delay, remove if not needed
+    // await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsLoading(false);
   };
-
-  const handleVendorLogin = () => {
-    toast({ title: "Vendor Login", description: "Redirecting to OSO Vendor Partner App..." });
-    console.log("Redirecting to Vendor Partner App (Simulated)");
-    router.push("/vendor-dashboard");
-  };
-
-  const handleRiderLogin = () => {
-    toast({ title: "Rider Login", description: "Redirecting to OSO Rider App..." });
-    console.log("Redirecting to Rider Partner App (Simulated)");
-    router.push("/rider-dashboard");
-  };
-
-  const loginRoles = [
-    { icon: BookOpen, labelEn: "Student Login", labelHi: "छात्र लॉगिन", action: handleStudentLogin, bgColorClass: "bg-login-orange", glowClass: "shadow-glow-orange", hoverGlowClass: "hover:shadow-glow-orange-hover" },
-    { icon: Users, labelEn: "Parent Login", labelHi: "अभिभावक लॉगिन", action: handleParentLogin, bgColorClass: "bg-login-orange", glowClass: "shadow-glow-orange", hoverGlowClass: "hover:shadow-glow-orange-hover" },
-    { icon: School, labelEn: "School Login", labelHi: "स्कूल लॉगिन", action: handleSchoolLogin, bgColorClass: "bg-login-aqua-mint", glowClass: "shadow-glow-mint", hoverGlowClass: "hover:shadow-glow-mint-hover" },
-    { icon: ShoppingBag, labelEn: "Vendor Login", labelHi: "विक्रेता लॉगिन", action: handleVendorLogin, bgColorClass: "bg-login-aqua-mint", glowClass: "shadow-glow-mint", hoverGlowClass: "hover:shadow-glow-mint-hover" },
-    { icon: Bike, labelEn: "Rider Login", labelHi: "राइडर लॉगिन", action: handleRiderLogin, bgColorClass: "bg-login-aqua-mint", glowClass: "shadow-glow-mint", hoverGlowClass: "hover:shadow-glow-mint-hover" },
-  ];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-deep-purple to-darker-purple p-6 font-sans relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-6 font-body relative">
       <Button
         onClick={handleLanguageToggle}
-        variant="ghost"
-        className="absolute top-6 right-6 text-white hover:bg-white/10 py-1 px-2 text-sm h-auto"
+        variant="outline"
+        className="absolute top-6 right-6 text-foreground hover:bg-accent/10 py-1 px-2 text-sm h-auto z-10"
       >
         <Languages className="h-4 w-4 mr-1.5" />
         {currentLang === 'en' ? 'हिंदी' : 'English'}
       </Button>
 
-      <div className="w-full max-w-sm text-center">
-        {/* Top Section: Branding */}
-        <div className="mb-10">
+      <div className="w-full max-w-md text-center">
+        <div className="mb-8">
           <Image
-            src="https://placehold.co/100x100/FFD700/3B0A4E?text=S&font=poppins" 
+            src="https://placehold.co/100x100/FF8C00/FFFFFF?text=O&font=poppins"
             alt="OSO App Logo"
             width={80}
             height={80}
-            className="mx-auto mb-4 rounded-full shadow-logo-glow"
-            data-ai-hint="oso logo yellow"
+            className="mx-auto mb-3 rounded-full border-2 border-primary p-1 shadow-lg"
+            data-ai-hint="oso logo orange"
           />
-          <p className="text-base font-bold text-white">
-            <BilingualText en="India’s 1st Edu + Delivery App" hi="भारत का पहला एडु + डिलीवरी ऐप" lang={currentLang} />
+           <p className="text-lg font-semibold text-primary">
+            <BilingualText en="OSO App" hi="ओसो ऐप" lang={currentLang} />
+          </p>
+          <p className="text-sm text-muted-foreground">
+            <BilingualText en="Learn & Deliver" hi="सीखें और वितरित करें" lang={currentLang} />
           </p>
         </div>
 
-        {/* Middle Section: Choose Login Role */}
-        <div className="space-y-4 mb-12">
-          {loginRoles.map((role) => (
-            <LoginRoleButton
-              key={role.labelEn}
-              icon={role.icon}
-              labelEn={role.labelEn}
-              labelHi={role.labelHi}
-              action={role.action}
-              bgColorClass={role.bgColorClass}
-              glowClass={role.glowClass}
-              hoverGlowClass={role.hoverGlowClass}
-              lang={currentLang}
-            />
-          ))}
-        </div>
+        <Card className="shadow-xl border-border">
+          <CardHeader>
+            <CardTitle className="text-2xl font-headline text-primary">
+              {mode === 'signIn' ? (
+                <BilingualText en="Sign In" hi="साइन इन करें" lang={currentLang} />
+              ) : (
+                <BilingualText en="Sign Up" hi="साइन अप करें" lang={currentLang} />
+              )}
+            </CardTitle>
+            <CardDescription>
+              {mode === 'signIn' ? (
+                <BilingualText en="Welcome back! Please enter your details." hi="वापसी पर स्वागत है! कृपया अपना विवरण दर्ज करें।" lang={currentLang} />
+              ) : (
+                <BilingualText en="Create your OSO account." hi="अपना OSO खाता बनाएं।" lang={currentLang} />
+              )}
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              {mode === 'signUp' && (
+                <div className="space-y-1 text-left">
+                  <Label htmlFor="fullName" className="flex items-center text-muted-foreground">
+                    <UserIcon className="h-4 w-4 mr-1.5 text-primary/70" />
+                    <BilingualText en="Full Name" hi="पूरा नाम" lang={currentLang} />
+                  </Label>
+                  <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder_en="Enter your full name" placeholder_hi="अपना पूरा नाम दर्ज करें" required={mode === 'signUp'} />
+                </div>
+              )}
+              <div className="space-y-1 text-left">
+                <Label htmlFor="email" className="flex items-center text-muted-foreground">
+                  <Mail className="h-4 w-4 mr-1.5 text-primary/70" />
+                  <BilingualText en="Email" hi="ईमेल" lang={currentLang} />
+                </Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" required />
+              </div>
+              <div className="space-y-1 text-left">
+                <Label htmlFor="password" className="flex items-center text-muted-foreground">
+                  <KeyRound className="h-4 w-4 mr-1.5 text-primary/70" />
+                  <BilingualText en="Password" hi="पासवर्ड" lang={currentLang} />
+                </Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder_en="Enter your password" placeholder_hi="अपना पासवर्ड दर्ज करें" required />
+              </div>
+              {mode === 'signUp' && (
+                <div className="space-y-1 text-left">
+                  <Label htmlFor="confirmPassword" className="flex items-center text-muted-foreground">
+                    <KeyRound className="h-4 w-4 mr-1.5 text-primary/70" />
+                    <BilingualText en="Confirm Password" hi="पासवर्ड की पुष्टि करें" lang={currentLang} />
+                  </Label>
+                  <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder_en="Confirm your password" placeholder_hi="अपने पासवर्ड की पुष्टि करें" required={mode === 'signUp'} />
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="flex flex-col gap-3">
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                {isLoading ? <LoadingSpinner /> : mode === 'signIn' ? <LogIn className="mr-2"/> : <UserPlus className="mr-2"/>}
+                {mode === 'signIn' ? (
+                  <BilingualText en="Sign In" hi="साइन इन करें" lang={currentLang} />
+                ) : (
+                  <BilingualText en="Sign Up" hi="साइन अप करें" lang={currentLang} />
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="link"
+                onClick={() => setMode(mode === 'signIn' ? 'signUp' : 'signIn')}
+                className="text-primary hover:text-primary/80 text-sm"
+              >
+                {mode === 'signIn' ? (
+                  <BilingualText en="Don't have an account? Sign Up" hi="खाता नहीं है? साइन अप करें" lang={currentLang} />
+                ) : (
+                  <BilingualText en="Already have an account? Sign In" hi="पहले से ही खाता है? साइन इन करें" lang={currentLang} />
+                )}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
 
-        {/* Bottom Section: Info & Support */}
-        <div className="text-xs text-login-support-text space-y-1">
+        <div className="mt-8 text-xs text-muted-foreground space-y-1">
           <p>
-            <BilingualText en="Don’t have an account?" hi="खाता नहीं है?" lang={currentLang} />{' '}
-            <BilingualText en="Register with your role." hi="अपनी भूमिका के साथ पंजीकरण करें।" lang={currentLang} />
+            <BilingualText en="By continuing, you agree to OSO's Terms & Privacy Policy." hi="जारी रखने पर, आप OSO की शर्तों और गोपनीयता नीति से सहमत होते हैं।" lang={currentLang} />
           </p>
           <p>
             <BilingualText en="Need help?" hi="मदद चाहिए?" lang={currentLang} />{' '}
-            <a href="#" className="underline hover:text-white">
+            <a href="#" className="underline hover:text-primary">
               <BilingualText en="Contact OSO Support" hi="OSO सहायता से संपर्क करें" lang={currentLang} />
             </a>
           </p>
@@ -142,4 +198,11 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+declare module 'react' {
+    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
 }

@@ -91,6 +91,7 @@ const stateCityData: Record<string, string[]> = {
   "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"],
   "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi"],
   "Delhi (NCT)": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
+  // Add more states and cities as needed
 };
 
 
@@ -99,8 +100,8 @@ export default function EditProfilePage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const [loginType, setLoginType] = useState<string | null>(null);
-  const [isSchoolLogin, setIsSchoolLogin] = useState(false);
+  const [loginType, setLoginType] = useState<string | null>(null); // Retained for school login differentiation if needed
+  const [isSchoolLogin, setIsSchoolLogin] = useState(false); // Retained for school login differentiation
   const [isLoading, setIsLoading] = useState(false);
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -131,84 +132,48 @@ export default function EditProfilePage() {
   const selectedState = watch("state");
 
   useEffect(() => {
-    const typeParam = searchParams.get("loginType");
-    const isNew = searchParams.get("isNewUser") === "true";
-    
+    setInitialDataLoading(true);
+    const typeParam = searchParams.get("loginType"); // e.g. "school" or undefined if direct from new login page
+    const isNewUserFlow = searchParams.get("isNewUser") === "true";
+    const emailFromParam = searchParams.get("email");
+    const fullNameFromParam = searchParams.get("fullName");
+
     setLoginType(typeParam);
     setIsSchoolLogin(typeParam === "school");
 
-    let currentDefaultValues: Partial<ProfileFormData> = { 
-      country: "India",
-      fullName: "",
-      email: "",
-      phoneNumber: "",
-      schoolName: "",
-      schoolId: "",
-      className: "",
-      board: "",
-      stream: "",
-      city: "",
-      state: "",
-      avatarUrl: "",
-      gender: "",
-      examTarget: "",
-      dateOfBirth: undefined,
-    };
+    let currentDefaultValues: Partial<ProfileFormData> = { country: "India" };
 
-    // Try to load from localStorage first if not a new user explicit navigation
-     if (typeof window !== "undefined") {
-        const storedProfile = localStorage.getItem('userProfileData');
-        if (storedProfile) {
-            try {
-                const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
-                // Convert dateOfBirth string back to Date object if it exists
-                if (parsedProfile.dateOfBirth) {
-                    parsedProfile.dateOfBirth = new Date(parsedProfile.dateOfBirth);
-                }
-                currentDefaultValues = { ...currentDefaultValues, ...parsedProfile };
-            } catch (e) {
-                console.error("Failed to parse profile from localStorage", e);
-            }
-        }
-    }
-
-
-    if (typeParam === "school") {
-      currentDefaultValues = {
-        ...currentDefaultValues,
-        schoolId: searchParams.get("schoolId") || currentDefaultValues.schoolId || "", 
-        fullName: searchParams.get("fullName") || currentDefaultValues.fullName || "Mock School User", 
-        schoolName: searchParams.get("schoolName") || currentDefaultValues.schoolName || "Mock School Name", 
-        className: searchParams.get("className") || currentDefaultValues.className || "", 
-        email: searchParams.get("email") || currentDefaultValues.email || "school.user@example.com", 
-      };
-    } else if (typeParam === "direct") {
-      if (isNew) {
-        // For new direct users, only override email if provided, keep other localStorage or defaults
-        currentDefaultValues = { ...currentDefaultValues, email: searchParams.get("email") || currentDefaultValues.email || "" };
-      } else {
-        // For existing direct users, use localStorage data as primary, or specific mock if no localStorage
-        const fallbackExistingUser: Partial<ProfileFormData> = {
-          fullName: "Existing User",
-          email: "existing.user@example.com",
-          phoneNumber: "9876543210",
-          className: "11 Science",
-          board: "CBSE",
-          stream: "Science", 
-          dateOfBirth: new Date(2005, 7, 15), 
-          city: "Mumbai", 
-          state: "Maharashtra",
-          avatarUrl: "https://placehold.co/100x100.png",
-          examTarget: "JEE Advanced",
-        };
-        // If localStorage was empty, use fallbackExistingUser data
-        if (!localStorage.getItem('userProfileData')) {
-             currentDefaultValues = {...currentDefaultValues, ...fallbackExistingUser, email: searchParams.get("email") || fallbackExistingUser.email};
-        } else {
-            // Ensure email from param is used if it's different, typically it won't be for existing user flow
-             currentDefaultValues.email = searchParams.get("email") || currentDefaultValues.email || "";
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('userProfileData');
+      if (storedProfileString) {
+        try {
+          const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData & {dateOfBirth?: string};
+          currentDefaultValues = {
+            ...parsedProfile,
+            dateOfBirth: parsedProfile.dateOfBirth ? new Date(parsedProfile.dateOfBirth) : undefined,
+          };
+        } catch (e) {
+          console.error("Failed to parse profile from localStorage", e);
         }
       }
+    }
+    
+    // If coming from new sign-up flow, params override anything in localStorage for these fields
+    if (isNewUserFlow && emailFromParam) {
+      currentDefaultValues.email = emailFromParam;
+    }
+    if (isNewUserFlow && fullNameFromParam) {
+      currentDefaultValues.fullName = fullNameFromParam;
+    }
+
+    // Handle school-specific login params if they exist (legacy or separate flow)
+    if (typeParam === "school") {
+      currentDefaultValues.schoolId = searchParams.get("schoolId") || currentDefaultValues.schoolId || "";
+      currentDefaultValues.schoolName = searchParams.get("schoolName") || currentDefaultValues.schoolName || "";
+      currentDefaultValues.className = searchParams.get("className") || currentDefaultValues.className || "";
+      // Email and fullName might also come from school login params
+      currentDefaultValues.email = emailFromParam || currentDefaultValues.email || "";
+      currentDefaultValues.fullName = fullNameFromParam || currentDefaultValues.fullName || "";
     }
     
     const allFieldsToReset: ProfileFormData = {
@@ -220,7 +185,7 @@ export default function EditProfilePage() {
         className: currentDefaultValues.className || "",
         board: currentDefaultValues.board || "",
         stream: currentDefaultValues.stream || "",
-        dateOfBirth: currentDefaultValues.dateOfBirth instanceof Date ? currentDefaultValues.dateOfBirth : (currentDefaultValues.dateOfBirth ? new Date(currentDefaultValues.dateOfBirth) : undefined), 
+        dateOfBirth: currentDefaultValues.dateOfBirth instanceof Date ? currentDefaultValues.dateOfBirth : (currentDefaultValues.dateOfBirth ? new Date(currentDefaultValues.dateOfBirth) : undefined),
         gender: currentDefaultValues.gender || "", 
         examTarget: currentDefaultValues.examTarget || "", 
         city: currentDefaultValues.city || "",
@@ -236,19 +201,22 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (selectedState) {
       setCitiesForSelectedState(stateCityData[selectedState] || []);
-      setValue('city', '', { shouldValidate: true }); 
+      // Don't reset city if it was pre-filled and matches the current state
+      const currentCity = watch('city');
+      if (currentCity && !(stateCityData[selectedState] || []).includes(currentCity)) {
+          setValue('city', '', { shouldValidate: true }); 
+      }
     } else {
       setCitiesForSelectedState([]);
       setValue('city', '', { shouldValidate: true });
     }
-  }, [selectedState, setValue]);
+  }, [selectedState, setValue, watch]);
 
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
     console.log("Profile Data to Save:", data);
 
-    // Convert Date object to ISO string for localStorage
     const dataToStore = {
       ...data,
       dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toISOString() : undefined,
@@ -256,12 +224,20 @@ export default function EditProfilePage() {
 
     if (typeof window !== "undefined") {
         localStorage.setItem('userProfileData', JSON.stringify(dataToStore));
+         // Ensure loggedInUser details are also up-to-date if name changed
+        const loggedInUserString = localStorage.getItem('loggedInUser');
+        if (loggedInUserString) {
+            const loggedInUserDetails = JSON.parse(loggedInUserString);
+            if (loggedInUserDetails.email === data.email && loggedInUserDetails.fullName !== data.fullName) {
+                localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: data.fullName }));
+            }
+        }
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
     toast({
       title: "Profile Saved",
-      description: "Your profile information has been updated and stored locally.",
+      description: "Your profile information has been updated.",
     });
     setIsLoading(false);
     router.push("/profile"); 
@@ -348,7 +324,7 @@ export default function EditProfilePage() {
               </div>
               <div>
                 <Label htmlFor="email"><BilingualText en="Email" hi="ईमेल" />*</Label>
-                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={loginType === "direct" && !searchParams.get("isNewUser") === true && !isSchoolLogin} />} />
+                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={!searchParams.get("isNewUser") === true && !isSchoolLogin} />} />
                 {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
               </div>
             </div>
@@ -362,7 +338,7 @@ export default function EditProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" /></Label>
-                <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="Your School Name" placeholder_hi="आपके स्कूल का नाम" readOnly={isSchoolLogin} />} />
+                <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="Your School Name" placeholder_hi="आपके स्कूल का नाम" readOnly={isSchoolLogin && !!searchParams.get("schoolName")} />} />
               </div>
               {isSchoolLogin && (
                 <div>
@@ -537,7 +513,7 @@ export default function EditProfilePage() {
                     </Select>
                   )}
                 />
-                 {citiesForSelectedState.length === 0 && selectedState && <p className="text-xs text-muted-foreground mt-1">No cities listed for {selectedState}. Select another state or type manually (if feature enabled).</p>}
+                 {citiesForSelectedState.length === 0 && selectedState && <p className="text-xs text-muted-foreground mt-1">No cities listed for {selectedState}.</p>}
               </div>
               <div>
                 <Label htmlFor="country"><BilingualText en="Country" hi="देश" /></Label>
@@ -570,4 +546,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-

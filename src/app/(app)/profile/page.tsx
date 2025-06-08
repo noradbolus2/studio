@@ -92,38 +92,53 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 500)); // Shorter delay
+      await new Promise(resolve => setTimeout(resolve, 500)); 
 
       let profileToDisplay: UserProfileDisplay;
+      let loggedInUserEmail: string | null = null;
 
       if (typeof window !== "undefined") {
+        const loggedInUserString = localStorage.getItem('loggedInUser');
+        if (loggedInUserString) {
+            const loggedInUserDetails = JSON.parse(loggedInUserString);
+            loggedInUserEmail = loggedInUserDetails.email;
+        }
+
         const storedProfileString = localStorage.getItem('userProfileData');
         if (storedProfileString) {
           try {
-            const storedProfile = JSON.parse(storedProfileString) as ProfileFormData & { dateOfBirth?: string }; // Expect dateOfBirth as string from localStorage
-            profileToDisplay = {
-              ...storedProfile,
-              initials: storedProfile.fullName ? storedProfile.fullName.substring(0, 2).toUpperCase() : "NA",
-              dateOfBirth: storedProfile.dateOfBirth ? format(new Date(storedProfile.dateOfBirth), "dd MMM yyyy") : undefined,
-            };
+            const storedProfile = JSON.parse(storedProfileString) as ProfileFormData & { dateOfBirth?: string }; 
+            
+            // Ensure the loaded profile matches the logged-in user's email if available
+            if (loggedInUserEmail && storedProfile.email !== loggedInUserEmail) {
+                 console.warn("Profile data in localStorage does not match logged-in user. Clearing stale profile.");
+                 localStorage.removeItem('userProfileData');
+                 profileToDisplay = getMockUser(loggedInUserEmail); // Use logged-in user's email for mock
+            } else {
+                profileToDisplay = {
+                ...storedProfile,
+                initials: storedProfile.fullName ? storedProfile.fullName.substring(0, 2).toUpperCase() : "NA",
+                dateOfBirth: storedProfile.dateOfBirth ? format(new Date(storedProfile.dateOfBirth), "dd MMM yyyy") : undefined,
+                };
+            }
           } catch (e) {
             console.error("Failed to parse profile from localStorage, using mock.", e);
-            profileToDisplay = getMockUser(); // Fallback to mock if parsing fails
+            profileToDisplay = getMockUser(loggedInUserEmail); 
           }
         } else {
-          profileToDisplay = getMockUser(); // Use mock if nothing in localStorage
+          profileToDisplay = getMockUser(loggedInUserEmail); 
         }
       } else {
-        profileToDisplay = getMockUser(); // Fallback for SSR or if window is not defined
+        profileToDisplay = getMockUser(null); 
       }
       
       setUser(profileToDisplay);
       setLoading(false);
     };
 
-    const getMockUser = (): UserProfileDisplay => ({
+    const getMockUser = (email?: string | null): UserProfileDisplay => ({
       fullName: "Aarav Sharma",
-      email: "aarav.sharma@example.com",
+      email: email || "aarav.sharma@example.com",
       avatarUrl: "https://placehold.co/100x100.png",
       initials: "AS",
       phoneNumber: "+91 98765 43210",
@@ -132,7 +147,7 @@ export default function ProfilePage() {
       className: "11",
       board: "CBSE",
       stream: "Science",
-      dateOfBirth: format(new Date(2006, 7, 15), "dd MMM yyyy"), // "15 Aug 2006"
+      dateOfBirth: format(new Date(2006, 7, 15), "dd MMM yyyy"), 
       gender: "Male",
       examTarget: "JEE, NEET",
       city: "Bengaluru",
@@ -145,7 +160,8 @@ export default function ProfilePage() {
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
-        localStorage.removeItem('userProfileData'); // Clear stored profile on logout
+        localStorage.removeItem('loggedInUser'); 
+        localStorage.removeItem('userProfileData'); 
     }
     toast({
       title: "Logged Out",
@@ -187,9 +203,9 @@ export default function ProfilePage() {
     { icon: Phone, labelEn: "Phone", labelHi: "फ़ोन", value: user.phoneNumber },
     { icon: School, labelEn: "School", labelHi: "स्कूल", value: user.schoolName },
     { icon: School, labelEn: "School ID", labelHi: "स्कूल आईडी", value: user.schoolId, condition: !!user.schoolId },
-    { icon: UserCircle2, labelEn: "Class", labelHi: "कक्षा", value: user.className ? `Class ${user.className}` : undefined },
+    { icon: UserCircle2, labelEn: "Class", labelHi: "कक्षा", value: user.className ? (user.className.toLowerCase().includes("class") ? user.className : `Class ${user.className}` ): undefined },
     { icon: UserCircle2, labelEn: "Board", labelHi: "बोर्ड", value: user.board },
-    { icon: UserCircle2, labelEn: "Stream", labelHi: "स्ट्रीम", value: user.stream, condition: (user.className === "11" || user.className === "12" || user.className === "11 Science" || user.className === "11 Commerce" || user.className === "11 Arts" || user.className === "12 Science" || user.className === "12 Commerce" || user.className === "12 Arts" ) && !!user.stream },
+    { icon: UserCircle2, labelEn: "Stream", labelHi: "स्ट्रीम", value: user.stream, condition: (user.className?.toLowerCase().includes("11") || user.className?.toLowerCase().includes("12")) && !!user.stream },
     { icon: CalendarDays, labelEn: "D.O.B", labelHi: "जन्म तिथि", value: user.dateOfBirth },
     { icon: Users, labelEn: "Gender", labelHi: "लिंग", value: user.gender },
     { icon: TargetIcon, labelEn: "Exam Target", labelHi: "परीक्षा लक्ष्य", value: user.examTarget },
@@ -202,8 +218,8 @@ export default function ProfilePage() {
       <Card className="overflow-hidden">
         <CardHeader className="bg-primary/5 p-6 flex flex-col items-center text-center space-y-3">
             <Avatar className="h-24 w-24 border-4 border-primary shadow-md">
-              <AvatarImage src={user.avatarUrl || `https://placehold.co/100x100.png?text=${user.initials || user.fullName.substring(0,1)}`} alt={user.fullName} data-ai-hint="student avatar" />
-              <AvatarFallback className="bg-primary text-primary-foreground text-3xl">{user.initials || user.fullName.substring(0,2).toUpperCase()}</AvatarFallback>
+              <AvatarImage src={user.avatarUrl || `https://placehold.co/100x100.png?text=${user.initials || user.fullName?.substring(0,1) || 'U'}`} alt={user.fullName} data-ai-hint="student avatar" />
+              <AvatarFallback className="bg-primary text-primary-foreground text-3xl">{user.initials || user.fullName?.substring(0,2).toUpperCase() || "NA"}</AvatarFallback>
             </Avatar>
             <div>
                 <CardTitle className="text-2xl font-headline text-primary">{user.fullName}</CardTitle>
