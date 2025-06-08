@@ -1,15 +1,15 @@
-
 "use client"; // For useRouter and mock data state
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon, BarChart3, Trophy } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 // Mock user data structure
 interface UserProfile {
@@ -56,6 +56,15 @@ interface ClassHistoryItem {
   duration: string;
 }
 
+interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  score?: string; 
+  avatarUrl?: string;
+  dataAiHint?: string;
+  category?: string; 
+}
+
 const mockOrderHistory: OrderHistoryItem[] = [
   { id: "ORD12345", date: "2024-07-15", status: "Delivered", total: 245.00, itemCount: 3 },
   { id: "ORD67890", date: "2024-07-10", status: "Shipped", total: 75.00, itemCount: 1 },
@@ -73,6 +82,14 @@ const mockClassHistory: ClassHistoryItem[] = [
   { id: "CLS102", title: "Introduction to Physics", subject: "Physics", date: "2024-07-09", time: "02:00 PM", duration: "45 mins" },
 ];
 
+const mockLeaderboardSample: LeaderboardEntry[] = [
+  { rank: 1, name: "Priya Sharma", score: "99.2%", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student female avatar", category: "Class 12 CBSE Topper" },
+  { rank: 2, name: "Rohan Mehra", score: "710/720", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student male avatar", category: "NEET UG - All India" },
+  { rank: 3, name: "Aisha Khan", score: "AIR 25", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student girl avatar", category: "JEE Advanced" },
+  { rank: 125, name: "Vikram Singh", score: "85%", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student boy avatar", category: "Class 10 ICSE - Top 500" },
+  { rank: 450, name: "Sneha Reddy", score: "Class 10 + State Board + CUET", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student female south", category: "Combined Ranker" },
+];
+
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -83,7 +100,6 @@ export default function ProfilePage() {
     const fetchUserData = async () => {
       setLoading(true);
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      // In a real app, fetch from Firestore or your backend
       const mockUser: UserProfile = {
         fullName: "Aarav Sharma",
         email: "aarav.sharma@example.com",
@@ -91,7 +107,7 @@ export default function ProfilePage() {
         initials: "AS",
         phoneNumber: "+91 98765 43210",
         schoolName: "Demo Public School",
-        schoolId: "DPS123XYZ", // Example if school login
+        schoolId: "DPS123XYZ", 
         className: "11",
         board: "CBSE",
         stream: "Science",
@@ -140,7 +156,7 @@ export default function ProfilePage() {
     { icon: Mail, labelEn: "Email", labelHi: "ईमेल", value: user.email },
     { icon: Phone, labelEn: "Phone", labelHi: "फ़ोन", value: user.phoneNumber },
     { icon: School, labelEn: "School", labelHi: "स्कूल", value: user.schoolName },
-    { icon: School, labelEn: "School ID", labelHi: "स्कूल आईडी", value: user.schoolId, condition: !!user.schoolId }, // Conditional
+    { icon: School, labelEn: "School ID", labelHi: "स्कूल आईडी", value: user.schoolId, condition: !!user.schoolId },
     { icon: UserCircle2, labelEn: "Class", labelHi: "कक्षा", value: user.className ? `Class ${user.className}` : undefined },
     { icon: UserCircle2, labelEn: "Board", labelHi: "बोर्ड", value: user.board },
     { icon: UserCircle2, labelEn: "Stream", labelHi: "स्ट्रीम", value: user.stream, condition: (user.className === "11" || user.className === "12") && !!user.stream },
@@ -173,8 +189,8 @@ export default function ProfilePage() {
         <CardContent className="p-4 md:p-6">
           <div className="space-y-3">
             {profileItems.map((item, index) => {
-               if (item.condition === false) return null; // Skip if condition is explicitly false
-               if (!item.value && item.condition !== true) return null; // Skip if no value and condition not explicitly true
+               if (item.condition === false) return null; 
+               if (!item.value && item.condition !== true) return null; 
                return (
                   <div key={index} className="flex items-start text-sm">
                     <item.icon className="h-5 w-5 text-muted-foreground mr-3 mt-0.5 shrink-0" />
@@ -248,11 +264,52 @@ export default function ProfilePage() {
                  <Card key={cls.id} className="bg-muted/30 p-3">
                     <p className="text-sm font-semibold text-foreground">{cls.title} <span className="text-xs text-muted-foreground">({cls.subject})</span></p>
                     <p className="text-xs text-muted-foreground">Date: {cls.date} | Time: {cls.time} | Duration: {cls.duration}</p>
-                    {/* Add a button to view recording if available */}
                 </Card>
             )) : (
                 <p className="text-muted-foreground text-sm"><BilingualText en="No class history found." hi="कोई कक्षा इतिहास नहीं मिला।" /></p>
             )}
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline flex items-center gap-2">
+            <Trophy className="text-yellow-500 h-6 w-6" />
+            <BilingualText en="All India Rank &amp; Leaderboards" hi="अखिल भारतीय रैंक और लीडरबोर्ड" />
+          </CardTitle>
+          <CardDescription>
+            <BilingualText en="Compare your performance with peers across India." hi="पूरे भारत में साथियों के साथ अपने प्रदर्शन की तुलना करें।" />
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <Button variant="outline" size="sm"><BilingualText en="Class Toppers" hi="कक्षा टॉपर्स" /></Button>
+            <Button variant="outline" size="sm"><BilingualText en="Board Toppers" hi="बोर्ड टॉपर्स" /></Button>
+            <Button variant="outline" size="sm"><BilingualText en="Exam Toppers" hi="परीक्षा टॉपर्स" /></Button>
+            <Button variant="outline" size="sm" className="col-span-2 sm:col-span-3"><BilingualText en="My Combined Rank (School + Board + Exam)" hi="मेरी संयुक्त रैंक (स्कूल + बोर्ड + परीक्षा)" /></Button>
+          </div>
+          
+          <div className="mt-4">
+            <h4 className="text-sm font-semibold mb-2"><BilingualText en="Sample Leaderboard (All India NEET)" hi="नमूना लीडरबोर्ड (अखिल भारतीय नीट)" /></h4>
+            <ul className="space-y-2">
+              {mockLeaderboardSample.slice(0, 3).map(student => ( // Show top 3 for sample
+                <li key={student.rank} className="flex items-center justify-between p-2 bg-muted/30 rounded-md text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold w-6 text-center">{student.rank}.</span>
+                    <Avatar className="h-6 w-6">
+                        <AvatarImage src={student.avatarUrl} alt={student.name} data-ai-hint={student.dataAiHint || 'student avatar'}/>
+                        <AvatarFallback>{student.name.substring(0,1)}</AvatarFallback>
+                    </Avatar>
+                    <span>{student.name}</span>
+                  </div>
+                  <Badge variant={student.rank <=3 ? "default" : "secondary"} className="text-xs">{student.score}</Badge>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              <BilingualText en="Full leaderboards are coming soon!" hi="पूर्ण लीडरबोर्ड जल्द ही आ रहे हैं!" />
+            </p>
+          </div>
         </CardContent>
       </Card>
 
@@ -263,13 +320,12 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent>
             <p className="text-muted-foreground text-sm"><BilingualText en="Your badges and certificates will appear here." hi="आपके बैज और प्रमाण पत्र यहां दिखाई देंगे।" /></p>
-            {/* Placeholder for achievements list */}
         </CardContent>
       </Card>
       
       <Card>
         <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><Settings className="text-primary h-6 w-6"/> <BilingualText en="Settings & Preferences" hi="सेटिंग्स और प्राथमिकताएं" /></CardTitle>
+            <CardTitle className="font-headline flex items-center gap-2"><Settings className="text-primary h-6 w-6"/> <BilingualText en="Settings &amp; Preferences" hi="सेटिंग्स और प्राथमिकताएं" /></CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
             <Button asChild variant="outline" className="w-full justify-start gap-2">
