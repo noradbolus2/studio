@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mic, Send, Loader2, Paperclip, XCircle, FileText, Image as ImageIcon } from "lucide-react";
-import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow';
+import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/guruji-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -190,7 +190,7 @@ export default function AiGurujiPage() {
               <BilingualText en="Guruji" hi="गुरुजी" />
             </h1>
             <p className="text-xs text-muted-foreground">
-              <BilingualText en="Your personal AI study assistant" hi="आपका व्यक्तिगत एआई अध्ययन सहायक" />
+              <BilingualText en="Your personal study assistant" hi="आपका व्यक्तिगत अध्ययन सहायक" />
             </p>
           </div>
         </div>
