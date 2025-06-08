@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2 } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Badge } from '@/components/ui/badge';
 
 // Mock user data structure
 interface UserProfile {
@@ -29,6 +30,49 @@ interface UserProfile {
   state?: string;
   country?: string;
 }
+
+interface OrderHistoryItem {
+  id: string;
+  date: string;
+  status: 'Delivered' | 'Processing' | 'Shipped' | 'Cancelled';
+  total: number;
+  itemCount: number;
+}
+
+interface PaymentHistoryItem {
+  id: string;
+  date: string;
+  amount: number;
+  method: string;
+  status: 'Success' | 'Failed' | 'Pending';
+}
+
+interface ClassHistoryItem {
+  id: string;
+  title: string;
+  subject: string;
+  date: string;
+  time: string;
+  duration: string;
+}
+
+const mockOrderHistory: OrderHistoryItem[] = [
+  { id: "ORD12345", date: "2024-07-15", status: "Delivered", total: 245.00, itemCount: 3 },
+  { id: "ORD67890", date: "2024-07-10", status: "Shipped", total: 75.00, itemCount: 1 },
+  { id: "ORD24680", date: "2024-07-05", status: "Cancelled", total: 150.00, itemCount: 2 },
+];
+
+const mockPaymentHistory: PaymentHistoryItem[] = [
+  { id: "PAY78901", date: "2024-07-15", amount: 245.00, method: "UPI", status: "Success" },
+  { id: "PAY12345", date: "2024-07-10", amount: 75.00, method: "Credit Card", status: "Success" },
+  { id: "PAY54321", date: "2024-07-02", amount: 99.00, method: "Netbanking", status: "Failed" },
+];
+
+const mockClassHistory: ClassHistoryItem[] = [
+  { id: "CLS101", title: "Algebra Basics", subject: "Mathematics", date: "2024-07-12", time: "10:00 AM", duration: "1 hr" },
+  { id: "CLS102", title: "Introduction to Physics", subject: "Physics", date: "2024-07-09", time: "02:00 PM", duration: "45 mins" },
+];
+
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -63,6 +107,25 @@ export default function ProfilePage() {
     };
     fetchUserData();
   }, []);
+
+  const getOrderStatusBadge = (status: OrderHistoryItem['status']) => {
+    switch(status) {
+        case 'Delivered': return <Badge variant="default" className="bg-green-500 text-white">{status}</Badge>;
+        case 'Shipped': return <Badge variant="secondary" className="bg-blue-500 text-white">{status}</Badge>;
+        case 'Processing': return <Badge variant="outline" className="bg-yellow-500 text-white">{status}</Badge>;
+        case 'Cancelled': return <Badge variant="destructive">{status}</Badge>;
+        default: return <Badge>{status}</Badge>;
+    }
+  };
+
+  const getPaymentStatusBadge = (status: PaymentHistoryItem['status']) => {
+    switch(status) {
+        case 'Success': return <Badge variant="default" className="bg-green-500 text-white">{status}</Badge>;
+        case 'Failed': return <Badge variant="destructive">{status}</Badge>;
+        case 'Pending': return <Badge variant="outline" className="bg-yellow-500 text-white">{status}</Badge>;
+        default: return <Badge>{status}</Badge>;
+    }
+  };
 
   if (loading || !user) {
     return (
@@ -125,6 +188,74 @@ export default function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline flex items-center gap-2"><PackageSearch className="text-primary h-6 w-6"/> <BilingualText en="Order History" hi="ऑर्डर इतिहास" /></CardTitle>
+            <CardDescription><BilingualText en="View your past orders and their status." hi="अपने पिछले ऑर्डर और उनकी स्थिति देखें।" /></CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+            {mockOrderHistory.length > 0 ? mockOrderHistory.map(order => (
+                <Card key={order.id} className="bg-muted/30 p-3">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-sm font-semibold text-foreground">Order ID: {order.id}</p>
+                            <p className="text-xs text-muted-foreground">Date: {order.date} | {order.itemCount} items | Total: INR {order.total.toFixed(2)}</p>
+                        </div>
+                        {getOrderStatusBadge(order.status)}
+                    </div>
+                    <Button asChild variant="link" size="sm" className="p-0 h-auto mt-1.5 text-primary">
+                        <Link href={`/track-order/${order.id}`}>
+                            <BilingualText en="Track Your Order" hi="अपना ऑर्डर ट्रैक करें"/>
+                        </Link>
+                    </Button>
+                </Card>
+            )) : (
+                <p className="text-muted-foreground text-sm"><BilingualText en="No orders found." hi="कोई ऑर्डर नहीं मिला।" /></p>
+            )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline flex items-center gap-2"><Receipt className="text-green-500 h-6 w-6"/> <BilingualText en="Payment History" hi="भुगतान इतिहास" /></CardTitle>
+            <CardDescription><BilingualText en="Review your past transactions." hi="अपने पिछले लेनदेन की समीक्षा करें।" /></CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+            {mockPaymentHistory.length > 0 ? mockPaymentHistory.map(payment => (
+                <Card key={payment.id} className="bg-muted/30 p-3">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-sm font-semibold text-foreground">Transaction ID: {payment.id}</p>
+                            <p className="text-xs text-muted-foreground">Date: {payment.date} | Method: {payment.method} | Amount: INR {payment.amount.toFixed(2)}</p>
+                        </div>
+                        {getPaymentStatusBadge(payment.status)}
+                    </div>
+                </Card>
+            )) : (
+                <p className="text-muted-foreground text-sm"><BilingualText en="No payment history found." hi="कोई भुगतान इतिहास नहीं मिला।" /></p>
+            )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline flex items-center gap-2"><Video className="text-accent h-6 w-6"/> <BilingualText en="Class History" hi="कक्षा इतिहास" /></CardTitle>
+            <CardDescription><BilingualText en="Your attended live classes and sessions." hi="आपकी उपस्थित लाइव कक्षाएं और सत्र।" /></CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+            {mockClassHistory.length > 0 ? mockClassHistory.map(cls => (
+                 <Card key={cls.id} className="bg-muted/30 p-3">
+                    <p className="text-sm font-semibold text-foreground">{cls.title} <span className="text-xs text-muted-foreground">({cls.subject})</span></p>
+                    <p className="text-xs text-muted-foreground">Date: {cls.date} | Time: {cls.time} | Duration: {cls.duration}</p>
+                    {/* Add a button to view recording if available */}
+                </Card>
+            )) : (
+                <p className="text-muted-foreground text-sm"><BilingualText en="No class history found." hi="कोई कक्षा इतिहास नहीं मिला।" /></p>
+            )}
+        </CardContent>
+      </Card>
+
 
        <Card>
         <CardHeader>
