@@ -9,7 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   AreaChart, ShieldCheck, Eye, User, Users2, LogOut, ArrowLeftRight, Bell, Languages, Brain, Smile, Meh, Frown, Zap,
-  Package, BookOpen, TrendingUp, AlertTriangle, Award, Download, MessageSquare, CalendarCheck2, Printer, FileText, Notebook, PencilLine
+  Package, BookOpen, TrendingUp, AlertTriangle, Award, Download, MessageSquare, CalendarCheck2, Printer, FileText, Notebook, PencilLine,
+  ExternalLink, RadioTower, Clock, Edit
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -32,22 +33,22 @@ const brainScanData = {
   stressLevel: "Medium",
   stressEmoji: "😟",
   lastScan: "Monday",
-  color: "purple-500", // For glow effect
+  color: "purple-500", 
 };
 
 const mindDiaryData = [
-  { date: "Mon", emoji: "😊", label: "Happy" },
-  { date: "Tue", emoji: "😐", label: "Neutral" },
-  { date: "Wed", emoji: "😊", label: "Happy" },
-  { date: "Thu", emoji: "😔", label: "Sad" },
-  { date: "Fri", emoji: "😟", label: "Stressed" }, // Using a Lucide icon equivalent for stressed
-  { date: "Sat", emoji: "😊", label: "Happy" },
-  { date: "Sun", emoji: "😊", label: "Happy" },
+  { date: "Mon", emoji: <Smile size={24} className="text-yellow-400"/>, label: "Happy" },
+  { date: "Tue", emoji: <Meh size={24} className="text-blue-400"/>, label: "Neutral" },
+  { date: "Wed", emoji: <Smile size={24} className="text-yellow-400"/>, label: "Happy" },
+  { date: "Thu", emoji: <Frown size={24} className="text-purple-400"/>, label: "Sad" },
+  { date: "Fri", emoji: <Zap size={24} className="text-orange-400"/>, label: "Stressed" },
+  { date: "Sat", emoji: <Smile size={24} className="text-yellow-400"/>, label: "Happy" },
+  { date: "Sun", emoji: <Smile size={24} className="text-yellow-400"/>, label: "Happy" },
 ];
 
 const orderData = [
-  { id: "1", itemEn: "Notebook Pack", itemHi: "नोटबुक पैक", statusEn: "Delivered", statusHi: "डिलीवर हो गया", icon: Notebook, date:"Jul 15"},
-  { id: "2", itemEn: "Gel Pens (Set of 5)", itemHi: "जेल पेन (5 का सेट)", statusEn: "On the way", statusHi: "रास्ते में", icon: PencilLine, date: "Expected by 4PM Today"},
+  { id: "OSO78901", itemEn: "Notebook Pack (Classmate, 5 units)", itemHi: "नोटबुक पैक (क्लासमेट, 5 यूनिट)", statusEn: "Delivered", statusHi: "डिलीवर हो गया", icon: Notebook, date:"Jul 15, 2024"},
+  { id: "OSO78902", itemEn: "Gel Pens (Trimax Gold, Set of 3)", itemHi: "जेल पेन (ट्राइमैक्स गोल्ड, 3 का सेट)", statusEn: "On the way", statusHi: "रास्ते में", icon: PencilLine, date: "Expected by 4PM Today"},
 ];
 
 const studySummaryData = {
@@ -59,7 +60,7 @@ const studySummaryData = {
 const testPerformanceData = {
   testName: "Mock Test 1 (Physics)",
   score: 65,
-  weakAreas: "Organic Chemistry, Algebra", // Example, might not fit Physics test
+  weakAreas: "Organic Chemistry, Algebra", 
   gurujiSuggestion: "Revise concepts with AI notes & practice more numericals.",
 };
 
@@ -67,7 +68,7 @@ const goalsData = {
   studyStreak: 5,
   currentGoal: "Finish Physics Chapter 4",
   badgeUnlocked: "Early Bird Learner",
-  progress: 70, // percentage
+  progress: 70, 
 };
 
 const parentAlertsData = [
@@ -77,9 +78,9 @@ const parentAlertsData = [
 ];
 
 const downloadsData = [
-  { id: "doc1", nameEn: "School Circular - Summer Camp", nameHi: "स्कूल परिपत्र - ग्रीष्मकालीन शिविर", type: "PDF" },
-  { id: "doc2", nameEn: "Aanya's Term 1 Report Card", nameHi: "आन्या की पहली टर्म की रिपोर्ट कार्ड", type: "PDF" },
-  { id: "doc3", nameEn: "Learning Plan - July", nameHi: "सीखने की योजना - जुलाई", type: "PDF" },
+  { id: "doc1", nameEn: "School Circular - Summer Camp", nameHi: "स्कूल परिपत्र - ग्रीष्मकालीन शिविर", type: "PDF", icon: FileText },
+  { id: "doc2", nameEn: "Aanya's Term 1 Report Card", nameHi: "आन्या की पहली टर्म की रिपोर्ट कार्ड", type: "PDF", icon: FileText },
+  { id: "doc3", nameEn: "Learning Plan - July", nameHi: "सीखने की योजना - जुलाई", type: "PDF", icon: Edit },
 ];
 
 
@@ -108,12 +109,19 @@ export default function ParentDashboardPage() {
     router.push('/');
   };
   
-  const getStressEmoji = (level: string) => {
-    if (level.toLowerCase() === 'low') return '😊';
-    if (level.toLowerCase() === 'medium') return '😐';
-    if (level.toLowerCase() === 'high') return '😟';
-    return '🤔';
+  const getStressEmojiIcon = (level: string) => {
+    if (level.toLowerCase() === 'low') return <Smile size={18} className="text-green-400"/>;
+    if (level.toLowerCase() === 'medium') return <Meh size={18} className="text-yellow-400"/>;
+    if (level.toLowerCase() === 'high') return <Frown size={18} className="text-red-400"/>;
+    return <Meh size={18} className="text-gray-400"/>; // Default
   }
+
+  const handleMockAction = (actionName: string) => {
+    toast({
+        title: `${actionName} (Simulated)`,
+        description: `This feature is coming soon!`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-deep-space-indigo text-gray-200 font-sans space-y-5 pb-10 -m-4 p-4">
@@ -126,14 +134,14 @@ export default function ParentDashboardPage() {
             </Avatar>
             <div>
                 <p className="text-sm font-medium">{childData.name}</p>
-                <p className="text-xs text-gray-400">Parent: {parentData.name}</p>
+                <p className="text-xs text-gray-400"><BilingualText en="Parent:" hi="अभिभावक:" lang={currentLang}/> {parentData.name}</p>
             </div>
         </div>
         <div className="flex items-center gap-2">
           <Button onClick={handleLanguageToggle} variant="ghost" size="sm" className="text-xs h-7 px-2 text-gray-300 hover:bg-dark-glass-card hover:text-glow-aqua">
-            {currentLang === 'en' ? 'हिन्दी' : 'English'}
+            <Languages className="mr-1 h-3 w-3"/> {currentLang === 'en' ? 'हिन्दी' : 'English'}
           </Button>
-          <Button variant="ghost" size="icon" className="text-gray-300 hover:text-glow-aqua hover:bg-dark-glass-card relative h-8 w-8">
+          <Button variant="ghost" size="icon" className="text-gray-300 hover:text-glow-aqua hover:bg-dark-glass-card relative h-8 w-8" onClick={() => handleMockAction("View Notifications")}>
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-glow-yellow opacity-75"></span>
@@ -147,7 +155,7 @@ export default function ParentDashboardPage() {
       <Card className="bg-dark-glass-card border-glow-aqua/30 shadow-lg shadow-glow-aqua/10">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline text-glow-aqua">
-            <Brain className="h-6 w-6 animate-pulse" /> OSO Brain Scan™
+            <RadioTower className="h-6 w-6 animate-pulse" /> OSO Brain Scan™
           </CardTitle>
           <CardDescription className="text-gray-400 text-xs">
             <BilingualText en="Weekly AI Report Card" hi="साप्ताहिक एआई रिपोर्ट कार्ड" lang={currentLang} />
@@ -167,18 +175,20 @@ export default function ParentDashboardPage() {
               <p className="font-semibold text-green-400">{brainScanData.attentionSpan}</p>
               <p className="text-gray-400"><BilingualText en="Attention" hi="ध्यान" lang={currentLang}/></p>
             </div>
-            <div>
-              <p className="font-semibold flex items-center justify-center">
-                {getStressEmoji(brainScanData.stressLevel)} {brainScanData.stressLevel}
-              </p>
+            <div className="flex flex-col items-center">
+              <div className="font-semibold flex items-center justify-center gap-1">
+                {getStressEmojiIcon(brainScanData.stressLevel)} {brainScanData.stressLevel}
+              </div>
               <p className="text-gray-400"><BilingualText en="Stress" hi="तनाव" lang={currentLang}/></p>
             </div>
           </div>
           <p className="text-xs text-gray-500"><BilingualText en="Last scan:" hi="अंतिम स्कैन:" lang={currentLang}/> {brainScanData.lastScan}</p>
         </CardContent>
         <CardFooter>
-             <Button variant="outline" size="sm" className="w-full border-glow-aqua/50 text-glow-aqua hover:bg-glow-aqua/10 hover:text-glow-aqua">
-                <BilingualText en="View Full Weekly Report" hi="पूरी साप्ताहिक रिपोर्ट देखें" lang={currentLang}/>
+            <Button asChild variant="outline" size="sm" className="w-full border-glow-aqua/50 text-glow-aqua hover:bg-glow-aqua/10 hover:text-glow-aqua">
+                <Link href="/brain-scan-report">
+                    <BilingualText en="View Full Weekly Report" hi="पूरी साप्ताहिक रिपोर्ट देखें" lang={currentLang}/> <ExternalLink size={12} className="ml-1"/>
+                </Link>
             </Button>
         </CardFooter>
       </Card>
@@ -187,15 +197,15 @@ export default function ParentDashboardPage() {
       <Card className="bg-dark-glass-card border-gray-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline text-gray-200">
-            <Smile className="h-6 w-6 text-yellow-400" /> OSO Mind Diary™
+            <HeartPulse className="h-6 w-6 text-yellow-400" /> OSO Mind Diary™
           </CardTitle>
           <CardDescription className="text-gray-400 text-xs"><BilingualText en="Past 7 Days Emotional Check-ins" hi="पिछले 7 दिनों के भावनात्मक चेक-इन" lang={currentLang}/></CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex justify-around items-end p-2 bg-gray-900/30 rounded-md min-h-[60px]">
             {mindDiaryData.map(day => (
-              <div key={day.date} className="flex flex-col items-center text-center">
-                <span className="text-2xl mb-0.5">{day.emoji}</span>
+              <div key={day.date} className="flex flex-col items-center text-center" title={day.label}>
+                {day.emoji}
                 <span className="text-[0.6rem] text-gray-400">{day.date}</span>
               </div>
             ))}
@@ -207,7 +217,7 @@ export default function ParentDashboardPage() {
       <Card className="bg-dark-glass-card border-gray-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline text-gray-200">
-            <Package className="h-6 w-6 text-orange-400" /> OSO Orders
+            <Truck className="h-6 w-6 text-orange-400" /> OSO Orders
           </CardTitle>
           <CardDescription className="text-gray-400 text-xs"><BilingualText en="Delivery Tracker for Study Items" hi="अध्ययन सामग्री के लिए डिलीवरी ट्रैकर" lang={currentLang}/></CardDescription>
         </CardHeader>
@@ -221,13 +231,17 @@ export default function ParentDashboardPage() {
                     <p className="text-gray-400"><BilingualText en={order.statusEn} hi={order.statusHi} lang={currentLang}/> - {order.date}</p>
                 </div>
               </div>
-              <Link href={`/track-order/${order.id}`} className="text-orange-400 hover:underline"><BilingualText en="Track" hi="ट्रैक" lang={currentLang}/></Link>
+              <Button asChild variant="link" size="sm" className="p-0 h-auto text-orange-400 hover:underline">
+                 <Link href={`/track-order/${order.id}`}>
+                    <BilingualText en="Track" hi="ट्रैक" lang={currentLang}/>
+                 </Link>
+              </Button>
             </div>
           ))}
         </CardContent>
         <CardFooter>
-            <Button variant="link" className="w-full text-orange-400 justify-start p-0 h-auto">
-                 <BilingualText en="View Full Order History" hi="पूरा ऑर्डर इतिहास देखें" lang={currentLang}/>
+            <Button variant="link" className="w-full text-orange-400 justify-start p-0 h-auto text-xs" onClick={() => handleMockAction("View Full Order History")}>
+                 <BilingualText en="View Full Order History" hi="पूरा ऑर्डर इतिहास देखें" lang={currentLang}/> <ExternalLink size={12} className="ml-1"/>
             </Button>
         </CardFooter>
       </Card>
@@ -241,13 +255,13 @@ export default function ParentDashboardPage() {
           <CardDescription className="text-gray-400 text-xs"><BilingualText en="Child's learning activity this week" hi="इस सप्ताह बच्चे की सीखने की गतिविधि" lang={currentLang}/></CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <p>✅ {studySummaryData.chaptersCompleted} <BilingualText en="chapters completed" hi="अध्याय पूरे हुए" lang={currentLang}/></p>
-          <p>❌ {studySummaryData.topicsUnclear} <BilingualText en="topics unclear (AI Flagged)" hi="विषय अस्पष्ट (AI द्वारा चिह्नित)" lang={currentLang}/></p>
-          <p>📚 <BilingualText en="Avg. study time:" hi="औसत अध्ययन समय:" lang={currentLang}/> {studySummaryData.avgStudyTime}</p>
+          <p><CheckCircle size={14} className="inline mr-1 text-green-400"/> {studySummaryData.chaptersCompleted} <BilingualText en="chapters completed" hi="अध्याय पूरे हुए" lang={currentLang}/></p>
+          <p><AlertTriangle size={14} className="inline mr-1 text-yellow-400"/> {studySummaryData.topicsUnclear} <BilingualText en="topics unclear (AI Flagged)" hi="विषय अस्पष्ट (AI द्वारा चिह्नित)" lang={currentLang}/></p>
+          <p><Clock size={14} className="inline mr-1 text-gray-400"/> <BilingualText en="Avg. study time:" hi="औसत अध्ययन समय:" lang={currentLang}/> {studySummaryData.avgStudyTime}</p>
         </CardContent>
          <CardFooter>
-            <Button variant="link" className="w-full text-blue-400 justify-start p-0 h-auto">
-                 <BilingualText en="View Learning Timeline" hi="सीखने की टाइमलाइन देखें" lang={currentLang}/>
+            <Button variant="link" className="w-full text-blue-400 justify-start p-0 h-auto text-xs" onClick={() => handleMockAction("View Learning Timeline")}>
+                 <BilingualText en="View Learning Timeline" hi="सीखने की टाइमलाइन देखें" lang={currentLang}/> <ExternalLink size={12} className="ml-1"/>
             </Button>
         </CardFooter>
       </Card>
@@ -261,13 +275,13 @@ export default function ParentDashboardPage() {
            <CardDescription className="text-gray-400 text-xs"><BilingualText en="Latest mock test results" hi="नवीनतम मॉक टेस्ट परिणाम" lang={currentLang}/></CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <p>📊 {testPerformanceData.testName}: <span className="font-bold">{testPerformanceData.score}%</span></p>
-          <p>🧠 <BilingualText en="Weak Areas:" hi="कमजोर क्षेत्र:" lang={currentLang}/> {testPerformanceData.weakAreas}</p>
-          <p className="text-glow-aqua/90">💡 <BilingualText en="Guruji's Suggestion:" hi="गुरुजी का सुझाव:" lang={currentLang}/> {testPerformanceData.gurujiSuggestion}</p>
+          <p><FileText size={14} className="inline mr-1 text-gray-400"/> {testPerformanceData.testName}: <span className="font-bold">{testPerformanceData.score}%</span></p>
+          <p><Zap size={14} className="inline mr-1 text-yellow-400"/> <BilingualText en="Weak Areas:" hi="कमजोर क्षेत्र:" lang={currentLang}/> {testPerformanceData.weakAreas}</p>
+          <p className="text-glow-aqua/90"><MessageSquare size={14} className="inline mr-1"/> <BilingualText en="Guruji's Suggestion:" hi="गुरुजी का सुझाव:" lang={currentLang}/> {testPerformanceData.gurujiSuggestion}</p>
         </CardContent>
          <CardFooter>
-            <Button variant="link" className="w-full text-green-400 justify-start p-0 h-auto">
-                 <BilingualText en="View Full Test Series Analysis" hi="पूर्ण टेस्ट सीरीज़ विश्लेषण देखें" lang={currentLang}/>
+            <Button variant="link" className="w-full text-green-400 justify-start p-0 h-auto text-xs" onClick={() => handleMockAction("View Full Test Series Analysis")}>
+                 <BilingualText en="View Full Test Series Analysis" hi="पूर्ण टेस्ट सीरीज़ विश्लेषण देखें" lang={currentLang}/> <ExternalLink size={12} className="ml-1"/>
             </Button>
         </CardFooter>
       </Card>
@@ -280,11 +294,11 @@ export default function ParentDashboardPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <p>📅 {goalsData.studyStreak} <BilingualText en="days study streak" hi="दिनों की अध्ययन लकीर" lang={currentLang}/> 🔥</p>
-          <p>📖 <BilingualText en="Goal:" hi="लक्ष्य:" lang={currentLang}/> {goalsData.currentGoal}</p>
+          <p><CalendarCheck2 size={14} className="inline mr-1 text-yellow-400"/> {goalsData.studyStreak} <BilingualText en="days study streak" hi="दिनों की अध्ययन लकीर" lang={currentLang}/> 🔥</p>
+          <p><Target size={14} className="inline mr-1 text-gray-400"/> <BilingualText en="Goal:" hi="लक्ष्य:" lang={currentLang}/> {goalsData.currentGoal}</p>
           <Progress value={goalsData.progress} className="h-2.5 [&>div]:bg-gradient-to-r [&>div]:from-yellow-400 [&>div]:to-orange-500 shadow-inner shadow-black/20" />
           <p className="text-xs text-right">{goalsData.progress}% <BilingualText en="complete" hi="पूर्ण" lang={currentLang}/></p>
-          <p>🏆 <BilingualText en="Badge Unlocked:" hi="बैज अनलॉक किया गया:" lang={currentLang}/> <span className="font-semibold text-yellow-400">{goalsData.badgeUnlocked}</span></p>
+          <p><ShieldCheck size={14} className="inline mr-1 text-green-400"/> <BilingualText en="Badge Unlocked:" hi="बैज अनलॉक किया गया:" lang={currentLang}/> <span className="font-semibold text-yellow-400">{goalsData.badgeUnlocked}</span></p>
         </CardContent>
       </Card>
 
@@ -292,7 +306,7 @@ export default function ParentDashboardPage() {
       <Card className="bg-dark-glass-card border-gray-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline text-gray-200">
-            <AlertTriangle className="h-6 w-6 text-glow-yellow" /> <BilingualText en="Parent Alerts" hi="अभिभावक अलर्ट" lang={currentLang}/>
+            <Bell className="h-6 w-6 text-glow-yellow animate-pulse" style={{animationDuration: '1.5s'}} /> <BilingualText en="Parent Alerts" hi="अभिभावक अलर्ट" lang={currentLang}/>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2.5">
@@ -314,8 +328,13 @@ export default function ParentDashboardPage() {
         </CardHeader>
         <CardContent className="space-y-2">
             {downloadsData.map(doc => (
-                <Button key={doc.id} variant="outline" className="w-full justify-start gap-2 text-gray-300 border-gray-700 hover:bg-gray-700/50 hover:text-glow-aqua text-xs">
-                    <FileText size={16}/>
+                <Button 
+                    key={doc.id} 
+                    variant="outline" 
+                    className="w-full justify-start gap-2 text-gray-300 border-gray-700 hover:bg-gray-700/50 hover:text-glow-aqua text-xs"
+                    onClick={() => handleMockAction(`Download: ${doc.nameEn}`)}
+                >
+                    <doc.icon size={16}/>
                     <span><BilingualText en={doc.nameEn} hi={doc.nameHi} lang={currentLang}/> ({doc.type})</span>
                 </Button>
             ))}
@@ -331,13 +350,13 @@ export default function ParentDashboardPage() {
           <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:text-glow-aqua justify-start gap-1.5" onClick={handleSwitchToStudentMode}>
             <ArrowLeftRight size={14}/> <BilingualText en="Student View" hi="छात्र दृश्य" lang={currentLang}/>
           </Button>
-          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:text-glow-aqua justify-start gap-1.5">
+          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:text-glow-aqua justify-start gap-1.5" onClick={() => handleMockAction("Chat Support")}>
             <MessageSquare size={14}/> <BilingualText en="Chat Support" hi="चैट सहायता" lang={currentLang}/>
           </Button>
-           <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:text-glow-aqua justify-start gap-1.5">
+           <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:text-glow-aqua justify-start gap-1.5" onClick={() => handleMockAction("Schedule PTM")}>
             <CalendarCheck2 size={14}/> <BilingualText en="Schedule PTM" hi="PTM शेड्यूल करें" lang={currentLang}/>
           </Button>
-          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:text-glow-aqua justify-start gap-1.5">
+          <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-700/50 hover:text-glow-aqua justify-start gap-1.5" onClick={() => handleMockAction("Print Report")}>
             <Printer size={14}/> <BilingualText en="Print Report" hi="रिपोर्ट प्रिंट करें" lang={currentLang}/>
           </Button>
           <Button variant="destructive" className="col-span-2 bg-red-700/50 border-red-600 text-red-200 hover:bg-red-600/70 justify-start gap-1.5" onClick={handleLogout}>
