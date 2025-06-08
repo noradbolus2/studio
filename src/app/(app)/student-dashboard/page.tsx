@@ -12,11 +12,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
 import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow';
+import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData type
 
 interface ChatMessage {
   id: string;
   role: 'user' | 'guru';
-  text: string; // Single text field
+  text: string; 
   timestamp: Date;
 }
 
@@ -59,7 +60,31 @@ export default function StudentDashboardPage() {
     setIsGurujiLoading(true);
 
     try {
-      const gurujiApiInput: GurujiInput = { userInput: trimmedInput };
+      let profileContext: Partial<ProfileFormData> = {};
+      if (typeof window !== "undefined") {
+        const storedProfile = localStorage.getItem('userProfileData');
+        if (storedProfile) {
+          try {
+            const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+            profileContext = {
+              className: parsedProfile.className,
+              board: parsedProfile.board,
+              stream: parsedProfile.stream,
+              examTarget: parsedProfile.examTarget,
+            };
+          } catch (err) {
+            console.warn("Could not parse profile data from localStorage for Student Dashboard Guruji context:", err);
+          }
+        }
+      }
+
+      const gurujiApiInput: GurujiInput = { 
+        userInput: trimmedInput,
+        studentClass: profileContext.className,
+        studentBoard: profileContext.board,
+        studentStream: profileContext.stream,
+        studentExamTarget: profileContext.examTarget,
+      };
       const response = await askGuruji(gurujiApiInput);
       
       if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
@@ -232,3 +257,4 @@ declare module 'react' {
     }
   }
 
+    

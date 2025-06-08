@@ -8,23 +8,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mic, Send, Loader2, Paperclip, XCircle, FileText, Image as ImageIcon } from "lucide-react";
-import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/guruji-flow';
+import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow'; // Changed import
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
+import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData type
 
 interface Message {
   id: string;
   role: 'user' | 'guru';
   text: string; 
-  attachmentPreview?: AttachmentPreview | null; // Add attachment info to message
+  attachmentPreview?: AttachmentPreview | null;
   timestamp: Date;
 }
 
 interface AttachmentPreview {
   name: string;
-  type: string; // MIME type
-  dataUri: string | null; // Base64 data URI for images, null for other docs for now
+  type: string; 
+  dataUri: string | null; 
   isImage: boolean;
 }
 
@@ -35,7 +36,7 @@ const ALLOWED_DOC_TYPES = ['application/pdf', 'application/msword', 'application
 const ALLOWED_FILE_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOC_TYPES];
 
 
-export default function AiGurujiPage() {
+export default function GurujiPage() { // Renamed component for clarity
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +68,7 @@ export default function AiGurujiPage() {
       if (file.size > MAX_FILE_SIZE_BYTES) {
         toast({ title: "File Too Large", description: `Please select a file smaller than ${MAX_FILE_SIZE_MB}MB.`, variant: "destructive"});
         setAttachmentPreview(null);
-        if(fileInputRef.current) fileInputRef.current.value = ""; // Reset file input
+        if(fileInputRef.current) fileInputRef.current.value = ""; 
         return;
       }
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
@@ -84,7 +85,7 @@ export default function AiGurujiPage() {
         setAttachmentPreview({
           name: file.name,
           type: file.type,
-          dataUri: isImage ? reader.result as string : null, // Only store data URI for images to send
+          dataUri: isImage ? reader.result as string : null, 
           isImage: isImage,
         });
       };
@@ -93,14 +94,14 @@ export default function AiGurujiPage() {
         setAttachmentPreview(null);
         if(fileInputRef.current) fileInputRef.current.value = "";
       };
-      reader.readAsDataURL(file); // Always read as data URL for simplicity, even if only images use it for AI
+      reader.readAsDataURL(file); 
     }
   };
 
   const removeAttachment = () => {
     setAttachmentPreview(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Reset the file input
+      fileInputRef.current.value = ""; 
     }
   };
 
@@ -108,7 +109,7 @@ export default function AiGurujiPage() {
   const handleSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     const trimmedInput = inputValue.trim();
-    if (!trimmedInput && !attachmentPreview) { // Allow sending if only attachment exists
+    if (!trimmedInput && !attachmentPreview) { 
       toast({ title: "Empty Message", description: "Please type a message or attach a file.", variant: "default"});
       return;
     }
@@ -118,17 +119,41 @@ export default function AiGurujiPage() {
       id: `user-${Date.now()}`,
       role: 'user',
       text: trimmedInput,
-      attachmentPreview: attachmentPreview, // Save preview with message for display
+      attachmentPreview: attachmentPreview, 
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
-    // Do not clear attachmentPreview here, it will be cleared after successful send in finally block
-
+    
     setIsLoading(true);
 
     try {
-      const gurujiInput: GurujiInput = { userInput: trimmedInput };
+      let profileContext: Partial<ProfileFormData> = {};
+      if (typeof window !== "undefined") {
+        const storedProfile = localStorage.getItem('userProfileData');
+        if (storedProfile) {
+          try {
+            const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+            profileContext = {
+              className: parsedProfile.className,
+              board: parsedProfile.board,
+              stream: parsedProfile.stream,
+              examTarget: parsedProfile.examTarget,
+            };
+          } catch (err) {
+            console.warn("Could not parse profile data from localStorage for Guruji context:", err);
+          }
+        }
+      }
+
+      const gurujiInput: GurujiInput = { 
+        userInput: trimmedInput,
+        studentClass: profileContext.className,
+        studentBoard: profileContext.board,
+        studentStream: profileContext.stream,
+        studentExamTarget: profileContext.examTarget,
+      };
+
       if (attachmentPreview) {
         gurujiInput.attachmentInfo = {
           name: attachmentPreview.name,
@@ -173,7 +198,7 @@ export default function AiGurujiPage() {
       setMessages(prev => [...prev, errorResponse]);
     } finally {
       setIsLoading(false);
-      removeAttachment(); // Clear attachment after attempt (success or fail)
+      removeAttachment(); 
     }
   };
 

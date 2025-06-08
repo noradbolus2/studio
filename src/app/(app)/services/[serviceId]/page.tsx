@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
+import type { ProfileFormData } from '../../edit-profile/page'; // Import ProfileFormData type
 
 
 // Define a type for your service data for better type safety
@@ -187,11 +188,10 @@ export default function ServicePage() {
                 timestamp: new Date() 
               }]);
             }
-             // Set active tab for project/assignment help based on serviceId
             if (fetchedData.type === "interactive_assignment_project_help") {
-              if (serviceId === "projects") setActiveTab("science_model"); // Default to science model for "projects"
-              else if (serviceId === "assignments") setActiveTab("essay_research"); // Default to essay for "assignments"
-              else setActiveTab(projectCategories[0].id); // Fallback
+              if (serviceId === "projects") setActiveTab("science_model"); 
+              else if (serviceId === "assignments") setActiveTab("essay_research"); 
+              else setActiveTab(projectCategories[0].id); 
             }
           } else {
              setError(`${INFO_PREFIX}Content not available yet for the '${serviceId}' service. Please ensure it is configured in Firestore or mock data.`);
@@ -244,7 +244,31 @@ export default function ServicePage() {
     setServicePageChatIsLoading(true);
 
     try {
-      const gurujiInput: GurujiInput = { userInput: trimmedInput };
+      let profileContext: Partial<ProfileFormData> = {};
+      if (typeof window !== "undefined") {
+        const storedProfile = localStorage.getItem('userProfileData');
+        if (storedProfile) {
+          try {
+            const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+            profileContext = {
+              className: parsedProfile.className,
+              board: parsedProfile.board,
+              stream: parsedProfile.stream,
+              examTarget: parsedProfile.examTarget,
+            };
+          } catch (err) {
+            console.warn("Could not parse profile data from localStorage for Service Page Guruji context:", err);
+          }
+        }
+      }
+      
+      const gurujiInput: GurujiInput = { 
+        userInput: trimmedInput,
+        studentClass: profileContext.className,
+        studentBoard: profileContext.board,
+        studentStream: profileContext.stream,
+        studentExamTarget: profileContext.examTarget,
+      };
       const response = await askGuruji(gurujiInput);
       
       if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
@@ -936,4 +960,4 @@ declare module "@radix-ui/react-select" {
   }
 }
 
-
+    
