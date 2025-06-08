@@ -47,15 +47,14 @@ export default function LoginPage() {
   };
 
   const handleStudentLogin = () => {
-    toast({ title: "Student Login", description: "Proceeding to student login/signup..." });
-    // In a real app, navigate to student login flow
-     router.push("/edit-profile?loginType=direct&isNewUser=false"); // Example navigation
+    toast({ title: "Student Entry", description: "Proceeding to student profile setup..." });
+    // Navigate to edit-profile, treating it as a new user/profile setup
+    router.push("/edit-profile?loginType=direct&isNewUser=true&email=new.student@example.com"); 
   };
 
   const handleParentLogin = () => {
-    toast({ title: "Parent Login", description: "Proceeding to parent login/signup..." });
-    // In a real app, navigate to parent login flow
-    router.push("/parent-mode"); // Example navigation
+    toast({ title: "Parent Login", description: "Proceeding to parent dashboard..." });
+    router.push("/parent-mode");
   };
 
   const handleSchoolLogin = () => {
