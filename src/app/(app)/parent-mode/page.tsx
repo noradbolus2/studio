@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   AreaChart, ShieldCheck, Eye, User, Users2, LogOut, ArrowLeftRight, Bell, Languages, Brain, Smile, Meh, Frown, Zap,
   Package, BookOpen, TrendingUp, AlertTriangle, Award, Download, MessageSquare, CalendarCheck2, Printer, FileText, Notebook, PencilLine,
-  ExternalLink, RadioTower, Clock, Edit, HeartPulse // Added HeartPulse here
+  ExternalLink, RadioTower, Clock, Edit, HeartPulse, Truck, CheckCircle, Target, // Added Truck here
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -373,5 +373,3 @@ export default function ParentDashboardPage() {
   );
 }
 
-
-    
