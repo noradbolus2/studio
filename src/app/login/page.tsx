@@ -48,7 +48,6 @@ export default function LoginPage() {
 
   const handleStudentLogin = () => {
     toast({ title: "Student Entry", description: "Proceeding to student profile setup..." });
-    // Navigate to edit-profile, treating it as a new user/profile setup
     router.push("/edit-profile?loginType=direct&isNewUser=true&email=new.student@example.com"); 
   };
 
@@ -98,12 +97,12 @@ export default function LoginPage() {
         {/* Top Section: Branding */}
         <div className="mb-10">
           <Image
-            src="https://placehold.co/100x100/FFB6C1/3B0A4E?text=OSO&font=poppins" // Placeholder, Light Pink glow
+            src="https://placehold.co/100x100/FFD700/3B0A4E?text=S&font=poppins" 
             alt="OSO App Logo"
             width={80}
             height={80}
             className="mx-auto mb-4 rounded-full shadow-logo-glow"
-            data-ai-hint="app logo glowing"
+            data-ai-hint="oso logo yellow"
           />
           <p className="text-base font-bold text-white">
             <BilingualText en="India’s 1st Edu + Delivery App" hi="भारत का पहला एडु + डिलीवरी ऐप" lang={currentLang} />
