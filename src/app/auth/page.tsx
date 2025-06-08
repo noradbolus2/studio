@@ -27,11 +27,12 @@ export default function AuthPage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
+  const selectedRole = searchParams.get('role');
+
   useEffect(() => {
-    const roleParam = searchParams.get('role');
-    // You can use roleParam if you want to customize the auth page title or behavior based on role
-    // For now, it's not explicitly used to change the form itself.
-  }, [searchParams]);
+    // Can use selectedRole to customize titles or behavior if needed
+    console.log("Selected role on auth page:", selectedRole);
+  }, [selectedRole]);
 
   const handleLanguageToggle = () => {
     setCurrentLang(prevLang => (prevLang === 'en' ? 'hi' : 'en'));
@@ -40,6 +41,8 @@ export default function AuthPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    let redirectPath = '/'; // Default redirect path
 
     if (mode === 'signUp') {
       if (password !== confirmPassword) {
@@ -53,12 +56,12 @@ export default function AuthPage() {
         return;
       }
       // Simulate sign up
-      localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName }));
-      localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName }));
-      localStorage.setItem('userProfileData', JSON.stringify({ email, fullName, avatarUrl: '', country: 'India' }));
-
+      localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName, role: selectedRole || 'student' }));
+      localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName, role: selectedRole || 'student' }));
+      // For new sign-ups, always go to edit-profile first
+      redirectPath = `/edit-profile?email=${encodeURIComponent(email)}&fullName=${encodeURIComponent(fullName)}&role=${selectedRole || 'student'}&isNewUser=true`;
       toast({ title: "Sign Up Successful", description: "Welcome! Please complete your profile." });
-      router.push(`/edit-profile?email=${encodeURIComponent(email)}&fullName=${encodeURIComponent(fullName)}&isNewUser=true`);
+
     } else { // Sign In
       if (!email.trim() || !password.trim()) {
         toast({ title: "Error", description: "Email and password are required.", variant: "destructive" });
@@ -69,24 +72,40 @@ export default function AuthPage() {
       if (storedCredentialsString) {
         const storedCredentials = JSON.parse(storedCredentialsString);
         if (storedCredentials.password === password) {
-          localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName }));
+          const userRole = storedCredentials.role || selectedRole || 'student';
+          localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole }));
           toast({ title: "Sign In Successful", description: "Welcome back!" });
-          router.push('/');
+          
+          // Determine redirect path based on role
+          switch (userRole) {
+            case 'parent': redirectPath = '/parent-mode'; break;
+            case 'school': redirectPath = '/school-dashboard'; break;
+            case 'vendor': redirectPath = '/vendor-dashboard'; break;
+            case 'creator': redirectPath = '/creator-dashboard'; break;
+            case 'student':
+            default: redirectPath = '/'; break;
+          }
         } else {
           toast({ title: "Sign In Failed", description: "Invalid credentials.", variant: "destructive" });
+          setIsLoading(false);
+          return;
         }
       } else {
         toast({ title: "Sign In Failed", description: "User not found. Please sign up.", variant: "destructive" });
+        setIsLoading(false);
+        return;
       }
     }
-    setIsLoading(false);
+    
+    router.push(redirectPath);
+    // setIsLoading(false); // This might cause issues if router.push is slow, better to let page unmount
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-6 font-body relative">
       <div className="absolute top-6 left-6 z-10">
         <Button
-            onClick={() => router.push('/login')}
+            onClick={() => router.push('/login')} // Go back to role selection
             variant="outline"
             size="icon"
             className="text-foreground hover:bg-accent/10"
@@ -123,6 +142,11 @@ export default function AuthPage() {
                 <BilingualText en="Sign In" hi="साइन इन करें" lang={currentLang} />
               ) : (
                 <BilingualText en="Sign Up" hi="साइन अप करें" lang={currentLang} />
+              )}
+              {selectedRole && (
+                <span className="text-sm text-muted-foreground block mt-1">
+                  (<BilingualText en={`as ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}`} hi={`${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)} के रूप में`} lang={currentLang} />)
+                </span>
               )}
             </CardTitle>
             <CardDescription>

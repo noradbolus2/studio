@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Languages, User, Briefcase, School, UserCheck, LogIn } from "lucide-react"; // Added new icons
+import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon } from "lucide-react"; // Added CreatorIcon
 import { Button } from "@/components/ui/button";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
@@ -17,10 +17,16 @@ export default function RoleSelectionPage() {
   };
 
   const handleRoleSelection = (role: string) => {
-    // For now, all roles will navigate to the auth page.
-    // This can be customized later if different roles have different auth flows.
     router.push(`/auth?role=${role}`);
   };
+
+  const roles = [
+    { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User },
+    { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck },
+    { role: 'school', labelEn: 'School', labelHi: 'स्कूल', icon: School },
+    { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase },
+    { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon }, // Added Creator role
+  ];
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-6 font-body relative">
@@ -61,12 +67,7 @@ export default function RoleSelectionPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {[
-              { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User },
-              { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck },
-              { role: 'school', labelEn: 'School', labelHi: 'स्कूल', icon: School },
-              { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase },
-            ].map(item => (
+            {roles.map(item => (
               <Button
                 key={item.role}
                 variant="outline"
