@@ -1,6 +1,8 @@
+
 "use client"; // For useRouter and mock data state
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,6 +12,7 @@ import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 // Mock user data structure
 interface UserProfile {
@@ -94,6 +97,8 @@ const mockLeaderboardSample: LeaderboardEntry[] = [
 export default function ProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // Initialize router
+  const { toast } = useToast(); // Initialize toast
 
   // Simulate fetching user data
   useEffect(() => {
@@ -123,6 +128,15 @@ export default function ProfilePage() {
     };
     fetchUserData();
   }, []);
+
+  const handleLogout = () => {
+    // Simulate logout (e.g., clear auth tokens if any)
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    router.push('/login'); // Redirect to login page
+  };
 
   const getOrderStatusBadge = (status: OrderHistoryItem['status']) => {
     switch(status) {
@@ -275,7 +289,7 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle className="font-headline flex items-center gap-2">
             <Trophy className="text-yellow-500 h-6 w-6" />
-            <BilingualText en="All India Rank &amp; Leaderboards" hi="अखिल भारतीय रैंक और लीडरबोर्ड" />
+            <BilingualText en="All India Rank & Leaderboards" hi="अखिल भारतीय रैंक और लीडरबोर्ड" />
           </CardTitle>
           <CardDescription>
             <BilingualText en="Compare your performance with peers across India." hi="पूरे भारत में साथियों के साथ अपने प्रदर्शन की तुलना करें।" />
@@ -325,7 +339,7 @@ export default function ProfilePage() {
       
       <Card>
         <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><Settings className="text-primary h-6 w-6"/> <BilingualText en="Settings &amp; Preferences" hi="सेटिंग्स और प्राथमिकताएं" /></CardTitle>
+            <CardTitle className="font-headline flex items-center gap-2"><Settings className="text-primary h-6 w-6"/> <BilingualText en="Settings & Preferences" hi="सेटिंग्स और प्राथमिकताएं" /></CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
             <Button asChild variant="outline" className="w-full justify-start gap-2">
@@ -349,7 +363,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
       
-      <Button variant="destructive" className="w-full">
+      <Button variant="destructive" className="w-full" onClick={handleLogout}>
         <LogOut className="mr-2 h-5 w-5" />
         <BilingualText en="Logout" hi="लॉग आउट" />
       </Button>
