@@ -1,8 +1,8 @@
 
-"use client"; // For useRouter and mock data state
+"use client"; 
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation'; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,27 +12,16 @@ import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { useToast } from '@/hooks/use-toast'; // Import useToast
+import { useToast } from '@/hooks/use-toast'; 
+import { format } from "date-fns";
+import type { ProfileFormData } from '../edit-profile/page'; // Import the type
 
-// Mock user data structure
-interface UserProfile {
-  fullName: string;
-  email: string;
-  avatarUrl?: string;
+// UserProfile interface now mirrors ProfileFormData for easier mapping, with display-specific transformations done in JSX
+interface UserProfileDisplay extends Omit<ProfileFormData, 'dateOfBirth'> {
   initials?: string;
-  phoneNumber?: string;
-  schoolName?: string;
-  schoolId?: string;
-  className?: string;
-  board?: string;
-  stream?: string;
-  dateOfBirth?: string; // Store as string for display
-  gender?: string;
-  examTarget?: string;
-  city?: string;
-  state?: string;
-  country?: string;
+  dateOfBirth?: string; // For display
 }
+
 
 interface OrderHistoryItem {
   id: string;
@@ -95,47 +84,74 @@ const mockLeaderboardSample: LeaderboardEntry[] = [
 
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserProfileDisplay | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // Initialize router
-  const { toast } = useToast(); // Initialize toast
+  const router = useRouter(); 
+  const { toast } = useToast(); 
 
-  // Simulate fetching user data
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-      const mockUser: UserProfile = {
-        fullName: "Aarav Sharma",
-        email: "aarav.sharma@example.com",
-        avatarUrl: "https://placehold.co/100x100.png",
-        initials: "AS",
-        phoneNumber: "+91 98765 43210",
-        schoolName: "Demo Public School",
-        schoolId: "DPS123XYZ", 
-        className: "11",
-        board: "CBSE",
-        stream: "Science",
-        dateOfBirth: "15 Aug 2006",
-        gender: "Male",
-        examTarget: "JEE, NEET",
-        city: "Bengaluru",
-        state: "Karnataka",
-        country: "India",
-      };
-      setUser(mockUser);
+      await new Promise(resolve => setTimeout(resolve, 500)); // Shorter delay
+
+      let profileToDisplay: UserProfileDisplay;
+
+      if (typeof window !== "undefined") {
+        const storedProfileString = localStorage.getItem('userProfileData');
+        if (storedProfileString) {
+          try {
+            const storedProfile = JSON.parse(storedProfileString) as ProfileFormData & { dateOfBirth?: string }; // Expect dateOfBirth as string from localStorage
+            profileToDisplay = {
+              ...storedProfile,
+              initials: storedProfile.fullName ? storedProfile.fullName.substring(0, 2).toUpperCase() : "NA",
+              dateOfBirth: storedProfile.dateOfBirth ? format(new Date(storedProfile.dateOfBirth), "dd MMM yyyy") : undefined,
+            };
+          } catch (e) {
+            console.error("Failed to parse profile from localStorage, using mock.", e);
+            profileToDisplay = getMockUser(); // Fallback to mock if parsing fails
+          }
+        } else {
+          profileToDisplay = getMockUser(); // Use mock if nothing in localStorage
+        }
+      } else {
+        profileToDisplay = getMockUser(); // Fallback for SSR or if window is not defined
+      }
+      
+      setUser(profileToDisplay);
       setLoading(false);
     };
+
+    const getMockUser = (): UserProfileDisplay => ({
+      fullName: "Aarav Sharma",
+      email: "aarav.sharma@example.com",
+      avatarUrl: "https://placehold.co/100x100.png",
+      initials: "AS",
+      phoneNumber: "+91 98765 43210",
+      schoolName: "Demo Public School",
+      schoolId: "DPS123XYZ", 
+      className: "11",
+      board: "CBSE",
+      stream: "Science",
+      dateOfBirth: format(new Date(2006, 7, 15), "dd MMM yyyy"), // "15 Aug 2006"
+      gender: "Male",
+      examTarget: "JEE, NEET",
+      city: "Bengaluru",
+      state: "Karnataka",
+      country: "India",
+    });
+
     fetchUserData();
   }, []);
 
   const handleLogout = () => {
-    // Simulate logout (e.g., clear auth tokens if any)
+    if (typeof window !== "undefined") {
+        localStorage.removeItem('userProfileData'); // Clear stored profile on logout
+    }
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
-    router.push('/login'); // Redirect to login page
+    router.push('/login'); 
   };
 
   const getOrderStatusBadge = (status: OrderHistoryItem['status']) => {
@@ -173,11 +189,11 @@ export default function ProfilePage() {
     { icon: School, labelEn: "School ID", labelHi: "स्कूल आईडी", value: user.schoolId, condition: !!user.schoolId },
     { icon: UserCircle2, labelEn: "Class", labelHi: "कक्षा", value: user.className ? `Class ${user.className}` : undefined },
     { icon: UserCircle2, labelEn: "Board", labelHi: "बोर्ड", value: user.board },
-    { icon: UserCircle2, labelEn: "Stream", labelHi: "स्ट्रीम", value: user.stream, condition: (user.className === "11" || user.className === "12") && !!user.stream },
+    { icon: UserCircle2, labelEn: "Stream", labelHi: "स्ट्रीम", value: user.stream, condition: (user.className === "11" || user.className === "12" || user.className === "11 Science" || user.className === "11 Commerce" || user.className === "11 Arts" || user.className === "12 Science" || user.className === "12 Commerce" || user.className === "12 Arts" ) && !!user.stream },
     { icon: CalendarDays, labelEn: "D.O.B", labelHi: "जन्म तिथि", value: user.dateOfBirth },
     { icon: Users, labelEn: "Gender", labelHi: "लिंग", value: user.gender },
     { icon: TargetIcon, labelEn: "Exam Target", labelHi: "परीक्षा लक्ष्य", value: user.examTarget },
-    { icon: MapPin, labelEn: "Location", labelHi: "स्थान", value: `${user.city ? user.city + ', ' : ''}${user.state ? user.state + ', ' : ''}${user.country}` },
+    { icon: MapPin, labelEn: "Location", labelHi: "स्थान", value: `${user.city ? user.city + ', ' : ''}${user.state ? user.state + ', ' : ''}${user.country || ''}`.replace(/,\s*$/, "") },
   ];
 
 
@@ -186,7 +202,7 @@ export default function ProfilePage() {
       <Card className="overflow-hidden">
         <CardHeader className="bg-primary/5 p-6 flex flex-col items-center text-center space-y-3">
             <Avatar className="h-24 w-24 border-4 border-primary shadow-md">
-              <AvatarImage src={user.avatarUrl} alt={user.fullName} data-ai-hint="student avatar" />
+              <AvatarImage src={user.avatarUrl || `https://placehold.co/100x100.png?text=${user.initials || user.fullName.substring(0,1)}`} alt={user.fullName} data-ai-hint="student avatar" />
               <AvatarFallback className="bg-primary text-primary-foreground text-3xl">{user.initials || user.fullName.substring(0,2).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>

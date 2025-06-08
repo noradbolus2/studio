@@ -40,7 +40,7 @@ const profileSchema = z.object({
   avatarUrl: z.string().optional(),
 });
 
-type ProfileFormData = z.infer<typeof profileSchema>;
+export type ProfileFormData = z.infer<typeof profileSchema>;
 
 const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams"];
 const boards = ["CBSE", "ICSE", "State", "Other"];
@@ -49,15 +49,10 @@ const genders = ["Male", "Female", "Other"];
 
 const examTargets = [
   "School Exams",
-  // Engineering
   "JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "SRMJEEE", "MET (Manipal)", "COMEDK UGET", "KIITEE", "WBJEE", "MHT CET (Engineering)", "GUJCET", "AP EAMCET (Engineering)", "TS EAMCET (Engineering)", "KCET (Engineering)", "GATE (for PG/PSU)", "State Engineering Entrance Exams",
-  // Medical
   "NEET UG (MBBS, BDS, AYUSH, B.V.Sc)", "NEET PG (MD, MS, PG Diploma)", "INI CET (AIIMS, JIPMER, PGIMER, NIMHANS)", "NEET SS (DM, MCh)", "FMGE (Foreign Medical Graduate Examination)", "AIIMS Nursing", "Indian Army B.Sc Nursing / MNS", "State Nursing Entrances", "AIAPGET (PG AYUSH)",
-  // Management
   "CAT", "XAT", "CMAT", "SNAP", "NMAT by GMAC", "MAT", "ATMA", "IIFT", "TISSNET", "IBSAT", "MICAT", "GMAT (Indian B-schools)",
-  // Law
   "CLAT (UG)", "CLAT (PG)", "AILET (UG)", "AILET (PG)", "LSAT India", "SLAT (Symbiosis)", "MH CET Law", "AP LAWCET", "TS LAWCET", "Kerala KLEE", "State Judicial Services Examination (PCS-J)",
-  // Civil Services & Govt Jobs
   "UPSC Civil Services Examination (IAS, IPS, IFS, etc.)", "UPSC Indian Forest Service (IFoS)", "UPSC Engineering Services (ESE/IES)", "UPSC Geo-Scientist", "UPSC Combined Medical Services (CMS)", "UPSC CAPF (AC)",
   "SSC CGL", "SSC CHSL", "SSC JE", "SSC Stenographer", "SSC MTS", "SSC GD Constable", "SSC CPO",
   "IBPS PO", "IBPS Clerk", "IBPS SO", "IBPS RRB (Officer)", "IBPS RRB (Assistant)",
@@ -65,28 +60,18 @@ const examTargets = [
   "RBI Grade B Officer", "RBI Assistant", "NABARD Grade A/B", "LIC AAO/ADO", "UIIC/NIACL Exams", "ESIC Exams", "FCI Exams",
   "RRB NTPC", "RRB JE", "RRB ALP & Technician", "RRB Group D",
   "State PSCs (General)", "State Level Police Recruitment", "High Court Exams",
-  // Defence
   "NDA & NA Examination", "CDS Examination", "AFCAT", "INET", "Indian Army TES", "Indian Navy Sailors (SSR, AA, MR)", "Indian Air Force Airmen (Group X & Y)", "Indian Coast Guard (Navik, Yantrik)", "Territorial Army",
-  // General University Entrance
   "CUET UG", "CUET PG", "JMI Entrance Exam", "AMU Entrance Exam",
-  // Design & Architecture
   "NID DAT", "UCEED", "CEED", "NIFT Entrance Exam", "NATA", "JEE Main Paper 2 (B.Arch/B.Plan)", "AIEED",
-  // Hotel Management
-  "NCHM JEE", "State IHM Entrances", "Private Hotel Management Entrances",
-  // Agriculture & Veterinary Science
-  "ICAR AIEEA (UG/PG/PhD)", "State Agriculture University Entrances",
-  // Teaching
-  "CTET", "State TETs", "UGC NET (Assistant Professor & JRF)", "CSIR UGC NET (JRF & Lectureship)", "SET/SLET (Lectureship)", "KVS Recruitment (TGT, PGT, PRT)", "NVS Recruitment (TGT, PGT)", "DSSSB (Teacher)", "B.Ed. Entrance Exams",
-  // Pharmacy
-  "GPAT (M.Pharm)", "State CETs (B.Pharm)", "NIPER JEE",
-  // Research Fellowships & PhD
-  "ICMR JRF", "DBT JRF", "University/Institute PhD Entrances",
-  // Commerce & Finance Professional
-  "CA (Foundation)", "CA (Intermediate)", "CA (Final)",
+  "Hotel Management", "NCHM JEE", "State IHM Entrances", "Private Hotel Management Entrances",
+  "Agriculture & Veterinary Science", "ICAR AIEEA (UG/PG/PhD)", "State Agriculture University Entrances",
+  "Teaching", "CTET", "State TETs", "UGC NET (Assistant Professor & JRF)", "CSIR UGC NET (JRF & Lectureship)", "SET/SLET (Lectureship)", "KVS Recruitment (TGT, PGT, PRT)", "NVS Recruitment (TGT, PGT)", "DSSSB (Teacher)", "B.Ed. Entrance Exams",
+  "Pharmacy", "GPAT (M.Pharm)", "State CETs (B.Pharm)", "NIPER JEE",
+  "Research Fellowships & PhD", "ICMR JRF", "DBT JRF", "University/Institute PhD Entrances",
+  "Commerce & Finance Professional", "CA (Foundation)", "CA (Intermediate)", "CA (Final)",
   "CS (CSEET)", "CS (Executive)", "CS (Professional)",
   "CMA (Foundation)", "CMA (Intermediate)", "CMA (Final)",
-  // School Level Olympiads & Talent Search
-  "NTSE", "KVPY (Scholarship Program)", "SOF Olympiads (e.g., NSO, IMO, IEO)", "Homi Bhabha Balvaidnyanik Spardha",
+  "School Level Olympiads & Talent Search", "NTSE", "KVPY (Scholarship Program)", "SOF Olympiads (e.g., NSO, IMO, IEO)", "Homi Bhabha Balvaidnyanik Spardha",
   "Other Competitive Exam"
 ].sort();
 
@@ -167,25 +152,45 @@ export default function EditProfilePage() {
       avatarUrl: "",
       gender: "",
       examTarget: "",
+      dateOfBirth: undefined,
     };
+
+    // Try to load from localStorage first if not a new user explicit navigation
+     if (typeof window !== "undefined") {
+        const storedProfile = localStorage.getItem('userProfileData');
+        if (storedProfile) {
+            try {
+                const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+                // Convert dateOfBirth string back to Date object if it exists
+                if (parsedProfile.dateOfBirth) {
+                    parsedProfile.dateOfBirth = new Date(parsedProfile.dateOfBirth);
+                }
+                currentDefaultValues = { ...currentDefaultValues, ...parsedProfile };
+            } catch (e) {
+                console.error("Failed to parse profile from localStorage", e);
+            }
+        }
+    }
+
 
     if (typeParam === "school") {
       currentDefaultValues = {
         ...currentDefaultValues,
-        schoolId: searchParams.get("schoolId") || "", 
-        fullName: searchParams.get("fullName") || "Mock School User", 
-        schoolName: searchParams.get("schoolName") || "Mock School Name", 
-        className: searchParams.get("className") || "", 
-        email: searchParams.get("email") || "school.user@example.com", 
+        schoolId: searchParams.get("schoolId") || currentDefaultValues.schoolId || "", 
+        fullName: searchParams.get("fullName") || currentDefaultValues.fullName || "Mock School User", 
+        schoolName: searchParams.get("schoolName") || currentDefaultValues.schoolName || "Mock School Name", 
+        className: searchParams.get("className") || currentDefaultValues.className || "", 
+        email: searchParams.get("email") || currentDefaultValues.email || "school.user@example.com", 
       };
     } else if (typeParam === "direct") {
       if (isNew) {
-        currentDefaultValues = { ...currentDefaultValues, email: searchParams.get("email") || "" };
+        // For new direct users, only override email if provided, keep other localStorage or defaults
+        currentDefaultValues = { ...currentDefaultValues, email: searchParams.get("email") || currentDefaultValues.email || "" };
       } else {
-        currentDefaultValues = {
-          ...currentDefaultValues,
+        // For existing direct users, use localStorage data as primary, or specific mock if no localStorage
+        const fallbackExistingUser: Partial<ProfileFormData> = {
           fullName: "Existing User",
-          email: searchParams.get("email") || "existing.user@example.com",
+          email: "existing.user@example.com",
           phoneNumber: "9876543210",
           className: "11 Science",
           board: "CBSE",
@@ -196,6 +201,13 @@ export default function EditProfilePage() {
           avatarUrl: "https://placehold.co/100x100.png",
           examTarget: "JEE Advanced",
         };
+        // If localStorage was empty, use fallbackExistingUser data
+        if (!localStorage.getItem('userProfileData')) {
+             currentDefaultValues = {...currentDefaultValues, ...fallbackExistingUser, email: searchParams.get("email") || fallbackExistingUser.email};
+        } else {
+            // Ensure email from param is used if it's different, typically it won't be for existing user flow
+             currentDefaultValues.email = searchParams.get("email") || currentDefaultValues.email || "";
+        }
       }
     }
     
@@ -208,7 +220,7 @@ export default function EditProfilePage() {
         className: currentDefaultValues.className || "",
         board: currentDefaultValues.board || "",
         stream: currentDefaultValues.stream || "",
-        dateOfBirth: currentDefaultValues.dateOfBirth, 
+        dateOfBirth: currentDefaultValues.dateOfBirth instanceof Date ? currentDefaultValues.dateOfBirth : (currentDefaultValues.dateOfBirth ? new Date(currentDefaultValues.dateOfBirth) : undefined), 
         gender: currentDefaultValues.gender || "", 
         examTarget: currentDefaultValues.examTarget || "", 
         city: currentDefaultValues.city || "",
@@ -235,10 +247,21 @@ export default function EditProfilePage() {
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
     console.log("Profile Data to Save:", data);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Convert Date object to ISO string for localStorage
+    const dataToStore = {
+      ...data,
+      dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toISOString() : undefined,
+    };
+
+    if (typeof window !== "undefined") {
+        localStorage.setItem('userProfileData', JSON.stringify(dataToStore));
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
     toast({
-      title: "Profile Saved (Simulated)",
-      description: "Your profile information has been updated.",
+      title: "Profile Saved",
+      description: "Your profile information has been updated and stored locally.",
     });
     setIsLoading(false);
     router.push("/profile"); 
@@ -325,7 +348,7 @@ export default function EditProfilePage() {
               </div>
               <div>
                 <Label htmlFor="email"><BilingualText en="Email" hi="ईमेल" />*</Label>
-                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={loginType === "direct" && !searchParams.get("isNewUser") === true} />} />
+                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={loginType === "direct" && !searchParams.get("isNewUser") === true && !isSchoolLogin} />} />
                 {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
               </div>
             </div>
