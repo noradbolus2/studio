@@ -5,35 +5,33 @@
 
 @layer base {
   :root {
-    --background: 326 100% 25%; /* #82004A (Background Top) */
-    --foreground: 0 0% 100%;    /* #FFFFFF (Text Primary) */
+    --background: 220 25% 12%; /* Rich Night - Very dark desaturated blue */
+    --foreground: 210 40% 98%; /* Bright Star - Almost white */
 
-    /* Card color based on rgba(255,255,255,0.07) on #82004A -> approx #8B1257 */
-    --card: 326 77% 31%;
-    --card-foreground: 0 0% 100%; /* #FFFFFF (Text Primary) */
+    --card: 220 25% 17%; /* Night Sky - Slightly lighter than BG */
+    --card-foreground: 210 40% 98%; /* Bright Star */
 
-    /* Popover follows card styling */
-    --popover: 326 77% 31%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 220 25% 17%; /* Night Sky */
+    --popover-foreground: 210 40% 98%; /* Bright Star */
 
-    --primary: 345 100% 59%;        /* #FF2E63 (Accent Pink for CTAs) */
-    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --primary: 180 70% 45%; /* Deep Ocean - Vibrant Teal for CTAs */
+    --primary-foreground: 180 100% 97%; /* Very light, for contrast on Teal */
 
-    --secondary: 351 100% 86%;      /* #FFB6C1 (Glow Highlight) */
-    --secondary-foreground: 326 100% 17%; /* #550030 (Background Bottom) for text on light pink */
+    --secondary: 45 90% 55%; /* Golden Hour - Warm Gold for highlights */
+    --secondary-foreground: 45 90% 10%; /* Dark Brown for contrast on Gold */
 
-    --muted: 326 100% 17%;          /* #550030 (Background Bottom) for muted backgrounds */
-    --muted-foreground: 334 100% 92%; /* #FFD6E8 (Text Secondary) */
+    --muted: 220 25% 22%; /* Shadow - Darker muted backgrounds */
+    --muted-foreground: 220 15% 65%; /* Mist - Subdued Gray for subtext */
 
-    --accent: 40 95% 55%;           /* Original Yellow Accent - not replaced by palette */
-    --accent-foreground: 40 100% 10%;/* Original Dark Brown for yellow accent text */
+    --accent: 200 80% 60%; /* Charged Accent - Electric Blue */
+    --accent-foreground: 200 100% 97%; /* Very light for contrast on Electric Blue */
 
-    --destructive: 0 84.2% 60.2%;    /* Default Red */
-    --destructive-foreground: 0 0% 98%; /* Default Light text for destructive */
+    --destructive: 0 75% 55%;    /* Warning Red - Vibrant Red */
+    --destructive-foreground: 0 0% 98%; /* White */
 
-    --border: 351 100% 86%;         /* #FFB6C1 (Glow Highlight) */
-    --input: 351 100% 86%;          /* #FFB6C1 (Glow Highlight) for input background */
-    --ring: 351 100% 86%;           /* #FFB6C1 (Glow Highlight) for focus rings */
+    --border: 220 20% 30%;         /* Horizon Line - Subtle border */
+    --input: 220 20% 25%;          /* Deep Slate - Input background */
+    --ring: 180 70% 55%;           /* Focus Ocean - Primary Teal for focus rings */
 
     --radius: 0.5rem;
 
@@ -56,52 +54,52 @@
   }
 
   .dark {
-    --background: 326 100% 17%; /* #550030 (Background Bottom) */
-    --foreground: 0 0% 100%;    /* #FFFFFF */
+    /* For now, the dark mode will use the same "Midnight Bloom" theme as default.
+       You can define a different dark variant here if needed later. */
+    --background: 220 25% 12%;
+    --foreground: 210 40% 98%;
 
-    /* Card color based on rgba(255,255,255,0.07) on #550030 -> approx #61123E */
-    --card: 327 56% 23%;
-    --card-foreground: 0 0% 100%;
+    --card: 220 25% 17%;
+    --card-foreground: 210 40% 98%;
 
-    /* Popover follows card styling */
-    --popover: 327 56% 23%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 220 25% 17%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 345 100% 64%;        /* Brighter Accent Pink for dark mode e.g. #FF4775 */
-    --primary-foreground: 0 0% 100%;
+    --primary: 180 70% 45%;
+    --primary-foreground: 180 100% 97%;
 
-    --secondary: 345 100% 84%;      /* Lighter pink from Glow Highlight range for dark mode e.g. #FFACC1 */
-    --secondary-foreground: 326 100% 13%; /* Even darker maroon for text e.g. #420025 */
+    --secondary: 45 90% 55%;
+    --secondary-foreground: 45 90% 10%;
 
-    --muted: 326 100% 13%;          /* Darker than dark BG e.g. #420025 */
-    --muted-foreground: 335 100% 89%; /* Dimmer Text Secondary e.g. #FFC9E0 */
+    --muted: 220 25% 22%;
+    --muted-foreground: 220 15% 65%;
 
-    --accent: 40 95% 60%;           /* Original Dark Yellow Accent */
-    --accent-foreground: 40 100% 10%;/* Original Dark Brown */
+    --accent: 200 80% 60%;
+    --accent-foreground: 200 100% 97%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 326 100% 30%;         /* A slightly lighter maroon for dark borders e.g. #990055 */
-    --input: 326 100% 30%;          /* Same for dark input BG */
-    --ring: 345 100% 64%;           /* Use primary for ring in dark mode */
+    --border: 220 20% 30%;
+    --input: 220 20% 25%;
+    --ring: 180 70% 55%;
 
-    /* Chart variables for dark mode - kept original */
+    /* Chart variables for dark mode - can be adjusted if needed */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    /* Sidebar variables for dark mode - kept original */
-    --sidebar-background: 260 10% 10%;
-    --sidebar-foreground: 260 10% 95%;
-    --sidebar-primary: 260 70% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 95% 60%;
-    --sidebar-accent-foreground: 40 100% 10%;
-    --sidebar-border: 260 10% 25%;
-    --sidebar-ring: 260 70% 65%;
+    /* Sidebar variables for dark mode - can be adjusted if needed */
+    --sidebar-background: 220 25% 10%; /* Slightly darker than main dark bg */
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 180 70% 50%;
+    --sidebar-primary-foreground: 180 100% 97%;
+    --sidebar-accent: 45 90% 60%;
+    --sidebar-accent-foreground: 45 90% 10%;
+    --sidebar-border: 220 20% 25%;
+    --sidebar-ring: 180 70% 55%;
   }
 }
 
@@ -110,14 +108,12 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground font-body antialiased;
-    /* Apply gradient for light mode */
-    background-color: hsl(var(--background)); /* Fallback */
-    background-image: linear-gradient(to bottom, #82004A, #550030);
+    @apply bg-background text-foreground font-body antialiased;
+    /* Removed gradient, using solid rich background */
   }
   .dark body {
-    background-color: hsl(var(--background)); /* Uses .dark --background variable */
-    background-image: none; /* Explicitly remove gradient for dark mode */
+    /* Ensures dark mode body also uses its specific background if ever different from :root in future */
+    @apply bg-background text-foreground;
   }
 
   /* Custom scrollbar for a more modern feel */
@@ -145,5 +141,3 @@
 .text-shadow-sm {
   text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.4));
 }
-
-    
