@@ -18,7 +18,7 @@ export default function AuthPage() {
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
   const [isLoading, setIsLoading] = useState(false);
 
-  const [fullName, setFullName] = useState('');
+  const [fullName, setFullName] = useState(''); // Used as "Contact Person Name" for school/vendor/creator roles
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -30,7 +30,6 @@ export default function AuthPage() {
   const selectedRole = searchParams.get('role');
 
   useEffect(() => {
-    // Can use selectedRole to customize titles or behavior if needed
     console.log("Selected role on auth page:", selectedRole);
   }, [selectedRole]);
 
@@ -42,7 +41,12 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    let redirectPath = '/'; // Default redirect path
+    let redirectPath = '/'; 
+    let queryParams = new URLSearchParams();
+    queryParams.set('email', email);
+    queryParams.set('isNewUser', 'true');
+    if (selectedRole) queryParams.set('role', selectedRole);
+
 
     if (mode === 'signUp') {
       if (password !== confirmPassword) {
@@ -55,12 +59,27 @@ export default function AuthPage() {
         setIsLoading(false);
         return;
       }
-      // Simulate sign up
+      
       localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName, role: selectedRole || 'student' }));
       localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName, role: selectedRole || 'student' }));
-      // For new sign-ups, always go to edit-profile first
-      redirectPath = `/edit-profile?email=${encodeURIComponent(email)}&fullName=${encodeURIComponent(fullName)}&role=${selectedRole || 'student'}&isNewUser=true`;
       toast({ title: "Sign Up Successful", description: "Welcome! Please complete your profile." });
+
+      // Role-specific redirection after sign-up
+      switch (selectedRole) {
+        case 'school':
+          queryParams.set('contactPersonName', fullName); // Pass fullName as contactPersonName
+          redirectPath = `/edit-school-profile?${queryParams.toString()}`;
+          break;
+        // TODO: Add cases for 'vendor', 'creator' to redirect to their specific edit profile pages
+        // case 'vendor': redirectPath = `/edit-vendor-profile?${queryParams.toString()}`; break;
+        // case 'creator': redirectPath = `/edit-creator-profile?${queryParams.toString()}`; break;
+        case 'student':
+        case 'parent':
+        default:
+          queryParams.set('fullName', fullName);
+          redirectPath = `/edit-profile?${queryParams.toString()}`;
+          break;
+      }
 
     } else { // Sign In
       if (!email.trim() || !password.trim()) {
@@ -76,7 +95,6 @@ export default function AuthPage() {
           localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole }));
           toast({ title: "Sign In Successful", description: "Welcome back!" });
           
-          // Determine redirect path based on role
           switch (userRole) {
             case 'parent': redirectPath = '/parent-mode'; break;
             case 'school': redirectPath = '/school-dashboard'; break;
@@ -98,14 +116,25 @@ export default function AuthPage() {
     }
     
     router.push(redirectPath);
-    // setIsLoading(false); // This might cause issues if router.push is slow, better to let page unmount
   };
+
+  const getFullNameLabel = () => {
+    switch (selectedRole) {
+        case 'school':
+        case 'vendor':
+        case 'creator':
+            return { en: "Contact Person Name", hi: "संपर्क व्यक्ति का नाम" };
+        default:
+            return { en: "Full Name", hi: "पूरा नाम" };
+    }
+  };
+  const fullNameLabel = getFullNameLabel();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-6 font-body relative">
       <div className="absolute top-6 left-6 z-10">
         <Button
-            onClick={() => router.push('/login')} // Go back to role selection
+            onClick={() => router.push('/login')} 
             variant="outline"
             size="icon"
             className="text-foreground hover:bg-accent/10"
@@ -163,9 +192,9 @@ export default function AuthPage() {
                 <div className="space-y-1 text-left">
                   <Label htmlFor="fullName" className="flex items-center text-muted-foreground">
                     <UserIcon className="h-4 w-4 mr-1.5 text-primary/70" />
-                    <BilingualText en="Full Name" hi="पूरा नाम" lang={currentLang} />
+                    <BilingualText en={fullNameLabel.en} hi={fullNameLabel.hi} lang={currentLang} />
                   </Label>
-                  <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder_en="Enter your full name" placeholder_hi="अपना पूरा नाम दर्ज करें" required={mode === 'signUp'} />
+                  <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder_en={`Enter ${fullNameLabel.en.toLowerCase()}`} placeholder_hi={`${fullNameLabel.hi} दर्ज करें`} required={mode === 'signUp'} />
                 </div>
               )}
               <div className="space-y-1 text-left">
@@ -228,3 +257,5 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
+
+    

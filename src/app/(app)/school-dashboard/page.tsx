@@ -2,12 +2,16 @@
 // src/app/(app)/school-dashboard/page.tsx
 "use client";
 
+import { useState, useEffect } from 'react'; // Added useEffect
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3 } from "lucide-react";
+import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import type { SchoolProfileFormData } from '../edit-school-profile/page'; // Import the type
+
 
 const schoolStats = [
   { id: "students", labelEn: "Total Students", labelHi: "कुल छात्र", value: "1250+", icon: Users, color: "text-blue-500" },
@@ -26,6 +30,24 @@ const schoolActions = [
 
 export default function SchoolDashboardPage() {
   const { toast } = useToast();
+  const [schoolProfile, setSchoolProfile] = useState<SchoolProfileFormData | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('schoolProfileData');
+      if (storedProfileString) {
+        try {
+          setSchoolProfile(JSON.parse(storedProfileString));
+        } catch (e) {
+          console.error("Failed to parse school profile from localStorage", e);
+          // Fallback or redirect if needed
+        }
+      }
+    }
+    setLoadingProfile(false);
+  }, []);
+
 
   const handleActionClick = (href: string, labelEn: string) => {
     toast({
@@ -35,16 +57,31 @@ export default function SchoolDashboardPage() {
     // router.push(href); // Uncomment when pages are ready
   };
 
+  if (loadingProfile) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+        <LoadingSpinner size={48} />
+        <p className="ml-4">Loading dashboard...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <header className="text-center">
         <School className="h-12 w-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold font-headline text-primary">
-          <BilingualText en="School Dashboard" hi="स्कूल डैशबोर्ड" />
+          {schoolProfile?.schoolName ? schoolProfile.schoolName : <BilingualText en="School Dashboard" hi="स्कूल डैशबोर्ड" />}
         </h1>
         <p className="text-muted-foreground">
           <BilingualText en="Oversee and manage your institution effectively." hi="अपने संस्थान का प्रभावी ढंग से निरीक्षण और प्रबंधन करें।" />
         </p>
+         <Button asChild variant="outline" size="sm" className="mt-2">
+            <Link href="/edit-school-profile">
+                <Edit className="mr-2 h-4 w-4"/>
+                <BilingualText en="Edit School Info" hi="स्कूल जानकारी संपादित करें" />
+            </Link>
+        </Button>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -96,3 +133,5 @@ export default function SchoolDashboardPage() {
     </div>
   );
 }
+
+    
