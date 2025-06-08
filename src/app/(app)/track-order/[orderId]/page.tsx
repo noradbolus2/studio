@@ -21,9 +21,9 @@ interface TrackingStep {
 }
 
 export default function TrackOrderPage() {
-  const params = useParams();
   const router = useRouter();
-  const orderId = params.orderId as string;
+  const { orderId: rawOrderId } = useParams(); // Destructure directly
+  const orderId = rawOrderId as string;
 
   const [isLoading, setIsLoading] = useState(true);
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);
@@ -67,6 +67,10 @@ export default function TrackOrderPage() {
         setCurrentStepIndex(tempCurrentStepIndex);
         setIsLoading(false);
       }, 1200);
+    } else {
+      // If no orderId, stop loading and potentially show an error or redirect
+      setIsLoading(false);
+      // Consider redirecting or showing a message if orderId is missing
     }
   }, [orderId]);
 
@@ -85,13 +89,26 @@ export default function TrackOrderPage() {
   if (!orderId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
-        <p className="text-destructive"><BilingualText en="No order ID provided." hi="कोई ऑर्डर आईडी प्रदान नहीं की गई।" /></p>
+        <p className="text-destructive"><BilingualText en="No order ID provided or order not found." hi="कोई ऑर्डर आईडी प्रदान नहीं की गई या ऑर्डर नहीं मिला।" /></p>
         <Button variant="outline" onClick={() => router.push('/')} className="mt-4">
           <ArrowLeft className="mr-2 h-4 w-4" /> <BilingualText en="Back to Home" hi="होम पर वापस जाएं" />
         </Button>
       </div>
     );
   }
+
+  const getCurrentStatusText = () => {
+    if (trackingSteps.length === 0 || !trackingSteps[currentStepIndex]) {
+      return 'Loading...';
+    }
+    // If the current step is completed AND it's not the last step, show the next step's status as current.
+    if (trackingSteps[currentStepIndex].completed && currentStepIndex < trackingSteps.length - 1) {
+      return trackingSteps[currentStepIndex + 1].statusEn;
+    }
+    // Otherwise, show the current step's status.
+    return trackingSteps[currentStepIndex].statusEn;
+  };
+
 
   return (
     <div className="space-y-6">
@@ -113,7 +130,7 @@ export default function TrackOrderPage() {
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle><BilingualText en="Current Status" hi="वर्तमान स्थिति" />: {trackingSteps[currentStepIndex]?.completed && trackingSteps[currentStepIndex].id !== 'delivered' ? trackingSteps[currentStepIndex+1]?.statusEn || trackingSteps[currentStepIndex].statusEn : trackingSteps[currentStepIndex]?.statusEn || 'Loading...'}</CardTitle>
+          <CardTitle><BilingualText en="Current Status" hi="वर्तमान स्थिति" />: {getCurrentStatusText()}</CardTitle>
           <CardDescription><BilingualText en="Estimated Delivery: Within 45 minutes from confirmation." hi="अनुमानित डिलीवरी: पुष्टि से 45 मिनट के भीतर।" /></CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 pt-2">
