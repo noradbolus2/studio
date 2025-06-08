@@ -81,13 +81,22 @@ export default {
         'login-support-text': '#B0B0D0',
         'login-orange-glow': 'rgba(255,109,0,0.35)',
         'login-mint-glow': 'rgba(0,230,176,0.35)',
+        // Colors for Parent Dashboard
+        'deep-space-indigo': '#12002F',
+        'dark-glass-card': '#1C1B2E',
+        'glow-aqua': '#00E6B0',
+        'glow-yellow': '#FFB300',
       },
       boxShadow: {
-        'glow-orange': '0 0 15px 3px rgba(255,109,0,0.35)', // Corresponds to login-orange-glow
-        'glow-mint': '0 0 15px 3px rgba(0,230,176,0.35)',   // Corresponds to login-mint-glow
+        'glow-orange': '0 0 15px 3px rgba(255,109,0,0.35)',
+        'glow-mint': '0 0 15px 3px rgba(0,230,176,0.35)',
         'glow-orange-hover': '0 0 20px 6px rgba(255,109,0,0.45)',
         'glow-mint-hover': '0 0 20px 6px rgba(0,230,176,0.45)',
-        'logo-glow': '0 0 20px 5px rgba(255, 182, 193, 0.5)', // Glow Highlight #FFB6C1
+        'logo-glow': '0 0 20px 5px rgba(255, 182, 193, 0.5)',
+        // Glows for Parent Dashboard
+        'glow-aqua-soft': '0 0 15px 2px var(--tw-shadow-color, #00E6B0)',
+        'glow-yellow-soft': '0 0 15px 2px var(--tw-shadow-color, #FFB300)',
+        'glow-purple-soft': '0 0 15px 2px var(--tw-shadow-color, #A076F9)', // Example purple glow
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -107,11 +116,16 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: ".7" },
         },
+        "brain-heatmap-pulse": {
+          "0%, 100%": { boxShadow: "0 0 10px 2px var(--tw-shadow-color, #A076F9), inset 0 0 10px 0px var(--tw-shadow-color, #A076F9)" },
+          "50%": { boxShadow: "0 0 20px 5px var(--tw-shadow-color, #A076F9), inset 0 0 15px 2px var(--tw-shadow-color, #A076F9)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-subtle": "pulse-थोड़ा 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "brain-heatmap-pulse": "brain-heatmap-pulse 3s ease-in-out infinite",
       },
     },
   },
