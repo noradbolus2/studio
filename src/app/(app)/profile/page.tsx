@@ -96,12 +96,15 @@ export default function ProfilePage() {
 
       let profileToDisplay: UserProfileDisplay;
       let loggedInUserEmail: string | null = null;
+      let loggedInUserFullName: string | null = null;
+
 
       if (typeof window !== "undefined") {
         const loggedInUserString = localStorage.getItem('loggedInUser');
         if (loggedInUserString) {
             const loggedInUserDetails = JSON.parse(loggedInUserString);
             loggedInUserEmail = loggedInUserDetails.email;
+            loggedInUserFullName = loggedInUserDetails.fullName; // Get full name
         }
 
         const storedProfileString = localStorage.getItem('userProfileData');
@@ -113,7 +116,7 @@ export default function ProfilePage() {
             if (loggedInUserEmail && storedProfile.email !== loggedInUserEmail) {
                  console.warn("Profile data in localStorage does not match logged-in user. Clearing stale profile.");
                  localStorage.removeItem('userProfileData');
-                 profileToDisplay = getMockUser(loggedInUserEmail); // Use logged-in user's email for mock
+                 profileToDisplay = getMockUser(loggedInUserEmail, loggedInUserFullName); 
             } else {
                 profileToDisplay = {
                 ...storedProfile,
@@ -123,24 +126,35 @@ export default function ProfilePage() {
             }
           } catch (e) {
             console.error("Failed to parse profile from localStorage, using mock.", e);
-            profileToDisplay = getMockUser(loggedInUserEmail); 
+            profileToDisplay = getMockUser(loggedInUserEmail, loggedInUserFullName); 
           }
         } else {
-          profileToDisplay = getMockUser(loggedInUserEmail); 
+          // If no userProfileData, create one based on loggedInUser if it exists
+          if (loggedInUserEmail && loggedInUserFullName) {
+            profileToDisplay = getMockUser(loggedInUserEmail, loggedInUserFullName);
+            localStorage.setItem('userProfileData', JSON.stringify({ // Store basic profile
+                fullName: loggedInUserFullName,
+                email: loggedInUserEmail,
+                avatarUrl: "https://placehold.co/100x100.png", // Default avatar
+                country: "India"
+            }));
+          } else {
+            profileToDisplay = getMockUser(null, null); // Fallback to generic mock
+          }
         }
       } else {
-        profileToDisplay = getMockUser(null); 
+        profileToDisplay = getMockUser(null, null); 
       }
       
       setUser(profileToDisplay);
       setLoading(false);
     };
 
-    const getMockUser = (email?: string | null): UserProfileDisplay => ({
-      fullName: "Aarav Sharma",
+    const getMockUser = (email?: string | null, fullName?: string | null): UserProfileDisplay => ({
+      fullName: fullName || "Aarav Sharma",
       email: email || "aarav.sharma@example.com",
       avatarUrl: "https://placehold.co/100x100.png",
-      initials: "AS",
+      initials: (fullName || "Aarav Sharma").substring(0, 2).toUpperCase(),
       phoneNumber: "+91 98765 43210",
       schoolName: "Demo Public School",
       schoolId: "DPS123XYZ", 
@@ -167,7 +181,7 @@ export default function ProfilePage() {
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
-    router.push('/login'); 
+    router.push('/login'); // Redirect to the new role selection page
   };
 
   const getOrderStatusBadge = (status: OrderHistoryItem['status']) => {

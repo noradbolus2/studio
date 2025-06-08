@@ -100,8 +100,6 @@ export default function EditProfilePage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const [loginType, setLoginType] = useState<string | null>(null); // Retained for school login differentiation if needed
-  const [isSchoolLogin, setIsSchoolLogin] = useState(false); // Retained for school login differentiation
   const [isLoading, setIsLoading] = useState(false);
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -133,13 +131,9 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     setInitialDataLoading(true);
-    const typeParam = searchParams.get("loginType"); // e.g. "school" or undefined if direct from new login page
     const isNewUserFlow = searchParams.get("isNewUser") === "true";
     const emailFromParam = searchParams.get("email");
     const fullNameFromParam = searchParams.get("fullName");
-
-    setLoginType(typeParam);
-    setIsSchoolLogin(typeParam === "school");
 
     let currentDefaultValues: Partial<ProfileFormData> = { country: "India" };
 
@@ -147,7 +141,7 @@ export default function EditProfilePage() {
       const storedProfileString = localStorage.getItem('userProfileData');
       if (storedProfileString) {
         try {
-          const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData & {dateOfBirth?: string};
+          const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData & {dateOfBirth?: string}; // Handle DOB as string from LS
           currentDefaultValues = {
             ...parsedProfile,
             dateOfBirth: parsedProfile.dateOfBirth ? new Date(parsedProfile.dateOfBirth) : undefined,
@@ -158,22 +152,9 @@ export default function EditProfilePage() {
       }
     }
     
-    // If coming from new sign-up flow, params override anything in localStorage for these fields
-    if (isNewUserFlow && emailFromParam) {
-      currentDefaultValues.email = emailFromParam;
-    }
-    if (isNewUserFlow && fullNameFromParam) {
-      currentDefaultValues.fullName = fullNameFromParam;
-    }
-
-    // Handle school-specific login params if they exist (legacy or separate flow)
-    if (typeParam === "school") {
-      currentDefaultValues.schoolId = searchParams.get("schoolId") || currentDefaultValues.schoolId || "";
-      currentDefaultValues.schoolName = searchParams.get("schoolName") || currentDefaultValues.schoolName || "";
-      currentDefaultValues.className = searchParams.get("className") || currentDefaultValues.className || "";
-      // Email and fullName might also come from school login params
-      currentDefaultValues.email = emailFromParam || currentDefaultValues.email || "";
-      currentDefaultValues.fullName = fullNameFromParam || currentDefaultValues.fullName || "";
+    if (isNewUserFlow) {
+      if (emailFromParam) currentDefaultValues.email = emailFromParam;
+      if (fullNameFromParam) currentDefaultValues.fullName = fullNameFromParam;
     }
     
     const allFieldsToReset: ProfileFormData = {
@@ -185,7 +166,7 @@ export default function EditProfilePage() {
         className: currentDefaultValues.className || "",
         board: currentDefaultValues.board || "",
         stream: currentDefaultValues.stream || "",
-        dateOfBirth: currentDefaultValues.dateOfBirth instanceof Date ? currentDefaultValues.dateOfBirth : (currentDefaultValues.dateOfBirth ? new Date(currentDefaultValues.dateOfBirth) : undefined),
+        dateOfBirth: currentDefaultValues.dateOfBirth instanceof Date ? currentDefaultValues.dateOfBirth : (currentDefaultValues.dateOfBirth ? new Date(currentDefaultValues.dateOfBirth as string) : undefined),
         gender: currentDefaultValues.gender || "", 
         examTarget: currentDefaultValues.examTarget || "", 
         city: currentDefaultValues.city || "",
@@ -201,7 +182,6 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (selectedState) {
       setCitiesForSelectedState(stateCityData[selectedState] || []);
-      // Don't reset city if it was pre-filled and matches the current state
       const currentCity = watch('city');
       if (currentCity && !(stateCityData[selectedState] || []).includes(currentCity)) {
           setValue('city', '', { shouldValidate: true }); 
@@ -224,12 +204,15 @@ export default function EditProfilePage() {
 
     if (typeof window !== "undefined") {
         localStorage.setItem('userProfileData', JSON.stringify(dataToStore));
-         // Ensure loggedInUser details are also up-to-date if name changed
         const loggedInUserString = localStorage.getItem('loggedInUser');
         if (loggedInUserString) {
-            const loggedInUserDetails = JSON.parse(loggedInUserString);
-            if (loggedInUserDetails.email === data.email && loggedInUserDetails.fullName !== data.fullName) {
-                localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: data.fullName }));
+            try {
+                const loggedInUserDetails = JSON.parse(loggedInUserString);
+                if (loggedInUserDetails.email === data.email && loggedInUserDetails.fullName !== data.fullName) {
+                    localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: data.fullName }));
+                }
+            } catch (e) {
+                console.error("Error updating loggedInUser in localStorage:", e);
             }
         }
     }
@@ -324,7 +307,7 @@ export default function EditProfilePage() {
               </div>
               <div>
                 <Label htmlFor="email"><BilingualText en="Email" hi="ईमेल" />*</Label>
-                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={!searchParams.get("isNewUser") === true && !isSchoolLogin} />} />
+                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={!(searchParams.get("isNewUser") === "true")} />} />
                 {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
               </div>
             </div>
@@ -338,14 +321,9 @@ export default function EditProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" /></Label>
-                <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="Your School Name" placeholder_hi="आपके स्कूल का नाम" readOnly={isSchoolLogin && !!searchParams.get("schoolName")} />} />
+                <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="Your School Name" placeholder_hi="आपके स्कूल का नाम" />} />
               </div>
-              {isSchoolLogin && (
-                <div>
-                  <Label htmlFor="schoolId"><BilingualText en="School ID" hi="स्कूल आईडी" /></Label>
-                  <Controller name="schoolId" control={control} render={({ field }) => <Input id="schoolId" {...field} readOnly />} />
-                </div>
-              )}
+              
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
