@@ -1,3 +1,5 @@
+
+import Link from 'next/link'; // Added Link
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,10 +42,12 @@ export function OrderConfirmationDialog({ isOpen, onClose, orderId }: OrderConfi
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col space-y-2 sm:flex-col sm:space-y-2 sm:space-x-0 pt-4">
           <AlertDialogAction asChild>
-            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Truck className="mr-2 h-5 w-5" />
-              <BilingualText en="Track Order" hi="ऑर्डर ट्रैक करें" />
-            </Button>
+            <Link href={`/track-order/${orderId}`} passHref>
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Truck className="mr-2 h-5 w-5" />
+                <BilingualText en="Track Order" hi="ऑर्डर ट्रैक करें" />
+              </Button>
+            </Link>
           </AlertDialogAction>
           <AlertDialogCancel asChild>
             <Button variant="outline" className="w-full" onClick={onClose}>
