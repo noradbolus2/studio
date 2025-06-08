@@ -1,245 +1,147 @@
 
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ShieldCheck, UserPlus, Users, Briefcase, Bike, School, LogIn, ArrowLeft, Mail, Phone, KeyRound } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { BookOpen, Users, School, ShoppingBag, Bike, Languages } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
-type AuthStep = "initialSelection" | "studentLoginOptions" | "schoolIdLogin" | "directLogin" | "otherRolesLogin";
-type OtherRole = "vendor" | "rider";
+interface LoginRoleButtonProps {
+  icon: React.ElementType;
+  labelEn: string;
+  labelHi: string;
+  action: () => void;
+  bgColorClass: string;
+  glowClass: string;
+  hoverGlowClass: string;
+  lang: 'en' | 'hi';
+}
+
+const LoginRoleButton: React.FC<LoginRoleButtonProps> = ({ icon: Icon, labelEn, labelHi, action, bgColorClass, glowClass, hoverGlowClass, lang }) => {
+  return (
+    <button
+      onClick={action}
+      className={cn(
+        "w-full flex items-center justify-center text-white font-bold uppercase text-base py-4 px-6 rounded-2xl transition-all duration-300 ease-in-out transform hover:scale-105",
+        bgColorClass,
+        glowClass,
+        hoverGlowClass
+      )}
+    >
+      <Icon className="h-6 w-6 mr-3" />
+      <BilingualText en={labelEn} hi={labelHi} lang={lang} />
+    </button>
+  );
+};
 
 export default function LoginPage() {
-  const [currentStep, setCurrentStep] = useState<AuthStep>("initialSelection");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [schoolId, setSchoolId] = useState("");
-  const [selectedOtherRole, setSelectedOtherRole] = useState<OtherRole | null>(null);
+  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleStudentPath = () => {
-    setCurrentStep("studentLoginOptions");
+  const handleLanguageToggle = () => {
+    setCurrentLang(prevLang => (prevLang === 'en' ? 'hi' : 'en'));
   };
 
-  const handleOtherRolesPath = () => {
-    setCurrentStep("otherRolesLogin");
-  };
-  
-  const handleSchoolIdLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!schoolId.trim()) {
-      toast({ title: "School ID Required", description: "Please enter your School ID.", variant: "destructive" });
-      return;
-    }
-    console.log("School ID Login attempt with ID:", schoolId);
-    toast({ title: "School Login Successful (Simulated)", description: "Redirecting to your profile..." });
-    router.push(`/edit-profile?loginType=school&schoolId=${encodeURIComponent(schoolId)}&fullName=Rohit%20Verma&schoolName=Demo%20Public%20School&className=10`);
+  const handleStudentLogin = () => {
+    toast({ title: "Student Login", description: "Proceeding to student login/signup..." });
+    // In a real app, navigate to student login flow
+     router.push("/edit-profile?loginType=direct&isNewUser=false"); // Example navigation
   };
 
-  const handleDirectLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Direct Login attempt with Email:", email);
-    toast({ title: "Login Successful (Simulated)", description: "Redirecting to your dashboard..." });
-    router.push(`/edit-profile?loginType=direct&email=${encodeURIComponent(email)}`);
+  const handleParentLogin = () => {
+    toast({ title: "Parent Login", description: "Proceeding to parent login/signup..." });
+    // In a real app, navigate to parent login flow
+    router.push("/parent-mode"); // Example navigation
   };
 
-  const handleDirectSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Direct Signup attempt with Email:", email);
-    toast({ title: "Signup Successful (Simulated)", description: "Please complete your profile." });
-    router.push(`/edit-profile?loginType=direct&isNewUser=true&email=${encodeURIComponent(email)}`);
+  const handleSchoolLogin = () => {
+    toast({ title: "School Login", description: "Redirecting to OSO School Partner App..." });
+    // In a real app, this would be an actual redirect: window.location.href = "https://school.osoapp.com";
+    console.log("Redirecting to School Partner App (Simulated)");
   };
 
-  const handleOtherRoleSelect = (role: OtherRole) => {
-    setSelectedOtherRole(role);
-    console.log(`Login attempt for role: ${role}`);
-    toast({ title: `${role.charAt(0).toUpperCase() + role.slice(1)} Login (Simulated)`, description: "Redirecting to dashboard..." });
-    if (role === "vendor") router.push("/vendor-dashboard");
-    if (role === "rider") router.push("/rider-dashboard");
+  const handleVendorLogin = () => {
+    toast({ title: "Vendor Login", description: "Redirecting to OSO Vendor Partner App..." });
+    console.log("Redirecting to Vendor Partner App (Simulated)");
+    router.push("/vendor-dashboard");
   };
 
-  const renderInitialSelection = () => {
-    return (
-      <CardContent className="space-y-4">
-          <Button onClick={handleStudentPath} variant="outline" className="w-full justify-center gap-2 py-6 text-lg border-primary text-primary hover:bg-primary/10 hover:text-primary">
-              <School className="h-6 w-6" /> <BilingualText en="I am a Student" hi="मैं एक छात्र हूँ" />
-          </Button>
-          <Button onClick={handleOtherRolesPath} variant="outline" className="w-full justify-center gap-2 py-6 text-lg border-muted-foreground text-muted-foreground hover:bg-muted/20">
-              <Users className="h-6 w-6" /> <BilingualText en="Vendor / Rider Login" hi="विक्रेता / राइडर लॉगिन" />
-          </Button>
-      </CardContent>
-    );
+  const handleRiderLogin = () => {
+    toast({ title: "Rider Login", description: "Redirecting to OSO Rider App..." });
+    console.log("Redirecting to Rider Partner App (Simulated)");
+    router.push("/rider-dashboard");
   };
 
-  const renderStudentLoginOptions = () => {
-    return (
-      <CardContent className="space-y-4">
-          <Button variant="ghost" size="sm" onClick={() => setCurrentStep("initialSelection")} className="mb-2 text-muted-foreground self-start px-0">
-              <ArrowLeft className="mr-2 h-4 w-4" /> <BilingualText en="Back" hi="वापस"/>
-          </Button>
-          <Button onClick={() => setCurrentStep("schoolIdLogin")} variant="outline" className="w-full justify-center gap-2 py-6 text-base border-green-500 text-green-600 hover:bg-green-500/10 hover:text-green-600">
-              <ShieldCheck className="h-5 w-5" /> <BilingualText en="Login with School ID" hi="स्कूल आईडी से लॉगिन करें" />
-          </Button>
-          <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-              <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground"><BilingualText en="OR" hi="या" /></span>
-              </div>
-          </div>
-          <Button onClick={() => setCurrentStep("directLogin")} variant="outline" className="w-full justify-center gap-2 py-6 text-base">
-              <LogIn className="h-5 w-5" /> <BilingualText en="OSO App Direct Login/Signup" hi="OSO ऐप डायरेक्ट लॉगिन/साइनअप" />
-          </Button>
-      </CardContent>
-    );
-  };
-
-  const renderSchoolIdLogin = () => {
-    return (
-     <CardContent className="space-y-6">
-        <Button variant="ghost" size="sm" onClick={() => setCurrentStep("studentLoginOptions")} className="mb-0 text-muted-foreground self-start px-0">
-            <ArrowLeft className="mr-2 h-4 w-4" /> <BilingualText en="Back to student options" hi="छात्र विकल्पों पर वापस"/>
-        </Button>
-        <form onSubmit={handleSchoolIdLogin} className="space-y-4">
-            <div>
-                <Label htmlFor="schoolId"><BilingualText en="Enter Your School ID" hi="अपनी स्कूल आईडी दर्ज करें" /></Label>
-                <Input id="schoolId" type="text" placeholder="e.g., YourSchool123 / उदा., आपकास्कूल123" value={schoolId} onChange={(e) => setSchoolId(e.target.value)} required />
-            </div>
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-base">
-                <ShieldCheck className="mr-2 h-5 w-5" /> <BilingualText en="Login with School ID" hi="स्कूल आईडी से लॉगिन करें" />
-            </Button>
-        </form>
-    </CardContent>
-    );
-  };
-
-  const renderDirectLogin = () => {
-    return (
-      <CardContent className="space-y-6">
-          <Button variant="ghost" size="sm" onClick={() => setCurrentStep("studentLoginOptions")} className="mb-0 text-muted-foreground self-start px-0">
-              <ArrowLeft className="mr-2 h-4 w-4" /> <BilingualText en="Back to student options" hi="छात्र विकल्पों पर वापस"/>
-          </Button>
-          
-          <Button 
-              variant="default" 
-              className="w-full justify-center gap-2 py-3 text-base bg-blue-600 hover:bg-blue-700 text-white" 
-              onClick={() => toast({title: "Coming Soon!", description:"Phone OTP login will be available soon."})}
-          >
-              <Phone className="h-5 w-5" /> <BilingualText en="Login/Signup with Phone OTP" hi="फ़ोन OTP से लॉगिन/साइनअप करें" />
-          </Button>
-
-          <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-              <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground"><BilingualText en="OR" hi="या" /></span>
-              </div>
-          </div>
-
-          <form onSubmit={handleDirectLogin} className="space-y-4">
-              <div>
-                  <Label htmlFor="email"><Mail className="inline mr-1 h-4 w-4" /><BilingualText en="Email" hi="ईमेल" /></Label>
-                  <Input id="email" type="email" placeholder="your.email@example.com / आपका.ईमेल@उदाहरण.कॉम" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div>
-                  <Label htmlFor="password"><KeyRound className="inline mr-1 h-4 w-4" /><BilingualText en="Password" hi="पासवर्ड" /></Label>
-                  <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:gap-2 space-y-2 sm:space-y-0">
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-base">
-                      <LogIn className="mr-2 h-5 w-5" /> <BilingualText en="Login with Email" hi="ईमेल से लॉग इन करें" />
-                  </Button>
-                  <Button type="button" onClick={handleDirectSignup} variant="outline" className="w-full py-3 text-base">
-                      <UserPlus className="mr-2 h-5 w-5" /> <BilingualText en="Sign Up with Email" hi="ईमेल से साइन अप करें" />
-                  </Button>
-              </div>
-          </form>
-          
-          <div className="text-center text-sm mt-2">
-              <BilingualText en="Forgot password?" hi="पासवर्ड भूल गए?" />{' '}
-              <Link href="#" className="font-medium text-primary hover:underline">
-                  <BilingualText en="Reset here" hi="यहां रीसेट करें" />
-              </Link>
-          </div>
-      </CardContent>
-    );
-  };
-
-  const renderOtherRolesLogin = () => {
-    return (
-      <CardContent className="space-y-4">
-          <Button variant="ghost" size="sm" onClick={() => setCurrentStep("initialSelection")} className="mb-2 text-muted-foreground self-start px-0">
-              <ArrowLeft className="mr-2 h-4 w-4" /> <BilingualText en="Back" hi="वापस"/>
-          </Button>
-          <Button onClick={() => handleOtherRoleSelect("vendor")} variant="outline" className="w-full justify-center gap-2 py-6 text-base border-green-500 text-green-600 hover:bg-green-500/10 hover:text-green-600">
-              <Briefcase className="h-5 w-5" /> <BilingualText en="Login as Vendor" hi="विक्रेता के रूप में लॉगिन करें" />
-          </Button>
-          <Button onClick={() => handleOtherRoleSelect("rider")} variant="outline" className="w-full justify-center gap-2 py-6 text-base border-orange-500 text-orange-600 hover:bg-orange-500/10 hover:text-orange-600">
-              <Bike className="h-5 w-5" /> <BilingualText en="Login as Rider" hi="राइडर के रूप में लॉगिन करें" />
-          </Button>
-      </CardContent>
-    );
-  };
-  
-  const getTitle = () => {
-    switch(currentStep) {
-        case "initialSelection": return <BilingualText en="Welcome to OSO App!" hi="OSO ऐप में आपका स्वागत है!" />;
-        case "studentLoginOptions": return <BilingualText en="Student Login/Signup" hi="छात्र लॉगिन/साइनअप" />;
-        case "schoolIdLogin": return <BilingualText en="School ID Login" hi="स्कूल आईडी लॉगिन" />;
-        case "directLogin": return <BilingualText en="OSO Direct Login/Signup" hi="OSO डायरेक्ट लॉगिन/साइनअप" />;
-        case "otherRolesLogin": return <BilingualText en="Vendor / Rider Login" hi="विक्रेता / राइडर लॉगिन" />;
-        default: return <BilingualText en="Login / Signup" hi="लॉगिन / साइनअप" />;
-    }
-  };
-
-  let stepContent;
-  if (currentStep === "initialSelection") {
-    stepContent = renderInitialSelection();
-  } else if (currentStep === "studentLoginOptions") {
-    stepContent = renderStudentLoginOptions();
-  } else if (currentStep === "schoolIdLogin") {
-    stepContent = renderSchoolIdLogin();
-  } else if (currentStep === "directLogin") {
-    stepContent = renderDirectLogin();
-  } else if (currentStep === "otherRolesLogin") {
-    stepContent = renderOtherRolesLogin();
-  } else {
-    stepContent = renderInitialSelection(); // Default fallback
-  }
+  const loginRoles = [
+    { icon: BookOpen, labelEn: "Student Login", labelHi: "छात्र लॉगिन", action: handleStudentLogin, bgColorClass: "bg-login-orange", glowClass: "shadow-glow-orange", hoverGlowClass: "hover:shadow-glow-orange-hover" },
+    { icon: Users, labelEn: "Parent Login", labelHi: "अभिभावक लॉगिन", action: handleParentLogin, bgColorClass: "bg-login-orange", glowClass: "shadow-glow-orange", hoverGlowClass: "hover:shadow-glow-orange-hover" },
+    { icon: School, labelEn: "School Login", labelHi: "स्कूल लॉगिन", action: handleSchoolLogin, bgColorClass: "bg-login-aqua-mint", glowClass: "shadow-glow-mint", hoverGlowClass: "hover:shadow-glow-mint-hover" },
+    { icon: ShoppingBag, labelEn: "Vendor Login", labelHi: "विक्रेता लॉगिन", action: handleVendorLogin, bgColorClass: "bg-login-aqua-mint", glowClass: "shadow-glow-mint", hoverGlowClass: "hover:shadow-glow-mint-hover" },
+    { icon: Bike, labelEn: "Rider Login", labelHi: "राइडर लॉगिन", action: handleRiderLogin, bgColorClass: "bg-login-aqua-mint", glowClass: "shadow-glow-mint", hoverGlowClass: "hover:shadow-glow-mint-hover" },
+  ];
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="text-center">
-          <Image src="https://placehold.co/100x100.png" alt="OSO App Logo" width={60} height={60} className="mx-auto mb-3 rounded-full border border-primary" data-ai-hint="app logo" />
-          <CardTitle className="text-2xl font-headline">{getTitle()}</CardTitle>
-          <CardDescription>
-             {currentStep === "initialSelection" ? 
-                <BilingualText en="Please select how you'd like to continue." hi="कृपया चुनें कि आप कैसे जारी रखना चाहते हैं।" /> :
-             currentStep === "directLogin" ?
-                <BilingualText en="Use Phone OTP or Email to continue." hi="जारी रखने के लिए फ़ोन OTP या ईमेल का उपयोग करें।" /> :
-                <BilingualText en="Continue your OSO journey." hi="अपनी OSO यात्रा जारी रखें।" />
-             }
-          </CardDescription>
-        </CardHeader>
-        
-        {stepContent}
-        
-        {currentStep !== "initialSelection" && (
-            <CardFooter className="flex-col space-y-2 pt-4 border-t">
-                 <p className="text-xs text-muted-foreground text-center">
-                    <BilingualText en="By continuing, you agree to OSO App's" hi="जारी रखकर, आप OSO ऐप की" />
-                    <Link href="/terms" className="underline hover:text-primary"> <BilingualText en="Terms of Service" hi="सेवा की शर्तें" /></Link> <BilingualText en="and" hi="और" />
-                    <Link href="/privacy" className="underline hover:text-primary"> <BilingualText en="Privacy Policy" hi="गोपनीयता नीति" /></Link>.
-                 </p>
-            </CardFooter>
-        )}
-      </Card>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-deep-purple to-darker-purple p-6 font-sans relative">
+      <Button
+        onClick={handleLanguageToggle}
+        variant="ghost"
+        className="absolute top-6 right-6 text-white hover:bg-white/10 py-1 px-2 text-sm h-auto"
+      >
+        <Languages className="h-4 w-4 mr-1.5" />
+        {currentLang === 'en' ? 'हिंदी' : 'English'}
+      </Button>
+
+      <div className="w-full max-w-sm text-center">
+        {/* Top Section: Branding */}
+        <div className="mb-10">
+          <Image
+            src="https://placehold.co/100x100/FFB6C1/3B0A4E?text=OSO&font=poppins" // Placeholder, Light Pink glow
+            alt="OSO App Logo"
+            width={80}
+            height={80}
+            className="mx-auto mb-4 rounded-full shadow-logo-glow"
+            data-ai-hint="app logo glowing"
+          />
+          <p className="text-base font-bold text-white">
+            <BilingualText en="India’s 1st Edu + Delivery App" hi="भारत का पहला एडु + डिलीवरी ऐप" lang={currentLang} />
+          </p>
+        </div>
+
+        {/* Middle Section: Choose Login Role */}
+        <div className="space-y-4 mb-12">
+          {loginRoles.map((role) => (
+            <LoginRoleButton
+              key={role.labelEn}
+              icon={role.icon}
+              labelEn={role.labelEn}
+              labelHi={role.labelHi}
+              action={role.action}
+              bgColorClass={role.bgColorClass}
+              glowClass={role.glowClass}
+              hoverGlowClass={role.hoverGlowClass}
+              lang={currentLang}
+            />
+          ))}
+        </div>
+
+        {/* Bottom Section: Info & Support */}
+        <div className="text-xs text-login-support-text space-y-1">
+          <p>
+            <BilingualText en="Don’t have an account?" hi="खाता नहीं है?" lang={currentLang} />{' '}
+            <BilingualText en="Register with your role." hi="अपनी भूमिका के साथ पंजीकरण करें।" lang={currentLang} />
+          </p>
+          <p>
+            <BilingualText en="Need help?" hi="मदद चाहिए?" lang={currentLang} />{' '}
+            <a href="#" className="underline hover:text-white">
+              <BilingualText en="Contact OSO Support" hi="OSO सहायता से संपर्क करें" lang={currentLang} />
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

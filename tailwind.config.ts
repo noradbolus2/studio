@@ -17,8 +17,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['PT Sans', 'sans-serif'],
-        headline: ['PT Sans', 'sans-serif'],
+        sans: ['Poppins', 'PT Sans', 'sans-serif'], // Added Poppins as primary
+        body: ['Poppins', 'PT Sans', 'sans-serif'],
+        headline: ['Poppins', 'PT Sans', 'sans-serif'],
         code: ['monospace', 'monospace'],
       },
       colors: {
@@ -28,11 +29,11 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsl(var(--primary))", // Bright Orange #FF8C00
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: "hsl(var(--secondary))", // Aqua Mint #66CDAA
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
@@ -41,10 +42,10 @@ export default {
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          foreground: "hsl(var(--muted-foreground))", // Light Gray-Blue #A9CCE3
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(var(--accent))", // Aqua Mint #66CDAA
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
@@ -62,7 +63,7 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
-        sidebar: { // Though not primary, ensure these variables exist if any shadcn component uses them
+        sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',
           primary: 'hsl(var(--sidebar-primary))',
@@ -72,6 +73,21 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        // Custom colors for Login Page
+        'deep-purple': '#3B0A4E',
+        'darker-purple': '#12002F',
+        'login-orange': '#FF6D00',
+        'login-aqua-mint': '#00E6B0',
+        'login-support-text': '#B0B0D0',
+        'login-orange-glow': 'rgba(255,109,0,0.35)',
+        'login-mint-glow': 'rgba(0,230,176,0.35)',
+      },
+      boxShadow: {
+        'glow-orange': '0 0 15px 3px rgba(255,109,0,0.35)', // Corresponds to login-orange-glow
+        'glow-mint': '0 0 15px 3px rgba(0,230,176,0.35)',   // Corresponds to login-mint-glow
+        'glow-orange-hover': '0 0 20px 6px rgba(255,109,0,0.45)',
+        'glow-mint-hover': '0 0 20px 6px rgba(0,230,176,0.45)',
+        'logo-glow': '0 0 20px 5px rgba(255, 182, 193, 0.5)', // Glow Highlight #FFB6C1
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -87,7 +103,7 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "pulse-थोड़ा": { // pulse-subtle in Hindi, for fun
+        "pulse-थोड़ा": { 
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: ".7" },
         },
