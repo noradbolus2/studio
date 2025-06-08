@@ -107,6 +107,16 @@ const mockProjects: MockProject[] = [
   { id: "proj6", title: "Water Cycle Poster", category: "art_poster", classFilter: ["5","6"], subjectFilter: ["Science", "Art"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "water cycle diagram", description: "Design an informative and visually appealing poster explaining the water cycle.", materials: [{name: "Large Chart Paper", qty:1}, {name:"Color Pencils/Markers", qty:1}, {name:"Cotton Balls (for clouds)", qty:"1 pack"}], creatorPrice: 79, estimatedTime: "2 hours"},
 ];
 
+function getNumericClassFromStringForProjects(classNameString?: string): string | undefined {
+  if (!classNameString) return undefined;
+  // Handles "Class 6", "6", "11 Science" -> "11"
+  const match = classNameString.match(/\d+/); 
+  if (match) return match[0];
+  // For "Nursery", "LKG", "UKG", we might not have direct numeric mapping for projects
+  // but the `classes` array in this component has them, so it's fine.
+  return classNameString; // Return original if no number, e.g. "Nursery"
+}
+
 
 export default function ServicePage() {
   const { serviceId } = useParams<ServicePageParams>(); 
@@ -117,6 +127,7 @@ export default function ServicePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
 
   // For chat_interface type
   const [servicePageChatInputValue, setServicePageChatInputValue] = useState('');
@@ -135,6 +146,20 @@ export default function ServicePage() {
   const [activeTab, setActiveTab] = useState<ProjectCategory>(projectCategories[0].id);
   const [selectedProject, setSelectedProject] = useState<MockProject | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('userProfileData');
+      if (storedProfileString) {
+        try {
+          const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData;
+          setProfileData(parsedProfile);
+        } catch (e) {
+          console.error("Failed to parse profile for Service page:", e);
+        }
+      }
+    }
+  }, []);
 
 
   useEffect(() => {
@@ -192,6 +217,18 @@ export default function ServicePage() {
               if (serviceId === "projects") setActiveTab("science_model"); 
               else if (serviceId === "assignments") setActiveTab("essay_research"); 
               else setActiveTab(projectCategories[0].id); 
+              
+              // Set default class from profile for project help
+              if (profileData?.className) {
+                const profileClass = getNumericClassFromStringForProjects(profileData.className);
+                if (profileClass && classes.includes(profileClass)) {
+                    setSelectedClass(profileClass);
+                } else if (profileClass && classes.map(c => c.toLowerCase()).includes(profileClass.toLowerCase())) {
+                    // Find matching case-insensitive
+                    const matchingClass = classes.find(c => c.toLowerCase() === profileClass.toLowerCase());
+                    if (matchingClass) setSelectedClass(matchingClass);
+                }
+              }
             }
           } else {
              setError(`${INFO_PREFIX}Content not available yet for the '${serviceId}' service. Please ensure it is configured in Firestore or mock data.`);
@@ -209,7 +246,7 @@ export default function ServicePage() {
 
       fetchServiceData();
     }
-  }, [serviceId, router]); 
+  }, [serviceId, router, profileData]); // Added profileData to dependency array
   
   useEffect(() => {
     if (servicePageChatScrollAreaRef.current) {
@@ -244,30 +281,12 @@ export default function ServicePage() {
     setServicePageChatIsLoading(true);
 
     try {
-      let profileContext: Partial<ProfileFormData> = {};
-      if (typeof window !== "undefined") {
-        const storedProfile = localStorage.getItem('userProfileData');
-        if (storedProfile) {
-          try {
-            const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
-            profileContext = {
-              className: parsedProfile.className,
-              board: parsedProfile.board,
-              stream: parsedProfile.stream,
-              examTarget: parsedProfile.examTarget,
-            };
-          } catch (err) {
-            console.warn("Could not parse profile data from localStorage for Service Page Guruji context:", err);
-          }
-        }
-      }
-      
       const gurujiInput: GurujiInput = { 
         userInput: trimmedInput,
-        studentClass: profileContext.className,
-        studentBoard: profileContext.board,
-        studentStream: profileContext.stream,
-        studentExamTarget: profileContext.examTarget,
+        studentClass: profileData?.className,
+        studentBoard: profileData?.board,
+        studentStream: profileData?.stream,
+        studentExamTarget: profileData?.examTarget,
       };
       const response = await askGuruji(gurujiInput);
       
@@ -310,8 +329,8 @@ export default function ServicePage() {
     setTestRecommendations(null);
 
     const mockStudentInput: TestSeriesRecommendationInput = {
-        studentName: "Aarav",
-        examType: "NEET UG",
+        studentName: profileData?.fullName || "Aarav",
+        examType: profileData?.examTarget || "NEET UG",
         preferredLanguage: 'en',
         lastTestPerformances: [
             { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
@@ -556,7 +575,7 @@ export default function ServicePage() {
                 <CardContent className="space-y-4">
                     {!testRecommendations && !isTestRecommendationLoading && (
                         <p className="text-sm text-muted-foreground text-center py-4">
-                            Click the button below to get personalized test series suggestions based on a sample student profile.
+                            Click the button below to get personalized test series suggestions based on your profile (or a sample profile if yours isn't set).
                         </p>
                     )}
                     {isTestRecommendationLoading && (
@@ -628,7 +647,7 @@ export default function ServicePage() {
       case 'interactive_assignment_project_help':
         const filteredProjects = mockProjects.filter(p => 
             p.category === activeTab &&
-            (!selectedClass || p.classFilter?.includes(selectedClass.replace("Class ","")) || p.classFilter?.includes(selectedClass)) &&
+            (!selectedClass || p.classFilter?.includes(getNumericClassFromStringForProjects(selectedClass) || "") || p.classFilter?.includes(selectedClass)) &&
             (selectedSubject === 'All' || p.subjectFilter?.includes(selectedSubject))
         );
 

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react'; // Added useEffect
 import Image from 'next/image';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BookText, Search, Filter, BookOpenCheck, DownloadCloud, ShoppingCart, Info } from 'lucide-react';
+import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData
 
 interface NcertBook {
   id: string;
@@ -63,6 +64,14 @@ const availableSubjectsEn = Array.from(new Set(allNcertBooks.map(book => book.su
 const availableBoards = Array.from(new Set(allNcertBooks.map(book => book.board))).sort();
 const availableMediums = Array.from(new Set(allNcertBooks.map(book => book.medium))).sort();
 
+function getNumericClassFromString(classNameString?: string): string | null {
+  if (!classNameString) return null;
+  const match = classNameString.match(/\d+/); 
+  if (match) {
+    return match[0];
+  }
+  return null;
+}
 
 export default function NcertBooksPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -70,6 +79,25 @@ export default function NcertBooksPage() {
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [selectedBoard, setSelectedBoard] = useState<string>('all');
   const [selectedMedium, setSelectedMedium] = useState<string>('all');
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('userProfileData');
+      if (storedProfileString) {
+        try {
+          const storedProfile = JSON.parse(storedProfileString) as ProfileFormData;
+          if (storedProfile.className) {
+            const numericClass = getNumericClassFromString(storedProfile.className);
+            if (numericClass && availableClasses.map(String).includes(numericClass)) {
+              setSelectedClass(numericClass);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse profile for NCERT books page:", e);
+        }
+      }
+    }
+  }, []);
 
   const filteredBooks = useMemo(() => {
     return allNcertBooks.filter(book =>

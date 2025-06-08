@@ -2,7 +2,7 @@
 // Placeholder for Competitive Bookstore UI
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BookOpen, DownloadCloud, Filter, Search, ShoppingCart, ThumbsUp } from "lucide-react";
 import Image from 'next/image';
+import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData
 
 const examCategories = [
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
@@ -47,9 +48,59 @@ const sampleBooks = [
   { id: '6', titleEn: 'CLAT Legal Reasoning', titleHi: 'क्लैट कानूनी तर्क', exam: 'law', publisher: 'Oswaal', price: 400, imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "clat law book", class: "N/A" },
 ];
 
+function getCategoryFromExamTarget(examTarget?: string): string {
+  if (!examTarget) return 'all';
+  const targetLower = examTarget.toLowerCase();
+
+  const categoryKeywordsMap: Record<string, string[]> = {
+    engineering: ['jee', 'engineering', 'bitsat', 'viteee', 'srmjeee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet (eng', 'gujcet', 'eamcet (eng', 'kcet (eng', 'gate'],
+    medical: ['neet', 'medical', 'aiims', 'ini cet', 'fmge', 'nursing', 'aiapget', 'bds', 'mbbs', 'ayush', 'b.v.sc'],
+    management: ['cat', 'mba', 'xat', 'cmat', 'snap', 'nmat', 'mat', 'atma', 'iift', 'tissnet', 'ibsat', 'micat', 'gmat'],
+    law: ['clat', 'law', 'ailet', 'lsat', 'slat', 'mh cet law', 'lawcet', 'klee', 'judicial'],
+    upsc_civil_services: ['upsc', 'civil services', 'ias', 'ifos', 'ese', 'ies', 'geo-scientist', 'cms', 'capf'],
+    ssc_banking: ['ssc', 'banking', 'ibps', 'sbi po', 'sbi clerk', 'rbi grade', 'rbi assist', 'nabard', 'lic aao', 'lic ado', 'uiic', 'niacl', 'esic', 'fci', 'cgl', 'chsl', 'cpo'],
+    defence: ['nda', 'defence', 'cds', 'afcat', 'inet', 'army tes', 'navy sailors', 'airmen', 'coast guard', 'territorial army'],
+    cuet_general_uni: ['cuet', 'jmi entrance', 'amu entrance', 'university entrance'],
+    design_architecture: ['nid dat', 'uceed', 'ceed', 'nift', 'nata', 'b.arch', 'b.plan', 'aieed', 'design', 'architecture'],
+    teaching: ['ctet', 'teaching', 'tet', 'net', 'set', 'slet', 'kvs', 'nvs', 'dsssb', 'b.ed'],
+    commerce_professional: ['ca (', 'cs (', 'cma (', 'chartered accountant', 'company secretary', 'cost management accountant'],
+    school_olympiads: ['olympiad', 'ntse', 'kvpy', 'homi bhabha', 'talent search'],
+    other_govt_jobs: ['rrb ntpc', 'rrb je', 'rrb alp', 'rrb group d', 'state psc', 'police', 'high court', 'railway'],
+    pharmacy_agriculture: ['pharmacy', 'gpat', 'niper', 'agriculture', 'icar aieea', 'veterinary'],
+  };
+
+  for (const categoryId in categoryKeywordsMap) {
+    if (categoryKeywordsMap[categoryId].some(keyword => targetLower.includes(keyword))) {
+      return categoryId;
+    }
+  }
+  return 'all';
+}
+
+
 export default function CompetitiveBookstorePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedExam, setSelectedExam] = useState('all');
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('userProfileData');
+      if (storedProfileString) {
+        try {
+          const storedProfile = JSON.parse(storedProfileString) as ProfileFormData;
+          if (storedProfile.examTarget) {
+            const categoryId = getCategoryFromExamTarget(storedProfile.examTarget);
+            if (examCategories.some(cat => cat.id === categoryId)) {
+              setSelectedExam(categoryId);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse profile for bookstore page:", e);
+        }
+      }
+    }
+  }, []);
+
 
   const filteredBooks = sampleBooks.filter(book => 
     (book.titleEn.toLowerCase().includes(searchTerm.toLowerCase()) || book.titleHi.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -165,3 +216,4 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
+

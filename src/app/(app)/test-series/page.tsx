@@ -1,7 +1,7 @@
 
 "use client"; 
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,54 +11,112 @@ import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
 import { useToast } from '@/hooks/use-toast';
+import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // For category filter
 
-
-const testCategories = [
-  { id: "engineering", nameEn: "Engineering (JEE, BITSAT, etc.)", nameHi: "इंजीनियरिंग (जेईई, बिटसैट, आदि)", descriptionEn: "Full syllabus mock tests, previous year papers.", descriptionHi: "पूर्ण पाठ्यक्रम मॉक टेस्ट, पिछले वर्ष के प्रश्नपत्र।"},
-  { id: "medical", nameEn: "Medical (NEET UG/PG, AIIMS)", nameHi: "मेडिकल (नीट यूजी/पीजी, एम्स)", descriptionEn: "Subject-wise tests, all India ranking.", descriptionHi: "विषयवार टेस्ट, अखिल भारतीय रैंकिंग।"},
-  { id: "management", nameEn: "MBA & Management (CAT, XAT)", nameHi: "एमबीए और प्रबंधन (कैट, एक्सएटी)", descriptionEn: "Practice tests for top B-schools.", descriptionHi: "शीर्ष बी-स्कूलों के लिए अभ्यास परीक्षण।"},
-  { id: "law", nameEn: "Law (CLAT, AILET)", nameHi: "कानून (क्लैट, एआईएलईटी)", descriptionEn: "Mock tests for national law universities.", descriptionHi: "राष्ट्रीय विधि विश्वविद्यालयों के लिए मॉक टेस्ट।"},
-  { id: "upsc_civil_services", nameEn: "UPSC & Civil Services", nameHi: "यूपीएससी और सिविल सेवा", descriptionEn: "Prelims and Mains oriented test series.", descriptionHi: "प्रारंभिक और मुख्य परीक्षा उन्मुख टेस्ट सीरीज़।"},
-  { id: "ssc_banking", nameEn: "SSC & Banking", nameHi: "एसएससी और बैंकिंग", descriptionEn: "Tier-wise tests for govt. jobs.", descriptionHi: "सरकारी नौकरियों के लिए टियर-वार टेस्ट।"},
-  { id: "defence", nameEn: "Defence (NDA, CDS)", nameHi: "रक्षा (एनडीए, सीडीएस)", descriptionEn: "Prepare for officer cadre entries.", descriptionHi: "अधिकारी कैडर प्रविष्टियों के लिए तैयारी करें।"},
-  { id: "cuet_general_uni", nameEn: "CUET & University Entrance", nameHi: "सीयूईटी और विश्वविद्यालय प्रवेश", descriptionEn: "Practice tests for all sections.", descriptionHi: "सभी वर्गों के लिए अभ्यास परीक्षण।"},
-  { id: "teaching", nameEn: "Teaching Exams (CTET, NET)", nameHi: "शिक्षण परीक्षा (सीटीईटी, नेट)", descriptionEn: "Eligibility tests for teachers.", descriptionHi: "शिक्षकों के लिए पात्रता परीक्षा।"},
-  { id: "boards", nameEn: "Class 10 & 12 Boards", nameHi: "कक्षा 10 और 12 बोर्ड", descriptionEn: "Chapter tests and model papers.", descriptionHi: "अध्याय परीक्षण और मॉडल पेपर।"},
+const testCategories = [ // This list matches competitive-bookstore for consistency
+  { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
+  { id: 'engineering', nameEn: 'Engineering (JEE, BITSAT, etc.)', nameHi: 'इंजीनियरिंग (जेईई, बिटसैट, आदि)', descriptionEn: "Full syllabus mock tests, previous year papers.", descriptionHi: "पूर्ण पाठ्यक्रम मॉक टेस्ट, पिछले वर्ष के प्रश्नपत्र।"},
+  { id: 'medical', nameEn: 'Medical (NEET UG/PG, AIIMS)', nameHi: 'मेडिकल (नीट यूजी/पीजी, एम्स)', descriptionEn: "Subject-wise tests, all India ranking.", descriptionHi: "विषयवार टेस्ट, अखिल भारतीय रैंकिंग।"},
+  { id: 'management', nameEn: 'MBA & Management (CAT, XAT)', nameHi: 'एमबीए और प्रबंधन (कैट, एक्सएटी)', descriptionEn: "Practice tests for top B-schools.", descriptionHi: "शीर्ष बी-स्कूलों के लिए अभ्यास परीक्षण।"},
+  { id: 'law', nameEn: 'Law (CLAT, AILET, Judiciary)', nameHi: 'कानून (क्लैट, एआईएलईटी, न्यायपालिका)', descriptionEn: "Mock tests for national law universities.", descriptionHi: "राष्ट्रीय विधि विश्वविद्यालयों के लिए मॉक टेस्ट।"},
+  { id: 'upsc_civil_services', nameEn: 'UPSC & Civil Services', nameHi: 'यूपीएससी और सिविल सेवा', descriptionEn: "Prelims and Mains oriented test series.", descriptionHi: "प्रारंभिक और मुख्य परीक्षा उन्मुख टेस्ट सीरीज़।"},
+  { id: 'ssc_banking', nameEn: 'SSC & Banking', nameHi: 'एसएससी और बैंकिंग', descriptionEn: "Tier-wise tests for govt. jobs.", descriptionHi: "सरकारी नौकरियों के लिए टियर-वार टेस्ट।"},
+  { id: 'defence', nameEn: 'Defence (NDA, CDS, AFCAT)', nameHi: 'रक्षा (एनडीए, सीडीएस, एएफसीएटी)', descriptionEn: "Prepare for officer cadre entries.", descriptionHi: "अधिकारी कैडर प्रविष्टियों के लिए तैयारी करें।"},
+  { id: 'cuet_general_uni', nameEn: 'CUET & General University', nameHi: 'सीयूईटी और सामान्य विश्वविद्यालय', descriptionEn: "Practice tests for all sections.", descriptionHi: "सभी वर्गों के लिए अभ्यास परीक्षण।"},
+  { id: 'design_architecture', nameEn: 'Design & Architecture', nameHi: 'डिज़ाइन और आर्किटेक्चर', descriptionEn: "Mock tests for NID, NIFT, NATA.", descriptionHi: "NID, NIFT, NATA के लिए मॉक टेस्ट।"},
+  { id: 'teaching', nameEn: 'Teaching (CTET, NET, TETs)', nameHi: 'शिक्षण (सीटीईटी, नेट, टीईटी)', descriptionEn: "Eligibility tests for teachers.", descriptionHi: "शिक्षकों के लिए पात्रता परीक्षा।"},
+  { id: 'commerce_professional', nameEn: 'Commerce Professional (CA, CS, CMA)', nameHi: 'वाणिज्य पेशेवर (सीए, सीएस, सीएमए)', descriptionEn: "Foundation to Final level tests.", descriptionHi: "फाउंडेशन से फाइनल लेवल तक के टेस्ट।"},
+  { id: 'school_olympiads', nameEn: 'School Olympiads & Talent', nameHi: 'स्कूल ओलंपियाड और प्रतिभा खोज', descriptionEn: "Tests for NTSE, KVPY, Olympiads.", descriptionHi: "NTSE, KVPY, ओलंपियाड के लिए टेस्ट।"},
+  { id: 'other_govt_jobs', nameEn: 'Other Govt. Jobs (Railways, etc.)', nameHi: 'अन्य सरकारी नौकरियां (रेलवे, आदि)', descriptionEn: "Specific tests for various roles.", descriptionHi: "विभिन्न भूमिकाओं के लिए विशिष्ट परीक्षण।"},
+  { id: 'pharmacy_agriculture', nameEn: 'Pharmacy & Agriculture', nameHi: 'फार्मेसी और कृषि', descriptionEn: "Entrance tests for B.Pharm, Agri BSc.", descriptionHi: "B.Pharm, Agri BSc के लिए प्रवेश परीक्षा।"},
+  { id: 'boards', nameEn: 'Class 10 & 12 Boards', nameHi: 'कक्षा 10 और 12 बोर्ड', descriptionEn: "Chapter tests and model papers.", descriptionHi: "अध्याय परीक्षण और मॉडल पेपर।"},
 ];
+
+// Helper function (can be shared if used elsewhere)
+function getCategoryFromExamTarget(examTarget?: string): string {
+  if (!examTarget) return 'all';
+  const targetLower = examTarget.toLowerCase();
+  const categoryKeywordsMap: Record<string, string[]> = {
+    engineering: ['jee', 'engineering', 'bitsat', 'viteee', 'srmjeee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet (eng', 'gujcet', 'eamcet (eng', 'kcet (eng', 'gate'],
+    medical: ['neet', 'medical', 'aiims', 'ini cet', 'fmge', 'nursing', 'aiapget', 'bds', 'mbbs', 'ayush', 'b.v.sc'],
+    management: ['cat', 'mba', 'xat', 'cmat', 'snap', 'nmat', 'mat', 'atma', 'iift', 'tissnet', 'ibsat', 'micat', 'gmat'],
+    law: ['clat', 'law', 'ailet', 'lsat', 'slat', 'mh cet law', 'lawcet', 'klee', 'judicial'],
+    upsc_civil_services: ['upsc', 'civil services', 'ias', 'ifos', 'ese', 'ies', 'geo-scientist', 'cms', 'capf'],
+    ssc_banking: ['ssc', 'banking', 'ibps', 'sbi po', 'sbi clerk', 'rbi grade', 'rbi assist', 'nabard', 'lic aao', 'lic ado', 'uiic', 'niacl', 'esic', 'fci', 'cgl', 'chsl', 'cpo'],
+    defence: ['nda', 'defence', 'cds', 'afcat', 'inet', 'army tes', 'navy sailors', 'airmen', 'coast guard', 'territorial army'],
+    cuet_general_uni: ['cuet', 'jmi entrance', 'amu entrance', 'university entrance'],
+    design_architecture: ['nid dat', 'uceed', 'ceed', 'nift', 'nata', 'b.arch', 'b.plan', 'aieed', 'design', 'architecture'],
+    teaching: ['ctet', 'teaching', 'tet', 'net', 'set', 'slet', 'kvs', 'nvs', 'dsssb', 'b.ed'],
+    commerce_professional: ['ca (', 'cs (', 'cma (', 'chartered accountant', 'company secretary', 'cost management accountant'],
+    school_olympiads: ['olympiad', 'ntse', 'kvpy', 'homi bhabha', 'talent search'],
+    other_govt_jobs: ['rrb ntpc', 'rrb je', 'rrb alp', 'rrb group d', 'state psc', 'police', 'high court', 'railway'],
+    pharmacy_agriculture: ['pharmacy', 'gpat', 'niper', 'agriculture', 'icar aieea', 'veterinary'],
+  };
+  for (const categoryId in categoryKeywordsMap) {
+    if (categoryKeywordsMap[categoryId].some(keyword => targetLower.includes(keyword))) {
+      return categoryId;
+    }
+  }
+  if (targetLower.includes('board') || targetLower.match(/class\s*(10|12)/)) return 'boards';
+  return 'all';
+}
+
 
 export default function TestSeriesPage() {
   const [recommendations, setRecommendations] = useState<TestSeriesRecommendationOutput | null>(null);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
+  const [selectedTestCategory, setSelectedTestCategory] = useState<string>('all');
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('userProfileData');
+      if (storedProfileString) {
+        try {
+          const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData;
+          setProfileData(parsedProfile);
+          if (parsedProfile.examTarget) {
+            const categoryId = getCategoryFromExamTarget(parsedProfile.examTarget);
+            if (testCategories.some(cat => cat.id === categoryId)) {
+              setSelectedTestCategory(categoryId);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse profile for Test Series page:", e);
+        }
+      }
+    }
+  }, []);
 
   const handleGetRecommendations = async () => {
     setIsLoadingRecommendations(true);
     setRecommendationError(null);
     setRecommendations(null);
 
-    const mockStudentInput: TestSeriesRecommendationInput = {
-        studentName: "Aarav",
-        examType: "NEET UG", // Example exam, can be changed
+    const studentNameFromProfile = profileData?.fullName || "Student";
+    const examTargetFromProfile = profileData?.examTarget || "General Competitive Exam"; // Fallback
+
+    const dynamicStudentInput: TestSeriesRecommendationInput = {
+        studentName: studentNameFromProfile,
+        examType: examTargetFromProfile, 
         preferredLanguage: 'en', 
-        lastTestPerformances: [
-            { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
-            { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
-            { title: "Chemistry Full Syllabus Test 1", score: "90/180", weakTopics: ["Organic Chemistry Reactions", "Chemical Bonding"] }
+        lastTestPerformances: [ // These remain mock for now
+            { title: "General Aptitude Mock 1", score: "70/100", weakTopics: ["Quantitative Reasoning", "Logical Puzzles"] },
+            { title: "Subject Proficiency Test - Physics", score: "60/100", weakTopics: ["Rotational Motion", "Thermodynamics"] },
         ],
-        availableTestSets: [ // This list should ideally be dynamic or larger
-            { title: "NEET Full Syllabus Mock Test Series (Set A)", subject: "All", level: "Medium" },
-            { title: "NEET Biology - Genetics Special", subject: "Biology", level: "Hard" },
-            { title: "NEET Physics - Mechanics Booster", subject: "Physics", level: "Medium" },
-            { title: "NEET Chemistry - Organic Mastery", subject: "Chemistry", level: "Tough" },
-            { title: "JEE Advanced Physics Challenge", subject: "Physics", level: "Very Hard"}, 
-            { title: "CAT Quant Mock Series", subject: "Quantitative Aptitude", level: "Medium"},
-            { title: "UPSC Prelims GS Paper 1 Mock", subject: "General Studies", level: "Hard"},
+        availableTestSets: [ 
+            { title: `${examTargetFromProfile} Full Syllabus Mock (Set A)`, subject: "All", level: "Medium" },
+            { title: `${examTargetFromProfile} - Advanced Problems`, subject: "Mixed", level: "Hard" },
+            { title: "General Knowledge Booster", subject: "GK", level: "Medium" },
+            { title: "Verbal Ability Challenge", subject: "English", level: "Tough" },
         ]
     };
 
     try {
-        const result = await getTestSeriesRecommendations(mockStudentInput);
+        const result = await getTestSeriesRecommendations(dynamicStudentInput);
         setRecommendations(result);
     } catch (err: any) {
         console.error("Error getting test recommendations:", err);
@@ -93,7 +151,7 @@ export default function TestSeriesPage() {
                 <BilingualText en="Guruji's Recommendations" hi="गुरुजी की सिफारिशें" />
             </CardTitle>
             <CardDescription>
-                <BilingualText en="Get personalized test series suggestions from Guruji based on your (mock) performance." hi="गुरुजी से अपने (मॉक) प्रदर्शन के आधार पर व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करें।" />
+                <BilingualText en="Get personalized test series suggestions from Guruji based on your profile and (mock) performance." hi="गुरुजी से अपनी प्रोफ़ाइल और (मॉक) प्रदर्शन के आधार पर व्यक्तिगत टेस्ट सीरीज़ सुझाव प्राप्त करें।" />
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -165,9 +223,28 @@ export default function TestSeriesPage() {
             </CardContent>
         </Card>
       )}
+      
+      <div className="my-6">
+        <Label htmlFor="testCategoryFilter" className="text-md font-semibold text-foreground mb-2 block">
+          <BilingualText en="Browse Test Categories" hi="टेस्ट श्रेणियां ब्राउज़ करें" />
+        </Label>
+        <Select value={selectedTestCategory} onValueChange={setSelectedTestCategory}>
+          <SelectTrigger id="testCategoryFilter" className="h-11">
+            <SelectValue placeholder={<BilingualText en="Select Exam Category" hi="परीक्षा श्रेणी चुनें" />} />
+          </SelectTrigger>
+          <SelectContent>
+            {testCategories.map(exam => (
+              <SelectItem key={exam.id} value={exam.id}>
+                <BilingualText en={exam.nameEn} hi={exam.nameHi} />
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {testCategories.map(category => (
+        {testCategories.filter(category => selectedTestCategory === 'all' || category.id === selectedTestCategory).map(category => (
             <Card key={category.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                     <CardTitle className="font-headline"><BilingualText en={category.nameEn} hi={category.nameHi} /></CardTitle>
