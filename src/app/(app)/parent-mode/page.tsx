@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   AreaChart, ShieldCheck, Eye, User, Users2, LogOut, ArrowLeftRight, Bell, Languages, Brain, Smile, Meh, Frown, Zap,
   Package, BookOpen, TrendingUp, AlertTriangle, Award, Download, MessageSquare, CalendarCheck2, Printer, FileText, Notebook, PencilLine,
-  ExternalLink, RadioTower, Clock, Edit
+  ExternalLink, RadioTower, Clock, Edit, HeartPulse // Added HeartPulse here
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -116,11 +116,15 @@ export default function ParentDashboardPage() {
     return <Meh size={18} className="text-gray-400"/>; // Default
   }
 
-  const handleMockAction = (actionName: string) => {
-    toast({
-        title: `${actionName} (Simulated)`,
-        description: `This feature is coming soon!`,
-    });
+  const handleMockAction = (actionName: string, link?: string) => {
+    if (link) {
+        router.push(link);
+    } else {
+        toast({
+            title: `${actionName} (Simulated)`,
+            description: `This feature is coming soon or the specific link needs to be implemented!`,
+        });
+    }
   };
 
   return (
@@ -280,7 +284,7 @@ export default function ParentDashboardPage() {
           <p className="text-glow-aqua/90"><MessageSquare size={14} className="inline mr-1"/> <BilingualText en="Guruji's Suggestion:" hi="गुरुजी का सुझाव:" lang={currentLang}/> {testPerformanceData.gurujiSuggestion}</p>
         </CardContent>
          <CardFooter>
-            <Button variant="link" className="w-full text-green-400 justify-start p-0 h-auto text-xs" onClick={() => handleMockAction("View Full Test Series Analysis")}>
+            <Button variant="link" className="w-full text-green-400 justify-start p-0 h-auto text-xs" onClick={() => handleMockAction("View Full Test Series Analysis", "/test-series")}>
                  <BilingualText en="View Full Test Series Analysis" hi="पूर्ण टेस्ट सीरीज़ विश्लेषण देखें" lang={currentLang}/> <ExternalLink size={12} className="ml-1"/>
             </Button>
         </CardFooter>
@@ -369,3 +373,5 @@ export default function ParentDashboardPage() {
   );
 }
 
+
+    
