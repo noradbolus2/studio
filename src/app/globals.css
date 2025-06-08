@@ -1,45 +1,50 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* #F9F9F9 */
-    --foreground: 0 0% 20%; /* #333333 */
+    --background: 326 100% 25%; /* #82004A (Background Top) */
+    --foreground: 0 0% 100%;    /* #FFFFFF (Text Primary) */
 
-    --card: 0 0% 100%; /* #FFFFFF */
-    --card-foreground: 0 0% 20%; /* #333333 */
+    /* Card color based on rgba(255,255,255,0.07) on #82004A -> approx #8B1257 */
+    --card: 326 77% 31%;
+    --card-foreground: 0 0% 100%; /* #FFFFFF (Text Primary) */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    /* Popover follows card styling */
+    --popover: 326 77% 31%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 260 70% 50%; /* Deep Purple */
-    --primary-foreground: 0 0% 100%; /* White */
+    --primary: 345 100% 59%;        /* #FF2E63 (Accent Pink for CTAs) */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --secondary: 220 15% 90%; /* Light Gray */
-    --secondary-foreground: 220 10% 25%; /* Darker Gray */
+    --secondary: 351 100% 86%;      /* #FFB6C1 (Glow Highlight) */
+    --secondary-foreground: 326 100% 17%; /* #550030 (Background Bottom) for text on light pink */
 
-    --muted: 220 15% 95%; /* Lighter Gray for muted backgrounds */
-    --muted-foreground: 0 0% 45%; /* Gray for muted text */
+    --muted: 326 100% 17%;          /* #550030 (Background Bottom) for muted backgrounds */
+    --muted-foreground: 334 100% 92%; /* #FFD6E8 (Text Secondary) */
 
-    --accent: 40 95% 55%; /* Bright Yellow/Orange */
-    --accent-foreground: 40 100% 10%; /* Dark Brown/Black for text on yellow/orange */
+    --accent: 40 95% 55%;           /* Original Yellow Accent - not replaced by palette */
+    --accent-foreground: 40 100% 10%;/* Original Dark Brown for yellow accent text */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;    /* Default Red */
+    --destructive-foreground: 0 0% 98%; /* Default Light text for destructive */
 
-    --border: 0 0% 90%; /* #E5E5E5 */
-    --input: 0 0% 90%; /* #E5E5E5 */
-    --ring: 260 70% 55%; /* Purple, slightly lighter or same for focus */
+    --border: 351 100% 86%;         /* #FFB6C1 (Glow Highlight) */
+    --input: 351 100% 86%;          /* #FFB6C1 (Glow Highlight) for input background */
+    --ring: 351 100% 86%;           /* #FFB6C1 (Glow Highlight) for focus rings */
 
+    --radius: 0.5rem;
+
+    /* Chart variables - kept original as they are not directly part of main theme palette */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
 
-    /* Sidebar variables from shadcn/ui, adjusted to fit theme if necessary but not primary for this mobile app */
+    /* Sidebar variables - kept original */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 20%;
     --sidebar-primary: 260 70% 50%;
@@ -51,41 +56,44 @@
   }
 
   .dark {
-    /* Define dark mode colors if needed in the future, for now keeping defaults or OSO-themed darks */
-    --background: 260 10% 10%; /* Darker Purple background */
-    --foreground: 260 10% 95%; /* Light foreground */
+    --background: 326 100% 17%; /* #550030 (Background Bottom) */
+    --foreground: 0 0% 100%;    /* #FFFFFF */
 
-    --card: 260 10% 12%;
-    --card-foreground: 260 10% 95%;
+    /* Card color based on rgba(255,255,255,0.07) on #550030 -> approx #61123E */
+    --card: 327 56% 23%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 260 10% 12%;
-    --popover-foreground: 260 10% 95%;
+    /* Popover follows card styling */
+    --popover: 327 56% 23%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 260 70% 60%; /* Slightly brighter purple for dark mode */
+    --primary: 345 100% 64%;        /* Brighter Accent Pink for dark mode e.g. #FF4775 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 260 10% 20%;
-    --secondary-foreground: 260 10% 95%;
+    --secondary: 345 100% 84%;      /* Lighter pink from Glow Highlight range for dark mode e.g. #FFACC1 */
+    --secondary-foreground: 326 100% 13%; /* Even darker maroon for text e.g. #420025 */
 
-    --muted: 260 10% 20%;
-    --muted-foreground: 260 10% 60%;
+    --muted: 326 100% 13%;          /* Darker than dark BG e.g. #420025 */
+    --muted-foreground: 335 100% 89%; /* Dimmer Text Secondary e.g. #FFC9E0 */
 
-    --accent: 40 95% 60%; /* Slightly brighter yellow/orange for dark mode */
-    --accent-foreground: 40 100% 10%;
+    --accent: 40 95% 60%;           /* Original Dark Yellow Accent */
+    --accent-foreground: 40 100% 10%;/* Original Dark Brown */
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 260 10% 25%;
-    --input: 260 10% 25%;
-    --ring: 260 70% 65%;
+    --border: 326 100% 30%;         /* A slightly lighter maroon for dark borders e.g. #990055 */
+    --input: 326 100% 30%;          /* Same for dark input BG */
+    --ring: 345 100% 64%;           /* Use primary for ring in dark mode */
 
+    /* Chart variables for dark mode - kept original */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
+    /* Sidebar variables for dark mode - kept original */
     --sidebar-background: 260 10% 10%;
     --sidebar-foreground: 260 10% 95%;
     --sidebar-primary: 260 70% 60%;
@@ -102,8 +110,16 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    @apply text-foreground font-body antialiased;
+    /* Apply gradient for light mode */
+    background-color: hsl(var(--background)); /* Fallback */
+    background-image: linear-gradient(to bottom, #82004A, #550030);
   }
+  .dark body {
+    background-color: hsl(var(--background)); /* Uses .dark --background variable */
+    background-image: none; /* Explicitly remove gradient for dark mode */
+  }
+
   /* Custom scrollbar for a more modern feel */
   ::-webkit-scrollbar {
     width: 6px;
@@ -129,3 +145,5 @@
 .text-shadow-sm {
   text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.4));
 }
+
+    
