@@ -2,16 +2,17 @@
 // src/app/(app)/school-dashboard/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit } from "lucide-react";
+import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, AlertCircle, CheckCircle, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Added useRouter
+import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import type { SchoolProfileFormData } from '../edit-school-profile/page';
+import { cn } from '@/lib/utils';
 
 
 const schoolStats = [
@@ -29,9 +30,27 @@ const schoolActions = [
   { id: "reports", labelEn: "View Reports", labelHi: "रिपोर्ट देखें", icon: BarChart3, href: "/school-dashboard/reports" },
 ];
 
+interface ActivityItem {
+  id: string;
+  textEn: string;
+  textHi: string;
+  timestamp: string; // e.g., "2 hours ago", "Yesterday"
+  icon: React.ElementType;
+  iconColor?: string;
+}
+
+const mockActivities: ActivityItem[] = [
+  { id: "act1", textEn: "New student 'Riya Sharma' enrolled in Class 9A.", textHi: "नई छात्रा 'रिया शर्मा' कक्षा 9A में नामांकित हुई।", timestamp: "1 hour ago", icon: UserPlus, iconColor: "text-green-500" },
+  { id: "act2", textEn: "Parent-Teacher Meeting for Class 10 scheduled.", textHi: "कक्षा 10 के लिए अभिभावक-शिक्षक बैठक निर्धारित।", timestamp: "3 hours ago", icon: CalendarDays, iconColor: "text-blue-500" },
+  { id: "act3", textEn: "Fee reminder sent for overdue payments.", textHi: "अतिदेय भुगतानों के लिए शुल्क अनुस्मारक भेजा गया।", timestamp: "Yesterday", icon: AlertCircle, iconColor: "text-yellow-500" },
+  { id: "act4", textEn: "Staff meeting minutes uploaded.", textHi: "कर्मचारी बैठक के मिनट्स अपलोड किए गए।", timestamp: "2 days ago", icon: FileText, iconColor: "text-purple-500" },
+  { id: "act5", textEn: "Annual Sports Day successfully conducted.", textHi: "वार्षिक खेल दिवस सफलतापूर्वक आयोजित किया गया।", timestamp: "3 days ago", icon: CheckCircle, iconColor: "text-green-500" },
+];
+
+
 export default function SchoolDashboardPage() {
   const { toast } = useToast();
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -51,11 +70,7 @@ export default function SchoolDashboardPage() {
 
 
   const handleActionClick = (href: string, labelEn: string) => {
-    // toast({
-    //     title: "Navigating (Simulated)",
-    //     description: `This would navigate to ${labelEn}. Page not yet implemented.`,
-    // });
-    router.push(href); // Actual navigation
+    router.push(href);
   };
 
   if (loadingProfile) {
@@ -106,9 +121,9 @@ export default function SchoolDashboardPage() {
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {schoolActions.map(action => (
-                <Button 
-                    key={action.id} 
-                    variant="outline" 
+                <Button
+                    key={action.id}
+                    variant="outline"
                     className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
                     onClick={() => handleActionClick(action.href, action.labelEn)}
                 >
@@ -121,15 +136,34 @@ export default function SchoolDashboardPage() {
 
        <Card>
         <CardHeader>
-            <CardTitle className="font-headline"><BilingualText en="Recent Activity" hi="हाल की गतिविधि" /></CardTitle>
+            <CardTitle className="font-headline flex items-center gap-2">
+                <Activity className="h-6 w-6 text-primary"/>
+                <BilingualText en="Recent Activity" hi="हाल की गतिविधि" />
+            </CardTitle>
             <CardDescription><BilingualText en="Latest updates and notifications from the school." hi="स्कूल से नवीनतम अपडेट और सूचनाएं।" /></CardDescription>
         </CardHeader>
-        <CardContent>
-            <p className="text-muted-foreground text-sm text-center py-4">
-                <BilingualText en="[Activity feed placeholder - e.g., New student enrollment, Staff leave request, Parent query]" hi="[गतिविधि फ़ीड प्लेसहोल्डर - जैसे, नया छात्र नामांकन, कर्मचारी अवकाश अनुरोध, अभिभावक प्रश्न]" />
-            </p>
+        <CardContent className="space-y-3">
+            {mockActivities.length > 0 ? mockActivities.slice(0, 3).map(activity => ( // Show top 3 activities
+                <div key={activity.id} className="flex items-start gap-3 p-2.5 bg-muted/30 rounded-md">
+                    <activity.icon className={cn("h-5 w-5 mt-0.5 shrink-0", activity.iconColor || "text-muted-foreground")} />
+                    <div className="flex-grow">
+                        <p className="text-sm text-foreground"><BilingualText en={activity.textEn} hi={activity.textHi} /></p>
+                        <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
+                    </div>
+                </div>
+            )) : (
+                <p className="text-muted-foreground text-sm text-center py-4">
+                    <BilingualText en="No recent activity." hi="कोई हाल की गतिविधि नहीं।" />
+                </p>
+            )}
+            {mockActivities.length > 3 && (
+                 <Button variant="link" className="w-full justify-center p-0 mt-2 text-primary">
+                    <BilingualText en="View All Activity" hi="सभी गतिविधियाँ देखें" /> <ArrowRight className="ml-1 h-4 w-4"/>
+                 </Button>
+            )}
         </CardContent>
       </Card>
     </div>
   );
 }
+
