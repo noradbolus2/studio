@@ -5,99 +5,99 @@
 
 @layer base {
   :root {
-    --background: 248 39% 15%; /* Dark Indigo - Base for elements if gradient doesn't cover all */
-    --foreground: 0 0% 100%; /* White */
+    --background: 0 0% 98%; /* Off-white #F9F9F9 */
+    --foreground: 225 10% 10%; /* Dark Blue-Gray for text */
 
-    --card: 248 39% 20%; /* Slightly Lighter Dark Indigo - for card base */
-    --card-foreground: 0 0% 100%; /* White */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 225 10% 10%;
 
-    --popover: 248 39% 18%; /* Dark Indigo Popover */
-    --popover-foreground: 0 0% 100%; /* White */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 225 10% 10%;
 
-    --primary: 33 100% 50%; /* Bright Orange (DarkOrange #FF8C00) */
-    --primary-foreground: 0 0% 100%; /* White (for contrast on orange) */
+    --primary: 225 80% 49%; /* Blue #144EE3 */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 160 50% 60%; /* Aqua Mint (MediumAquamarine #66CDAA) */
-    --secondary-foreground: 160 50% 15%; /* Dark Aqua Mint (for contrast) */
+    --secondary: 220 15% 92%; /* Very Light Blue-Gray */
+    --secondary-foreground: 225 80% 49%; /* Primary Blue */
 
-    --muted: 248 39% 12%; /* Very Dark Indigo (for less prominent backgrounds) */
-    --muted-foreground: 207 46% 78%; /* Light Gray-Blue (#A9CCE3) */
+    --muted: 220 15% 95%; /* Light Grayish Blue */
+    --muted-foreground: 220 10% 45%; /* Medium Gray-Blue */
 
-    --accent: 160 50% 60%; /* Aqua Mint (same as secondary for highlights) */
-    --accent-foreground: 160 50% 15%; /* Dark Aqua Mint */
+    --accent: 48 100% 50%; /* Yellow #FFD000 */
+    --accent-foreground: 20 100% 15%; /* Dark Brown/Black for text on yellow */
 
-    --destructive: 0 72% 51%; /* Standard Red */
-    --destructive-foreground: 0 0% 100%; /* White */
+    --destructive: 0 84% 60%; /* Standard Red */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 248 30% 30%; /* Muted Indigo Border */
-    --input: 248 30% 25%; /* Slightly Darker Muted Indigo for Input BG */
-    --ring: 33 100% 55%; /* Slightly brighter Orange for focus rings */
+    --border: 220 15% 88%; /* Light Gray-Blue border */
+    --input: 0 0% 100%; /* White input background, with border for definition */
+    --ring: 225 80% 55%; /* Slightly lighter blue for focus rings */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Slightly more rounded */
 
     /* Chart variables - can be adjusted to fit the new theme */
-    --chart-1: hsl(var(--primary)); /* Orange */
-    --chart-2: hsl(var(--secondary)); /* Aqua Mint */
-    --chart-3: 207 46% 65%; /* A slightly darker gray-blue */
-    --chart-4: 265 45% 50%; /* A Purple shade */
-    --chart-5: 33 100% 70%; /* Lighter Orange */
+    --chart-1: hsl(var(--primary)); /* Blue */
+    --chart-2: hsl(var(--accent)); /* Yellow */
+    --chart-3: 220 15% 75%; /* A slightly darker gray-blue */
+    --chart-4: 265 45% 60%; /* A Purple shade for charts, if needed */
+    --chart-5: 225 80% 70%; /* Lighter Blue */
 
-    /* Sidebar variables - can be adjusted to fit the new theme */
-    --sidebar-background: 248 39% 12%; /* Very Dark Indigo, slightly darker than main bg */
-    --sidebar-foreground: 0 0% 95%; /* Off-white */
-    --sidebar-primary: hsl(var(--primary)); /* Orange */
-    --sidebar-primary-foreground: hsl(var(--primary-foreground)); /* White */
-    --sidebar-accent: hsl(var(--secondary)); /* Aqua Mint */
-    --sidebar-accent-foreground: hsl(var(--secondary-foreground)); /* Dark Aqua Mint */
-    --sidebar-border: 248 30% 25%; /* Darker Muted Indigo Border */
-    --sidebar-ring: hsl(var(--ring)); /* Orange for focus */
+    /* Sidebar variables */
+    --sidebar-background: 0 0% 96%; /* Slightly darker off-white for sidebar */
+    --sidebar-foreground: 225 10% 10%;
+    --sidebar-primary: hsl(var(--primary));
+    --sidebar-primary-foreground: hsl(var(--primary-foreground));
+    --sidebar-accent: hsl(var(--accent));
+    --sidebar-accent-foreground: 20 100% 15%;
+    --sidebar-border: 220 15% 85%;
+    --sidebar-ring: hsl(var(--ring));
   }
 
   .dark {
-    /* Dark mode will use the same Regal Tech theme as it's already dark */
-    --background: 248 39% 15%;
-    --foreground: 0 0% 100%;
+    /* A more standard dark theme */
+    --background: 225 15% 12%; /* Dark Desaturated Blue */
+    --foreground: 220 10% 85%; /* Light Gray-Blue */
 
-    --card: 248 39% 20%;
-    --card-foreground: 0 0% 100%;
+    --card: 225 15% 18%; /* Slightly Lighter Dark Desaturated Blue */
+    --card-foreground: 220 10% 85%;
 
-    --popover: 248 39% 18%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 225 15% 15%;
+    --popover-foreground: 220 10% 85%;
 
-    --primary: 33 100% 50%;
+    --primary: 225 75% 60%; /* Brighter Blue for dark mode */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 50% 60%;
-    --secondary-foreground: 160 50% 15%;
+    --secondary: 220 15% 25%; /* Darker Gray-Blue */
+    --secondary-foreground: 220 10% 75%;
 
-    --muted: 248 39% 12%;
-    --muted-foreground: 207 46% 78%;
+    --muted: 225 15% 22%;
+    --muted-foreground: 220 10% 55%;
 
-    --accent: 160 50% 60%;
-    --accent-foreground: 160 50% 15%;
+    --accent: 48 95% 55%; /* Slightly desaturated/brighter Yellow */
+    --accent-foreground: 48 100% 5%; /* Very Dark Brown/Black */
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 63% 50%; 
     --destructive-foreground: 0 0% 100%;
 
-    --border: 248 30% 30%;
-    --input: 248 30% 25%;
-    --ring: 33 100% 55%;
+    --border: 220 15% 28%;
+    --input: 220 15% 20%;
+    --ring: 225 75% 65%;
 
-    /* Chart variables for dark mode - can be adjusted if needed */
+    /* Chart variables for dark mode */
     --chart-1: hsl(var(--primary));
-    --chart-2: hsl(var(--secondary));
-    --chart-3: 207 46% 65%;
-    --chart-4: 265 45% 50%;
-    --chart-5: 33 100% 70%;
+    --chart-2: hsl(var(--accent));
+    --chart-3: 220 10% 65%;
+    --chart-4: 265 40% 60%;
+    --chart-5: 225 75% 75%;
 
-    /* Sidebar variables for dark mode - can be adjusted if needed */
-     --sidebar-background: 248 39% 12%;
-    --sidebar-foreground: 0 0% 95%;
+    /* Sidebar variables for dark mode */
+    --sidebar-background: 225 15% 10%;
+    --sidebar-foreground: 220 10% 85%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: hsl(var(--secondary));
-    --sidebar-accent-foreground: hsl(var(--secondary-foreground));
-    --sidebar-border: 248 30% 25%;
+    --sidebar-accent: hsl(var(--accent));
+    --sidebar-accent-foreground: 48 100% 5%;
+    --sidebar-border: 220 15% 25%;
     --sidebar-ring: hsl(var(--ring));
   }
 }
@@ -108,14 +108,9 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
-    background-image: linear-gradient(to bottom, hsl(265, 45%, 28%), hsl(var(--background))); /* Royal Purple to Dark Indigo gradient */
-    background-attachment: fixed; /* Ensures gradient covers full viewport height */
   }
   .dark body {
-    /* Dark mode can also use a gradient or a solid color */
-    background-image: linear-gradient(to bottom, hsl(265, 45%, 22%), hsl(var(--background))); /* Darker gradient for dark mode */
-    @apply text-foreground;
-    background-attachment: fixed;
+    @apply bg-background text-foreground;
   }
 
   /* Custom scrollbar for a more modern feel */
@@ -138,8 +133,8 @@
 
 /* Custom text shadow utility (if needed) */
 .text-shadow {
-  text-shadow: 1px 1px 2px var(--tw-shadow-color, rgba(0,0,0,0.5));
+  text-shadow: 1px 1px 2px var(--tw-shadow-color, rgba(0,0,0,0.1));
 }
 .text-shadow-sm {
-  text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.4));
+  text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.08));
 }

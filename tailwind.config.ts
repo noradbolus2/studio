@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -17,9 +18,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'PT Sans', 'sans-serif'], // Added Poppins as primary
-        body: ['Poppins', 'PT Sans', 'sans-serif'],
-        headline: ['Poppins', 'PT Sans', 'sans-serif'],
+        sans: ['PT Sans', 'Poppins', 'sans-serif'], // PT Sans is now primary
+        body: ['PT Sans', 'Poppins', 'sans-serif'],
+        headline: ['PT Sans', 'Poppins', 'sans-serif'], // PT Sans for headlines as per PRD
         code: ['monospace', 'monospace'],
       },
       colors: {
@@ -29,11 +30,11 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))", // Bright Orange #FF8C00
+          DEFAULT: "hsl(var(--primary))", 
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))", // Aqua Mint #66CDAA
+          DEFAULT: "hsl(var(--secondary))", 
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
@@ -42,10 +43,10 @@ export default {
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))", // Light Gray-Blue #A9CCE3
+          foreground: "hsl(var(--muted-foreground))", 
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))", // Aqua Mint #66CDAA
+          DEFAULT: "hsl(var(--accent))", 
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
@@ -73,7 +74,7 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        // Custom colors for Login Page
+        // Custom colors for Login Page (can be removed or adapted if not used with new theme)
         'deep-purple': '#3B0A4E',
         'darker-purple': '#12002F',
         'login-orange': '#FF6D00',
@@ -81,22 +82,22 @@ export default {
         'login-support-text': '#B0B0D0',
         'login-orange-glow': 'rgba(255,109,0,0.35)',
         'login-mint-glow': 'rgba(0,230,176,0.35)',
-        // Colors for Parent Dashboard
-        'deep-space-indigo': '#12002F',
-        'dark-glass-card': '#1C1B2E',
-        'glow-aqua': '#00E6B0',
-        'glow-yellow': '#FFB300',
+        // Colors for Parent Dashboard (can be removed or adapted)
+        'deep-space-indigo': '#12002F', // Previous theme color
+        'dark-glass-card': 'hsl(var(--card) / 0.8)', // Adjusted for new theme
+        'glow-aqua': 'hsl(var(--accent))', // New accent
+        'glow-yellow': 'hsl(var(--accent))', // New accent
       },
       boxShadow: {
-        'glow-orange': '0 0 15px 3px rgba(255,109,0,0.35)',
-        'glow-mint': '0 0 15px 3px rgba(0,230,176,0.35)',
-        'glow-orange-hover': '0 0 20px 6px rgba(255,109,0,0.45)',
-        'glow-mint-hover': '0 0 20px 6px rgba(0,230,176,0.45)',
-        'logo-glow': '0 0 20px 5px rgba(255, 182, 193, 0.5)',
+        'glow-orange': '0 0 15px 3px hsla(var(--primary), 0.35)',
+        'glow-mint': '0 0 15px 3px hsla(var(--accent), 0.35)',
+        'glow-orange-hover': '0 0 20px 6px hsla(var(--primary), 0.45)',
+        'glow-mint-hover': '0 0 20px 6px hsla(var(--accent), 0.45)',
+        'logo-glow': '0 0 20px 5px hsla(var(--primary), 0.3)',
         // Glows for Parent Dashboard
-        'glow-aqua-soft': '0 0 15px 2px var(--tw-shadow-color, #00E6B0)',
-        'glow-yellow-soft': '0 0 15px 2px var(--tw-shadow-color, #FFB300)',
-        'glow-purple-soft': '0 0 15px 2px var(--tw-shadow-color, #A076F9)', // Example purple glow
+        'glow-aqua-soft': '0 0 15px 2px hsla(var(--accent), 0.3)',
+        'glow-yellow-soft': '0 0 15px 2px hsla(var(--accent), 0.3)',
+        'glow-purple-soft': '0 0 15px 2px hsla(265, 70%, 60%, 0.3)', 
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -112,19 +113,19 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "pulse-थोड़ा": { 
+        "pulse-subtle": { 
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: ".7" },
         },
-        "brain-heatmap-pulse": {
-          "0%, 100%": { boxShadow: "0 0 10px 2px var(--tw-shadow-color, #A076F9), inset 0 0 10px 0px var(--tw-shadow-color, #A076F9)" },
-          "50%": { boxShadow: "0 0 20px 5px var(--tw-shadow-color, #A076F9), inset 0 0 15px 2px var(--tw-shadow-color, #A076F9)" },
+        "brain-heatmap-pulse": { /* This might need adjustment with new colors */
+          "0%, 100%": { boxShadow: "0 0 10px 2px hsla(var(--primary),0.3), inset 0 0 10px 0px hsla(var(--primary),0.2)" },
+          "50%": { boxShadow: "0 0 20px 5px hsla(var(--primary),0.4), inset 0 0 15px 2px hsla(var(--primary),0.3)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-subtle": "pulse-थोड़ा 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "pulse-subtle": "pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "brain-heatmap-pulse": "brain-heatmap-pulse 3s ease-in-out infinite",
       },
     },
