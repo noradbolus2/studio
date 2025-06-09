@@ -17,35 +17,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { UploadCloud, PackagePlus, BookOpen, Palette, Code2, FlaskConical, Edit3, DollarSign, FileText, Image as ImageIcon, Video } from "lucide-react";
+import { UploadCloud, PackagePlus, BookOpen, Palette, Code2, FlaskConical, Edit3, DollarSign, FileText, Image as ImageIcon, Video, Layers } from "lucide-react"; // Added Layers
 
 const projectSchema = z.object({
-  projectTitle: z.string().min(5, "Project title must be at least 5 characters"),
+  projectTitle: z.string().min(5, "Content title must be at least 5 characters"),
+  contentType: z.string().min(1, "Please select a content type"), // New field
   targetClass: z.string().min(1, "Please select a target class"),
   subject: z.string().min(1, "Please select a subject"),
   description: z.string().min(20, "Description must be at least 20 characters").max(500, "Description must be 500 characters or less"),
-  sampleImageUrl: z.string().optional(), // For now, just storing the name or a placeholder
+  sampleImageUrl: z.string().optional(), 
   sampleVideoUrl: z.string().url("Please enter a valid URL for the video (e.g., YouTube, Vimeo)").optional().or(z.literal('')),
   priceDigital: z.coerce.number().min(0, "Price must be 0 or more").optional(),
   pricePhysicalKit: z.coerce.number().min(0, "Price must be 0 or more").optional(),
-}).refine(data => data.priceDigital !== undefined || data.pricePhysicalKit !== undefined, {
-  message: "At least one price (Digital or Physical Kit) must be provided.",
-  path: ["priceDigital"], // Show error near the first price field
+  priceCourse: z.coerce.number().min(0, "Price must be 0 or more").optional(), // For courses/guides
+}).refine(data => data.priceDigital !== undefined || data.pricePhysicalKit !== undefined || data.priceCourse !== undefined, {
+  message: "At least one price (Digital, Physical Kit, or Course) must be provided.",
+  path: ["priceDigital"], 
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
 
 const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams", "All Ages"];
 const subjects = ["Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "AI/ML", "Art & Craft", "General Knowledge", "Entrepreneurship", "Other"];
-const projectCategories = [ // For potential future use, or to derive subjects
-    { id: 'science_model', nameEn: 'Science Models', nameHi: 'विज्ञान मॉडल', icon: FlaskConical },
-    { id: 'coding_ai', nameEn: 'Coding & AI', nameHi: 'कोडिंग और एआई', icon: Code2 },
-    { id: 'art_craft', nameEn: 'Art & Craft', nameHi: 'कला और शिल्प', icon: Palette },
-    { id: 'research_essay', nameEn: 'Research/Essay', nameHi: 'शोध/निबंध', icon: Edit3 },
-];
+const contentTypes = ["Project Template", "Video Course", "PDF Guide", "Live Workshop Plan", "Interactive Quiz Pack"];
 
 
-export default function UploadProjectPage() {
+export default function UploadContentPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -56,6 +53,7 @@ export default function UploadProjectPage() {
     resolver: zodResolver(projectSchema),
     defaultValues: {
       projectTitle: "",
+      contentType: "",
       targetClass: "",
       subject: "",
       description: "",
@@ -63,20 +61,20 @@ export default function UploadProjectPage() {
       sampleVideoUrl: "",
       priceDigital: undefined,
       pricePhysicalKit: undefined,
+      priceCourse: undefined,
     },
   });
 
   const onSubmit: SubmitHandler<ProjectFormData> = async (data) => {
     setIsLoading(true);
-    console.log("Project Data to Upload (Simulated):", data);
-    // Simulate API call
+    console.log("Content Data to Upload (Simulated):", data);
     await new Promise(resolve => setTimeout(resolve, 1500));
     toast({
-      title: "Project Uploaded (Simulated)",
+      title: "Content Uploaded (Simulated)",
       description: `"${data.projectTitle}" has been submitted for review.`,
     });
     setIsLoading(false);
-    router.push("/creator-dashboard"); // Redirect back to dashboard after successful "upload"
+    router.push("/creator-dashboard/my-projects"); 
   };
 
   const handleImageFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -88,16 +86,13 @@ export default function UploadProjectPage() {
         if(imageFileRef.current) imageFileRef.current.value = "";
         return;
       }
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) { 
         toast({ title: "File Too Large", description: "Image must be less than 5MB.", variant: "destructive" });
         setSelectedFileName(null);
         if(imageFileRef.current) imageFileRef.current.value = "";
         return;
       }
       setSelectedFileName(file.name);
-      // In a real app, you'd handle the file upload to Firebase Storage here
-      // and store the URL in form state (e.g., setValue('sampleImageUrl', uploadedUrl))
-      // For now, we just show the name.
     } else {
         setSelectedFileName(null);
     }
@@ -110,22 +105,40 @@ export default function UploadProjectPage() {
           <CardHeader>
             <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
               <PackagePlus className="h-7 w-7" />
-              <BilingualText en="Upload New Project Template" hi="नया प्रोजेक्ट टेम्पलेट अपलोड करें" />
+              <BilingualText en="Upload New Content" hi="नई सामग्री अपलोड करें" />
             </CardTitle>
             <CardDescription>
-              <BilingualText en="Fill in the details for your new student project." hi="अपने नए छात्र प्रोजेक्ट के लिए विवरण भरें।" />
+              <BilingualText en="Fill in the details for your new student content (project, course, guide)." hi="अपनी नई छात्र सामग्री (प्रोजेक्ट, कोर्स, गाइड) के लिए विवरण भरें।" />
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             <div>
-              <Label htmlFor="projectTitle"><FileText className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Project Title" hi="प्रोजेक्ट शीर्षक" />*</Label>
-              <Controller name="projectTitle" control={control} render={({ field }) => <Input id="projectTitle" {...field} placeholder_en="e.g., Working Volcano Model" placeholder_hi="उदा., वर्किंग ज्वालामुखी मॉडल" />} />
+              <Label htmlFor="projectTitle"><FileText className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Content Title" hi="सामग्री शीर्षक" />*</Label>
+              <Controller name="projectTitle" control={control} render={({ field }) => <Input id="projectTitle" {...field} placeholder_en="e.g., Working Volcano Model / Python Masterclass" placeholder_hi="उदा., वर्किंग ज्वालामुखी मॉडल / पायथन मास्टरक्लास" />} />
               {errors.projectTitle && <p className="text-xs text-destructive mt-1">{errors.projectTitle.message}</p>}
             </div>
+            
+            <div>
+                <Label htmlFor="contentType"><Layers className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Content Type" hi="सामग्री प्रकार" />*</Label>
+                <Controller
+                  name="contentType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="contentType"><SelectValue placeholder_en="Select Content Type" placeholder_hi="सामग्री प्रकार चुनें" /></SelectTrigger>
+                      <SelectContent>
+                        {contentTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.contentType && <p className="text-xs text-destructive mt-1">{errors.contentType.message}</p>}
+            </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="targetClass"><BookOpen className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Target Class" hi="लक्ष्य कक्षा" />*</Label>
+                <Label htmlFor="targetClass"><BookOpen className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Target Class/Audience" hi="लक्ष्य कक्षा/दर्शक" />*</Label>
                 <Controller
                   name="targetClass"
                   control={control}
@@ -159,13 +172,13 @@ export default function UploadProjectPage() {
             </div>
 
             <div>
-              <Label htmlFor="description"><Edit3 className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Project Description" hi="प्रोजेक्ट विवरण" />*</Label>
-              <Controller name="description" control={control} render={({ field }) => <Textarea id="description" {...field} placeholder_en="Detailed description of the project, learning outcomes, etc. (max 500 chars)" placeholder_hi="प्रोजेक्ट का विस्तृत विवरण, सीखने के परिणाम, आदि। (अधिकतम 500 अक्षर)" className="min-h-[100px]" />} />
+              <Label htmlFor="description"><Edit3 className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Content Description" hi="सामग्री विवरण" />*</Label>
+              <Controller name="description" control={control} render={({ field }) => <Textarea id="description" {...field} placeholder_en="Detailed description of the content, learning outcomes, etc. (max 500 chars)" placeholder_hi="सामग्री का विस्तृत विवरण, सीखने के परिणाम, आदि। (अधिकतम 500 अक्षर)" className="min-h-[100px]" />} />
               {errors.description && <p className="text-xs text-destructive mt-1">{errors.description.message}</p>}
             </div>
             
             <div>
-              <Label htmlFor="sampleImage"><ImageIcon className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Sample Image" hi="नमूना छवि" /> (Max 5MB)</Label>
+              <Label htmlFor="sampleImage"><ImageIcon className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Thumbnail/Sample Image" hi="थंबनेल/नमूना छवि" /> (Max 5MB)</Label>
               <Input 
                 id="sampleImage" 
                 type="file" 
@@ -179,25 +192,31 @@ export default function UploadProjectPage() {
             </div>
 
             <div>
-              <Label htmlFor="sampleVideoUrl"><Video className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Sample Video URL (Optional)" hi="नमूना वीडियो यूआरएल (वैकल्पिक)" /></Label>
+              <Label htmlFor="sampleVideoUrl"><Video className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Intro/Sample Video URL (Optional)" hi="परिचय/नमूना वीडियो यूआरएल (वैकल्पिक)" /></Label>
               <Controller name="sampleVideoUrl" control={control} render={({ field }) => <Input id="sampleVideoUrl" {...field} placeholder_en="e.g., https://www.youtube.com/watch?v=..." placeholder_hi="उदा., https://www.youtube.com/watch?v=..." />} />
               {errors.sampleVideoUrl && <p className="text-xs text-destructive mt-1">{errors.sampleVideoUrl.message}</p>}
             </div>
 
             <Card className="bg-muted/50 p-4">
                 <CardTitle className="text-md font-semibold mb-3 flex items-center gap-2">
-                    <DollarSign size={18}/> <BilingualText en="Pricing (INR)" hi="मूल्य निर्धारण (INR)"/>
+                    <DollarSign size={18}/> <BilingualText en="Pricing (INR)" hi="मूल्य निर्धारण (INR)"/>*
                 </CardTitle>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardDescription className="text-xs mb-3"><BilingualText en="Set price for digital access, physical kits, or full course." hi="डिजिटल एक्सेस, भौतिक किट, या पूर्ण पाठ्यक्रम के लिए मूल्य निर्धारित करें।" /></CardDescription>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      <div>
-                        <Label htmlFor="priceDigital"><BilingualText en="Digital Version Price" hi="डिजिटल संस्करण मूल्य" /></Label>
+                        <Label htmlFor="priceDigital"><BilingualText en="Digital Template/Guide" hi="डिजिटल टेम्पलेट/गाइड" /></Label>
                         <Controller name="priceDigital" control={control} render={({ field }) => <Input id="priceDigital" type="number" {...field} placeholder="e.g., 199" value={field.value ?? ''} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} />} />
                         {errors.priceDigital && <p className="text-xs text-destructive mt-1">{errors.priceDigital.message}</p>}
                     </div>
                     <div>
-                        <Label htmlFor="pricePhysicalKit"><BilingualText en="Physical Kit Price (Optional)" hi="फिजिकल किट मूल्य (वैकल्पिक)" /></Label>
+                        <Label htmlFor="pricePhysicalKit"><BilingualText en="Physical Kit (Optional)" hi="भौतिक किट (वैकल्पिक)" /></Label>
                         <Controller name="pricePhysicalKit" control={control} render={({ field }) => <Input id="pricePhysicalKit" type="number" {...field} placeholder="e.g., 499" value={field.value ?? ''} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} />} />
                          {errors.pricePhysicalKit && <p className="text-xs text-destructive mt-1">{errors.pricePhysicalKit.message}</p>}
+                    </div>
+                    <div>
+                        <Label htmlFor="priceCourse"><BilingualText en="Course/Workshop Access" hi="कोर्स/कार्यशाला प्रवेश" /></Label>
+                        <Controller name="priceCourse" control={control} render={({ field }) => <Input id="priceCourse" type="number" {...field} placeholder="e.g., 999" value={field.value ?? ''} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} />} />
+                         {errors.priceCourse && <p className="text-xs text-destructive mt-1">{errors.priceCourse.message}</p>}
                     </div>
                 </div>
                  {errors.root && <p className="text-xs text-destructive mt-2">{errors.root.message}</p>}
@@ -208,7 +227,7 @@ export default function UploadProjectPage() {
           <CardFooter className="flex justify-end">
             <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting || isLoading}>
               {isSubmitting || isLoading ? <LoadingSpinner size={20} /> : <UploadCloud className="mr-2 h-5 w-5" />}
-              <BilingualText en="Submit Project" hi="प्रोजेक्ट सबमिट करें" />
+              <BilingualText en="Submit Content" hi="सामग्री सबमिट करें" />
             </Button>
           </CardFooter>
         </form>
