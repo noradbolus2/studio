@@ -11,14 +11,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { BilingualText } from "@/components/shared/BilingualText";
 
-export default function EditSchoolProfileRedirectPage() {
+export default function EditCreatorProfileRedirectPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     // Construct new search params for the consolidated edit page
     const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set('role', 'school'); // Ensure role is correctly set for school
+    newParams.set('role', 'creator'); // Ensure role is correctly set for creator
 
     // Redirect to the consolidated edit profile page
     router.replace(`/edit-profile?${newParams.toString()}`);
@@ -28,7 +28,7 @@ export default function EditSchoolProfileRedirectPage() {
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
       <LoadingSpinner size={48} />
       <p className="mt-4 text-muted-foreground">
-        <BilingualText en="Redirecting to School Profile Editor..." hi="स्कूल प्रोफ़ाइल संपादक पर रीडायरेक्ट किया जा रहा है..." />
+        <BilingualText en="Redirecting to Creator Profile Editor..." hi="निर्माता प्रोफ़ाइल संपादक पर रीडायरेक्ट किया जा रहा है..." />
       </p>
     </div>
   );

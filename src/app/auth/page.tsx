@@ -2,7 +2,7 @@
 "use client";
 import { useState, type FormEvent, useEffect } from "react";
 import Image from "next/image";
-import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon, ArrowLeft } from "lucide-react";
+import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon, ArrowLeft, Briefcase, School as SchoolIconLucide, Sparkles as CreatorIcon, Edit3, Landmark, ShieldCheck } from "lucide-react"; // Added SchoolIconLucide, Landmark, ShieldCheck
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -12,16 +12,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+
+const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 
 export default function AuthPage() {
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
   const [isLoading, setIsLoading] = useState(false);
 
-  const [fullName, setFullName] = useState(''); // Used as "Contact Person Name" for school/vendor/creator roles
+  const [name, setName] = useState(''); // Generic name field for signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [schoolDesignation, setSchoolDesignation] = useState('');
+
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,6 +37,9 @@ export default function AuthPage() {
 
   useEffect(() => {
     console.log("Selected role on auth page:", selectedRole);
+    if (selectedRole !== 'school') {
+      setSchoolDesignation(''); // Clear designation if role is not school
+    }
   }, [selectedRole]);
 
   const handleLanguageToggle = () => {
@@ -41,11 +50,12 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    let redirectPath = '/'; 
+    let redirectPath = '/edit-profile'; // Default to consolidated profile page
     let queryParams = new URLSearchParams();
     queryParams.set('email', email);
     queryParams.set('isNewUser', 'true');
     if (selectedRole) queryParams.set('role', selectedRole);
+    queryParams.set('name', name); // Pass the generic name field for pre-filling
 
 
     if (mode === 'signUp') {
@@ -54,32 +64,23 @@ export default function AuthPage() {
         setIsLoading(false);
         return;
       }
-      if (!fullName.trim() || !email.trim() || !password.trim()) {
+      if (!name.trim() || !email.trim() || !password.trim()) {
         toast({ title: "Error", description: "All fields are required for sign up.", variant: "destructive" });
         setIsLoading(false);
         return;
       }
+      if (selectedRole === 'school' && !schoolDesignation) {
+        toast({ title: "Error", description: "Please select a designation for school staff.", variant: "destructive" });
+        setIsLoading(false);
+        return;
+      }
       
-      localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName, role: selectedRole || 'student' }));
-      localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName, role: selectedRole || 'student' }));
+      localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student', designation: selectedRole === 'school' ? schoolDesignation : undefined }));
+      localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student', designation: selectedRole === 'school' ? schoolDesignation : undefined }));
       toast({ title: "Sign Up Successful", description: "Welcome! Please complete your profile." });
 
-      // Role-specific redirection after sign-up
-      switch (selectedRole) {
-        case 'school':
-          queryParams.set('contactPersonName', fullName); // Pass fullName as contactPersonName
-          redirectPath = `/edit-school-profile?${queryParams.toString()}`;
-          break;
-        // TODO: Add cases for 'vendor', 'creator' to redirect to their specific edit profile pages
-        // case 'vendor': redirectPath = `/edit-vendor-profile?${queryParams.toString()}`; break;
-        // case 'creator': redirectPath = `/edit-creator-profile?${queryParams.toString()}`; break;
-        case 'student':
-        case 'parent':
-        default:
-          queryParams.set('fullName', fullName);
-          redirectPath = `/edit-profile?${queryParams.toString()}`;
-          break;
-      }
+      // All roles now go to /edit-profile, which will handle role-specific fields
+      redirectPath = `/edit-profile?${queryParams.toString()}`;
 
     } else { // Sign In
       if (!email.trim() || !password.trim()) {
@@ -91,8 +92,11 @@ export default function AuthPage() {
       if (storedCredentialsString) {
         const storedCredentials = JSON.parse(storedCredentialsString);
         if (storedCredentials.password === password) {
+          // Ensure the role stored during signup is used, or fallback to current selection/student
           const userRole = storedCredentials.role || selectedRole || 'student';
-          localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole }));
+          const userDesignation = storedCredentials.designation; // Get stored designation
+
+          localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole, designation: userDesignation }));
           toast({ title: "Sign In Successful", description: "Welcome back!" });
           
           switch (userRole) {
@@ -125,10 +129,10 @@ export default function AuthPage() {
         case 'creator':
             return { en: "Contact Person Name", hi: "संपर्क व्यक्ति का नाम" };
         default:
-            return { en: "Full Name", hi: "पूरा नाम" };
+            return { en: "Your Full Name", hi: "आपका पूरा नाम" };
     }
   };
-  const fullNameLabel = getFullNameLabel();
+  const nameFieldLabel = getFullNameLabel();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-6 font-body relative">
@@ -146,7 +150,7 @@ export default function AuthPage() {
       <Button
         onClick={handleLanguageToggle}
         variant="outline"
-        className="absolute top-6 right-6 text-foreground hover:bg-accent/10 py-1 px-2 text-sm h-auto z-10"
+        className="absolute top-6 right-6 bg-card/50 backdrop-blur-sm border-border/30 hover:bg-card/70 text-foreground py-1 px-2 text-sm h-auto z-10"
       >
         <Languages className="h-4 w-4 mr-1.5" />
         {currentLang === 'en' ? 'हिंदी' : 'English'}
@@ -155,7 +159,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md text-center">
         <div className="mb-8">
           <Image
-            src="https://placehold.co/100x100/FF8C00/FFFFFF?text=O&font=poppins"
+            src="/oso_logo_final.png"
             alt="OSO App Logo"
             width={80}
             height={80}
@@ -164,7 +168,7 @@ export default function AuthPage() {
           />
         </div>
 
-        <Card className="shadow-xl border-border">
+        <Card className="shadow-xl border-border bg-card/90 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-2xl font-headline text-primary">
               {mode === 'signIn' ? (
@@ -190,11 +194,11 @@ export default function AuthPage() {
             <CardContent className="space-y-4">
               {mode === 'signUp' && (
                 <div className="space-y-1 text-left">
-                  <Label htmlFor="fullName" className="flex items-center text-muted-foreground">
+                  <Label htmlFor="name" className="flex items-center text-muted-foreground">
                     <UserIcon className="h-4 w-4 mr-1.5 text-primary/70" />
-                    <BilingualText en={fullNameLabel.en} hi={fullNameLabel.hi} lang={currentLang} />
+                    <BilingualText en={nameFieldLabel.en} hi={nameFieldLabel.hi} lang={currentLang} />
                   </Label>
-                  <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder_en={`Enter ${fullNameLabel.en.toLowerCase()}`} placeholder_hi={`${fullNameLabel.hi} दर्ज करें`} required={mode === 'signUp'} />
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder_en={`Enter ${nameFieldLabel.en.toLowerCase()}`} placeholder_hi={`${nameFieldLabel.hi} दर्ज करें`} required={mode === 'signUp'} />
                 </div>
               )}
               <div className="space-y-1 text-left">
@@ -212,13 +216,33 @@ export default function AuthPage() {
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder_en="Enter your password" placeholder_hi="अपना पासवर्ड दर्ज करें" required />
               </div>
               {mode === 'signUp' && (
-                <div className="space-y-1 text-left">
-                  <Label htmlFor="confirmPassword" className="flex items-center text-muted-foreground">
-                    <KeyRound className="h-4 w-4 mr-1.5 text-primary/70" />
-                    <BilingualText en="Confirm Password" hi="पासवर्ड की पुष्टि करें" lang={currentLang} />
-                  </Label>
-                  <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder_en="Confirm your password" placeholder_hi="अपने पासवर्ड की पुष्टि करें" required={mode === 'signUp'} />
-                </div>
+                <>
+                  <div className="space-y-1 text-left">
+                    <Label htmlFor="confirmPassword" className="flex items-center text-muted-foreground">
+                      <KeyRound className="h-4 w-4 mr-1.5 text-primary/70" />
+                      <BilingualText en="Confirm Password" hi="पासवर्ड की पुष्टि करें" lang={currentLang} />
+                    </Label>
+                    <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder_en="Confirm your password" placeholder_hi="अपने पासवर्ड की पुष्टि करें" required={mode === 'signUp'} />
+                  </div>
+                  {selectedRole === 'school' && (
+                    <div className="space-y-1 text-left">
+                        <Label htmlFor="schoolDesignation" className="flex items-center text-muted-foreground">
+                            <ShieldCheck className="h-4 w-4 mr-1.5 text-primary/70" />
+                            <BilingualText en="Your Designation" hi="आपकी पदवी" lang={currentLang} />
+                        </Label>
+                        <Select value={schoolDesignation} onValueChange={setSchoolDesignation} required>
+                            <SelectTrigger id="schoolDesignation">
+                                <SelectValue placeholder_en="Select your designation" placeholder_hi="अपनी पदवी चुनें" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {schoolDesignations.map(desig => (
+                                    <SelectItem key={desig} value={desig}>{desig}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
@@ -256,6 +280,12 @@ declare module 'react' {
       placeholder_en?: string;
       placeholder_hi?: string;
     }
+}
+declare module "@radix-ui/react-select" {
+  interface SelectValueProps {
+    placeholder_en?: string;
+    placeholder_hi?: string;
+  }
 }
 
     
