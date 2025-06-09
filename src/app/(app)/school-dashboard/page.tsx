@@ -2,15 +2,16 @@
 // src/app/(app)/school-dashboard/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react'; 
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Added useRouter
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import type { SchoolProfileFormData } from '../edit-school-profile/page'; // Import the type
+import type { SchoolProfileFormData } from '../edit-school-profile/page';
 
 
 const schoolStats = [
@@ -30,6 +31,7 @@ const schoolActions = [
 
 export default function SchoolDashboardPage() {
   const { toast } = useToast();
+  const router = useRouter(); // Initialize router
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -41,7 +43,6 @@ export default function SchoolDashboardPage() {
           setSchoolProfile(JSON.parse(storedProfileString));
         } catch (e) {
           console.error("Failed to parse school profile from localStorage", e);
-          // Fallback or redirect if needed
         }
       }
     }
@@ -50,11 +51,11 @@ export default function SchoolDashboardPage() {
 
 
   const handleActionClick = (href: string, labelEn: string) => {
-    toast({
-        title: "Navigating (Simulated)",
-        description: `This would navigate to ${labelEn}. Page not yet implemented.`,
-    });
-    // router.push(href); // Uncomment when pages are ready
+    // toast({
+    //     title: "Navigating (Simulated)",
+    //     description: `This would navigate to ${labelEn}. Page not yet implemented.`,
+    // });
+    router.push(href); // Actual navigation
   };
 
   if (loadingProfile) {
@@ -93,7 +94,6 @@ export default function SchoolDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              {/* <p className="text-xs text-muted-foreground">+20.1% from last month</p> */}
             </CardContent>
           </Card>
         ))}
@@ -119,7 +119,7 @@ export default function SchoolDashboardPage() {
         </CardContent>
       </Card>
 
-      <Card>
+       <Card>
         <CardHeader>
             <CardTitle className="font-headline"><BilingualText en="Recent Activity" hi="हाल की गतिविधि" /></CardTitle>
             <CardDescription><BilingualText en="Latest updates and notifications from the school." hi="स्कूल से नवीनतम अपडेट और सूचनाएं।" /></CardDescription>
@@ -133,5 +133,3 @@ export default function SchoolDashboardPage() {
     </div>
   );
 }
-
-    
