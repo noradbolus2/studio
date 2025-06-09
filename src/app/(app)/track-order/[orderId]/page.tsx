@@ -9,6 +9,7 @@ import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ArrowLeft, Package, CheckCircle, Truck, Home as HomeIcon } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { MapDisplay } from '@/components/tracking/MapDisplay';
 import { cn } from '@/lib/utils';
 
 interface TrackingStep {
@@ -22,12 +23,16 @@ interface TrackingStep {
 
 export default function TrackOrderPage() {
   const router = useRouter();
-  const { orderId: rawOrderId } = useParams(); // Destructure directly
+  const { orderId: rawOrderId } = useParams(); 
   const orderId = rawOrderId as string;
 
   const [isLoading, setIsLoading] = useState(true);
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  // Mock delivery coordinates (e.g., somewhere in Delhi for the example)
+  const mockDeliveryLocation = { lat: 28.6139, lng: 77.2090 }; 
+  // In a real app, these would come from your backend based on orderId
 
   const mockTrackingData: TrackingStep[] = [
     { id: 'placed', statusEn: 'Order Placed', statusHi: 'ऑर्डर दिया गया', icon: Package, completed: false },
@@ -40,10 +45,10 @@ export default function TrackOrderPage() {
   useEffect(() => {
     if (orderId) {
       setIsLoading(true);
-      // Simulate fetching order status
+      
       setTimeout(() => {
         const steps = [...mockTrackingData];
-        const randomProgress = Math.floor(Math.random() * (steps.length +1)); // 0 to 5
+        const randomProgress = Math.floor(Math.random() * (steps.length +1)); 
         
         let tempCurrentStepIndex = 0;
         for (let i = 0; i < steps.length; i++) {
@@ -55,22 +60,17 @@ export default function TrackOrderPage() {
             }
           }
         }
-        // If all steps are completed, currentStepIndex should be last step.
-        // If no steps completed, it's 0.
-        // If some steps completed, it's the index of the last completed step.
+        
         if (randomProgress === steps.length) {
              tempCurrentStepIndex = steps.length -1;
         }
-
 
         setTrackingSteps(steps);
         setCurrentStepIndex(tempCurrentStepIndex);
         setIsLoading(false);
       }, 1200);
     } else {
-      // If no orderId, stop loading and potentially show an error or redirect
       setIsLoading(false);
-      // Consider redirecting or showing a message if orderId is missing
     }
   }, [orderId]);
 
@@ -101,11 +101,9 @@ export default function TrackOrderPage() {
     if (trackingSteps.length === 0 || !trackingSteps[currentStepIndex]) {
       return 'Loading...';
     }
-    // If the current step is completed AND it's not the last step, show the next step's status as current.
     if (trackingSteps[currentStepIndex].completed && currentStepIndex < trackingSteps.length - 1) {
       return trackingSteps[currentStepIndex + 1].statusEn;
     }
-    // Otherwise, show the current step's status.
     return trackingSteps[currentStepIndex].statusEn;
   };
 
@@ -160,6 +158,20 @@ export default function TrackOrderPage() {
              <p className="text-sm text-muted-foreground"><BilingualText en="Thank you for your order!" hi="आपके आदेश के लिए धन्यवाद!"/></p>
         </CardFooter>
       </Card>
+      
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle><BilingualText en="Live Location (Simulated)" hi="लाइव लोकेशन (नकली)" /></CardTitle>
+          <CardDescription><BilingualText en="See the current simulated location of your delivery." hi="अपनी डिलीवरी का वर्तमान नकली स्थान देखें।" /></CardDescription>
+        </CardHeader>
+        <CardContent>
+          <MapDisplay 
+            mapCenter={mockDeliveryLocation} 
+            markerPosition={mockDeliveryLocation} 
+          />
+        </CardContent>
+      </Card>
+
     </div>
   );
 }
