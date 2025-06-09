@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import type { SchoolProfileFormData as VendorProfileFormData } from '../edit-vendor-profile/page'; // Using same structure for now
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Badge } from "@/components/ui/badge"; // Added this import
 
 const vendorStats = [
   { id: "pending_orders", labelEn: "Pending Orders", labelHi: "लंबित आदेश", value: "12", icon: ListChecks, color: "text-orange-500" },
@@ -158,3 +159,4 @@ export default function VendorDashboardPage() {
     </div>
   );
 }
+
