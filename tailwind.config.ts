@@ -18,9 +18,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'Inter', 'sans-serif'], // Poppins is now primary, Inter secondary
+        sans: ['Poppins', 'Inter', 'sans-serif'],
         body: ['Poppins', 'Inter', 'sans-serif'],
-        headline: ['Poppins', 'Inter', 'sans-serif'], // Poppins for headlines
+        headline: ['Poppins', 'Inter', 'sans-serif'], 
         code: ['monospace', 'monospace'],
       },
       colors: {
@@ -41,6 +41,10 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        success: { // Added success color definition
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))", 
@@ -54,7 +58,7 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT: "hsl(var(--card))", // Will use the HSL with alpha
           foreground: "hsl(var(--card-foreground))",
         },
         chart: {
@@ -74,30 +78,19 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        // Remove old login page custom colors if no longer primary
-        'deep-purple': 'hsl(var(--background))', // map to new background
-        'darker-purple': 'hsl(270 100% 7%)', // even darker shade of bg
-        'login-orange': 'hsl(var(--accent))', // map to new accent (pink) or keep yellow if desired
-        'login-aqua-mint': 'hsl(var(--primary))', // map to new primary (glow blue)
-        'login-support-text': 'hsl(var(--muted-foreground))', // map to new muted-fg
-        'login-orange-glow': '0 0 15px 3px hsla(var(--accent), 0.35)',
-        'login-mint-glow': '0 0 15px 3px hsla(var(--primary), 0.35)',
-         // Colors for Parent Dashboard (New theme is dark by default)
-        'deep-space-indigo': 'hsl(var(--background))', 
-        'dark-glass-card': 'hsla(0, 0%, 100%, 0.06)', // Explicitly defining for parent dashboard cards
-        'glow-aqua': 'hsl(var(--primary))', 
-        'glow-yellow': 'hsl(var(--destructive))', // Warning color
+        // Removed old login page specific colors as they are now covered by the theme
       },
       boxShadow: {
-        'glow-accent-pink': '0 0 12px 2px hsla(var(--accent), 0.55), 0 0 20px 5px hsla(var(--accent), 0.35)', // #FF2E63
-        'glow-ai-blue': '0 0 12px 2px hsla(var(--primary), 0.55), 0 0 20px 5px hsla(var(--primary), 0.35)', // #00E6B0
-        'glow-orange': '0 0 15px 3px hsla(var(--accent), 0.35)', // Legacy, map to new accent glow
-        'glow-mint': '0 0 15px 3px hsla(var(--primary), 0.35)', // Legacy, map to new primary glow
-        'logo-glow': '0 0 20px 5px hsla(var(--primary), 0.3)',
-        // Glows for Parent Dashboard
-        'glow-aqua-soft': '0 0 15px 2px hsla(var(--primary), 0.3)',
-        'glow-yellow-soft': '0 0 15px 2px hsla(var(--destructive), 0.3)',
-        'glow-purple-soft': '0 0 15px 2px hsla(270, 70%, 60%, 0.3)', 
+        // Updated glow effects based on new palette
+        'glow-accent-pink': '0 0 12px 2px hsla(var(--accent), 0.55), 0 0 20px 5px hsla(var(--accent), 0.35)', // #FF2E63 (Accent Pink)
+        'glow-ai-blue': '0 0 12px 2px hsla(var(--primary), 0.55), 0 0 20px 5px hsla(var(--primary), 0.35)', // #00E6B0 (Glow Blue AI / Primary)
+        'logo-glow': '0 0 20px 5px hsla(var(--primary), 0.3)', // Using new primary for logo glow
+        'glow-success-green': '0 0 12px 2px hsla(var(--success), 0.55), 0 0 20px 5px hsla(var(--success), 0.35)', // #00FF94
+        'glow-warning-yellow': '0 0 12px 2px hsla(var(--destructive), 0.55), 0 0 20px 5px hsla(var(--destructive), 0.35)', // #FFB300
+         // Glows for Parent Dashboard (Partner Theme which uses Glow Blue as Primary)
+        'glow-aqua-soft': '0 0 15px 2px hsla(var(--primary), 0.3)', // Glow Blue from Partner Theme
+        'glow-yellow-soft': '0 0 15px 2px hsla(var(--destructive), 0.3)', // Warning Yellow
+        'glow-purple-soft': '0 0 15px 2px hsla(270, 70%, 60%, 0.3)', // A generic purple
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -117,7 +110,7 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: ".7" },
         },
-        "brain-heatmap-pulse": {
+        "brain-heatmap-pulse": { // Can be adapted to use --primary or --accent for its glow
           "0%, 100%": { boxShadow: "0 0 10px 2px hsla(var(--primary),0.4), inset 0 0 10px 0px hsla(var(--primary),0.3)" },
           "50%": { boxShadow: "0 0 20px 5px hsla(var(--primary),0.5), inset 0 0 15px 2px hsla(var(--primary),0.4)" },
         },
@@ -132,4 +125,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
