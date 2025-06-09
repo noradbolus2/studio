@@ -2,12 +2,12 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react'; // Added useMemo
+import { useEffect, useState, useMemo } from 'react'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { ArrowLeft, Package, CheckCircle, Truck, Home as HomeIcon, MapPin, ShoppingBag } from 'lucide-react'; // Added MapPin, ShoppingBag
+import { ArrowLeft, Package, CheckCircle, Truck, Home as HomeIcon, MapPin, ShoppingBag } from 'lucide-react'; 
 import { Progress } from '@/components/ui/progress';
 import { MapDisplay } from '@/components/tracking/MapDisplay';
 import { cn } from '@/lib/utils';
@@ -21,11 +21,12 @@ interface TrackingStep {
   icon: React.ElementType;
 }
 
-interface MapMarker {
+interface MapMarkerConfig { // Renamed to avoid conflict with MapDisplay's internal MapMarker type
   id: string;
   position: { lat: number; lng: number };
   label?: string;
-  icon?: string | google.maps.Icon | google.maps.Symbol;
+  iconUrl?: string;
+  iconSize?: { width: number; height: number };
 }
 
 export default function TrackOrderPage() {
@@ -37,18 +38,16 @@ export default function TrackOrderPage() {
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  // Simulated locations
-  const vendorLocation = useMemo(() => ({ lat: 28.63576, lng: 77.22445 }), []); // Connaught Place area
-  const riderLocation = useMemo(() => ({ lat: 28.6250, lng: 77.2150 }), []); // Near India Gate (simulated rider)
-  const deliveryLocation = useMemo(() => ({ lat: 28.6139, lng: 77.2090 }), []); // Rashtrapati Bhavan area (simulated delivery)
+  const vendorLocation = useMemo(() => ({ lat: 28.63576, lng: 77.22445 }), []); 
+  const riderLocation = useMemo(() => ({ lat: 28.6250, lng: 77.2150 }), []); 
+  const deliveryLocation = useMemo(() => ({ lat: 28.6139, lng: 77.2090 }), []); 
 
-  const mapMarkers: MapMarker[] = [
-    { id: 'vendor', position: vendorLocation, label: 'V', icon: { url: '/assets/icons/store-marker.png', scaledSize: new google.maps.Size(30, 30) } }, // Placeholder icon path
-    { id: 'rider', position: riderLocation, label: 'R', icon: { url: '/assets/icons/rider-marker.png', scaledSize: new google.maps.Size(30, 30) } }, // Placeholder icon path
-    { id: 'delivery', position: deliveryLocation, label: 'H', icon: { url: '/assets/icons/home-marker.png', scaledSize: new google.maps.Size(30, 30) } }, // Placeholder icon path
+  const mapMarkers: MapMarkerConfig[] = [
+    { id: 'vendor', position: vendorLocation, label: 'V', iconUrl: '/assets/icons/store-marker.png', iconSize: { width: 30, height: 30 } },
+    { id: 'rider', position: riderLocation, label: 'R', iconUrl: '/assets/icons/rider-marker.png', iconSize: { width: 30, height: 30 } },
+    { id: 'delivery', position: deliveryLocation, label: 'H', iconUrl: '/assets/icons/home-marker.png', iconSize: { width: 30, height: 30 } },
   ];
   
-  // Center map between vendor and delivery for a reasonable view
   const mapCenter = useMemo(() => ({
     lat: (vendorLocation.lat + deliveryLocation.lat) / 2,
     lng: (vendorLocation.lng + deliveryLocation.lng) / 2,
@@ -93,7 +92,7 @@ export default function TrackOrderPage() {
     } else {
       setIsLoading(false);
     }
-  }, [orderId]); // mockTrackingData is constant, no need to include it
+  }, [orderId]); 
 
   const progressValue = trackingSteps.length > 0 ? ((currentStepIndex + (trackingSteps[currentStepIndex]?.completed ? 1: 0) ) / trackingSteps.length) * 100 : 0;
 
@@ -122,11 +121,9 @@ export default function TrackOrderPage() {
     if (trackingSteps.length === 0 || !trackingSteps[currentStepIndex]) {
       return 'Loading...';
     }
-    // If current step is completed and it's not the last step, show next step's status as current
     if (trackingSteps[currentStepIndex].completed && currentStepIndex < trackingSteps.length - 1) {
       return trackingSteps[currentStepIndex + 1].statusEn;
     }
-    // Otherwise, show current step's status
     return trackingSteps[currentStepIndex].statusEn;
   };
 
@@ -158,7 +155,7 @@ export default function TrackOrderPage() {
           <MapDisplay 
             mapCenter={mapCenter} 
             markers={mapMarkers}
-            zoom={12} // Adjusted zoom for better initial view
+            zoom={12} 
           />
           <div className="grid grid-cols-3 gap-2 mt-3 text-xs text-muted-foreground text-center">
             <p><ShoppingBag size={12} className="inline mr-1 text-blue-500"/> Vendor Location (V)</p>
@@ -203,7 +200,3 @@ export default function TrackOrderPage() {
     </div>
   );
 }
-
-// Placeholder for custom marker icons - create these in public/assets/icons
-// e.g., public/assets/icons/store-marker.png, rider-marker.png, home-marker.png
-// For now, they will appear as broken images if not present, but the map will still work.

@@ -14,8 +14,9 @@ const containerStyle = {
 interface MapMarker {
   id: string;
   position: { lat: number; lng: number };
-  label?: string; // Optional label for the marker
-  icon?: string | google.maps.Icon | google.maps.Symbol; // Optional custom icon
+  label?: string; 
+  iconUrl?: string; 
+  iconSize?: { width: number; height: number }; 
 }
 
 interface MapDisplayProps {
@@ -62,14 +63,26 @@ export function MapDisplay({ mapCenter, markers, zoom }: MapDisplayProps) {
           zoomControlOptions: { position: 9 /* google.maps.ControlPosition.RIGHT_BOTTOM */ },
         }}
       >
-        {displayMarkers.map((marker) => (
-          <MarkerF 
-            key={marker.id} 
-            position={marker.position} 
-            label={marker.label}
-            icon={marker.icon}
-          />
-        ))}
+        {displayMarkers.map((marker) => {
+          let markerIcon: google.maps.Icon | string | undefined = undefined;
+          if (marker.iconUrl && typeof window !== 'undefined' && window.google && window.google.maps) {
+            markerIcon = {
+              url: marker.iconUrl,
+              scaledSize: marker.iconSize 
+                ? new window.google.maps.Size(marker.iconSize.width, marker.iconSize.height) 
+                : new window.google.maps.Size(30, 30), // Default size if not provided
+            };
+          }
+
+          return (
+            <MarkerF 
+              key={marker.id} 
+              position={marker.position} 
+              label={marker.label}
+              icon={markerIcon}
+            />
+          );
+        })}
       </GoogleMap>
     </LoadScript>
   );
