@@ -5,99 +5,90 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* Off-white #F9F9F9 */
-    --foreground: 225 10% 10%; /* Dark Blue-Gray for text */
+    /* New Palette based on User's Request */
+    --background: 270 100% 9%; /* #17002F - Deep royal purple */
+    --foreground: 0 0% 100%; /* #FFFFFF - White */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 225 10% 10%;
+    --card: 0 0% 100% / 0.06; /* rgba(255,255,255,0.06) - Glass Card BG */
+    --card-foreground: 0 0% 100%; /* White */
 
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 225 10% 10%;
+    --popover: 270 80% 12%; /* Slightly lighter than background for popovers */
+    --popover-foreground: 0 0% 100%; /* White */
 
-    --primary: 225 80% 49%; /* Blue #144EE3 */
-    --primary-foreground: 0 0% 100%; /* White */
+    --primary: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) */
+    --primary-foreground: 270 100% 7%; /* Darker purple for contrast on Glow Blue */
 
-    --secondary: 220 15% 92%; /* Very Light Blue-Gray */
-    --secondary-foreground: 225 80% 49%; /* Primary Blue */
+    --secondary: 270 80% 15%; /* Darker shade of background purple */
+    --secondary-foreground: 0 0% 100%; /* White */
 
-    --muted: 220 15% 95%; /* Light Grayish Blue */
-    --muted-foreground: 220 10% 45%; /* Medium Gray-Blue */
+    --muted: 0 0% 100% / 0.1; /* Subtle white for muted elements on dark bg */
+    --muted-foreground: 330 100% 92%; /* #FFD6E8 - Light Pink Secondary Text */
 
-    --accent: 48 100% 50%; /* Yellow #FFD000 */
-    --accent-foreground: 20 100% 15%; /* Dark Brown/Black for text on yellow */
+    --accent: 345 100% 59%; /* #FF2E63 - Accent Pink (Youth) */
+    --accent-foreground: 0 0% 100%; /* White */
 
-    --destructive: 0 84% 60%; /* Standard Red */
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 42 100% 50%; /* #FFB300 - Warning/Alert Yellow */
+    --destructive-foreground: 270 100% 9%; /* Dark Purple for contrast on Yellow */
 
-    --border: 220 15% 88%; /* Light Gray-Blue border */
-    --input: 0 0% 100%; /* White input background, with border for definition */
-    --ring: 225 80% 55%; /* Slightly lighter blue for focus rings */
+    --border: 0 0% 100% / 0.1; /* Subtle white border for glass effect */
+    --input: 0 0% 100% / 0.08; /* Glassy input background */
+    --ring: 167 100% 55%; /* Lighter Glow Blue for focus rings */
 
-    --radius: 0.75rem; /* Slightly more rounded */
+    --radius: 0.75rem;
 
-    /* Chart variables - can be adjusted to fit the new theme */
-    --chart-1: hsl(var(--primary)); /* Blue */
-    --chart-2: hsl(var(--accent)); /* Yellow */
-    --chart-3: 220 15% 75%; /* A slightly darker gray-blue */
-    --chart-4: 265 45% 60%; /* A Purple shade for charts, if needed */
-    --chart-5: 225 80% 70%; /* Lighter Blue */
-
+    /* Chart variables - Adjusted for the new theme */
+    --chart-1: 156 100% 50%;   /* #00FF94 - Success/Positive Green */
+    --chart-2: 345 100% 59%;   /* Accent Pink */
+    --chart-3: 167 100% 45%;   /* Glow Blue (AI) / Primary */
+    --chart-4: 42 100% 50%;    /* Warning/Alert Yellow / Destructive */
+    --chart-5: 270 70% 60%;   /* A general purple from the theme */
+    
     /* Sidebar variables */
-    --sidebar-background: 0 0% 96%; /* Slightly darker off-white for sidebar */
-    --sidebar-foreground: 225 10% 10%;
+    --sidebar-background: 270 90% 12%; /* Slightly different shade of purple for sidebar */
+    --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: hsl(var(--accent));
-    --sidebar-accent-foreground: 20 100% 15%;
-    --sidebar-border: 220 15% 85%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 100% / 0.08;
     --sidebar-ring: hsl(var(--ring));
   }
 
   .dark {
-    /* A more standard dark theme */
-    --background: 225 15% 12%; /* Dark Desaturated Blue */
-    --foreground: 220 10% 85%; /* Light Gray-Blue */
+    /* The new base theme is dark, so .dark can be identical or a slight variation */
+    --background: 270 100% 9%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 100% / 0.06;
+    --card-foreground: 0 0% 100%;
+    --popover: 270 80% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 167 100% 45%;
+    --primary-foreground: 270 100% 7%;
+    --secondary: 270 80% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 100% / 0.1;
+    --muted-foreground: 330 100% 92%;
+    --accent: 345 100% 59%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 42 100% 50%;
+    --destructive-foreground: 270 100% 9%;
+    --border: 0 0% 100% / 0.1;
+    --input: 0 0% 100% / 0.08;
+    --ring: 167 100% 55%;
 
-    --card: 225 15% 18%; /* Slightly Lighter Dark Desaturated Blue */
-    --card-foreground: 220 10% 85%;
-
-    --popover: 225 15% 15%;
-    --popover-foreground: 220 10% 85%;
-
-    --primary: 225 75% 60%; /* Brighter Blue for dark mode */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 15% 25%; /* Darker Gray-Blue */
-    --secondary-foreground: 220 10% 75%;
-
-    --muted: 225 15% 22%;
-    --muted-foreground: 220 10% 55%;
-
-    --accent: 48 95% 55%; /* Slightly desaturated/brighter Yellow */
-    --accent-foreground: 48 100% 5%; /* Very Dark Brown/Black */
-
-    --destructive: 0 63% 50%; 
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 15% 28%;
-    --input: 220 15% 20%;
-    --ring: 225 75% 65%;
-
-    /* Chart variables for dark mode */
-    --chart-1: hsl(var(--primary));
-    --chart-2: hsl(var(--accent));
-    --chart-3: 220 10% 65%;
-    --chart-4: 265 40% 60%;
-    --chart-5: 225 75% 75%;
-
-    /* Sidebar variables for dark mode */
-    --sidebar-background: 225 15% 10%;
-    --sidebar-foreground: 220 10% 85%;
+    --chart-1: 156 100% 50%;
+    --chart-2: 345 100% 59%;
+    --chart-3: 167 100% 45%;
+    --chart-4: 42 100% 50%;
+    --chart-5: 270 70% 60%;
+    
+    --sidebar-background: 270 90% 12%;
+    --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: hsl(var(--accent));
-    --sidebar-accent-foreground: 48 100% 5%;
-    --sidebar-border: 220 15% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 100% / 0.08;
     --sidebar-ring: hsl(var(--ring));
   }
 }
@@ -108,16 +99,12 @@
   }
   body {
     @apply text-foreground font-body antialiased;
-    /* Subtle gradient for a more premium feel */
-    background-image: linear-gradient(to bottom, hsl(220, 25%, 97%), hsl(0, 0%, 98%));
-    min-height: 100vh; /* Ensure gradient covers full viewport height */
+    /* New gradient background */
+    background-image: linear-gradient(to bottom, hsl(302 100% 19%), hsl(270 100% 9%)); /* #62005F -> #17002F */
+    min-height: 100vh;
   }
-  .dark body {
-    @apply text-foreground; /* Keep text color from dark theme */
-    /* Subtle dark gradient */
-    background-image: linear-gradient(to bottom, hsl(225, 15%, 10%), hsl(225, 15%, 12%));
-    min-height: 100vh; /* Ensure gradient covers full viewport height */
-  }
+  /* Remove dark body specific background if base is already dark and gradient is applied */
+  /* .dark body can inherit from body or have a very slight variation if needed */
 
   /* Custom scrollbar for a more modern feel */
   ::-webkit-scrollbar {
@@ -129,7 +116,7 @@
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.7);
+    background: hsl(var(--primary) / 0.7); /* Using new primary (Glow Blue AI) */
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb:hover {
@@ -139,8 +126,8 @@
 
 /* Custom text shadow utility (if needed) */
 .text-shadow {
-  text-shadow: 1px 1px 2px var(--tw-shadow-color, rgba(0,0,0,0.1));
+  text-shadow: 1px 1px 2px var(--tw-shadow-color, rgba(0,0,0,0.25)); /* Darker shadow for better visibility on dark bg */
 }
 .text-shadow-sm {
-  text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.08));
+  text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.15));
 }

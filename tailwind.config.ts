@@ -18,9 +18,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['PT Sans', 'Poppins', 'sans-serif'], // PT Sans is now primary
-        body: ['PT Sans', 'Poppins', 'sans-serif'],
-        headline: ['PT Sans', 'Poppins', 'sans-serif'], // PT Sans for headlines as per PRD
+        sans: ['Poppins', 'Inter', 'sans-serif'], // Poppins is now primary, Inter secondary
+        body: ['Poppins', 'Inter', 'sans-serif'],
+        headline: ['Poppins', 'Inter', 'sans-serif'], // Poppins for headlines
         code: ['monospace', 'monospace'],
       },
       colors: {
@@ -74,30 +74,30 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        // Custom colors for Login Page (can be removed or adapted if not used with new theme)
-        'deep-purple': '#3B0A4E',
-        'darker-purple': '#12002F',
-        'login-orange': '#FF6D00',
-        'login-aqua-mint': '#00E6B0',
-        'login-support-text': '#B0B0D0',
-        'login-orange-glow': 'rgba(255,109,0,0.35)',
-        'login-mint-glow': 'rgba(0,230,176,0.35)',
-        // Colors for Parent Dashboard (can be removed or adapted)
-        'deep-space-indigo': '#12002F', // Previous theme color
-        'dark-glass-card': 'hsl(var(--card) / 0.8)', // Adjusted for new theme
-        'glow-aqua': 'hsl(var(--accent))', // New accent
-        'glow-yellow': 'hsl(var(--accent))', // New accent
+        // Remove old login page custom colors if no longer primary
+        'deep-purple': 'hsl(var(--background))', // map to new background
+        'darker-purple': 'hsl(270 100% 7%)', // even darker shade of bg
+        'login-orange': 'hsl(var(--accent))', // map to new accent (pink) or keep yellow if desired
+        'login-aqua-mint': 'hsl(var(--primary))', // map to new primary (glow blue)
+        'login-support-text': 'hsl(var(--muted-foreground))', // map to new muted-fg
+        'login-orange-glow': '0 0 15px 3px hsla(var(--accent), 0.35)',
+        'login-mint-glow': '0 0 15px 3px hsla(var(--primary), 0.35)',
+         // Colors for Parent Dashboard (New theme is dark by default)
+        'deep-space-indigo': 'hsl(var(--background))', 
+        'dark-glass-card': 'hsla(0, 0%, 100%, 0.06)', // Explicitly defining for parent dashboard cards
+        'glow-aqua': 'hsl(var(--primary))', 
+        'glow-yellow': 'hsl(var(--destructive))', // Warning color
       },
       boxShadow: {
-        'glow-orange': '0 0 15px 3px hsla(var(--primary), 0.35)',
-        'glow-mint': '0 0 15px 3px hsla(var(--accent), 0.35)',
-        'glow-orange-hover': '0 0 20px 6px hsla(var(--primary), 0.45)',
-        'glow-mint-hover': '0 0 20px 6px hsla(var(--accent), 0.45)',
+        'glow-accent-pink': '0 0 12px 2px hsla(var(--accent), 0.55), 0 0 20px 5px hsla(var(--accent), 0.35)', // #FF2E63
+        'glow-ai-blue': '0 0 12px 2px hsla(var(--primary), 0.55), 0 0 20px 5px hsla(var(--primary), 0.35)', // #00E6B0
+        'glow-orange': '0 0 15px 3px hsla(var(--accent), 0.35)', // Legacy, map to new accent glow
+        'glow-mint': '0 0 15px 3px hsla(var(--primary), 0.35)', // Legacy, map to new primary glow
         'logo-glow': '0 0 20px 5px hsla(var(--primary), 0.3)',
         // Glows for Parent Dashboard
-        'glow-aqua-soft': '0 0 15px 2px hsla(var(--accent), 0.3)',
-        'glow-yellow-soft': '0 0 15px 2px hsla(var(--accent), 0.3)',
-        'glow-purple-soft': '0 0 15px 2px hsla(265, 70%, 60%, 0.3)', 
+        'glow-aqua-soft': '0 0 15px 2px hsla(var(--primary), 0.3)',
+        'glow-yellow-soft': '0 0 15px 2px hsla(var(--destructive), 0.3)',
+        'glow-purple-soft': '0 0 15px 2px hsla(270, 70%, 60%, 0.3)', 
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -117,9 +117,9 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: ".7" },
         },
-        "brain-heatmap-pulse": { /* This might need adjustment with new colors */
-          "0%, 100%": { boxShadow: "0 0 10px 2px hsla(var(--primary),0.3), inset 0 0 10px 0px hsla(var(--primary),0.2)" },
-          "50%": { boxShadow: "0 0 20px 5px hsla(var(--primary),0.4), inset 0 0 15px 2px hsla(var(--primary),0.3)" },
+        "brain-heatmap-pulse": {
+          "0%, 100%": { boxShadow: "0 0 10px 2px hsla(var(--primary),0.4), inset 0 0 10px 0px hsla(var(--primary),0.3)" },
+          "50%": { boxShadow: "0 0 20px 5px hsla(var(--primary),0.5), inset 0 0 15px 2px hsla(var(--primary),0.4)" },
         },
       },
       animation: {
@@ -132,3 +132,4 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
