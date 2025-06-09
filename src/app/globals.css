@@ -3,9 +3,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  HOW TO USE THEMES:
+  The default theme is "Student Pink Glow".
+  To apply other themes, add the corresponding class to the <html> or <body> tag dynamically using JavaScript
+  based on the user's role (fetched from localStorage, for example).
+  - For Partner (Parent/Vendor) theme: class="theme-partner"
+  - For School Staff theme: class="theme-school"
+
+  Example JS (in RootLayout or AppLayout useEffect):
+  const userRole = JSON.parse(localStorage.getItem('loggedInUser') || '{}').role;
+  const themeClass = userRole === 'parent' || userRole === 'vendor' ? 'theme-partner' : userRole === 'school' ? 'theme-school' : '';
+  document.documentElement.className = ''; // Clear existing theme classes first if needed
+  if (themeClass) document.documentElement.classList.add(themeClass);
+*/
+
 @layer base {
   :root {
-    /* New Palette based on User's Request */
+    /* Default Theme: Student Pink Glow Mode */
     --background: 270 100% 9%; /* #17002F - Deep royal purple */
     --foreground: 0 0% 100%; /* #FFFFFF - White */
 
@@ -15,7 +30,7 @@
     --popover: 270 80% 12%; /* Slightly lighter than background for popovers */
     --popover-foreground: 0 0% 100%; /* White */
 
-    --primary: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) */
+    --primary: 167 100% 45%; /* #00E6B0 - Glow Blue (AI), for highlights in this theme */
     --primary-foreground: 270 100% 7%; /* Darker purple for contrast on Glow Blue */
 
     --secondary: 270 80% 15%; /* Darker shade of background purple */
@@ -24,7 +39,7 @@
     --muted: 0 0% 100% / 0.1; /* Subtle white for muted elements on dark bg */
     --muted-foreground: 330 100% 92%; /* #FFD6E8 - Light Pink Secondary Text */
 
-    --accent: 345 100% 59%; /* #FF2E63 - Accent Pink (Youth) */
+    --accent: 345 100% 59%; /* #FF2E63 - Accent Pink (Youth) - Main interactive for student */
     --accent-foreground: 0 0% 100%; /* White */
 
     --destructive: 42 100% 50%; /* #FFB300 - Warning/Alert Yellow */
@@ -36,26 +51,28 @@
 
     --radius: 0.75rem;
 
-    /* Chart variables - Adjusted for the new theme */
+    /* Chart variables */
     --chart-1: 156 100% 50%;   /* #00FF94 - Success/Positive Green */
     --chart-2: 345 100% 59%;   /* Accent Pink */
     --chart-3: 167 100% 45%;   /* Glow Blue (AI) / Primary */
     --chart-4: 42 100% 50%;    /* Warning/Alert Yellow / Destructive */
     --chart-5: 270 70% 60%;   /* A general purple from the theme */
     
-    /* Sidebar variables */
-    --sidebar-background: 270 90% 12%; /* Slightly different shade of purple for sidebar */
+    /* Sidebar variables (will also adapt to theme changes if they use --primary, --accent etc.) */
+    --sidebar-background: 270 90% 12%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: hsl(var(--accent));
-    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-accent-foreground: hsl(var(--accent-foreground));
     --sidebar-border: 0 0% 100% / 0.08;
     --sidebar-ring: hsl(var(--ring));
   }
 
   .dark {
-    /* The new base theme is dark, so .dark can be identical or a slight variation */
+    /* The base theme is already dark. This .dark class ensures consistency
+       if a light theme were to be introduced as the absolute default without any class.
+       For now, it mirrors the :root as the student theme is the default dark theme. */
     --background: 270 100% 9%;
     --foreground: 0 0% 100%;
     --card: 0 0% 100% / 0.06;
@@ -75,21 +92,81 @@
     --border: 0 0% 100% / 0.1;
     --input: 0 0% 100% / 0.08;
     --ring: 167 100% 55%;
-
     --chart-1: 156 100% 50%;
     --chart-2: 345 100% 59%;
     --chart-3: 167 100% 45%;
     --chart-4: 42 100% 50%;
     --chart-5: 270 70% 60%;
-    
     --sidebar-background: 270 90% 12%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: hsl(var(--accent));
-    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-accent-foreground: hsl(var(--accent-foreground));
     --sidebar-border: 0 0% 100% / 0.08;
     --sidebar-ring: hsl(var(--ring));
+  }
+
+  /* Partner Theme: More aqua/blue + minimal dark background */
+  .theme-partner {
+    --background: 270 50% 7%; /* #0F031B - Very dark, less saturated purple/blue */
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 100% / 0.04; /* Even more subtle glass */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 270 50% 10%; 
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) - Main interactive color */
+    --primary-foreground: 270 100% 7%; 
+
+    --secondary: 270 50% 12%; 
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 100% / 0.08;
+    --muted-foreground: 180 70% 85%; /* #B8F5F5 - Light Aqua secondary text */
+
+    --accent: 345 100% 59%; /* #FF2E63 - Accent Pink - Secondary interactive */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 42 100% 50%; 
+    --destructive-foreground: 270 50% 7%; 
+
+    --border: 167 100% 45% / 0.15; /* Subtle blue border */
+    --input: 0 0% 100% / 0.06; 
+    --ring: 167 100% 55%; 
+  }
+
+  /* School Staff Theme: Flat indigo + green success glow */
+  .theme-school {
+    --background: 255 60% 20%; /* #20156B - Flat Indigo */
+    --foreground: 0 0% 100%;
+
+    --card: 255 60% 15% / 0.2; /* More solid, indigo-tinted glass: hsla(255, 60%, 15%, 0.2) */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 255 60% 22%; 
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 156 100% 50%; /* #00FF94 - Success Green - Main interactive color */
+    --primary-foreground: 255 60% 10%; /* Dark Indigo for contrast */
+
+    --secondary: 255 60% 25%; 
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 100% / 0.15;
+    --muted-foreground: 156 50% 85%; /* #BFF2D8 - Light Green/Grey secondary text */
+
+    --accent: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) - Secondary highlight */
+    --accent-foreground: 255 60% 10%;
+
+    --destructive: 42 100% 50%;
+    --destructive-foreground: 255 60% 10%;
+
+    --border: 156 100% 50% / 0.2; /* Subtle green border */
+    --input: 255 60% 25% / 0.3; 
+    --ring: 156 100% 60%; 
   }
 }
 
@@ -99,12 +176,20 @@
   }
   body {
     @apply text-foreground font-body antialiased;
-    /* New gradient background */
-    background-image: linear-gradient(to bottom, hsl(302 100% 19%), hsl(270 100% 9%)); /* #62005F -> #17002F */
+    background-image: linear-gradient(to bottom, hsl(302 100% 19%), hsl(var(--background))); /* #62005F -> var(--background) */
     min-height: 100vh;
   }
-  /* Remove dark body specific background if base is already dark and gradient is applied */
-  /* .dark body can inherit from body or have a very slight variation if needed */
+  
+  /* Specific background for Partner theme */
+  .theme-partner body, body.theme-partner { /* Added body.theme-partner for specificity */
+    background-image: linear-gradient(to bottom, hsl(270, 50%, 10%), hsl(var(--background))); /* Subtle dark gradient */
+  }
+
+  /* Specific background for School theme */
+  .theme-school body, body.theme-school {
+    background-image: linear-gradient(to bottom, hsl(255, 60%, 22%), hsl(var(--background))); /* Subtle indigo gradient */
+  }
+
 
   /* Custom scrollbar for a more modern feel */
   ::-webkit-scrollbar {
@@ -116,7 +201,7 @@
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.7); /* Using new primary (Glow Blue AI) */
+    background: hsl(var(--primary) / 0.7);
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb:hover {
@@ -124,9 +209,9 @@
   }
 }
 
-/* Custom text shadow utility (if needed) */
+/* Custom text shadow utility */
 .text-shadow {
-  text-shadow: 1px 1px 2px var(--tw-shadow-color, rgba(0,0,0,0.25)); /* Darker shadow for better visibility on dark bg */
+  text-shadow: 1px 1px 2px var(--tw-shadow-color, rgba(0,0,0,0.25));
 }
 .text-shadow-sm {
   text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.15));
