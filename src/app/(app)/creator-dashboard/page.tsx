@@ -2,7 +2,7 @@
 // src/app/(app)/creator-dashboard/page.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -11,6 +11,9 @@ import { Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, CheckCir
 import Link from "next/link";
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { SchoolProfileFormData as CreatorProfileFormData } from '../edit-creator-profile/page';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+
 
 type OrderStatus = "Pending Acceptance" | "Accepted" | "In Progress" | "Dispatched" | "Completed" | "Cancelled";
 
@@ -35,15 +38,32 @@ const mockProjectOrders: ProjectOrder[] = [
   { id: "ORD78905", projectId: "cp2", projectTitleEn: "Volcano Model Kit", projectTitleHi: "ज्वालामुखी मॉडल किट", studentName: "Priya Singh", studentId: "USR105", orderDate: "2024-07-11", status: "Completed", deliveryType: "Physical Kit", amount: 349 },
 ];
 
-const creatorStats = {
-    pendingOrders: mockProjectOrders.filter(o => o.status === "Pending Acceptance").length,
-    activeProjects: mockProjectOrders.filter(o => o.status === "Accepted" || o.status === "In Progress").length,
-    totalRevenue: mockProjectOrders.filter(o => o.status === "Completed").reduce((sum, o) => sum + o.amount, 0),
-};
-
 export default function CreatorDashboardPage() {
   const { toast } = useToast();
   const [orders, setOrders] = useState<ProjectOrder[]>(mockProjectOrders);
+  const [creatorProfile, setCreatorProfile] = useState<CreatorProfileFormData | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  const creatorStats = {
+    pendingOrders: orders.filter(o => o.status === "Pending Acceptance").length,
+    activeProjects: orders.filter(o => o.status === "Accepted" || o.status === "In Progress").length,
+    totalRevenue: orders.filter(o => o.status === "Completed").reduce((sum, o) => sum + o.amount, 0),
+  };
+  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('creatorProfileData');
+      if (storedProfileString) {
+        try {
+          setCreatorProfile(JSON.parse(storedProfileString));
+        } catch (e) {
+          console.error("Failed to parse creator profile from localStorage", e);
+        }
+      }
+    }
+    setLoadingProfile(false);
+  }, []);
+
 
   const handleUpdateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
     setOrders(prevOrders => prevOrders.map(order => order.id === orderId ? { ...order, status: newStatus } : order));
@@ -76,17 +96,33 @@ export default function CreatorDashboardPage() {
       default: return "bg-gray-500 text-gray-50";
     }
   }
+  
+  if (loadingProfile) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+        <LoadingSpinner size={48} />
+        <p className="ml-4">Loading dashboard...</p>
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-8">
       <header className="text-center">
         <Briefcase className="h-12 w-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold font-headline text-primary">
-          <BilingualText en="Creator Dashboard" hi="क्रिएटर डैशबोर्ड" />
+          {creatorProfile?.creatorName || <BilingualText en="Creator Dashboard" hi="क्रिएटर डैशबोर्ड" />}
         </h1>
         <p className="text-muted-foreground">
           <BilingualText en="Manage your projects, orders, and earnings." hi="अपने प्रोजेक्ट, ऑर्डर और कमाई का प्रबंधन करें।" />
         </p>
+         <Button asChild variant="outline" size="sm" className="mt-2">
+            <Link href="/edit-creator-profile">
+                <Edit className="mr-2 h-4 w-4"/>
+                <BilingualText en="Edit Creator Info" hi="निर्माता जानकारी संपादित करें" />
+            </Link>
+        </Button>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
