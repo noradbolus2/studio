@@ -11,22 +11,28 @@ const containerStyle = {
   borderRadius: '0.5rem', 
 };
 
+interface MapMarker {
+  id: string;
+  position: { lat: number; lng: number };
+  label?: string; // Optional label for the marker
+  icon?: string | google.maps.Icon | google.maps.Symbol; // Optional custom icon
+}
+
 interface MapDisplayProps {
   mapCenter?: { lat: number; lng: number };
-  markerPosition?: { lat: number; lng: number };
+  markers?: MapMarker[];
   zoom?: number;
 }
 
-// Using a default center in Delhi, India for example
-const DEFAULT_CENTER = { lat: 28.6139, lng: 77.2090 };
-const DEFAULT_ZOOM = 12;
+const DEFAULT_CENTER = { lat: 28.6139, lng: 77.2090 }; // Delhi
+const DEFAULT_ZOOM = 10;
 
-export function MapDisplay({ mapCenter, markerPosition, zoom }: MapDisplayProps) {
+export function MapDisplay({ mapCenter, markers, zoom }: MapDisplayProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const center = useMemo(() => mapCenter || DEFAULT_CENTER, [mapCenter]);
-  const currentMarkerPosition = useMemo(() => markerPosition || center, [markerPosition, center]);
   const currentZoom = useMemo(() => zoom || DEFAULT_ZOOM, [zoom]);
+  const displayMarkers = useMemo(() => markers || [], [markers]);
 
   if (!apiKey) {
     return (
@@ -56,7 +62,14 @@ export function MapDisplay({ mapCenter, markerPosition, zoom }: MapDisplayProps)
           zoomControlOptions: { position: 9 /* google.maps.ControlPosition.RIGHT_BOTTOM */ },
         }}
       >
-        {currentMarkerPosition && <MarkerF position={currentMarkerPosition} />}
+        {displayMarkers.map((marker) => (
+          <MarkerF 
+            key={marker.id} 
+            position={marker.position} 
+            label={marker.label}
+            icon={marker.icon}
+          />
+        ))}
       </GoogleMap>
     </LoadScript>
   );

@@ -2,12 +2,12 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react'; // Added useMemo
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { ArrowLeft, Package, CheckCircle, Truck, Home as HomeIcon } from 'lucide-react';
+import { ArrowLeft, Package, CheckCircle, Truck, Home as HomeIcon, MapPin, ShoppingBag } from 'lucide-react'; // Added MapPin, ShoppingBag
 import { Progress } from '@/components/ui/progress';
 import { MapDisplay } from '@/components/tracking/MapDisplay';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,13 @@ interface TrackingStep {
   icon: React.ElementType;
 }
 
+interface MapMarker {
+  id: string;
+  position: { lat: number; lng: number };
+  label?: string;
+  icon?: string | google.maps.Icon | google.maps.Symbol;
+}
+
 export default function TrackOrderPage() {
   const router = useRouter();
   const { orderId: rawOrderId } = useParams(); 
@@ -30,16 +37,30 @@ export default function TrackOrderPage() {
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  // Mock delivery coordinates (e.g., somewhere in Delhi for the example)
-  const mockDeliveryLocation = { lat: 28.6139, lng: 77.2090 }; 
-  // In a real app, these would come from your backend based on orderId
+  // Simulated locations
+  const vendorLocation = useMemo(() => ({ lat: 28.63576, lng: 77.22445 }), []); // Connaught Place area
+  const riderLocation = useMemo(() => ({ lat: 28.6250, lng: 77.2150 }), []); // Near India Gate (simulated rider)
+  const deliveryLocation = useMemo(() => ({ lat: 28.6139, lng: 77.2090 }), []); // Rashtrapati Bhavan area (simulated delivery)
+
+  const mapMarkers: MapMarker[] = [
+    { id: 'vendor', position: vendorLocation, label: 'V', icon: { url: '/assets/icons/store-marker.png', scaledSize: new google.maps.Size(30, 30) } }, // Placeholder icon path
+    { id: 'rider', position: riderLocation, label: 'R', icon: { url: '/assets/icons/rider-marker.png', scaledSize: new google.maps.Size(30, 30) } }, // Placeholder icon path
+    { id: 'delivery', position: deliveryLocation, label: 'H', icon: { url: '/assets/icons/home-marker.png', scaledSize: new google.maps.Size(30, 30) } }, // Placeholder icon path
+  ];
+  
+  // Center map between vendor and delivery for a reasonable view
+  const mapCenter = useMemo(() => ({
+    lat: (vendorLocation.lat + deliveryLocation.lat) / 2,
+    lng: (vendorLocation.lng + deliveryLocation.lng) / 2,
+  }), [vendorLocation, deliveryLocation]);
+
 
   const mockTrackingData: TrackingStep[] = [
-    { id: 'placed', statusEn: 'Order Placed', statusHi: 'ऑर्डर दिया गया', icon: Package, completed: false },
-    { id: 'confirmed', statusEn: 'Order Confirmed', statusHi: 'ऑर्डर की पुष्टि हुई', icon: CheckCircle, completed: false },
+    { id: 'placed', statusEn: 'Order Placed', statusHi: 'ऑर्डर दिया गया', icon: ShoppingBag, completed: false },
+    { id: 'confirmed', statusEn: 'Order Confirmed by Vendor', statusHi: 'विक्रेता द्वारा ऑर्डर की पुष्टि', icon: CheckCircle, completed: false },
     { id: 'preparing', statusEn: 'Preparing Your Order', statusHi: 'आपका ऑर्डर तैयार हो रहा है', icon: Package, completed: false },
-    { id: 'out_for_delivery', statusEn: 'Out for Delivery', statusHi: 'डिलीवरी के लिए निकला', icon: Truck, completed: false },
-    { id: 'delivered', statusEn: 'Delivered', statusHi: 'पहुंचा दिया गया', icon: HomeIcon, completed: false },
+    { id: 'out_for_delivery', statusEn: 'Rider En Route', statusHi: 'राइडर रास्ते में है', icon: Truck, completed: false },
+    { id: 'delivered', statusEn: 'Delivered to Your Location', statusHi: 'आपके स्थान पर पहुंचाया गया', icon: HomeIcon, completed: false },
   ];
 
   useEffect(() => {
@@ -72,7 +93,7 @@ export default function TrackOrderPage() {
     } else {
       setIsLoading(false);
     }
-  }, [orderId]);
+  }, [orderId]); // mockTrackingData is constant, no need to include it
 
   const progressValue = trackingSteps.length > 0 ? ((currentStepIndex + (trackingSteps[currentStepIndex]?.completed ? 1: 0) ) / trackingSteps.length) * 100 : 0;
 
@@ -101,9 +122,11 @@ export default function TrackOrderPage() {
     if (trackingSteps.length === 0 || !trackingSteps[currentStepIndex]) {
       return 'Loading...';
     }
+    // If current step is completed and it's not the last step, show next step's status as current
     if (trackingSteps[currentStepIndex].completed && currentStepIndex < trackingSteps.length - 1) {
       return trackingSteps[currentStepIndex + 1].statusEn;
     }
+    // Otherwise, show current step's status
     return trackingSteps[currentStepIndex].statusEn;
   };
 
@@ -125,6 +148,25 @@ export default function TrackOrderPage() {
           <BilingualText en="Home" hi="होम" />
         </Button>
       </header>
+      
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle><BilingualText en="Live Location & Route" hi="लाइव लोकेशन और मार्ग" /></CardTitle>
+          <CardDescription><BilingualText en="See the current simulated locations on the map." hi="मानचित्र पर वर्तमान नकली स्थान देखें।" /></CardDescription>
+        </CardHeader>
+        <CardContent>
+          <MapDisplay 
+            mapCenter={mapCenter} 
+            markers={mapMarkers}
+            zoom={12} // Adjusted zoom for better initial view
+          />
+          <div className="grid grid-cols-3 gap-2 mt-3 text-xs text-muted-foreground text-center">
+            <p><ShoppingBag size={12} className="inline mr-1 text-blue-500"/> Vendor Location (V)</p>
+            <p><Truck size={12} className="inline mr-1 text-red-500"/> Rider Location (R)</p>
+            <p><HomeIcon size={12} className="inline mr-1 text-green-500"/> Your Location (H)</p>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="shadow-lg">
         <CardHeader>
@@ -142,8 +184,8 @@ export default function TrackOrderPage() {
                 )}>
                   <step.icon size={20} />
                 </div>
-                <div className={cn("pt-1.5", step.completed ? "opacity-100" : "opacity-60")}>
-                  <p className={cn("font-semibold", step.completed && index === currentStepIndex ? "text-primary" : "")}>
+                <div className={cn("pt-1.5", step.completed || index === currentStepIndex ? "opacity-100" : "opacity-50")}>
+                  <p className={cn("font-semibold", step.completed && index <= currentStepIndex ? "text-primary" : "")}>
                     <BilingualText en={step.statusEn} hi={step.statusHi} />
                   </p>
                   {step.completed && step.timestamp && (
@@ -158,21 +200,10 @@ export default function TrackOrderPage() {
              <p className="text-sm text-muted-foreground"><BilingualText en="Thank you for your order!" hi="आपके आदेश के लिए धन्यवाद!"/></p>
         </CardFooter>
       </Card>
-      
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle><BilingualText en="Live Location (Simulated)" hi="लाइव लोकेशन (नकली)" /></CardTitle>
-          <CardDescription><BilingualText en="See the current simulated location of your delivery." hi="अपनी डिलीवरी का वर्तमान नकली स्थान देखें।" /></CardDescription>
-        </CardHeader>
-        <CardContent>
-          <MapDisplay 
-            mapCenter={mockDeliveryLocation} 
-            markerPosition={mockDeliveryLocation} 
-          />
-        </CardContent>
-      </Card>
-
     </div>
   );
 }
 
+// Placeholder for custom marker icons - create these in public/assets/icons
+// e.g., public/assets/icons/store-marker.png, rider-marker.png, home-marker.png
+// For now, they will appear as broken images if not present, but the map will still work.
