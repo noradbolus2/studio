@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PartyPopper } from "lucide-react";
@@ -12,7 +13,7 @@ export function WelcomeMessageCard({ onGetStarted }: WelcomeMessageCardProps) {
   return (
     <Card className="w-full max-w-md text-center shadow-xl">
       <CardHeader className="items-center">
-        <Image src="https://placehold.co/120x120.png" alt="OSO App Logo" width={80} height={80} className="rounded-full mb-4 border-2 border-primary p-1 data-ai-hint="app logo"" />
+        <Image src="/oso_logo_final.png" alt="OSO App Logo" width={100} height={100} className="rounded-full mb-4 border-2 border-primary p-1 data-ai-hint="app logo"" />
         <CardTitle className="text-3xl font-headline text-primary">
             <BilingualText en="Welcome to OSO!" hi="OSO में आपका स्वागत है!" />
         </CardTitle>

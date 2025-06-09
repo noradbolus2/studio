@@ -42,12 +42,12 @@ export default function RoleSelectionPage() {
       <div className="w-full max-w-md text-center">
         <div className="mb-6">
           <Image
-            src="https://placehold.co/100x100/FF8C00/FFFFFF?text=O&font=poppins"
+            src="/oso_logo_final.png"
             alt="OSO App Logo"
             width={80}
             height={80}
             className="mx-auto mb-2 rounded-full border-2 border-primary p-0.5 shadow-xl"
-            data-ai-hint="oso logo orange"
+            data-ai-hint="app logo"
           />
            <p className="text-2xl font-bold text-primary mb-0.5">
             <BilingualText en="OSO App" hi="ओसो ऐप" lang={currentLang} />
