@@ -12,6 +12,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Save, Type, BookOpen, FileText } from "lucide-react";
 import Link from 'next/link';
+import { format } from 'date-fns'; // For formatting date
+
+interface Note {
+  id: string;
+  title: string;
+  subject: string;
+  date: string;
+  excerpt: string;
+  content: string; // Full content
+}
+
+const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
 
 export default function NewNotePage() {
   const [title, setTitle] = useState('');
@@ -31,17 +43,35 @@ export default function NewNotePage() {
       return;
     }
 
-    // Simulate saving the note
-    console.log("New Note Data:", { title, subject, content });
-    toast({
-      title: "Note Saved (Simulated)",
-      description: `Your note "${title}" has been saved.`,
-    });
+    const currentDate = format(new Date(), 'yyyy-MM-dd');
+    const newNote: Note = {
+      id: Date.now().toString(), // Simple unique ID
+      title: title.trim(),
+      subject: subject.trim(),
+      date: currentDate,
+      content: content.trim(),
+      excerpt: content.trim().substring(0, 100) + (content.trim().length > 100 ? "..." : ""),
+    };
 
-    // In a real app, you would save to localStorage or backend here
-    // and then likely update the state in the MyNotesPage or refetch data.
+    try {
+      const storedNotesString = localStorage.getItem(LOCAL_STORAGE_NOTES_KEY);
+      const existingNotes: Note[] = storedNotesString ? JSON.parse(storedNotesString) : [];
+      const updatedNotes = [newNote, ...existingNotes]; // Add new note to the beginning
+      localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(updatedNotes));
 
-    router.push('/study/my-notes'); // Redirect back to the notes list
+      toast({
+        title: "Note Saved",
+        description: `Your note "${newNote.title}" has been saved successfully.`,
+      });
+      router.push('/study/my-notes'); 
+    } catch (error) {
+      console.error("Error saving note to localStorage:", error);
+      toast({
+        title: "Error Saving Note",
+        description: "Could not save your note. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

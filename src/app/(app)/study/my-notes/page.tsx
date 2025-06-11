@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; 
 import { Edit, PlusCircle, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast"; // Added useToast
+import { useToast } from "@/hooks/use-toast";
 
 interface Note {
   id: string;
@@ -17,18 +17,39 @@ interface Note {
   subject: string;
   date: string;
   excerpt: string;
+  content?: string; // Added full content for localStorage
 }
 
-const mockNotes: Note[] = [
-  { id: "note1", title: "Chapter 5: Light - Key Formulas", subject: "Physics", date: "2024-07-20", excerpt: "Reflection: angle i = angle r. Refraction: Snell's Law n1*sin(i) = n2*sin(r)..." },
-  { id: "note2", title: "Dates: Indian Independence Movement", subject: "History", date: "2024-07-18", excerpt: "1857: First War of Independence. 1915: Gandhi returns to India. 1942: Quit India Movement..." },
-  { id: "note3", title: "Important Chemical Reactions", subject: "Chemistry", date: "2024-07-15", excerpt: "Combustion: CH4 + 2O2 -> CO2 + 2H2O. Neutralization: HCl + NaOH -> NaCl + H2O..." },
+const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
+
+const initialMockNotes: Note[] = [
+  { id: "note1", title: "Chapter 5: Light - Key Formulas", subject: "Physics", date: "2024-07-20", excerpt: "Reflection: angle i = angle r. Refraction: Snell's Law n1*sin(i) = n2*sin(r)...", content: "Full content for Physics notes on Light. Includes detailed derivations and examples for reflection and refraction. Remember to practice diagrams." },
+  { id: "note2", title: "Dates: Indian Independence Movement", subject: "History", date: "2024-07-18", excerpt: "1857: First War of Independence. 1915: Gandhi returns to India. 1942: Quit India Movement...", content: "Comprehensive timeline of the Indian Independence Movement. Key figures, events, and their significance. Focus on chronological order." },
+  { id: "note3", title: "Important Chemical Reactions", subject: "Chemistry", date: "2024-07-15", excerpt: "Combustion: CH4 + 2O2 -> CO2 + 2H2O. Neutralization: HCl + NaOH -> NaCl + H2O...", content: "List of important chemical reactions for Class 10. Includes balancing equations, types of reactions, and common examples. Practice writing these out." },
 ];
 
 export default function MyNotesPage() {
-  const [notes, setNotes] = useState<Note[]>(mockNotes);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const { toast } = useToast(); // Initialized useToast
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const storedNotesString = localStorage.getItem(LOCAL_STORAGE_NOTES_KEY);
+    if (storedNotesString) {
+      try {
+        const storedNotes = JSON.parse(storedNotesString);
+        setNotes(storedNotes);
+      } catch (error) {
+        console.error("Error parsing notes from localStorage:", error);
+        setNotes(initialMockNotes); // Fallback to mocks if parsing fails
+        localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(initialMockNotes));
+      }
+    } else {
+      // If no notes in localStorage, initialize with mock notes and save them
+      setNotes(initialMockNotes);
+      localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(initialMockNotes));
+    }
+  }, []);
 
   const filteredNotes = notes.filter(note => 
     note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,21 +58,22 @@ export default function MyNotesPage() {
   );
 
   const handleDeleteNote = (noteId: string, noteTitle: string) => {
-    // In a real app, this would also involve API calls or state management updates
-    setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
+    const updatedNotes = notes.filter(note => note.id !== noteId);
+    setNotes(updatedNotes);
+    localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(updatedNotes));
     toast({
-      title: "Note Deleted (Simulated)",
+      title: "Note Deleted",
       description: `"${noteTitle}" has been removed from your notes.`,
       variant: "destructive"
     });
   };
 
   const handleEditNote = (noteId: string) => {
-    // For now, just a toast. Later, navigate to an edit page: router.push(`/study/my-notes/edit/${noteId}`);
     toast({
       title: "Edit Note (Coming Soon)",
-      description: `Editing functionality for note ID ${noteId} will be available soon.`,
+      description: `Editing functionality for note ID ${noteId} will be available in a future update.`,
     });
+    // Placeholder for future navigation: router.push(`/study/my-notes/edit/${noteId}`);
   };
 
   return (
