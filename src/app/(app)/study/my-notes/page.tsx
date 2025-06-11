@@ -3,12 +3,13 @@
 
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; // Added CardFooter
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; 
 import { Edit, PlusCircle, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge"; // Added Badge import
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast"; // Added useToast
 
 interface Note {
   id: string;
@@ -27,12 +28,31 @@ const mockNotes: Note[] = [
 export default function MyNotesPage() {
   const [notes, setNotes] = useState<Note[]>(mockNotes);
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast(); // Initialized useToast
 
   const filteredNotes = notes.filter(note => 
     note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDeleteNote = (noteId: string, noteTitle: string) => {
+    // In a real app, this would also involve API calls or state management updates
+    setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
+    toast({
+      title: "Note Deleted (Simulated)",
+      description: `"${noteTitle}" has been removed from your notes.`,
+      variant: "destructive"
+    });
+  };
+
+  const handleEditNote = (noteId: string) => {
+    // For now, just a toast. Later, navigate to an edit page: router.push(`/study/my-notes/edit/${noteId}`);
+    toast({
+      title: "Edit Note (Coming Soon)",
+      description: `Editing functionality for note ID ${noteId} will be available soon.`,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -47,7 +67,7 @@ export default function MyNotesPage() {
             </p>
         </div>
         <Button asChild>
-            <Link href="/study/my-notes/new"> {/* Assuming a page for creating new notes */}
+            <Link href="/study/my-notes/new">
                 <PlusCircle className="mr-2 h-5 w-5" />
                 <BilingualText en="Create New Note" hi="नया नोट बनाएं" />
             </Link>
@@ -89,8 +109,17 @@ export default function MyNotesPage() {
                             <p className="text-sm text-muted-foreground line-clamp-2">{note.excerpt}</p>
                         </CardContent>
                         <CardFooter className="flex gap-2 justify-end text-xs pt-2 border-t">
-                            <Button variant="ghost" size="sm" className="h-7 px-2"><Edit className="mr-1 h-3 w-3"/> Edit</Button>
-                            <Button variant="ghost" size="sm" className="h-7 px-2 text-destructive hover:text-destructive"><Trash2 className="mr-1 h-3 w-3"/> Delete</Button>
+                            <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => handleEditNote(note.id)}>
+                                <Edit className="mr-1 h-3 w-3"/> Edit
+                            </Button>
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-7 px-2 text-destructive hover:text-destructive"
+                                onClick={() => handleDeleteNote(note.id, note.title)}
+                            >
+                                <Trash2 className="mr-1 h-3 w-3"/> Delete
+                            </Button>
                         </CardFooter>
                     </Card>
                 ))}
