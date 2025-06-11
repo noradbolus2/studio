@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; 
 import { Edit, PlusCircle, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react"; // Added useEffect
+import { useRouter } from "next/navigation"; // Added useRouter
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +18,7 @@ interface Note {
   subject: string;
   date: string;
   excerpt: string;
-  content?: string; // Added full content for localStorage
+  content: string; 
 }
 
 const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
@@ -32,6 +33,7 @@ export default function MyNotesPage() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     const storedNotesString = localStorage.getItem(LOCAL_STORAGE_NOTES_KEY);
@@ -41,11 +43,10 @@ export default function MyNotesPage() {
         setNotes(storedNotes);
       } catch (error) {
         console.error("Error parsing notes from localStorage:", error);
-        setNotes(initialMockNotes); // Fallback to mocks if parsing fails
+        setNotes(initialMockNotes); 
         localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(initialMockNotes));
       }
     } else {
-      // If no notes in localStorage, initialize with mock notes and save them
       setNotes(initialMockNotes);
       localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(initialMockNotes));
     }
@@ -69,11 +70,7 @@ export default function MyNotesPage() {
   };
 
   const handleEditNote = (noteId: string) => {
-    toast({
-      title: "Edit Note (Coming Soon)",
-      description: `Editing functionality for note ID ${noteId} will be available in a future update.`,
-    });
-    // Placeholder for future navigation: router.push(`/study/my-notes/edit/${noteId}`);
+    router.push(`/study/my-notes/edit/${noteId}`);
   };
 
   return (
@@ -123,7 +120,7 @@ export default function MyNotesPage() {
                         <CardHeader className="pb-2">
                             <div className="flex justify-between items-start">
                                 <CardTitle className="text-md font-semibold">{note.title}</CardTitle>
-                                <Badge variant="outline" className="text-xs">{note.subject}</Badge>
+                                {note.subject && <Badge variant="outline" className="text-xs">{note.subject}</Badge>}
                             </div>
                             <CardDescription className="text-xs">Last updated: {note.date}</CardDescription>
                         </CardHeader>
