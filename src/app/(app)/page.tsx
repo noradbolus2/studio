@@ -82,13 +82,67 @@ const searchIcons = [
 ];
 
 const mockLocations = [
-    { id: "loc1", name: "Modern School, Barakhamba Road, Delhi", type: "School" },
-    { id: "loc2", name: "DPS, R.K. Puram, New Delhi", type: "School" },
-    { id: "loc3", name: "City Montessori School, Lucknow", type: "School" },
-    { id: "loc4", name: "My Home - Sector 15, Noida", type: "Home" },
-    { id: "loc5", name: "Karol Bagh, Delhi", type: "Area" },
-    { id: "loc6", name: "Indiranagar, Bengaluru", type: "Area" },
+    // Personalized
+    { id: "myhome_noida", name: "My Home - Sector 15, Noida", type: "Home" },
+
+    // Delhi Schools & Areas
+    { id: "del_modern", name: "Modern School, Barakhamba Road, Delhi", type: "School" },
+    { id: "del_dps_rkp", name: "DPS, R.K. Puram, New Delhi", type: "School" },
+    { id: "del_vasant_valley", name: "Vasant Valley School, New Delhi", type: "School" },
+    { id: "del_cp", name: "Connaught Place, New Delhi", type: "Area" },
+    { id: "del_karol_bagh", name: "Karol Bagh, Delhi", type: "Area" },
+
+    // Mumbai Schools & Areas
+    { id: "mum_dais", name: "Dhirubhai Ambani International School, Mumbai", type: "School" },
+    { id: "mum_cathedral", name: "Cathedral and John Connon School, Mumbai", type: "School" },
+    { id: "mum_scottish", name: "Bombay Scottish School, Mahim, Mumbai", type: "School" },
+    { id: "mum_bandra", name: "Bandra West, Mumbai", type: "Area" },
+
+    // Bangalore Schools & Areas
+    { id: "blr_valley", name: "The Valley School, Bengaluru", type: "School" },
+    { id: "blr_bishops", name: "Bishop Cotton Boys' School, Bengaluru", type: "School" },
+    { id: "blr_nps_ind", name: "National Public School, Indiranagar, Bengaluru", type: "School" },
+    { id: "blr_indiranagar", name: "Indiranagar, Bengaluru", type: "Area" },
+
+    // Chennai Schools & Areas
+    { id: "chn_psbb", name: "Padma Seshadri Bala Bhavan (PSBB), Nungambakkam, Chennai", type: "School" },
+    { id: "chn_sishya", name: "Sishya School, Adyar, Chennai", type: "School" },
+    { id: "chn_anna_nagar", name: "Anna Nagar, Chennai", type: "Area" },
+
+    // Kolkata Schools & Areas
+    { id: "kol_lm_boys", name: "La Martiniere For Boys, Kolkata", type: "School" },
+    { id: "kol_south_point", name: "South Point High School, Kolkata", type: "School" },
+    { id: "kol_park_street", name: "Park Street Area, Kolkata", type: "Area" },
+
+    // Hyderabad Schools & Areas
+    { id: "hyd_hps", name: "Hyderabad Public School, Begumpet, Hyderabad", type: "School" },
+    { id: "hyd_chirec", name: "CHIREC International School, Hyderabad", type: "School" },
+    { id: "hyd_jubilee_hills", name: "Jubilee Hills, Hyderabad", type: "Area" },
+    
+    // Pune Schools
+    { id: "pun_bishops_camp", name: "The Bishop's School, Camp, Pune", type: "School" },
+    { id: "pun_st_marys", name: "St. Mary's School, Pune", type: "School" },
+
+    // Lucknow Schools
+    { id: "lko_lm_college", name: "La Martiniere College, Lucknow", type: "School" },
+    { id: "lko_cms_gomti", name: "City Montessori School (CMS), Gomti Nagar, Lucknow", type: "School" },
+
+    // Jaipur Schools
+    { id: "jpr_mayo_girls", name: "Mayo College Girls' School, Ajmer (Near Jaipur)", type: "School" }, // Mayo is in Ajmer, but often considered by Jaipur folks.
+    { id: "jpr_jphs", name: "Jayshree Periwal High School, Jaipur", type: "School" },
+
+    // Chandigarh Schools
+    { id: "chd_vivek_high", name: "Vivek High School, Chandigarh", type: "School" },
+    { id: "chd_st_johns", name: "St. John's High School, Chandigarh", type: "School" },
+
+    // Other Major City Areas
+    { id: "amd_cg_road", name: "C.G. Road, Ahmedabad", type: "Area" },
+    { id: "sur_athwa", name: "Athwa, Surat", type: "Area" },
+    { id: "pat_boring_road", name: "Boring Road, Patna", type: "Area" },
+    { id: "ind_vijay_nagar", name: "Vijay Nagar, Indore", type: "Area" },
+    { id: "bho_mp_nagar", name: "MP Nagar, Bhopal", type: "Area" },
 ];
+
 
 const mockLiveClasses: LiveClass[] = [
   { id: 'live1', titleEn: 'Live: Solving Complex Equations', titleHi: 'लाइव: जटिल समीकरणों का समाधान', subjectEn: 'Maths', subjectHi: 'गणित', creatorNameEn: 'Prof. Algebra', creatorNameHi: 'प्रो. बीजगणित', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'maths equation live', status: 'live', dateTime: new Date().toISOString(), viewers: 102, classLevel: 'JEE', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'math teacher avatar' },
@@ -102,7 +156,7 @@ export default function ModernHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
-  const [location, setLocation] = useState("Modern School, Barakhamba");
+  const [location, setLocation] = useState("Modern School, Barakhamba Road, Delhi"); // Default
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
   const [selectedTempLocation, setSelectedTempLocation] = useState(location);
