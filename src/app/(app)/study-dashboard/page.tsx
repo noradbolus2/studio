@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner"; // Assuming this exists
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BookOpen, DownloadCloud, Headphones, Mic, PlayCircle, Trash2, UploadCloud } from "lucide-react";
+import { useToast } from "@/hooks/use-toast"; // Added useToast
 
 // Mock data
 const pocketSchoolContent = [
@@ -22,6 +23,39 @@ const voiceNotes = [
 ];
 
 export default function StudyDashboardPage() {
+  const { toast } = useToast(); // Initialize toast
+
+  const handleGenericAction = (actionName: string) => {
+    toast({
+      title: "Action Simulated",
+      description: `${actionName} feature is coming soon or this action has been simulated.`,
+    });
+  };
+
+  const handleDownloadItem = (itemName: string) => {
+    toast({
+      title: "Download Started (Simulated)",
+      description: `Downloading "${itemName}"...`,
+    });
+  };
+
+  const handlePlayItem = (itemName: string) => {
+    toast({
+      title: "Playback Started (Simulated)",
+      description: `Playing "${itemName}"... Actual playback requires player integration.`,
+    });
+  };
+  
+  const handleDeleteVoiceNote = (noteTitle: string) => {
+    toast({
+      title: "Voice Note Deleted (Simulated)",
+      description: `"${noteTitle}" has been removed.`,
+      variant: "destructive"
+    });
+    // In a real app, you'd update state here
+  };
+
+
   return (
     <div className="space-y-8">
       <header>
@@ -56,11 +90,11 @@ export default function StudyDashboardPage() {
                     </p>
                   </div>
                   {item.downloaded ? (
-                    <Button variant="ghost" size="sm" className="text-primary">
+                    <Button variant="ghost" size="sm" className="text-primary" onClick={() => handlePlayItem(item.titleEn)}>
                       <PlayCircle className="mr-1.5 h-4 w-4" /> <BilingualText en="Play" hi="चलाएं"/>
                     </Button>
                   ) : (
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadItem(item.titleEn)}>
                       <DownloadCloud className="mr-1.5 h-4 w-4" /> <BilingualText en="Download" hi="डाउनलोड करें"/>
                     </Button>
                   )}
@@ -70,7 +104,7 @@ export default function StudyDashboardPage() {
           ) : (
              <PocketSchoolLoadingAnimation /> // Or a "No content downloaded" message
           )}
-          <Button className="w-full mt-4" variant="outline">
+          <Button className="w-full mt-4" variant="outline" onClick={() => handleGenericAction("Manage Offline Content")}>
             <BilingualText en="Manage Offline Content" hi="ऑफ़लाइन सामग्री प्रबंधित करें" />
           </Button>
         </CardContent>
@@ -88,7 +122,7 @@ export default function StudyDashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button className="w-full mb-4 bg-accent text-accent-foreground hover:bg-accent/90">
+          <Button className="w-full mb-4 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => handleGenericAction("Record New Voice Note")}>
             <UploadCloud className="mr-2 h-5 w-5" />
             <BilingualText en="Record New Voice Note" hi="नया वॉयस नोट रिकॉर्ड करें" />
           </Button>
@@ -103,8 +137,8 @@ export default function StudyDashboardPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="space-x-2 p-2 bg-muted/30 rounded-md">
-                    <Button variant="outline" size="sm"><Headphones className="mr-1.5 h-4 w-4"/> <BilingualText en="Play" hi="चलाएं"/></Button>
-                    <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10"><Trash2 className="mr-1.5 h-4 w-4"/> <BilingualText en="Delete" hi="मिटाएं"/></Button>
+                    <Button variant="outline" size="sm" onClick={() => handlePlayItem(note.titleEn)}><Headphones className="mr-1.5 h-4 w-4"/> <BilingualText en="Play" hi="चलाएं"/></Button>
+                    <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteVoiceNote(note.titleEn)}><Trash2 className="mr-1.5 h-4 w-4"/> <BilingualText en="Delete" hi="मिटाएं"/></Button>
                   </AccordionContent>
                 </AccordionItem>
               ))}
@@ -120,3 +154,4 @@ export default function StudyDashboardPage() {
     </div>
   );
 }
+
