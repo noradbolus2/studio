@@ -20,6 +20,7 @@ import type { ProfileFormData } from '../edit-profile/page'; // Import the type
 interface UserProfileDisplay extends Omit<ProfileFormData, 'dateOfBirth'> {
   initials?: string;
   dateOfBirth?: string; // For display
+  dataAiHint?: string; // Added for avatar hint
 }
 
 
@@ -110,7 +111,7 @@ export default function ProfilePage() {
         const storedProfileString = localStorage.getItem('userProfileData');
         if (storedProfileString) {
           try {
-            const storedProfile = JSON.parse(storedProfileString) as ProfileFormData & { dateOfBirth?: string }; 
+            const storedProfile = JSON.parse(storedProfileString) as ProfileFormData & { dateOfBirth?: string; dataAiHint?: string }; 
             
             // Ensure the loaded profile matches the logged-in user's email if available
             if (loggedInUserEmail && storedProfile.email !== loggedInUserEmail) {
@@ -122,6 +123,7 @@ export default function ProfilePage() {
                 ...storedProfile,
                 initials: storedProfile.fullName ? storedProfile.fullName.substring(0, 2).toUpperCase() : "NA",
                 dateOfBirth: storedProfile.dateOfBirth ? format(new Date(storedProfile.dateOfBirth), "dd MMM yyyy") : undefined,
+                dataAiHint: storedProfile.dataAiHint || "student avatar",
                 };
             }
           } catch (e) {
@@ -136,6 +138,7 @@ export default function ProfilePage() {
                 fullName: loggedInUserFullName,
                 email: loggedInUserEmail,
                 avatarUrl: "https://placehold.co/100x100.png", // Default avatar
+                dataAiHint: "student avatar",
                 country: "India"
             }));
           } else {
@@ -154,6 +157,7 @@ export default function ProfilePage() {
       fullName: fullName || "Aarav Sharma",
       email: email || "aarav.sharma@example.com",
       avatarUrl: "https://placehold.co/100x100.png",
+      dataAiHint: "student avatar",
       initials: (fullName || "Aarav Sharma").substring(0, 2).toUpperCase(),
       phoneNumber: "+91 98765 43210",
       schoolName: "Demo Public School",
@@ -232,7 +236,11 @@ export default function ProfilePage() {
       <Card className="overflow-hidden">
         <CardHeader className="bg-primary/5 p-6 flex flex-col items-center text-center space-y-3">
             <Avatar className="h-24 w-24 border-4 border-primary shadow-md">
-              <AvatarImage src={user.avatarUrl || `https://placehold.co/100x100.png?text=${user.initials || user.fullName?.substring(0,1) || 'U'}`} alt={user.fullName} data-ai-hint="student avatar" />
+              <AvatarImage 
+                src={user.avatarUrl || `https://placehold.co/100x100.png`} 
+                alt={user.fullName || "User Avatar"} 
+                data-ai-hint={user.dataAiHint || "student avatar"} 
+              />
               <AvatarFallback className="bg-primary text-primary-foreground text-3xl">{user.initials || user.fullName?.substring(0,2).toUpperCase() || "NA"}</AvatarFallback>
             </Avatar>
             <div>
@@ -357,7 +365,11 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-2">
                     <span className="font-bold w-6 text-center">{student.rank}.</span>
                     <Avatar className="h-6 w-6">
-                        <AvatarImage src={student.avatarUrl} alt={student.name} data-ai-hint={student.dataAiHint || 'student avatar'}/>
+                        <AvatarImage 
+                          src={student.avatarUrl || 'https://placehold.co/40x40.png'} 
+                          alt={student.name} 
+                          data-ai-hint={student.dataAiHint || 'student avatar'}
+                        />
                         <AvatarFallback>{student.name.substring(0,1)}</AvatarFallback>
                     </Avatar>
                     <span>{student.name}</span>
@@ -417,4 +429,3 @@ export default function ProfilePage() {
   );
 }
 
-    

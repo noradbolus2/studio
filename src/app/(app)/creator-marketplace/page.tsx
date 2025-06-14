@@ -19,20 +19,20 @@ interface CreatorProject {
   titleHi: string;
   creatorNameEn: string;
   creatorNameHi: string;
-  creatorAvatarUrl?: string;
+  creatorAvatarUrl?: string; // Optional
   dataAiHintAvatar?: string;
   categoryEn: string;
   categoryHi: string;
-  classLevel?: string; // e.g., "6-8", "9-10", "11-12"
+  classLevel?: string; 
   subjectEn?: string;
   subjectHi?: string;
   descriptionEn: string;
   descriptionHi: string;
-  imageUrl: string;
+  imageUrl?: string; // Optional
   dataAiHintImage: string;
   priceDigital?: number;
   pricePhysicalKit?: number;
-  rating?: number; // 1-5
+  rating?: number; 
   reviewCount?: number;
 }
 
@@ -55,7 +55,7 @@ const mockCreatorProjects: CreatorProject[] = [
     imageUrl: 'https://placehold.co/300x200.png',
     dataAiHintImage: 'ai code project',
     priceDigital: 499,
-    pricePhysicalKit: 799, // e.g. if it included a raspberry pi or similar
+    pricePhysicalKit: 799, 
     rating: 4.5,
     reviewCount: 15,
   },
@@ -65,8 +65,7 @@ const mockCreatorProjects: CreatorProject[] = [
     titleHi: 'वर्किंग ज्वालामुखी मॉडल किट',
     creatorNameEn: 'Science Wonders',
     creatorNameHi: 'साइंस वंडर्स',
-    creatorAvatarUrl: 'https://placehold.co/40x40.png',
-    dataAiHintAvatar: 'creator avatar science',
+    dataAiHintAvatar: 'creator avatar science', // creatorAvatarUrl removed to test fallback
     categoryEn: 'Science Model',
     categoryHi: 'विज्ञान मॉडल',
     classLevel: '6-8',
@@ -93,9 +92,8 @@ const mockCreatorProjects: CreatorProject[] = [
     subjectHi: 'इतिहास, कला',
     descriptionEn: 'Create a detailed diorama of an Indus Valley Civilization settlement. Includes guide and material suggestions.',
     descriptionHi: 'सिंधु घाटी सभ्यता की बस्ती का विस्तृत डायोरमा बनाएं। इसमें गाइड और सामग्री सुझाव शामिल हैं।',
-    imageUrl: 'https://placehold.co/300x200.png',
-    dataAiHintImage: 'history diorama indus',
-    priceDigital: 199, // For the guide
+    dataAiHintImage: 'history diorama indus', // imageUrl removed
+    priceDigital: 199, 
     rating: 4.2,
     reviewCount: 9,
   },
@@ -115,12 +113,10 @@ export default function CreatorMarketplacePage() {
   const { toast } = useToast();
 
   const handleGetMade = (project: CreatorProject) => {
-    // Placeholder for order flow
     toast({
       title: `Order Request for "${project.titleEn}" (Simulated)`,
       description: "You would typically choose digital/physical and proceed to payment here.",
     });
-    // router.push(`/project-order/${project.id}`); // Future navigation
   };
 
   const filteredProjects = mockCreatorProjects.filter(project =>
@@ -179,12 +175,25 @@ export default function CreatorMarketplacePage() {
             <Card key={project.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow flex flex-col">
               <CardHeader className="p-0">
                 <div className="aspect-video relative w-full bg-muted/30">
-                  <Image src={project.imageUrl} alt={project.titleEn} layout="fill" objectFit="cover" data-ai-hint={project.dataAiHintImage} />
+                  <Image 
+                    src={project.imageUrl || `https://placehold.co/300x200.png`} 
+                    alt={project.titleEn} 
+                    layout="fill" 
+                    objectFit="cover" 
+                    data-ai-hint={project.dataAiHintImage || 'project image'} 
+                  />
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-2 flex-grow">
                 <div className="flex items-center gap-2 mb-1">
-                    {project.creatorAvatarUrl && <Image src={project.creatorAvatarUrl} alt={project.creatorNameEn} width={24} height={24} className="rounded-full data-ai-hint={project.dataAiHintAvatar || 'avatar'}" />}
+                    <Image 
+                      src={project.creatorAvatarUrl || `https://placehold.co/40x40.png`} 
+                      alt={project.creatorNameEn} 
+                      width={24} 
+                      height={24} 
+                      className="rounded-full" 
+                      data-ai-hint={project.dataAiHintAvatar || 'creator avatar'} 
+                    />
                     <span className="text-xs font-medium text-primary"><BilingualText en={project.creatorNameEn} hi={project.creatorNameHi} /></span>
                 </div>
                 <CardTitle className="text-lg font-semibold leading-tight">

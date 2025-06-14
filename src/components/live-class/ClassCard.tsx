@@ -1,10 +1,10 @@
 
 "use client";
 
-import React from 'react'; // Changed from "import type React"
+import React from 'react'; 
 import Image from 'next/image';
 import Link from 'next/link';
-import type { LucideIcon } from 'lucide-react'; // Keep LucideIcon as type
+import type { LucideIcon } from 'lucide-react'; 
 import { RadioTower, Timer, PlaySquare, BookOpen, FlaskConical, Sigma, Languages, Code2, Users, ExternalLink, Palette, TrendingUp, UserCircle } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -111,11 +111,11 @@ export function ClassCard({ classInfo, lang = 'en', className }: ClassCardProps)
       <CardHeader className="p-0 relative">
         <Link href={`/live-class/${classInfo.id}`} className="block aspect-video relative">
           <Image
-            src={classInfo.thumbnailUrl}
+            src={classInfo.thumbnailUrl || 'https://placehold.co/300x168.png'}
             alt={lang === 'en' ? classInfo.titleEn : classInfo.titleHi}
             layout="fill"
             objectFit="cover"
-            data-ai-hint={classInfo.dataAiHintThumbnail}
+            data-ai-hint={classInfo.dataAiHintThumbnail || 'class thumbnail'}
             className="group-hover:scale-105 transition-transform duration-300"
           />
           {statusBadge}
@@ -124,7 +124,11 @@ export function ClassCard({ classInfo, lang = 'en', className }: ClassCardProps)
       <CardContent className="p-3 flex-grow space-y-1.5">
         <div className="flex items-center gap-2 mb-1">
           <Avatar className="h-6 w-6">
-            <AvatarImage src={classInfo.creatorAvatarUrl || 'https://placehold.co/40x40.png'} alt={lang === 'en' ? classInfo.creatorNameEn : classInfo.creatorNameHi} data-ai-hint={classInfo.dataAiHintAvatar || 'teacher avatar'} />
+            <AvatarImage 
+              src={classInfo.creatorAvatarUrl || 'https://placehold.co/40x40.png'} 
+              alt={lang === 'en' ? classInfo.creatorNameEn : classInfo.creatorNameHi} 
+              data-ai-hint={classInfo.dataAiHintAvatar || 'teacher avatar'} 
+            />
             <AvatarFallback>{(lang === 'en' ? classInfo.creatorNameEn : classInfo.creatorNameHi).substring(0,1)}</AvatarFallback>
           </Avatar>
           <span className="text-xs text-muted-foreground truncate">

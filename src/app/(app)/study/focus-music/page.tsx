@@ -15,9 +15,9 @@ interface FocusTrack {
   descriptionEn: string;
   descriptionHi: string;
   icon: React.ElementType;
-  imageUrl: string;
+  imageUrl?: string; // Made optional
   dataAiHint: string;
-  duration?: string; // e.g., "25 min", "1 hour loop"
+  duration?: string; 
 }
 
 const focusTracks: FocusTrack[] = [
@@ -39,8 +39,7 @@ const focusTracks: FocusTrack[] = [
     descriptionEn: "Gentle rain and forest sounds to block distractions.",
     descriptionHi: "ध्यान भंग को रोकने के लिए हल्की बारिश और जंगल की आवाज़ें।",
     icon: Leaf,
-    imageUrl: "https://placehold.co/300x150.png",
-    dataAiHint: "forest nature sounds",
+    dataAiHint: "forest nature sounds", // imageUrl removed to test fallback
     duration: "45 min",
   },
   {
@@ -75,7 +74,6 @@ export default function FocusMusicPage() {
       title: "Playing Track (Simulated)",
       description: `Starting "${trackTitleEn}". Actual audio playback needs to be implemented.`,
     });
-    // In a real app, you would integrate an audio player here.
   };
 
   return (
@@ -99,11 +97,11 @@ export default function FocusMusicPage() {
             <CardHeader className="p-0">
               <div className="aspect-video relative w-full bg-muted/30">
                 <Image 
-                  src={track.imageUrl} 
+                  src={track.imageUrl || `https://placehold.co/300x150.png`} 
                   alt={track.titleEn} 
                   layout="fill" 
                   objectFit="cover" 
-                  data-ai-hint={track.dataAiHint} 
+                  data-ai-hint={track.dataAiHint || 'music track image'} 
                 />
               </div>
             </CardHeader>

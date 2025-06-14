@@ -28,6 +28,7 @@ const profileSchema = z.object({
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").optional().or(z.literal('')),
   avatarUrl: z.string().optional(),
+  dataAiHint: z.string().optional(), // Added for avatar hint
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().default("India"),
@@ -57,6 +58,7 @@ const profileSchema = z.object({
   businessName: z.string().optional(),
   gstin: z.string().optional().or(z.literal('')),
   productCategories: z.string().optional(), // Comma-separated or textarea
+  businessAddress: z.string().optional(), // Added missing field
 
   // Creator specific
   creatorName: z.string().optional(), // Can be pre-filled from signup 'fullName'
@@ -124,18 +126,18 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     setInitialDataLoading(true);
-    const roleFromParams = searchParams.get("role") || "student"; // Default to student if no role
+    const roleFromParams = searchParams.get("role") || "student"; 
     setCurrentRole(roleFromParams);
 
     const emailFromParam = searchParams.get("email");
-    const nameFromParam = searchParams.get("name"); // Generic name from auth signup
+    const nameFromParam = searchParams.get("name"); 
 
-    let profileDataKey = 'userProfileData'; // Default for student/parent
+    let profileDataKey = 'userProfileData'; 
     if (roleFromParams === 'vendor') profileDataKey = 'vendorProfileData';
     else if (roleFromParams === 'creator') profileDataKey = 'creatorProfileData';
     else if (roleFromParams === 'school') profileDataKey = 'schoolProfileData';
 
-    let currentDefaultValues: Partial<ProfileFormData> = { country: "India", role: roleFromParams };
+    let currentDefaultValues: Partial<ProfileFormData> = { country: "India", role: roleFromParams, dataAiHint: `${roleFromParams} avatar` };
 
     if (typeof window !== "undefined") {
       const storedProfileString = localStorage.getItem(profileDataKey);
@@ -145,7 +147,8 @@ export default function EditProfilePage() {
           currentDefaultValues = {
             ...parsedProfile,
             dateOfBirth: parsedProfile.dateOfBirth ? new Date(parsedProfile.dateOfBirth) : undefined,
-            role: roleFromParams, // Ensure role from param overrides stored one if different
+            role: roleFromParams, 
+            dataAiHint: parsedProfile.dataAiHint || `${roleFromParams} avatar`,
           };
         } catch (e) {
           console.error(`Failed to parse ${profileDataKey} from localStorage`, e);
@@ -153,13 +156,12 @@ export default function EditProfilePage() {
       }
     }
     
-    // Pre-fill from searchParams for new users
     if (searchParams.get("isNewUser") === "true") {
       if (emailFromParam) currentDefaultValues.email = emailFromParam;
       if (nameFromParam) {
         if (roleFromParams === 'vendor' || roleFromParams === 'school') currentDefaultValues.contactPersonName = nameFromParam;
         else if (roleFromParams === 'creator') currentDefaultValues.creatorName = nameFromParam;
-        else currentDefaultValues.fullName = nameFromParam; // Student/Parent
+        else currentDefaultValues.fullName = nameFromParam; 
       }
     }
     
@@ -187,11 +189,12 @@ export default function EditProfilePage() {
     const dataToStore = {
       ...data,
       dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toISOString() : undefined,
-      role: currentRole, // Ensure the role is part of the stored data
+      role: currentRole, 
+      dataAiHint: data.dataAiHint || `${currentRole} avatar`
     };
 
     let profileDataKey = 'userProfileData';
-    let redirectPath = '/profile'; // Default for student
+    let redirectPath = '/profile'; 
     let displayNameForToast = data.fullName;
 
     if (currentRole === 'parent') redirectPath = '/parent-mode';
@@ -211,13 +214,12 @@ export default function EditProfilePage() {
     
     if (typeof window !== "undefined") {
         localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
-        // Update loggedInUser if primary display name changes
         const loggedInUserString = localStorage.getItem('loggedInUser');
         if (loggedInUserString) {
             try {
                 const loggedInUserDetails = JSON.parse(loggedInUserString);
                 const currentDisplayName = loggedInUserDetails.fullName;
-                let newDisplayName = data.fullName; // Default
+                let newDisplayName = data.fullName; 
                 if (currentRole === 'vendor') newDisplayName = data.businessName || data.contactPersonName;
                 else if (currentRole === 'creator') newDisplayName = data.creatorName || data.contactPersonName;
                 else if (currentRole === 'school') newDisplayName = data.schoolName || data.contactPersonName;
@@ -279,6 +281,8 @@ export default function EditProfilePage() {
     return { en: "Change Picture", hi: "तस्वीर बदलें" };
   };
   const avatarButtonText = getAvatarButtonText();
+  const currentDataAiHint = watch('dataAiHint') || `${currentRole} avatar`;
+
 
   if (initialDataLoading) {
     return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]"><LoadingSpinner size={48} /><p className="ml-4">Loading profile editor...</p></div>;
@@ -299,7 +303,11 @@ export default function EditProfilePage() {
           <CardContent className="space-y-6">
             <div className="flex flex-col items-center space-y-3">
               <Avatar className="h-24 w-24 border-2 border-primary">
-                <AvatarImage src={avatarUrlPreview || `https://placehold.co/100x100.png?text=${getAvatarFallbackText()}`} alt={getAvatarAltText()} data-ai-hint={`${currentRole || 'user'} logo avatar`} />
+                <AvatarImage 
+                  src={avatarUrlPreview || `https://placehold.co/100x100.png`} 
+                  alt={getAvatarAltText()} 
+                  data-ai-hint={currentDataAiHint} 
+                />
                 <AvatarFallback>{getAvatarFallbackText()}</AvatarFallback>
               </Avatar>
               <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
@@ -527,5 +535,3 @@ declare module 'react' {
     }
 }
 
-
-    

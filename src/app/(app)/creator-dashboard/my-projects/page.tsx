@@ -17,7 +17,7 @@ interface CreatorContent {
   id: string;
   title: string;
   category: "Coding & AI" | "Science Model" | "Art & Craft" | "Research/Essay" | "Video Course" | "PDF Guide" | "Live Workshop";
-  imageUrl: string;
+  imageUrl?: string; // Made optional
   dataAiHint: string;
   status: "Approved" | "Pending Review" | "Needs Revision" | "Draft";
   priceDigital?: number;
@@ -29,11 +29,11 @@ interface CreatorContent {
 
 const mockCreatorContent: CreatorContent[] = [
   { id: "cp1", title: "AI Story Generator Template", category: "Coding & AI", imageUrl: "https://placehold.co/300x200.png", dataAiHint: "ai code project", status: "Approved", priceDigital: 499, orders: 25, views: 250 },
-  { id: "cp2", title: "Volcano Model Kit Guide", category: "Science Model", imageUrl: "https://placehold.co/300x200.png", dataAiHint: "volcano model kit", status: "Approved", pricePhysicalKit: 349, orders: 15, views: 180 },
+  { id: "cp2", title: "Volcano Model Kit Guide", category: "Science Model", dataAiHint: "volcano model kit", status: "Approved", pricePhysicalKit: 349, orders: 15, views: 180 }, // imageUrl removed
   { id: "cp3", title: "Indus Valley Diorama Plan", category: "Art & Craft", imageUrl: "https://placehold.co/300x200.png", dataAiHint: "history diorama", status: "Pending Review", priceDigital: 199, orders: 0, views: 30 },
   { id: "cp4", title: "Essay Writing Framework", category: "Research/Essay", imageUrl: "https://placehold.co/300x200.png", dataAiHint: "essay writing", status: "Draft", priceDigital: 99, orders: 0, views: 5 },
   { id: "course1", title: "Beginner Python Video Course", category: "Video Course", imageUrl: "https://placehold.co/300x200.png", dataAiHint: "python course thumbnail", status: "Approved", priceCourse: 1299, orders: 50, views: 500 },
-  { id: "guide1", title: "JEE Physics Quick Notes PDF", category: "PDF Guide", imageUrl: "https://placehold.co/300x200.png", dataAiHint: "physics notes pdf", status: "Approved", priceDigital: 249, orders: 100, views: 800 },
+  { id: "guide1", title: "JEE Physics Quick Notes PDF", category: "PDF Guide", dataAiHint: "physics notes pdf", status: "Approved", priceDigital: 249, orders: 100, views: 800 }, // imageUrl removed
   { id: "workshop1", title: "Live Creative Writing Workshop", category: "Live Workshop", imageUrl: "https://placehold.co/300x200.png", dataAiHint: "writing workshop live", status: "Draft", priceCourse: 799, orders: 0, views: 10 },
 ];
 
@@ -69,13 +69,13 @@ export default function MyContentPage() {
 
   const getCategoryIcon = (category: CreatorContent['category']) => {
     switch(category) {
-        case "Coding & AI": return <Edit3 className="h-3 w-3"/>; // Assuming projects are 'editable' templates
+        case "Coding & AI": return <Edit3 className="h-3 w-3"/>; 
         case "Science Model": return <Edit3 className="h-3 w-3"/>;
         case "Art & Craft": return <Edit3 className="h-3 w-3"/>;
         case "Research/Essay": return <Edit3 className="h-3 w-3"/>;
         case "Video Course": return <Video className="h-3 w-3"/>;
         case "PDF Guide": return <FileText className="h-3 w-3"/>;
-        case "Live Workshop": return <Video className="h-3 w-3"/>; // Or another icon for live
+        case "Live Workshop": return <Video className="h-3 w-3"/>; 
         default: return <Edit3 className="h-3 w-3"/>;
     }
   }
@@ -121,7 +121,13 @@ export default function MyContentPage() {
                 <Card key={item.id} className="overflow-hidden">
                   <CardHeader className="p-0 relative">
                      <div className="aspect-video relative bg-muted">
-                        <Image src={item.imageUrl} alt={item.title} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint}/>
+                        <Image 
+                          src={item.imageUrl || `https://placehold.co/300x200.png`} 
+                          alt={item.title} 
+                          layout="fill" 
+                          objectFit="cover" 
+                          data-ai-hint={item.dataAiHint || 'content image'}
+                        />
                      </div>
                      <Badge variant="outline" className={`absolute top-2 right-2 text-xs ${getStatusBadgeVariant(item.status)}`}>{item.status}</Badge>
                   </CardHeader>

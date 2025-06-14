@@ -92,6 +92,9 @@ const mockLocations = [
     { id: "del_sardar_patel", name: "Sardar Patel Vidyalaya, New Delhi", type: "School" },
     { id: "del_vasant_valley", name: "Vasant Valley School, New Delhi", type: "School" },
     { id: "del_shriram_school", name: "The Shri Ram School, Vasant Vihar, New Delhi", type: "School" },
+    { id: "del_st_columbas", name: "St. Columba's School, Delhi", type: "School" },
+    { id: "del_springdales_pusa", name: "Springdales School, Pusa Road, New Delhi", type: "School" },
+    { id: "del_mother_intl", name: "The Mother's International School, New Delhi", type: "School" },
     { id: "del_cp", name: "Connaught Place, New Delhi", type: "Area" },
     { id: "del_karol_bagh", name: "Karol Bagh, Delhi", type: "Area" },
     { id: "del_south_ex", name: "South Extension, New Delhi", type: "Area" },
@@ -100,8 +103,17 @@ const mockLocations = [
     { id: "del_rohini", name: "Rohini, Delhi", type: "Area" },
     { id: "del_pitampura", name: "Pitampura, Delhi", type: "Area" },
     { id: "del_janakpuri", name: "Janakpuri, New Delhi", type: "Area" },
+    { id: "del_greater_kailash", name: "Greater Kailash, New Delhi", type: "Area" },
+    { id: "del_chandni_chowk", name: "Chandni Chowk, Delhi", type: "Area" },
     { id: "ncr_gurgaon_dlf", name: "DLF Cyber City, Gurgaon", type: "Area" },
+    { id: "ncr_gurgaon_shriram_aravali", name: "The Shri Ram School, Aravali, Gurgaon", type: "School" },
+    { id: "ncr_gurgaon_pathways", name: "Pathways World School, Aravali, Gurgaon", type: "School" },
     { id: "ncr_noida_sec18", name: "Sector 18, Noida", type: "Area" },
+    { id: "ncr_noida_genesis_global", name: "Genesis Global School, Noida", type: "School" },
+    { id: "ncr_noida_step_by_step", name: "Step by Step School, Noida", type: "School" },
+    { id: "ncr_ghaziabad_dps", name: "DPS Ghaziabad, Vasundhara", type: "School" },
+    { id: "ncr_faridabad_apeejay", name: "Apeejay School, Faridabad", type: "School" },
+
 
     // Mumbai Schools & Areas
     { id: "mum_dais", name: "Dhirubhai Ambani International School, Mumbai", type: "School" },
@@ -109,12 +121,17 @@ const mockLocations = [
     { id: "mum_scottish", name: "Bombay Scottish School, Mahim, Mumbai", type: "School" },
     { id: "mum_jb_petit", name: "J.B. Petit High School for Girls, Mumbai", type: "School" },
     { id: "mum_cnms", name: "CNM School, Vile Parle, Mumbai", type: "School" },
+    { id: "mum_ecole_mondiale", name: "École Mondiale World School, Mumbai", type: "School" },
+    { id: "mum_jamnabai_narsee", name: "Jamnabai Narsee School, Mumbai", type: "School" },
     { id: "mum_bandra", name: "Bandra West, Mumbai", type: "Area" },
     { id: "mum_andheri", name: "Andheri East, Mumbai", type: "Area" },
     { id: "mum_juhu", name: "Juhu, Mumbai", type: "Area" },
     { id: "mum_worli", name: "Worli, Mumbai", type: "Area" },
     { id: "mum_thane", name: "Thane West, Thane", type: "Area" },
     { id: "mum_navi_vashi", name: "Vashi, Navi Mumbai", type: "Area" },
+    { id: "mum_colaba", name: "Colaba, Mumbai", type: "Area" },
+    { id: "mum_powai", name: "Powai, Mumbai", type: "Area" },
+    { id: "mum_dadar", name: "Dadar, Mumbai", type: "Area" },
 
     // Bangalore Schools & Areas
     { id: "blr_valley", name: "The Valley School, Bengaluru", type: "School" },
@@ -122,74 +139,107 @@ const mockLocations = [
     { id: "blr_nps_ind", name: "National Public School, Indiranagar, Bengaluru", type: "School" },
     { id: "blr_maiya_intl", name: "Mallya Aditi International School, Bengaluru", type: "School" },
     { id: "blr_inventure", name: "Inventure Academy, Bengaluru", type: "School" },
+    { id: "blr_greenwood_high", name: "Greenwood High International School, Bengaluru", type: "School" },
+    { id: "blr_indus_intl", name: "Indus International School, Bengaluru", type: "School" },
     { id: "blr_indiranagar", name: "Indiranagar, Bengaluru", type: "Area" },
     { id: "blr_koramangala", name: "Koramangala, Bengaluru", type: "Area" },
     { id: "blr_jpnagar", name: "J.P. Nagar, Bengaluru", type: "Area" },
     { id: "blr_whitefield", name: "Whitefield, Bengaluru", type: "Area" },
     { id: "blr_electronic_city", name: "Electronic City, Bengaluru", type: "Area" },
+    { id: "blr_mg_road", name: "MG Road, Bengaluru", type: "Area" },
+    { id: "blr_jayanagar", name: "Jayanagar, Bengaluru", type: "Area" },
+    { id: "blr_malleshwaram", name: "Malleshwaram, Bengaluru", type: "Area" },
 
     // Chennai Schools & Areas
     { id: "chn_psbb_nung", name: "Padma Seshadri Bala Bhavan (PSBB), Nungambakkam, Chennai", type: "School" },
     { id: "chn_sishya", name: "Sishya School, Adyar, Chennai", type: "School" },
     { id: "chn_chems_gg", name: "Chettinad Vidyashram, R.A. Puram, Chennai", type: "School" },
     { id: "chn_dav_mogappair", name: "D.A.V. Boys Senior Secondary School, Mogappair, Chennai", type: "School" },
+    { id: "chn_good_shepherd", name: "Good Shepherd Matriculation Higher Secondary School, Chennai", type: "School" },
+    { id: "chn_american_intl", name: "American International School, Chennai", type: "School" },
     { id: "chn_adyar", name: "Adyar, Chennai", type: "Area" },
     { id: "chn_anna_nagar", name: "Anna Nagar, Chennai", type: "Area" },
     { id: "chn_tnagar", name: "T. Nagar, Chennai", type: "Area" },
     { id: "chn_mylapore", name: "Mylapore, Chennai", type: "Area" },
     { id: "chn_velachery", name: "Velachery, Chennai", type: "Area" },
+    { id: "chn_nungambakkam", name: "Nungambakkam, Chennai", type: "Area" },
 
     // Kolkata Schools & Areas
     { id: "kol_lm_boys", name: "La Martiniere For Boys, Kolkata", type: "School" },
+    { id: "kol_lm_girls", name: "La Martiniere For Girls, Kolkata", type: "School" },
     { id: "kol_south_point", name: "South Point High School, Kolkata", type: "School" },
     { id: "kol_modern_high_girls", name: "Modern High School for Girls, Kolkata", type: "School" },
     { id: "kol_don_bosco", name: "Don Bosco School, Park Circus, Kolkata", type: "School" },
+    { id: "kol_st_xaviers", name: "St. Xavier's Collegiate School, Kolkata", type: "School" },
     { id: "kol_park_street", name: "Park Street Area, Kolkata", type: "Area" },
     { id: "kol_salt_lake", name: "Salt Lake City (Bidhannagar), Kolkata", type: "Area" },
     { id: "kol_gariahat", name: "Gariahat, Kolkata", type: "Area" },
     { id: "kol_howrah", name: "Howrah AC Market, Howrah", type: "Area" },
     { id: "kol_new_town", name: "New Town, Kolkata", type: "Area" },
+    { id: "kol_alipore", name: "Alipore, Kolkata", type: "Area" },
 
     // Hyderabad Schools & Areas
     { id: "hyd_hps_begumpet", name: "Hyderabad Public School, Begumpet, Hyderabad", type: "School" },
     { id: "hyd_chirec", name: "CHIREC International School, Hyderabad", type: "School" },
     { id: "hyd_oakridge_gach", name: "Oakridge International School, Gachibowli, Hyderabad", type: "School" },
+    { id: "hyd_nasr_school", name: "Nasr School, Khairatabad, Hyderabad", type: "School" },
+    { id: "hyd_geetanjali_devshala", name: "Geetanjali Devshala, Secunderabad", type: "School" },
     { id: "hyd_jubilee_hills", name: "Jubilee Hills, Hyderabad", type: "Area" },
     { id: "hyd_banjara_hills", name: "Banjara Hills, Hyderabad", type: "Area" },
     { id: "hyd_gachibowli", name: "Gachibowli, Hyderabad", type: "Area" },
     { id: "hyd_secunderabad", name: "Secunderabad Clock Tower Area", type: "Area" },
+    { id: "hyd_hitech_city", name: "HITEC City, Hyderabad", type: "Area" },
+    { id: "hyd_kondapur", name: "Kondapur, Hyderabad", type: "Area" },
     
     // Pune Schools & Areas
     { id: "pun_bishops_camp", name: "The Bishop's School, Camp, Pune", type: "School" },
     { id: "pun_st_marys", name: "St. Mary's School, Pune", type: "School" },
     { id: "pun_symbiosis_intl", name: "Symbiosis International School, Pune", type: "School" },
+    { id: "pun_mercedes_benz_intl", name: "Mercedes-Benz International School, Pune", type: "School" },
+    { id: "pun_vibgyor_high", name: "VIBGYOR High, Balewadi, Pune", type: "School" },
     { id: "pun_koregaon_park", name: "Koregaon Park, Pune", type: "Area" },
     { id: "pun_deccan", name: "Deccan Gymkhana, Pune", type: "Area" },
     { id: "pun_hinjewadi", name: "Hinjewadi IT Park, Pune", type: "Area" },
+    { id: "pun_viman_nagar", name: "Viman Nagar, Pune", type: "Area" },
+    { id: "pun_aundh", name: "Aundh, Pune", type: "Area" },
 
     // Ahmedabad Schools & Areas
     { id: "amd_st_xaviers_loyola", name: "St. Xavier's High School, Loyola Hall, Ahmedabad", type: "School" },
     { id: "amd_anand_niketan_shilaj", name: "Anand Niketan, Shilaj Campus, Ahmedabad", type: "School" },
+    { id: "amd_udgam_school", name: "Udgam School For Children, Ahmedabad", type: "School" },
     { id: "amd_cg_road", name: "C.G. Road, Ahmedabad", type: "Area" },
     { id: "amd_vastrapur", name: "Vastrapur, Ahmedabad", type: "Area" },
+    { id: "amd_satellite", name: "Satellite, Ahmedabad", type: "Area" },
 
     // Jaipur Schools & Areas
     { id: "jpr_mayo_college_ajmer", name: "Mayo College, Ajmer (near Jaipur)", type: "School" },
+    { id: "jpr_mayo_college_girls_ajmer", name: "Mayo College Girls' School, Ajmer (near Jaipur)", type: "School" },
     { id: "jpr_jphs", name: "Jayshree Periwal High School, Jaipur", type: "School" },
     { id: "jpr_sms_vidyalaya", name: "Sawai Man Singh Vidyalaya, Jaipur", type: "School" },
     { id: "jpr_c_scheme", name: "C-Scheme, Jaipur", type: "Area" },
     { id: "jpr_vaishali_nagar", name: "Vaishali Nagar, Jaipur", type: "Area" },
+    { id: "jpr_malviya_nagar", name: "Malviya Nagar, Jaipur", type: "Area" },
 
     // Lucknow Schools & Areas
     { id: "lko_lm_college", name: "La Martiniere College, Lucknow", type: "School" },
     { id: "lko_cms_gomti", name: "City Montessori School (CMS), Gomti Nagar, Lucknow", type: "School" },
+    { id: "lko_seth_mr_jaipuria", name: "Seth M.R. Jaipuria School, Lucknow", type: "School" },
     { id: "lko_hazratganj", name: "Hazratganj, Lucknow", type: "Area" },
     { id: "lko_gomti_nagar", name: "Gomti Nagar, Lucknow", type: "Area" },
+    { id: "lko_aliganj", name: "Aliganj, Lucknow", type: "Area" },
 
     // Chandigarh Schools & Areas
     { id: "chd_vivek_high", name: "Vivek High School, Chandigarh", type: "School" },
     { id: "chd_st_johns", name: "St. John's High School, Chandigarh", type: "School" },
+    { id: "chd_carmel_convent", name: "Carmel Convent School, Chandigarh", type: "School" },
     { id: "chd_sector_17", name: "Sector 17 Market, Chandigarh", type: "Area" },
+    { id: "chd_sector_35", name: "Sector 35, Chandigarh", type: "Area" },
+
+    // Dehradun Schools
+    { id: "ddn_doon_school", name: "The Doon School, Dehradun", type: "School"},
+    { id: "ddn_welham_boys", name: "Welham Boys' School, Dehradun", type: "School"},
+    { id: "ddn_welham_girls", name: "Welham Girls' School, Dehradun", type: "School"},
+    { id: "ddn_asian_school", name: "The Asian School, Dehradun", type: "School"},
 
     // Other Major City Areas
     { id: "sur_athwa", name: "Athwalines, Surat", type: "Area" },
@@ -297,7 +347,7 @@ export default function ModernHomePage() {
             </Button>
             <Link href="/profile">
               <Avatar className="h-8 w-8 border-2 border-accent">
-                <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint={user.dataAiHint} />
+                <AvatarImage src={user.avatarUrl || 'https://placehold.co/40x40.png'} alt={user.name} data-ai-hint={user.dataAiHint || 'avatar'} />
                 <AvatarFallback>{user.name.substring(0,1)}</AvatarFallback>
               </Avatar>
             </Link>
@@ -349,7 +399,15 @@ export default function ModernHomePage() {
               index === currentSlide ? "opacity-100 z-10" : "opacity-0"
             )}
           >
-            <MemoizedImage src={slide.imageUrl} alt={currentLang === 'en' ? slide.titleEn : slide.titleHi} layout="fill" objectFit="cover" className="absolute inset-0 z-0 opacity-80 data-ai-hint={slide.dataAiHint}" priority={index === 0}/>
+            <MemoizedImage 
+              src={slide.imageUrl || 'https://placehold.co/800x300.png'} 
+              alt={currentLang === 'en' ? slide.titleEn : slide.titleHi} 
+              layout="fill" 
+              objectFit="cover" 
+              className="absolute inset-0 z-0 opacity-80" 
+              data-ai-hint={slide.dataAiHint || 'hero image'} 
+              priority={index === 0}
+            />
             <Link href={slide.href} className="relative z-10 flex flex-col items-center justify-center h-full w-full bg-gradient-to-t from-black/50 via-transparent to-black/10 p-4">
               <div>
                 <h2 className="text-2xl font-bold mb-1 text-shadow shadow-black/70"><BilingualText en={slide.titleEn} hi={slide.titleHi} lang={currentLang} /></h2>
@@ -382,7 +440,7 @@ export default function ModernHomePage() {
         </div>
         {liveNowClasses.length > 0 && (
             <div className="mb-4">
-                <h3 className="text-md font-medium text-destructive mb-2 flex items-center"> {/* Using destructive (yellow) for live now */}
+                <h3 className="text-md font-medium text-destructive mb-2 flex items-center"> {}
                     <RadioTower size={18} className="mr-1.5 animate-pulse"/> <BilingualText en="Live Now" hi="अभी लाइव" lang={currentLang}/>
                 </h3>
                 <ScrollArea className="w-full whitespace-nowrap pb-2.5">
@@ -447,7 +505,13 @@ export default function ModernHomePage() {
               <Link href={item.href} key={item.id} className="block min-w-[150px] max-w-[150px]">
                 <Card className="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow h-full flex flex-col glass-card">
                   <div className="aspect-[3/4] relative w-full">
-                    <MemoizedImage src={item.imageUrl} alt={currentLang === 'en' ? item.titleEn : item.titleHi} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint} />
+                    <MemoizedImage 
+                      src={item.imageUrl || 'https://placehold.co/150x200.png'} 
+                      alt={currentLang === 'en' ? item.titleEn : item.titleHi} 
+                      layout="fill" 
+                      objectFit="cover" 
+                      data-ai-hint={item.dataAiHint || 'recommendation image'} 
+                    />
                   </div>
                   <CardContent className="p-2.5 flex-grow flex flex-col justify-between">
                     <div>

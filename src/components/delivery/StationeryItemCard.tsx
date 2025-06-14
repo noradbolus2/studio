@@ -10,11 +10,11 @@ export interface StationeryItem {
   nameEn: string;
   nameHi: string;
   price: number;
-  imageUrl: string;
+  imageUrl?: string; // Made optional
   vendorEn: string;
   vendorHi: string;
   dataAiHint?: string;
-  categoryKey: string; // Added for filtering
+  categoryKey: string; 
 }
 
 interface StationeryItemCardProps {
@@ -28,7 +28,7 @@ export function StationeryItemCard({ item, onAddToCart }: StationeryItemCardProp
       <CardHeader className="p-0">
         <div className="aspect-[4/3] relative w-full">
           <Image 
-            src={item.imageUrl} 
+            src={item.imageUrl || `https://placehold.co/300x225.png`} 
             alt={item.nameEn} 
             layout="fill" 
             objectFit="cover" 

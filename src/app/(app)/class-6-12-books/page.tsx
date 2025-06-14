@@ -20,7 +20,7 @@ interface NcertBook {
   subjectHi: string;
   board: 'NCERT' | 'State Board';
   medium: 'English' | 'Hindi' | 'English/Hindi';
-  imageUrl: string;
+  imageUrl?: string; // Made optional
   dataAiHint: string;
   status: 'free' | 'buy';
 }
@@ -54,7 +54,7 @@ const allNcertBooks: NcertBook[] = [
   { id: 'c11_chemistry1_h', titleEn: 'Chemistry Part-I (Hindi Med.)', titleHi: 'रसायन विज्ञान भाग-I', class: 11, subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1616908842279-1fdbda128284?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGVtaXN0cnklMjB0ZXh0Ym9vayUyMGhpbmRpfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "chemistry textbook hindi", status: 'buy' },
 
   // Class 12
-  { id: 'c12_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 12, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1707510917424-2d66055df14d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwaHlzaWNzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "physics textbook", status: 'free' },
+  { id: 'c12_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 12, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', dataAiHint: "physics textbook", status: 'free' }, // imageUrl removed to test fallback
   { id: 'c12_maths1_h', titleEn: 'Mathematics Part-I (Hindi Med.)', titleHi: 'गणित भाग-I', class: 12, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1602772576461-31b6d6dba5da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXRocyUyMHRleHRib29rJTIwaGluZGl8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook hindi", status: 'buy' },
   { id: 'c12_biology_sb_e', titleEn: 'Biology', titleHi: 'जीवविज्ञान', class: 12, subjectEn: 'Biology', subjectHi: 'जीवविज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1747769005252-80e91287820a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxiaW9sb2d5JTIwdGV4dGJvb2slMjBzdGF0ZXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "biology textbook state", status: 'free' },
 ];
@@ -190,7 +190,14 @@ export default function NcertBooksPage() {
             <Card key={book.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow flex flex-col">
               <CardHeader className="p-0">
                 <div className="aspect-[3/4] relative w-full bg-muted/30">
-                  <Image src={book.imageUrl} alt={book.titleEn} layout="fill" objectFit="cover" className="p-2" data-ai-hint={book.dataAiHint} />
+                  <Image 
+                    src={book.imageUrl || `https://placehold.co/300x400.png`} 
+                    alt={book.titleEn} 
+                    layout="fill" 
+                    objectFit="cover" 
+                    className="p-2" 
+                    data-ai-hint={book.dataAiHint || 'book cover'} 
+                  />
                 </div>
               </CardHeader>
               <CardContent className="p-3 space-y-1 flex-grow">

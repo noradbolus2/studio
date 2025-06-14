@@ -13,17 +13,17 @@ import { Badge } from "@/components/ui/badge";
 interface Query {
   id: string;
   customerName: string;
-  customerAvatar: string;
+  customerAvatar?: string; // Made optional
   dataAiHint?: string;
   queryText: string;
   date: string;
   status: "New" | "Replied" | "Resolved";
-  productName?: string; // Optional product name related to query
+  productName?: string; 
 }
 
 const mockQueries: Query[] = [
   { id: "Q001", customerName: "Aarav Sharma", customerAvatar: "https://placehold.co/40x40.png?text=AS", dataAiHint:"student avatar", queryText: "Is the Classmate notebook available in unruled format?", date: "2024-07-22 02:15 PM", status: "New", productName: "Classmate Notebook" },
-  { id: "Q002", customerName: "Priya Singh", customerAvatar: "https://placehold.co/40x40.png?text=PS", dataAiHint:"girl avatar", queryText: "When will the Fevicol MR 100g be back in stock?", date: "2024-07-21 09:00 AM", status: "Replied", productName: "Fevicol MR Squeeze Bottle (100g)" },
+  { id: "Q002", customerName: "Priya Singh", dataAiHint:"girl avatar", queryText: "When will the Fevicol MR 100g be back in stock?", date: "2024-07-21 09:00 AM", status: "Replied", productName: "Fevicol MR Squeeze Bottle (100g)" }, // customerAvatar removed
   { id: "Q003", customerName: "Rohan Verma", customerAvatar: "https://placehold.co/40x40.png?text=RV", dataAiHint:"boy avatar", queryText: "Can I get a bulk discount on Apsara pencils for my class?", date: "2024-07-20 03:30 PM", status: "Resolved" },
 ];
 
@@ -52,7 +52,11 @@ export default function VendorQueriesPage() {
             <Card key={query.id} className={`p-4 ${query.status === 'New' ? 'bg-primary/5 border-primary/30' : 'bg-muted/30'}`}>
               <div className="flex items-start gap-3">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src={query.customerAvatar} alt={query.customerName} data-ai-hint={query.dataAiHint || "user avatar"}/>
+                  <AvatarImage 
+                    src={query.customerAvatar || `https://placehold.co/40x40.png`} 
+                    alt={query.customerName} 
+                    data-ai-hint={query.dataAiHint || "user avatar"}
+                  />
                   <AvatarFallback>{query.customerName.substring(0,1)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-grow">

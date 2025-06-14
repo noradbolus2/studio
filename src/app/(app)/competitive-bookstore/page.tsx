@@ -39,11 +39,23 @@ const publishers = [
     {id: "disha", name: "Disha Publication", logoUrl: "https://placehold.co/100x40.png?text=Disha", dataAiHint:"disha logo"},
 ];
 
-const sampleBooks = [
+interface CompetitiveBook {
+  id: string;
+  titleEn: string;
+  titleHi: string;
+  exam: string;
+  publisher: string;
+  price: number;
+  imageUrl?: string; // Made optional
+  dataAiHint: string;
+  class?: string; // Optional class, N/A for many competitive books
+}
+
+const sampleBooks: CompetitiveBook[] = [
   { id: '1', titleEn: 'JEE Main Solved Papers', titleHi: 'जेईई मुख्य हल प्रश्नपत्र', exam: 'engineering', publisher: 'Arihant', price: 450, imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "jee book cover", class: "N/A" },
   { id: '2', titleEn: 'NEET Biology Guide', titleHi: 'नीट जीवविज्ञान गाइड', exam: 'medical', publisher: 'MTG', price: 799, imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "neet book cover", class: "N/A" },
   { id: '3', titleEn: 'CUET (UG) General Test', titleHi: 'सीयूईटी (यूजी) सामान्य परीक्षा', exam: 'cuet_general_uni', publisher: 'Oswaal', price: 350, imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "cuet book cover", class: "N/A" },
-  { id: '4', titleEn: 'Indian Polity for UPSC', titleHi: 'यूपीएससी के लिए भारतीय राजनीति', exam: 'upsc_civil_services', publisher: 'Disha', price: 600, imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "upsc book cover", class: "N/A" },
+  { id: '4', titleEn: 'Indian Polity for UPSC', titleHi: 'यूपीएससी के लिए भारतीय राजनीति', exam: 'upsc_civil_services', publisher: 'Disha', price: 600, dataAiHint: "upsc book cover", class: "N/A" }, // imageUrl removed to test fallback
   { id: '5', titleEn: 'CAT Verbal Ability', titleHi: 'कैट मौखिक क्षमता', exam: 'management', publisher: 'Arihant', price: 500, imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "cat exam book", class: "N/A" },
   { id: '6', titleEn: 'CLAT Legal Reasoning', titleHi: 'क्लैट कानूनी तर्क', exam: 'law', publisher: 'Oswaal', price: 400, imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "clat law book", class: "N/A" },
 ];
@@ -156,7 +168,14 @@ export default function CompetitiveBookstorePage() {
                 <div className="flex space-x-4">
                     {publishers.map(pub => (
                         <Card key={pub.id} className="min-w-[150px] p-3 hover:shadow-md transition-shadow">
-                            <Image src={pub.logoUrl} alt={pub.name} width={100} height={40} className="object-contain mx-auto data-ai-hint={pub.dataAiHint}" />
+                            <Image 
+                              src={pub.logoUrl || `https://placehold.co/100x40.png`} 
+                              alt={pub.name} 
+                              width={100} 
+                              height={40} 
+                              className="object-contain mx-auto" 
+                              data-ai-hint={pub.dataAiHint || 'publisher logo'}
+                            />
                             <p className="text-xs text-center mt-2 text-muted-foreground">{pub.name}</p>
                         </Card>
                     ))}
@@ -171,7 +190,14 @@ export default function CompetitiveBookstorePage() {
             <Card key={book.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
               <CardHeader className="p-0">
                 <div className="aspect-[3/4] relative w-full bg-muted/30">
-                  <Image src={book.imageUrl} alt={book.titleEn} layout="fill" objectFit="contain" className="p-2 data-ai-hint={book.dataAiHint}" />
+                  <Image 
+                    src={book.imageUrl || `https://placehold.co/150x200.png`} 
+                    alt={book.titleEn} 
+                    layout="fill" 
+                    objectFit="contain" 
+                    className="p-2" 
+                    data-ai-hint={book.dataAiHint || 'book cover'} 
+                  />
                 </div>
               </CardHeader>
               <CardContent className="p-3 space-y-1">
