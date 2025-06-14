@@ -16,7 +16,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
     Loader2, Send, Target, BookOpen, Brain, Rocket, FileText, Palette, Code2, Users, Edit3,
-    ShoppingCart, Clock, Truck, Home, School as SchoolIconLucide, UploadCloud, Package, Image as ImageIcon, ExternalLink, UserCheck,
+    ShoppingCart, Clock, Truck, Home, School as SchoolIconLucide, UploadCloud, Package, Image as ImageIconLucide, ExternalLink, UserCheck,
     BookCopy, FlaskConical, BrainCircuit, FileArchive, ChevronLeft, Eye, LightbulbIcon, Apple
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -75,7 +75,7 @@ interface MockProject {
   category: ProjectCategory;
   classFilter?: string[]; 
   subjectFilter?: string[]; 
-  sampleImageUrl: string;
+  sampleImageUrl?: string; // Made optional
   dataAiHint: string;
   description: string;
   materials: ProjectMaterial[];
@@ -98,13 +98,13 @@ const classes = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8"
 const subjects = ["All", "Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "Art", "General Knowledge", "Current Affairs"];
 
 const mockProjects: MockProject[] = [
-  { id: "proj1", title: "Working Model of Hydraulic Lift", category: "science_model", classFilter: ["7","8","9"], subjectFilter: ["Science", "Physics"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "hydraulic lift science", description: "Learn Pascal's Law by building a functional hydraulic lift model using simple syringes and tubes.", materials: [{ name: "Large Syringe (20ml)", qty: 2, price: 15 }, { name: "Small Syringe (5ml)", qty: 2, price:10 }, { name: "Flexible Plastic Tube (1 meter)", qty: 1, price:20 }, { name: "Cardboard Sheets", qty: 2, price: 5 }, { name: "Craft Glue", qty: 1, price:10 }], tutorialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", creatorPrice: 149, estimatedTime: "3 hours" },
-  { id: "proj2", title: "Solar System Diorama", category: "art_poster", classFilter: ["4","5","6"], subjectFilter: ["Science", "Art"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "solar system model", description: "Create a beautiful 3D model of our solar system for your classroom.", materials: [{ name: "Thermocol Balls (various sizes)", qty: 10, price:50 }, { name: "Acrylic Paints", qty: 1, price:80 }, { name: "Chart Paper (Black)", qty: 1, price:10 }, {name: "String", qty:1, price:5}], creatorPrice: 199, estimatedTime: "4 hours" },
-  { id: "proj3", title: "Essay: Impact of AI on Society", category: "essay_research", classFilter: ["10", "11 Arts", "12 Arts"], subjectFilter: ["English", "Social Studies", "Computer Science"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "essay writing ai", description: "Research and write a compelling essay on the societal impacts of Artificial Intelligence.", materials: [{ name: "Research Access (OSO e-Library)", qty: "Subscription", price:0 }], tutorialUrl: "#", estimatedTime: "Research + 2 hours writing" },
-  { id: "proj4", title: "Basic Python Calculator", category: "coding", classFilter: ["9","10","11 Science", "12 Science"], subjectFilter: ["Computer Science"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "python code computer", description: "Develop a simple calculator application using Python programming language.", materials: [{ name: "Python IDE (e.g., VS Code)", qty: 1, price:0 }], tutorialUrl: "#", creatorPrice: 249, estimatedTime: "5 hours coding" },
-  { id: "hw1", title: "Algebra Worksheet (Ch 3)", category: "homework", classFilter: ["8"], subjectFilter: ["Maths"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "maths worksheet", description: "Complete the algebra practice problems from Chapter 3.", materials: [{name: "Notebook", qty:1}, {name:"Pen", qty:1}], estimatedTime: "1 hour"},
-  { id: "proj5", title: "Volcano Eruption Model", category: "science_model", classFilter: ["6","7"], subjectFilter: ["Science", "Geography"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "volcano model erupting", description: "Create an exciting volcano model that erupts using baking soda and vinegar.", materials: [{name: "Plastic Bottle", qty: 1}, {name: "Cardboard Base", qty:1}, {name:"Clay or Papier-mâché", qty:1}, {name:"Baking Soda", qty:1}, {name:"Vinegar", qty:1}, {name:"Red Food Coloring", qty:1}], tutorialUrl: "#", estimatedTime: "2-3 hours"},
-  { id: "proj6", title: "Water Cycle Poster", category: "art_poster", classFilter: ["5","6"], subjectFilter: ["Science", "Art"], sampleImageUrl: "https://placehold.co/600x400.png", dataAiHint: "water cycle diagram", description: "Design an informative and visually appealing poster explaining the water cycle.", materials: [{name: "Large Chart Paper", qty:1}, {name:"Color Pencils/Markers", qty:1}, {name:"Cotton Balls (for clouds)", qty:"1 pack"}], creatorPrice: 79, estimatedTime: "2 hours"},
+  { id: "proj1", title: "Working Model of Hydraulic Lift", category: "science_model", classFilter: ["7","8","9"], subjectFilter: ["Science", "Physics"], sampleImageUrl: "https://placehold.co/600x337.png", dataAiHint: "hydraulic lift science", description: "Learn Pascal's Law by building a functional hydraulic lift model using simple syringes and tubes.", materials: [{ name: "Large Syringe (20ml)", qty: 2, price: 15 }, { name: "Small Syringe (5ml)", qty: 2, price:10 }, { name: "Flexible Plastic Tube (1 meter)", qty: 1, price:20 }, { name: "Cardboard Sheets", qty: 2, price: 5 }, { name: "Craft Glue", qty: 1, price:10 }], tutorialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", creatorPrice: 149, estimatedTime: "3 hours" },
+  { id: "proj2", title: "Solar System Diorama", category: "art_poster", classFilter: ["4","5","6"], subjectFilter: ["Science", "Art"], sampleImageUrl: "https://placehold.co/600x337.png", dataAiHint: "solar system model", description: "Create a beautiful 3D model of our solar system for your classroom.", materials: [{ name: "Thermocol Balls (various sizes)", qty: 10, price:50 }, { name: "Acrylic Paints", qty: 1, price:80 }, { name: "Chart Paper (Black)", qty: 1, price:10 }, {name: "String", qty:1, price:5}], creatorPrice: 199, estimatedTime: "4 hours" },
+  { id: "proj3", title: "Essay: Impact of AI on Society", category: "essay_research", classFilter: ["10", "11 Arts", "12 Arts"], subjectFilter: ["English", "Social Studies", "Computer Science"], dataAiHint: "essay writing ai", description: "Research and write a compelling essay on the societal impacts of Artificial Intelligence.", materials: [{ name: "Research Access (OSO e-Library)", qty: "Subscription", price:0 }], tutorialUrl: "#", estimatedTime: "Research + 2 hours writing" }, // No image
+  { id: "proj4", title: "Basic Python Calculator", category: "coding", classFilter: ["9","10","11 Science", "12 Science"], subjectFilter: ["Computer Science"], sampleImageUrl: "https://placehold.co/600x337.png", dataAiHint: "python code computer", description: "Develop a simple calculator application using Python programming language.", materials: [{ name: "Python IDE (e.g., VS Code)", qty: 1, price:0 }], tutorialUrl: "#", creatorPrice: 249, estimatedTime: "5 hours coding" },
+  { id: "hw1", title: "Algebra Worksheet (Ch 3)", category: "homework", classFilter: ["8"], subjectFilter: ["Maths"], dataAiHint: "maths worksheet", description: "Complete the algebra practice problems from Chapter 3.", materials: [{name: "Notebook", qty:1}, {name:"Pen", qty:1}], estimatedTime: "1 hour"}, // No image
+  { id: "proj5", title: "Volcano Eruption Model", category: "science_model", classFilter: ["6","7"], subjectFilter: ["Science", "Geography"], sampleImageUrl: "https://placehold.co/600x337.png", dataAiHint: "volcano model erupting", description: "Create an exciting volcano model that erupts using baking soda and vinegar.", materials: [{name: "Plastic Bottle", qty: 1}, {name: "Cardboard Base", qty:1}, {name:"Clay or Papier-mâché", qty:1}, {name:"Baking Soda", qty:1}, {name:"Vinegar", qty:1}, {name:"Red Food Coloring", qty:1}], tutorialUrl: "#", estimatedTime: "2-3 hours"},
+  { id: "proj6", title: "Water Cycle Poster", category: "art_poster", classFilter: ["5","6"], subjectFilter: ["Science", "Art"], dataAiHint: "water cycle diagram", description: "Design an informative and visually appealing poster explaining the water cycle.", materials: [{name: "Large Chart Paper", qty:1}, {name:"Color Pencils/Markers", qty:1}, {name:"Cotton Balls (for clouds)", qty:"1 pack"}], creatorPrice: 79, estimatedTime: "2 hours"}, // No image
 ];
 
 function getNumericClassFromStringForProjects(classNameString?: string): string | undefined {
@@ -179,7 +179,7 @@ export default function ServicePage() {
           const mockData: { [key: string]: ServiceData } = {
             elibrary: { name: "E-Library", type: "books_list_page", description: "Access NCERT and reference books.", data: { redirectTo: "/class-6-12-books" } },
             guruji: { name: "Guruji", type: "chat_interface", description: "Your personal study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
-            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png?text=🛍️", dataAiHint:"stationery bag" }},
+            stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"stationery bag" }},
             studysnacks: { name: "Study Snacks", type: "product_listing", description: "Healthy snacks delivered for study sessions.", data: { redirectTo: "/delivery", category: "study_snacks", avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"apple fruit"}},
             projects: { name: "Projects Assistant", type: "interactive_assignment_project_help", description: "Get help with school projects and assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"tools project" }},
             assignments: { name: "Assignments Assistant", type: "interactive_assignment_project_help", description: "Assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"writing assignment" }},
@@ -338,10 +338,10 @@ export default function ServicePage() {
             { title: "Chemistry Full Syllabus Test 1", score: "90/180", weakTopics: ["Organic Chemistry Reactions", "Chemical Bonding"] }
         ],
         availableTestSets: [
-            { title: "NEET Full Syllabus Mock Test Series (Set A)", subject: "All", level: "Medium" },
-            { title: "NEET Biology - Genetics Special", subject: "Biology", level: "Hard" },
-            { title: "NEET Physics - Mechanics Booster", subject: "Physics", level: "Medium" },
-            { title: "NEET Chemistry - Organic Mastery", subject: "Chemistry", level: "Tough" },
+            { title: `${profileData?.examTarget || "NEET UG"} Full Syllabus Mock Test Series (Set A)`, subject: "All", level: "Medium" },
+            { title: `${profileData?.examTarget || "NEET UG"} Biology - Genetics Special`, subject: "Biology", level: "Hard" },
+            { title: `${profileData?.examTarget || "NEET UG"} Physics - Mechanics Booster`, subject: "Physics", level: "Medium" },
+            { title: `${profileData?.examTarget || "NEET UG"} Chemistry - Organic Mastery`, subject: "Chemistry", level: "Tough" },
             { title: "JEE Advanced Physics Challenge", subject: "Physics", level: "Very Hard"},
         ]
     };
@@ -395,7 +395,7 @@ export default function ServicePage() {
       id: "ai-proj-dynamic",
       title: `Guruji Suggested: ${ideaDescription.substring(0,20)} Model`,
       category: "ai_idea",
-      sampleImageUrl: "https://placehold.co/600x400.png",
+      sampleImageUrl: "https://placehold.co/600x337.png", // Default placeholder for AI idea
       dataAiHint: "ai generated idea",
       description: `A Guruji-generated project idea based on your input: "${ideaDescription}". This could involve building a small prototype or a research paper.`,
       materials: [
@@ -489,12 +489,14 @@ export default function ServicePage() {
           <div className="flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
             <header className="p-4 border-b text-center bg-card rounded-t-lg">
               <div className="flex items-center justify-center space-x-3">
-                {serviceData.data?.avatarUrl && (
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data?.dataAiHint || "avatar"} />
-                    <AvatarFallback>{serviceData.name.substring(0,2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                )}
+                <Avatar className="h-10 w-10 border-2 border-primary">
+                  <AvatarImage 
+                    src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
+                    alt={serviceData.name} 
+                    data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
+                  />
+                  <AvatarFallback>{serviceData.name.substring(0,1).toUpperCase()}</AvatarFallback>
+                </Avatar>
                 <div>
                   <h2 className="text-xl font-bold font-headline text-primary">
                     {serviceData.name}
@@ -560,12 +562,14 @@ export default function ServicePage() {
             <Card className="w-full">
                 <CardHeader>
                     <div className="flex items-center gap-3">
-                        {serviceData.data?.avatarUrl && (
-                        <Avatar className="h-12 w-12 border-2 border-primary">
-                            <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
+                         <Avatar className="h-12 w-12 border-2 border-primary">
+                            <AvatarImage 
+                                src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
+                                alt={serviceData.name} 
+                                data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
+                            />
                             <AvatarFallback>{serviceData.name.substring(0,1)}G</AvatarFallback>
                         </Avatar>
-                        )}
                         <div>
                             <CardTitle className="text-xl font-headline text-primary">Test Advisor</CardTitle>
                             <CardDescription>Get smart test recommendations from Guruji.</CardDescription>
@@ -656,12 +660,14 @@ export default function ServicePage() {
                 <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 shadow-sm -mx-4 px-4 rounded-none border-x-0 border-t-0">
                     <CardHeader className="pb-3 pt-2 px-0">
                         <div className="flex items-center gap-3">
-                            {serviceData.data?.avatarUrl && (
                             <Avatar className="h-10 w-10 border-2 border-primary">
-                                <AvatarImage src={serviceData.data.avatarUrl} alt={serviceData.name} data-ai-hint={serviceData.data.dataAiHint || "avatar"} />
+                                <AvatarImage 
+                                    src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
+                                    alt={serviceData.name} 
+                                    data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
+                                />
                                 <AvatarFallback>{serviceData.name.substring(0,1).toUpperCase()}</AvatarFallback>
                             </Avatar>
-                            )}
                             <div>
                                 <CardTitle className="text-lg font-headline text-primary">
                                     {serviceData.name}
@@ -754,7 +760,13 @@ export default function ServicePage() {
                                                 <Card key={proj.id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow group" onClick={() => setSelectedProject(proj)}>
                                                     <CardHeader className="p-0">
                                                         <div className="aspect-video relative bg-muted">
-                                                            <Image src={proj.sampleImageUrl} alt={proj.title} layout="fill" objectFit="cover" data-ai-hint={proj.dataAiHint}/>
+                                                            <Image 
+                                                                src={proj.sampleImageUrl || `https://placehold.co/300x168.png`} 
+                                                                alt={proj.title} 
+                                                                layout="fill" 
+                                                                objectFit="cover" 
+                                                                data-ai-hint={proj.dataAiHint || "project thumbnail"}
+                                                            />
                                                         </div>
                                                     </CardHeader>
                                                     <CardContent className="p-3">
@@ -790,7 +802,13 @@ export default function ServicePage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4 pt-4">
                                     <div className="aspect-video relative bg-muted rounded-md overflow-hidden shadow-inner">
-                                         <Image src={selectedProject.sampleImageUrl} alt={selectedProject.title} layout="fill" objectFit="cover" data-ai-hint={selectedProject.dataAiHint} />
+                                         <Image 
+                                            src={selectedProject.sampleImageUrl || `https://placehold.co/300x168.png`} 
+                                            alt={selectedProject.title} 
+                                            layout="fill" 
+                                            objectFit="cover" 
+                                            data-ai-hint={selectedProject.dataAiHint || "project display"}
+                                        />
                                     </div>
                                     
                                     <div>
