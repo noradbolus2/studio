@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation'; 
 import {
   MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
-  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIcon, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Mic, Lightbulb, Music2, GraduationCap, Video,
+  FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIconLucide, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Mic, Lightbulb, Music2, GraduationCap, Video,
   RadioTower,
   Timer,    
   PlaySquare 
@@ -259,11 +259,12 @@ const mockLiveClasses: LiveClass[] = [
   { id: 'recorded1', titleEn: 'Intro to Python Programming', titleHi: 'पायथन प्रोग्रामिंग का परिचय', subjectEn: 'Computer Science', subjectHi: 'कंप्यूटर विज्ञान', creatorNameEn: 'Code Master', creatorNameHi: 'कोड मास्टर', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'python code screen', status: 'recorded', duration: '55min', dateTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'All Ages', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'coder avatar' },
 ];
 
+type LangState = 'en' | 'hi' | 'hng';
 
 export default function ModernHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
+  const [currentLang, setCurrentLang] = useState<LangState>('en');
   const [location, setLocation] = useState("Modern School, Barakhamba Road, Delhi"); // Default
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
@@ -296,8 +297,19 @@ export default function ModernHomePage() {
   const MemoizedImage = React.memo(Image);
 
   const toggleLanguage = () => {
-    setCurrentLang(prevLang => prevLang === 'en' ? 'hi' : 'en');
+    setCurrentLang(prevLang => {
+      if (prevLang === 'en') return 'hi';
+      if (prevLang === 'hi') return 'hng';
+      return 'en'; // 'hng' goes back to 'en'
+    });
   };
+
+  const getLanguageButtonText = () => {
+    if (currentLang === 'en') return 'हिन्दी';
+    if (currentLang === 'hi') return 'Hinglish';
+    return 'English';
+  };
+
 
   const handleLocationConfirm = () => {
     setLocation(selectedTempLocation);
@@ -343,7 +355,7 @@ export default function ModernHomePage() {
           </Button>
           <div className="flex items-center gap-2">
             <Button onClick={toggleLanguage} variant="outline" size="sm" className="text-xs h-7 px-2 border-border hover:bg-card text-muted-foreground">
-              {currentLang === 'en' ? 'हिन्दी' : 'English'}
+              {getLanguageButtonText()}
             </Button>
             <Link href="/profile">
               <Avatar className="h-8 w-8 border-2 border-accent">
@@ -364,7 +376,7 @@ export default function ModernHomePage() {
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
             <Input
               type="search"
-              placeholder={currentLang === 'en' ? "Search for books, projects, stationery..." : "किताबें, प्रोजेक्ट, स्टेशनरी खोजें..."}
+              placeholder={currentLang === 'en' ? "Search for books, projects, stationery..." : currentLang === 'hi' ? "किताबें, प्रोजेक्ट, स्टेशनरी खोजें..." : "Search books, projects, stationery..."}
               className="pl-10 h-12 text-base border-border focus:border-primary focus:ring-primary rounded-lg shadow-sm bg-input placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
