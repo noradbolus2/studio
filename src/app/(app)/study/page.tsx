@@ -1,15 +1,17 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MindDiaryCard } from "@/components/shared/MindDiaryCard";
-import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare } from "lucide-react";
+import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight } from "lucide-react"; // Added ArrowRight
 import { BilingualText } from "@/components/shared/BilingualText";
 import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner";
+import Link from "next/link"; // Added Link
 
 const studySections = [
-  { titleEn: "Courses", titleHi: "पाठ्यक्रम", descriptionEn: "AI, Coding, NCERT & more", descriptionHi: "एआई, कोडिंग, एनसीईआरटी और अधिक", icon: BookMarked, ctaEn: "Explore Courses", ctaHi: "पाठ्यक्रम देखें" },
-  { titleEn: "My Notes", titleHi: "मेरे नोट्स", descriptionEn: "Access your saved notes", descriptionHi: "अपने सहेजे गए नोट्स तक पहुंचें", icon: Edit, ctaEn: "View Notes", ctaHi: "नोट्स देखें" },
-  { titleEn: "AI Tools", titleHi: "एआई उपकरण", descriptionEn: "Smart learning assistants", descriptionHi: "स्मार्ट शिक्षण सहायक", icon: Bot, ctaEn: "Use AI Tools", ctaHi: "एआई उपकरण का प्रयोग करें" },
-  { titleEn: "Live Doubt Solving", titleHi: "लाइव शंका समाधान", descriptionEn: "Get expert help instantly", descriptionHi: "तुरंत विशेषज्ञ सहायता प्राप्त करें", icon: MessageCircleQuestion, ctaEn: "Join Session", ctaHi: "सत्र में शामिल हों" },
+  { titleEn: "Courses", titleHi: "पाठ्यक्रम", descriptionEn: "AI, Coding, NCERT & more", descriptionHi: "एआई, कोडिंग, एनसीईआरटी और अधिक", icon: BookMarked, ctaEn: "Explore Courses", ctaHi: "पाठ्यक्रम देखें", href: "/study/courses" }, // Added href
+  { titleEn: "My Notes", titleHi: "मेरे नोट्स", descriptionEn: "Access your saved notes", descriptionHi: "अपने सहेजे गए नोट्स तक पहुंचें", icon: Edit, ctaEn: "View Notes", ctaHi: "नोट्स देखें", href: "/study/my-notes" }, // Added href
+  { titleEn: "AI Tools", titleHi: "एआई उपकरण", descriptionEn: "Smart learning assistants", descriptionHi: "स्मार्ट शिक्षण सहायक", icon: Bot, ctaEn: "Use AI Tools", ctaHi: "एआई उपकरण का प्रयोग करें", href: "/ai-guruji" }, // Changed href for consistency
+  { titleEn: "Live Doubt Solving", titleHi: "लाइव शंका समाधान", descriptionEn: "Get expert help instantly", descriptionHi: "तुरंत विशेषज्ञ सहायता प्राप्त करें", icon: MessageCircleQuestion, ctaEn: "Join Session", ctaHi: "सत्र में शामिल हों", href: "/live-classes/all" }, // Added example href
 ];
 
 const courseHighlights = [
@@ -48,7 +50,12 @@ export default function StudyPage() {
                 <CardDescription><BilingualText en={section.descriptionEn} hi={section.descriptionHi} /></CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full"><BilingualText en={section.ctaEn} hi={section.ctaHi} /></Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href={section.href}>
+                    <BilingualText en={section.ctaEn} hi={section.ctaHi} />
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           ))}
