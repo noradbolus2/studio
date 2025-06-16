@@ -19,7 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { CalendarIcon, User, Camera, Save, Mail, Phone, School, Users, TargetIcon, MapPin, Briefcase, Building, Percent, Info, Edit3, Link2, Palette, Code2, List } from "lucide-react";
+import { CalendarIcon, User, Camera, Save, Mail, Phone, School, Users, TargetIcon, MapPin, Briefcase, Building, Percent, Info, Edit3, Link2, Palette, Code2, List, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -28,7 +28,7 @@ const profileSchema = z.object({
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").optional().or(z.literal('')),
   avatarUrl: z.string().optional(),
-  dataAiHint: z.string().optional(), // Added for avatar hint
+  dataAiHint: z.string().optional(), 
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().default("India"),
@@ -37,37 +37,38 @@ const profileSchema = z.object({
   fullName: z.string().optional(), 
 
   // School specific fields
-  schoolName: z.string().optional(), // Also used for student's school
-  schoolId: z.string().optional(), // School's affiliation/UDISE or student's ID at school
-  addressLine1: z.string().optional(), // School's address
+  schoolName: z.string().optional(), 
+  schoolId: z.string().optional(), 
+  addressLine1: z.string().optional(), 
   pincode: z.string().optional(),
-  boardAffiliation: z.string().optional(), // School's board
+  boardAffiliation: z.string().optional(), 
   principalName: z.string().optional(),
   aboutSchool: z.string().max(500, "About school should be max 500 characters").optional(),
 
   // Student specific
   className: z.string().optional(), 
-  board: z.string().optional(), // Student's board
+  board: z.string().optional(), 
   stream: z.string().optional(),
   dateOfBirth: z.date().optional(),
   gender: z.string().optional(),
   examTarget: z.string().optional(),
 
   // Vendor specific
-  contactPersonName: z.string().optional(), // Can be pre-filled from signup 'fullName'
+  contactPersonName: z.string().optional(), 
   businessName: z.string().optional(),
   gstin: z.string().optional().or(z.literal('')),
-  productCategories: z.string().optional(), // Comma-separated or textarea
+  productCategories: z.string().optional(), 
   businessAddress: z.string().optional(), 
 
   // Creator specific
-  creatorName: z.string().optional(), // Can be pre-filled from signup 'fullName'
-  expertise: z.string().optional(), // Comma-separated or textarea
+  creatorName: z.string().optional(), 
+  expertise: z.string().optional(), 
   bio: z.string().max(300, "Bio must be 300 characters or less").optional(),
   portfolioLink: z.string().url("Please enter a valid URL").optional().or(z.literal('')),
   
   // Role - hidden, but used for logic
   role: z.string().optional(),
+  schoolDesignation: z.string().optional(), // Added for school staff
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
@@ -77,6 +78,7 @@ const studentBoards = ["CBSE", "ICSE", "State", "Other"];
 const studentStreams = ["Science", "Commerce", "Arts", "Other"]; 
 const genders = ["Male", "Female", "Other"];
 const schoolBoards = ["CBSE", "ICSE", "State Board (Specify State)", "IB", "Cambridge (IGCSE)", "Other"];
+const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const indianStatesAndUTs = [
   "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", 
   "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi (NCT)", "Goa", "Gujarat", "Haryana", 
@@ -131,6 +133,7 @@ export default function EditProfilePage() {
 
     const emailFromParam = searchParams.get("email");
     const nameFromParam = searchParams.get("name"); 
+    const designationFromParam = searchParams.get("designation");
 
     let profileDataKey = 'userProfileData'; 
     if (roleFromParams === 'vendor') profileDataKey = 'vendorProfileData';
@@ -149,6 +152,7 @@ export default function EditProfilePage() {
             dateOfBirth: parsedProfile.dateOfBirth ? new Date(parsedProfile.dateOfBirth) : undefined,
             role: roleFromParams, 
             dataAiHint: parsedProfile.dataAiHint || `${roleFromParams} avatar`,
+            schoolDesignation: parsedProfile.schoolDesignation || (roleFromParams === 'school' ? designationFromParam || '' : undefined),
           };
         } catch (e) {
           console.error(`Failed to parse ${profileDataKey} from localStorage`, e);
@@ -162,6 +166,9 @@ export default function EditProfilePage() {
         if (roleFromParams === 'vendor' || roleFromParams === 'school') currentDefaultValues.contactPersonName = nameFromParam;
         else if (roleFromParams === 'creator') currentDefaultValues.creatorName = nameFromParam;
         else currentDefaultValues.fullName = nameFromParam; 
+      }
+      if (roleFromParams === 'school' && designationFromParam) {
+        currentDefaultValues.schoolDesignation = designationFromParam;
       }
     }
     
@@ -197,55 +204,39 @@ export default function EditProfilePage() {
     let redirectPath = '/profile'; 
     let displayNameForToast = data.fullName;
 
-    if (currentRole === 'parent') redirectPath = '/parent-mode';
-    else if (currentRole === 'vendor') {
-      profileDataKey = 'vendorProfileData';
-      redirectPath = '/vendor-dashboard';
-      displayNameForToast = data.businessName || data.contactPersonName;
-    } else if (currentRole === 'creator') {
-      profileDataKey = 'creatorProfileData';
-      redirectPath = '/creator-dashboard';
-      displayNameForToast = data.creatorName || data.contactPersonName;
-    } else if (currentRole === 'school') {
+    if (currentRole === 'school') {
       profileDataKey = 'schoolProfileData';
       redirectPath = '/school-dashboard';
       displayNameForToast = data.schoolName || data.contactPersonName;
-    }
-    
-    if (currentRole === 'school') {
+      
       try {
-        // console.log("Attempting to save school profile to backend:", JSON.stringify(dataToStore, null, 2));
-        // Replace with your actual API endpoint
+        console.log("Attempting to save school profile to backend:", JSON.stringify(dataToStore, null, 2));
         const response = await fetch('/api/school/profile', { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            // Add any auth headers if needed, e.g., 'Authorization': `Bearer ${your_auth_token}`
           },
           body: JSON.stringify(dataToStore),
         });
 
+        let responseData;
+        const responseText = await response.text();
+        try {
+            responseData = JSON.parse(responseText);
+        } catch (e) {
+            console.error("Failed to parse JSON response:", responseText);
+            throw new Error(`Server returned non-JSON response: ${response.status} ${response.statusText}. Body: ${responseText.substring(0,100)}`);
+        }
+
         if (!response.ok) {
-          let errorMsg = `Network response was not ok: ${response.status} ${response.statusText}`;
-          try {
-            const errorData = await response.json();
-            errorMsg = errorData.message || errorMsg; // Use backend error message if available
-          } catch (e) {
-            // Response might not be JSON, stick with the status text
-          }
-          throw new Error(errorMsg);
+          throw new Error(responseData.message || `Network response was not ok: ${response.status} ${response.statusText}`);
         }
         
-        // const result = await response.json(); // Process result if backend sends confirmation data
-        // console.log("Backend response for school profile:", result);
-
         toast({
-          title: "School Profile Saved!",
+          title: responseData.message || "School Profile Saved!",
           description: `${displayNameForToast || 'Your school'} profile has been successfully saved to the server.`,
         });
         
-        // Still save to localStorage for now so UI updates immediately,
-        // until "get profile" is also backend-driven. This can be removed later.
         if (typeof window !== "undefined") {
             localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
             const loggedInUserString = localStorage.getItem('loggedInUser');
@@ -257,7 +248,8 @@ export default function EditProfilePage() {
                         localStorage.setItem('loggedInUser', JSON.stringify({ 
                             email: data.email, 
                             fullName: newDisplayNameForLoggedInUser, 
-                            role: currentRole 
+                            role: currentRole,
+                            designation: data.schoolDesignation // Persist designation for school user
                         }));
                     }
                 } catch (e) { console.error("Error updating loggedInUser name for school:", e); }
@@ -272,44 +264,60 @@ export default function EditProfilePage() {
           description: `Failed to save school profile to server: ${apiError.message}. Data saved locally as a backup.`,
           variant: "destructive",
         });
-        // Fallback: save to localStorage even if API fails, so user doesn't lose data
         if (typeof window !== "undefined") {
             localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
         }
       } finally {
         setIsLoading(false);
       }
-    } else {
-      // --- Other Roles: Simulated Backend (console log + localStorage) ---
-      console.log("Submitting to backend (simulated for role: " + currentRole + "):", JSON.stringify(dataToStore, null, 2));
-      console.log("TODO: Replace localStorage with actual API call for this role.");
-
-      if (typeof window !== "undefined") {
-          localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
-          const loggedInUserString = localStorage.getItem('loggedInUser');
-          if (loggedInUserString) {
-              try {
-                  const loggedInUserDetails = JSON.parse(loggedInUserString);
-                  let newDisplayName = data.fullName; 
-                  if (currentRole === 'vendor') newDisplayName = data.businessName || data.contactPersonName;
-                  else if (currentRole === 'creator') newDisplayName = data.creatorName || data.contactPersonName;
-
-                  if (loggedInUserDetails.email === data.email && newDisplayName) { 
-                      localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: newDisplayName, role: currentRole }));
-                  }
-              } catch (e) { console.error("Error updating loggedInUser name:", e); }
-          }
-      }
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); 
-      
-      toast({
-        title: "Profile Data Ready for Backend (Simulated)",
-        description: `${displayNameForToast || 'Your'} profile data logged to console and saved locally. API integration pending for this role.`,
-      });
-      setIsLoading(false);
-      router.push(redirectPath); 
+      return; 
     }
+    
+    // Logic for other roles
+    if (currentRole === 'parent') {
+        redirectPath = '/parent-mode';
+    } else if (currentRole === 'vendor') {
+      profileDataKey = 'vendorProfileData';
+      redirectPath = '/vendor-dashboard';
+      displayNameForToast = data.businessName || data.contactPersonName;
+    } else if (currentRole === 'creator') {
+      profileDataKey = 'creatorProfileData';
+      redirectPath = '/creator-dashboard';
+      displayNameForToast = data.creatorName || data.contactPersonName;
+    } else { 
+        profileDataKey = 'userProfileData';
+        redirectPath = '/profile';
+        displayNameForToast = data.fullName;
+    }
+    
+    console.log("Submitting to backend (simulated for role: " + currentRole + "):", JSON.stringify(dataToStore, null, 2));
+    console.log("TODO: Replace localStorage with actual API call for role: " + currentRole);
+
+    if (typeof window !== "undefined") {
+        localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
+        const loggedInUserString = localStorage.getItem('loggedInUser');
+        if (loggedInUserString) {
+            try {
+                const loggedInUserDetails = JSON.parse(loggedInUserString);
+                let newDisplayName = data.fullName; 
+                if (currentRole === 'vendor') newDisplayName = data.businessName || data.contactPersonName;
+                else if (currentRole === 'creator') newDisplayName = data.creatorName || data.contactPersonName;
+
+                if (loggedInUserDetails.email === data.email && newDisplayName) { 
+                    localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: newDisplayName, role: currentRole }));
+                }
+            } catch (e) { console.error("Error updating loggedInUser name for role " + currentRole + ":", e); }
+        }
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    
+    toast({
+      title: "Profile Data Ready for Backend (Simulated)",
+      description: `${displayNameForToast || 'Your'} profile data logged to console and saved locally. API integration pending for this role.`,
+    });
+    setIsLoading(false);
+    router.push(redirectPath); 
   };
   
   const handleAvatarUploadButtonClick = () => {
@@ -344,7 +352,7 @@ export default function EditProfilePage() {
     if (currentRole === 'creator') return formCreatorName || formContactPersonName || "Creator";
     if (currentRole === 'school') return formSchoolName || formContactPersonName || "School";
     return formFullName || "User";
-  }
+  };
 
   const getAvatarButtonText = () => {
     if (currentRole === 'vendor') return { en: "Upload Shop Logo", hi: "दुकान लोगो अपलोड करें" };
@@ -519,6 +527,18 @@ export default function EditProfilePage() {
                   <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="e.g., Delhi Public School" placeholder_hi="उदा., दिल्ली पब्लिक स्कूल" />} />
                   {errors.schoolName && <p className="text-xs text-destructive mt-1">{errors.schoolName.message}</p>}
                 </div>
+                 <div>
+                    <Label htmlFor="schoolDesignation" className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-muted-foreground" /> <BilingualText en="Your Designation in School" hi="स्कूल में आपकी पदवी" />*</Label>
+                    <Controller name="schoolDesignation" control={control} render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger id="schoolDesignation"><SelectValue placeholder_en="Select your designation" placeholder_hi="अपनी पदवी चुनें" /></SelectTrigger>
+                            <SelectContent>
+                                {schoolDesignations.map(desig => <SelectItem key={desig} value={desig}>{desig}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    )} />
+                    {errors.schoolDesignation && <p className="text-xs text-destructive mt-1">{errors.schoolDesignation.message}</p>}
+                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="schoolId"><Info className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="School ID (Affiliation/UDISE)" hi="स्कूल आईडी (संबद्धता/यूडीआईएसई)" /></Label>
@@ -554,7 +574,7 @@ export default function EditProfilePage() {
               </>
             )}
 
-            {/* Location Fields (Common for most roles except maybe a very basic student profile) */}
+            {/* Location Fields (Common for most roles) */}
             {(currentRole === 'student' || currentRole === 'parent' || currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'school') && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t">
                 <div>
@@ -602,7 +622,7 @@ declare module 'react' {
       placeholder_hi?: string;
     }
     interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
-      placeholder_en?: string;
-      placeholder_hi?: string;
+        placeholder_en?: string;
+        placeholder_hi?: string;
     }
 }
