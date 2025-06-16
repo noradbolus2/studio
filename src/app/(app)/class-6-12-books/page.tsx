@@ -40,11 +40,11 @@ const allNcertBooks: NcertBook[] = [
 
   // Class 8
   { id: 'c8_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 8, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'free' },
-  { id: 'c8_science_h', titleEn: 'Science (Hindi Med.)', titleHi: 'विज्ञान', class: 8, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzY2llbmNlJTIwdGV4dGJvb2slMjBoaW5kaXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook hindi", status: 'buy' },
+  { id: 'c8_science_h', titleEn: 'Science Ch1 (Hindi Med.)', titleHi: 'विज्ञान अध्याय1', class: 8, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzY2llbmNlJTIwdGV4dGJvb2slMjBoaW5kaXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook hindi", status: 'free', pdfUrl: 'https://ncert.nic.in/textbook/pdf/hhvs101.pdf' },
 
   // Class 9
   { id: 'c9_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 9, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1509869175650-a1d97972541a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'free' },
-  { id: 'c9_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 9, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1475906089153-644d9452ce87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook", status: 'free', pdfUrl: 'https://ncert.nic.in/textbook/pdf/iesc101.pdf' },
+  { id: 'c9_science_e', titleEn: 'Science Ch1: Matter in Our Surroundings', titleHi: 'विज्ञान अध्याय1: हमारे आस-पास के पदार्थ', class: 9, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1475906089153-644d9452ce87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook", status: 'free', pdfUrl: 'https://ncert.nic.in/textbook/pdf/iesc101.pdf' },
   { id: 'c9_sst_sb_e', titleEn: 'Social Studies', titleHi: 'सामाजिक अध्ययन', class: 9, subjectEn: 'Social Science', subjectHi: 'सामाजिक विज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzb2NpYWwlMjBzdHVkaWVzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "social studies textbook", status: 'free' },
 
   // Class 10
@@ -52,7 +52,7 @@ const allNcertBooks: NcertBook[] = [
   { id: 'c10_science_h', titleEn: 'Science (Hindi Med.)', titleHi: 'विज्ञान', class: 10, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2slMjBoaW5kaXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook hindi", status: 'free' },
 
   // Class 11
-  { id: 'c11_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 11, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1707510917424-2d66055df14d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwaHlzaWNzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "physics textbook", status: 'free' },
+  { id: 'c11_physics1_e', titleEn: 'Physics Part-I Ch1: Units and Measurements', titleHi: 'भौतिकी भाग-I अध्याय1: मात्रक और मापन', class: 11, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1707510917424-2d66055df14d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwaHlzaWNzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "physics textbook", status: 'free', pdfUrl: 'https://ncert.nic.in/textbook/pdf/keph101.pdf' },
   { id: 'c11_chemistry1_h', titleEn: 'Chemistry Part-I (Hindi Med.)', titleHi: 'रसायन विज्ञान भाग-I', class: 11, subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1616908842279-1fdbda128284?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGVtaXN0cnklMjB0ZXh0Ym9vayUyMGhpbmRpfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "chemistry textbook hindi", status: 'buy' },
 
   // Class 12
@@ -290,4 +290,5 @@ export default function NcertBooksPage() {
     
 
     
+
 
