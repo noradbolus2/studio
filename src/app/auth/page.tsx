@@ -14,8 +14,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
+const DEFAULT_SCHOOL_ID = "defaultSchool"; // For prototype simplicity
 
 export default function AuthPage() {
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
@@ -27,7 +27,6 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [schoolDesignation, setSchoolDesignation] = useState('');
-
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -54,80 +53,103 @@ export default function AuthPage() {
     queryParams.set('email', email);
     if (selectedRole) queryParams.set('role', selectedRole);
 
-
     if (mode === 'signUp') {
-      queryParams.set('isNewUser', 'true');
-      queryParams.set('name', name); // Pass the generic name field for pre-filling
-
-      if (password !== confirmPassword) {
-        toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" });
-        setIsLoading(false);
-        return;
-      }
       if (!name.trim() || !email.trim() || !password.trim()) {
         toast({ title: "Error", description: "All fields are required for sign up.", variant: "destructive" });
         setIsLoading(false);
         return;
       }
-      if (selectedRole === 'school' && !schoolDesignation) {
-        toast({ title: "Error", description: "Please select a designation for school staff.", variant: "destructive" });
+      if (password !== confirmPassword) {
+        toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" });
         setIsLoading(false);
         return;
       }
+
       if (selectedRole === 'school') {
-        queryParams.set('designation', schoolDesignation);
+        if (!schoolDesignation) {
+          toast({ title: "Error", description: "Please select your designation for school registration.", variant: "destructive" });
+          setIsLoading(false);
+          return;
+        }
+        // This is the initial school admin registration
+        localStorage.setItem('tempInitialAdminCredentials', JSON.stringify({ email, password, fullName: name, designation: schoolDesignation }));
+        queryParams.set('isSchoolSetup', 'true'); // Mark for initial school profile creation
+        queryParams.set('name', name); // Pass admin's name
+        queryParams.set('designation', schoolDesignation); // Pass admin's designation
+        redirectPath = `/edit-profile?${queryParams.toString()}`;
+        toast({ title: "Admin Registration Initiated", description: "Please complete school profile setup." });
+      } else {
+        // Regular user signup (student, parent, vendor, creator)
+        localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student' }));
+        localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student' }));
+        queryParams.set('isNewUser', 'true');
+        queryParams.set('name', name);
+        redirectPath = `/edit-profile?${queryParams.toString()}`;
+        toast({ title: "Sign Up Successful", description: "Please complete your profile." });
       }
-      
-      localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student', designation: selectedRole === 'school' ? schoolDesignation : undefined }));
-      // Set loggedInUser immediately so edit-profile page can use it for context
-      localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student', designation: selectedRole === 'school' ? schoolDesignation : undefined }));
-
-      toast({ title: "Sign Up Initiated", description: "Please complete your profile to finish registration." });
-      redirectPath = `/edit-profile?${queryParams.toString()}`;
-
     } else { // Sign In
       if (!email.trim() || !password.trim()) {
         toast({ title: "Error", description: "Email and password are required.", variant: "destructive" });
         setIsLoading(false);
         return;
       }
-      const storedCredentialsString = localStorage.getItem(`userCredentials_${email}`);
-      if (storedCredentialsString) {
-        const storedCredentials = JSON.parse(storedCredentialsString);
-        if (storedCredentials.password === password) {
-          const userRole = storedCredentials.role || selectedRole || 'student';
-          const userDesignation = storedCredentials.designation;
 
-          localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole, designation: userDesignation }));
-          toast({ title: "Sign In Successful", description: "Welcome back!" });
-          
-          switch (userRole) {
-            case 'parent': redirectPath = '/parent-mode'; break;
-            case 'school': redirectPath = '/school-dashboard'; break;
-            case 'vendor': redirectPath = '/vendor-dashboard'; break;
-            case 'creator': redirectPath = '/creator-dashboard'; break;
-            case 'student':
-            default: redirectPath = '/'; break;
-          }
+      if (selectedRole === 'school') {
+        const schoolStaffString = localStorage.getItem(`schoolStaff_${DEFAULT_SCHOOL_ID}`);
+        const schoolStaff = schoolStaffString ? JSON.parse(schoolStaffString) : [];
+        const staffMember = schoolStaff.find((staff: any) => staff.email === email && staff.password === password);
+
+        if (staffMember) {
+          localStorage.setItem('loggedInUser', JSON.stringify({
+            email: staffMember.email,
+            fullName: staffMember.name,
+            role: 'school',
+            designation: staffMember.designation,
+            schoolId: DEFAULT_SCHOOL_ID // Add schoolId context
+          }));
+          toast({ title: "Sign In Successful", description: `Welcome back, ${staffMember.name}!` });
+          redirectPath = '/school-dashboard';
         } else {
-          toast({ title: "Sign In Failed", description: "Invalid credentials.", variant: "destructive" });
+          toast({ title: "Sign In Failed", description: "Invalid staff credentials or staff account not found.", variant: "destructive" });
           setIsLoading(false);
           return;
         }
       } else {
-        toast({ title: "Sign In Failed", description: "User not found. Please sign up.", variant: "destructive" });
-        setIsLoading(false);
-        return;
+        // Sign in for other roles
+        const storedCredentialsString = localStorage.getItem(`userCredentials_${email}`);
+        if (storedCredentialsString) {
+          const storedCredentials = JSON.parse(storedCredentialsString);
+          if (storedCredentials.password === password) {
+            const userRole = storedCredentials.role || selectedRole || 'student';
+            localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole }));
+            toast({ title: "Sign In Successful", description: "Welcome back!" });
+            switch (userRole) {
+              case 'parent': redirectPath = '/parent-mode'; break;
+              case 'vendor': redirectPath = '/vendor-dashboard'; break;
+              case 'creator': redirectPath = '/creator-dashboard'; break;
+              case 'student':
+              default: redirectPath = '/'; break;
+            }
+          } else {
+            toast({ title: "Sign In Failed", description: "Invalid credentials.", variant: "destructive" });
+            setIsLoading(false);
+            return;
+          }
+        } else {
+          toast({ title: "Sign In Failed", description: "User not found. Please sign up.", variant: "destructive" });
+          setIsLoading(false);
+          return;
+        }
       }
     }
-    
     router.push(redirectPath);
   };
 
   const getFullNameLabel = () => {
+    if (selectedRole === 'school' && mode === 'signUp') {
+        return { en: "Your Full Name (Admin/Principal)", hi: "आपका पूरा नाम (एडमिन/प्रधानाचार्य)" };
+    }
     switch (selectedRole) {
-        case 'school':
-            return { en: "Your Full Name (e.g., Principal's Name)", hi: "आपका पूरा नाम (उदा., प्रधानाचार्य का नाम)" };
         case 'vendor':
         case 'creator':
             return { en: "Contact Person Name", hi: "संपर्क व्यक्ति का नाम" };
@@ -141,7 +163,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-6 font-body relative">
       <div className="absolute top-6 left-6 z-10">
         <Button
-            onClick={() => router.push('/login')} 
+            onClick={() => router.push('/login')}
             variant="outline"
             size="icon"
             className="text-foreground hover:bg-accent/10"
@@ -181,7 +203,9 @@ export default function AuthPage() {
               )}
               {selectedRole && (
                 <span className="text-sm text-muted-foreground block mt-1">
-                  (<BilingualText en={`as ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}`} hi={`${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)} के रूप में`} lang={currentLang} />)
+                  (<BilingualText en={`as ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}`} hi={`${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)} के रूप में`} lang={currentLang} />
+                  {mode === 'signUp' && selectedRole === 'school' && " Administrator"}
+                  )
                 </span>
               )}
             </CardTitle>
@@ -189,7 +213,9 @@ export default function AuthPage() {
               {mode === 'signIn' ? (
                 <BilingualText en="Welcome back! Please enter your details." hi="वापसी पर स्वागत है! कृपया अपना विवरण दर्ज करें।" lang={currentLang} />
               ) : (
-                <BilingualText en={selectedRole === 'school' ? "Register your school account." : "Create your OSO account."} hi={selectedRole === 'school' ? "अपना स्कूल खाता पंजीकृत करें।" : "अपना OSO खाता बनाएं।"} lang={currentLang} />
+                <BilingualText 
+                    en={selectedRole === 'school' ? "Register as School Administrator to set up your school." : "Create your OSO account."} 
+                    hi={selectedRole === 'school' ? "अपने स्कूल को स्थापित करने के लिए स्कूल प्रशासक के रूप में पंजीकरण करें।" : "अपना OSO खाता बनाएं।"} lang={currentLang} />
               )}
             </CardDescription>
           </CardHeader>
@@ -231,7 +257,7 @@ export default function AuthPage() {
                     <div className="space-y-1 text-left">
                         <Label htmlFor="schoolDesignation" className="flex items-center text-muted-foreground">
                             <ShieldCheck className="h-4 w-4 mr-1.5 text-primary/70" />
-                            <BilingualText en="Your Designation" hi="आपकी पदवी" lang={currentLang} />*
+                            <BilingualText en="Your Designation (as Admin)" hi="आपकी पदवी (एडमिन के रूप में)" lang={currentLang} />*
                         </Label>
                         <Select value={schoolDesignation} onValueChange={setSchoolDesignation} required>
                             <SelectTrigger id="schoolDesignation">
@@ -254,7 +280,7 @@ export default function AuthPage() {
                 {mode === 'signIn' ? (
                   <BilingualText en="Sign In" hi="साइन इन करें" lang={currentLang} />
                 ) : (
-                  <BilingualText en="Sign Up & Proceed" hi="साइन अप करें और आगे बढ़ें" lang={currentLang} />
+                  <BilingualText en={selectedRole === 'school' ? "Register School Admin & Proceed" : "Sign Up & Proceed"} hi={selectedRole === 'school' ? "स्कूल एडमिन पंजीकृत करें और आगे बढ़ें" : "साइन अप करें और आगे बढ़ें"} lang={currentLang} />
                 )}
               </Button>
               <Button
@@ -290,5 +316,4 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
-
     
