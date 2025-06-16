@@ -212,6 +212,10 @@ export default function EditProfilePage() {
       displayNameForToast = data.schoolName || data.contactPersonName;
     }
     
+    console.log("Submitting to backend (simulated):", JSON.stringify(dataToStore, null, 2));
+    console.log("TODO: Replace localStorage with actual API call here.");
+
+    // For now, we'll keep saving to localStorage so the app continues to function visually
     if (typeof window !== "undefined") {
         localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
         const loggedInUserString = localStorage.getItem('loggedInUser');
@@ -231,13 +235,15 @@ export default function EditProfilePage() {
         }
     }
 
+    // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000)); 
+    
     toast({
-      title: "Profile Saved",
-      description: `${displayNameForToast || 'Your'} profile has been updated.`,
+      title: "Profile Data Ready for Backend",
+      description: `${displayNameForToast || 'Your'} profile data logged to console. Next step: Implement API call.`,
     });
     setIsLoading(false);
-    router.push(redirectPath); 
+    // router.push(redirectPath); // Commenting out redirect for now to see console log
   };
   
   const handleAvatarUploadButtonClick = () => {
@@ -306,7 +312,7 @@ export default function EditProfilePage() {
                 <AvatarImage 
                   src={avatarUrlPreview || `https://placehold.co/100x100.png`} 
                   alt={getAvatarAltText()} 
-                  data-ai-hint={currentDataAiHint} 
+                  data-ai-hint={currentDataAiHint || "avatar"}
                 />
                 <AvatarFallback>{getAvatarFallbackText()}</AvatarFallback>
               </Avatar>
@@ -455,7 +461,7 @@ export default function EditProfilePage() {
                   <div>
                     <Label htmlFor="boardAffiliation"><List className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Board Affiliation" hi="बोर्ड संबद्धता" />*</Label>
                     <Controller name="boardAffiliation" control={control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="boardAffiliation"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{schoolBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent></Select>
+                      <Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="boardAffiliation"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{schoolBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>))}</SelectContent></Select>
                     )} />
                     {errors.boardAffiliation && <p className="text-xs text-destructive mt-1">{errors.boardAffiliation.message}</p>}
                   </div>
@@ -534,4 +540,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-
