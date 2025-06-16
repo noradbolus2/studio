@@ -1,4 +1,3 @@
-
 // src/app/(app)/school-dashboard/page.tsx
 "use client";
 
@@ -6,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, AlertCircle, CheckCircle, UserPlus } from "lucide-react";
+import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -21,7 +20,7 @@ const schoolStatsPlaceholders = [
   { id: "events", labelEn: "Upcoming Events", labelHi: "आगामी कार्यक्रम", value: "0", icon: CalendarDays, color: "text-orange-500" },
 ];
 
-const schoolActionsPrincipal = [
+const schoolActionsPrincipal = [ // For Admin/Principal
   { id: "manage_students", labelEn: "Student Management", labelHi: "छात्र प्रबंधन", icon: Users, href: "/school-dashboard/students" },
   { id: "manage_staff", labelEn: "Staff Management", labelHi: "कर्मचारी प्रबंधन", icon: UserCog, href: "/school-dashboard/staff" },
   { id: "announcements", labelEn: "Post Announcements", labelHi: "घोषणाएँ पोस्ट करें", icon: Bell, href: "/school-dashboard/announcements" },
@@ -62,7 +61,8 @@ export default function SchoolDashboardPage() {
           const parsedGeneric = JSON.parse(genericProfileString);
           if (parsedGeneric.role === 'school') {
             profileToUse = parsedGeneric;
-            localStorage.setItem('schoolProfileData', JSON.stringify(parsedGeneric));
+            // Optionally re-save to schoolProfileData if it's the definitive key for school context
+            // localStorage.setItem('schoolProfileData', JSON.stringify(parsedGeneric));
           }
         } catch (e) { console.error("Failed to parse userProfileData as school profile", e); }
       }
@@ -79,6 +79,7 @@ export default function SchoolDashboardPage() {
 
 
   const handleActionClick = (href: string, labelEn: string) => {
+    // For prototype, directly navigate. In real app, might check permissions.
     router.push(href);
   };
 
@@ -96,7 +97,7 @@ export default function SchoolDashboardPage() {
   // Determine which actions to show based on designation
   let currentSchoolActions = schoolActionsPrincipal; // Default to Principal actions
   if (userDesignation === 'teacher') {
-    currentSchoolActions = schoolActionsTeacher;
+    currentSchoolActions = schoolActionsTeacher; // This list should be defined with teacher-specific actions
   } // Add more else if for other roles like 'Accountant', 'Admin Staff' etc.
 
   return (
@@ -146,7 +147,7 @@ export default function SchoolDashboardPage() {
                 <CardDescription><BilingualText en="Access key school management modules." hi="प्रमुख स्कूल प्रबंधन मॉड्यूल तक पहुंचें।" /></CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {currentSchoolActions.map(action => (
+                {currentSchoolActions.map(action => ( // Uses the correct action list
                     <Button
                         key={action.id}
                         variant="outline"
