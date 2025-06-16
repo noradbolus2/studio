@@ -19,72 +19,59 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { CalendarIcon, User, Camera, Save, Mail, Phone, School, Users, TargetIcon, MapPin, Briefcase, Building, Percent, Info, Edit3, Link2, Palette, Code2, List, ShieldCheck } from "lucide-react";
+import { CalendarIcon, User, Camera, Save, Mail, Phone, School, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon, BarChart3, Briefcase, Building, Percent, Info, Edit3, List, ShieldCheck, Code2, Palette, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 
 const profileSchema = z.object({
-  // Common fields used by most/all
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").optional().or(z.literal('')),
   avatarUrl: z.string().optional(),
-  dataAiHint: z.string().optional(), 
+  dataAiHint: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().default("India"),
-
-  // Student/Parent specific or general 'person' name
-  fullName: z.string().optional(), 
-
-  // School specific fields
-  schoolName: z.string().optional(), 
-  schoolId: z.string().optional(), 
-  addressLine1: z.string().optional(), 
+  fullName: z.string().optional(),
+  schoolName: z.string().optional(),
+  schoolId: z.string().optional(),
+  addressLine1: z.string().optional(),
   pincode: z.string().optional(),
-  boardAffiliation: z.string().optional(), 
+  boardAffiliation: z.string().optional(),
   principalName: z.string().optional(),
   aboutSchool: z.string().max(500, "About school should be max 500 characters").optional(),
-
-  // Student specific
-  className: z.string().optional(), 
-  board: z.string().optional(), 
+  className: z.string().optional(),
+  board: z.string().optional(),
   stream: z.string().optional(),
   dateOfBirth: z.date().optional(),
   gender: z.string().optional(),
   examTarget: z.string().optional(),
-
-  // Vendor specific
-  contactPersonName: z.string().optional(), 
+  contactPersonName: z.string().optional(),
   businessName: z.string().optional(),
   gstin: z.string().optional().or(z.literal('')),
-  productCategories: z.string().optional(), 
-  businessAddress: z.string().optional(), 
-
-  // Creator specific
-  creatorName: z.string().optional(), 
-  expertise: z.string().optional(), 
+  productCategories: z.string().optional(),
+  businessAddress: z.string().optional(),
+  creatorName: z.string().optional(),
+  expertise: z.string().optional(),
   bio: z.string().max(300, "Bio must be 300 characters or less").optional(),
   portfolioLink: z.string().url("Please enter a valid URL").optional().or(z.literal('')),
-  
-  // Role - hidden, but used for logic
   role: z.string().optional(),
-  schoolDesignation: z.string().optional(), // Added for school staff
+  schoolDesignation: z.string().optional(),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
 const studentClasses = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams"];
 const studentBoards = ["CBSE", "ICSE", "State", "Other"];
-const studentStreams = ["Science", "Commerce", "Arts", "Other"]; 
+const studentStreams = ["Science", "Commerce", "Arts", "Other"];
 const genders = ["Male", "Female", "Other"];
 const schoolBoards = ["CBSE", "ICSE", "State Board (Specify State)", "IB", "Cambridge (IGCSE)", "Other"];
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const indianStatesAndUTs = [
-  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", 
-  "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi (NCT)", "Goa", "Gujarat", "Haryana", 
-  "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", 
-  "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", 
-  "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
+  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh",
+  "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi (NCT)", "Goa", "Gujarat", "Haryana",
+  "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep",
+  "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry",
+  "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
   "West Bengal"
 ].sort();
 
@@ -114,9 +101,9 @@ export default function EditProfilePage() {
 
   const { control, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { country: "India" }, 
+    defaultValues: { country: "India" },
   });
-  
+
   const avatarUrlPreview = watch("avatarUrl");
   const selectedState = watch("state");
   const formFullName = watch("fullName");
@@ -128,14 +115,14 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     setInitialDataLoading(true);
-    const roleFromParams = searchParams.get("role") || "student"; 
+    const roleFromParams = searchParams.get("role") || "student";
     setCurrentRole(roleFromParams);
 
     const emailFromParam = searchParams.get("email");
-    const nameFromParam = searchParams.get("name"); 
+    const nameFromParam = searchParams.get("name");
     const designationFromParam = searchParams.get("designation");
 
-    let profileDataKey = 'userProfileData'; 
+    let profileDataKey = 'userProfileData';
     if (roleFromParams === 'vendor') profileDataKey = 'vendorProfileData';
     else if (roleFromParams === 'creator') profileDataKey = 'creatorProfileData';
     else if (roleFromParams === 'school') profileDataKey = 'schoolProfileData';
@@ -150,7 +137,7 @@ export default function EditProfilePage() {
           currentDefaultValues = {
             ...parsedProfile,
             dateOfBirth: parsedProfile.dateOfBirth ? new Date(parsedProfile.dateOfBirth) : undefined,
-            role: roleFromParams, 
+            role: roleFromParams,
             dataAiHint: parsedProfile.dataAiHint || `${roleFromParams} avatar`,
             schoolDesignation: parsedProfile.schoolDesignation || (roleFromParams === 'school' ? designationFromParam || '' : undefined),
           };
@@ -159,20 +146,20 @@ export default function EditProfilePage() {
         }
       }
     }
-    
+
     if (searchParams.get("isNewUser") === "true") {
       if (emailFromParam) currentDefaultValues.email = emailFromParam;
       if (nameFromParam) {
         if (roleFromParams === 'vendor' || roleFromParams === 'school') currentDefaultValues.contactPersonName = nameFromParam;
         else if (roleFromParams === 'creator') currentDefaultValues.creatorName = nameFromParam;
-        else currentDefaultValues.fullName = nameFromParam; 
+        else currentDefaultValues.fullName = nameFromParam;
       }
       if (roleFromParams === 'school' && designationFromParam) {
         currentDefaultValues.schoolDesignation = designationFromParam;
       }
     }
-    
-    reset(currentDefaultValues); 
+
+    reset(currentDefaultValues);
     setInitialDataLoading(false);
   }, [searchParams, reset]);
 
@@ -181,7 +168,7 @@ export default function EditProfilePage() {
       setCitiesForSelectedState(stateCityData[selectedState] || []);
       const currentCity = watch('city');
       if (currentCity && !(stateCityData[selectedState] || []).includes(currentCity)) {
-          setValue('city', '', { shouldValidate: true }); 
+          setValue('city', '', { shouldValidate: true });
       }
     } else {
       setCitiesForSelectedState([]);
@@ -192,134 +179,72 @@ export default function EditProfilePage() {
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
-    
-    const dataToStore = {
-      ...data,
-      dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toISOString() : undefined,
-      role: currentRole, 
-      dataAiHint: data.dataAiHint || `${currentRole} avatar`
-    };
+    console.log("Form Data Submitted:", data);
 
     let profileDataKey = 'userProfileData';
-    let redirectPath = '/profile'; 
-    let displayNameForToast = data.fullName;
+    if (data.role === 'vendor') profileDataKey = 'vendorProfileData';
+    else if (data.role === 'creator') profileDataKey = 'creatorProfileData';
+    else if (data.role === 'school') profileDataKey = 'schoolProfileData';
 
-    if (currentRole === 'school') {
-      profileDataKey = 'schoolProfileData';
-      redirectPath = '/school-dashboard';
-      displayNameForToast = data.schoolName || data.contactPersonName;
-      
+    if (data.role === 'school') {
+      console.log("Attempting to save school profile (simulated backend call):", data);
       try {
-        console.log("Attempting to save school profile to backend:", JSON.stringify(dataToStore, null, 2));
-        const response = await fetch('/api/school/profile', { 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dataToStore),
-        });
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+        // const response = await fetch('/api/school/profile', { // Replace with your actual API endpoint
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(data),
+        // });
 
-        let responseData;
-        const responseText = await response.text();
-        try {
-            responseData = JSON.parse(responseText);
-        } catch (e) {
-            console.error("Failed to parse JSON response:", responseText);
-            throw new Error(`Server returned non-JSON response: ${response.status} ${response.statusText}. Body: ${responseText.substring(0,100)}`);
-        }
-
-        if (!response.ok) {
-          throw new Error(responseData.message || `Network response was not ok: ${response.status} ${response.statusText}`);
-        }
+        // if (!response.ok) {
+        //   let errorData;
+        //   try {
+        //     errorData = await response.json();
+        //   } catch (e) {
+        //     throw new Error(`HTTP error! status: ${response.status}`);
+        //   }
+        //   throw new Error(errorData.message || `Failed to save school profile to backend. Status: ${response.status}`);
+        // }
         
-        toast({
-          title: responseData.message || "School Profile Saved!",
-          description: `${displayNameForToast || 'Your school'} profile has been successfully saved to the server.`,
-        });
-        
-        if (typeof window !== "undefined") {
-            localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
-            const loggedInUserString = localStorage.getItem('loggedInUser');
-            if (loggedInUserString) {
-                try {
-                    const loggedInUserDetails = JSON.parse(loggedInUserString);
-                    const newDisplayNameForLoggedInUser = data.schoolName || data.contactPersonName;
-                    if (loggedInUserDetails.email === data.email && newDisplayNameForLoggedInUser) {
-                        localStorage.setItem('loggedInUser', JSON.stringify({ 
-                            email: data.email, 
-                            fullName: newDisplayNameForLoggedInUser, 
-                            role: currentRole,
-                            designation: data.schoolDesignation // Persist designation for school user
-                        }));
-                    }
-                } catch (e) { console.error("Error updating loggedInUser name for school:", e); }
-            }
-        }
-        router.push(redirectPath);
+        // const result = await response.json(); // Assuming backend returns success message
+        // console.log("Backend response (simulated):", result);
 
-      } catch (apiError: any) {
-        console.error("Failed to save school profile to backend:", apiError);
+        localStorage.setItem(profileDataKey, JSON.stringify(data));
         toast({
-          title: "API Error",
-          description: `Failed to save school profile to server: ${apiError.message}. Data saved locally as a backup.`,
+          title: "School Profile Updated (Simulated)",
+          description: "Your school profile changes have been saved (simulated backend).",
+        });
+        router.push('/school-dashboard');
+      } catch (error: any) {
+        console.error("Error saving school profile:", error);
+        toast({
+          title: "Error Saving School Profile",
+          description: error.message || "Could not save school profile. Please try again.",
           variant: "destructive",
         });
-        if (typeof window !== "undefined") {
-            localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
-        }
       } finally {
         setIsLoading(false);
       }
-      return; 
-    }
-    
-    // Logic for other roles
-    if (currentRole === 'parent') {
-        redirectPath = '/parent-mode';
-    } else if (currentRole === 'vendor') {
-      profileDataKey = 'vendorProfileData';
-      redirectPath = '/vendor-dashboard';
-      displayNameForToast = data.businessName || data.contactPersonName;
-    } else if (currentRole === 'creator') {
-      profileDataKey = 'creatorProfileData';
-      redirectPath = '/creator-dashboard';
-      displayNameForToast = data.creatorName || data.contactPersonName;
-    } else { 
-        profileDataKey = 'userProfileData';
-        redirectPath = '/profile';
-        displayNameForToast = data.fullName;
-    }
-    
-    console.log("Submitting to backend (simulated for role: " + currentRole + "):", JSON.stringify(dataToStore, null, 2));
-    console.log("TODO: Replace localStorage with actual API call for role: " + currentRole);
+    } else {
+      // For other roles, just save to localStorage and navigate
+      localStorage.setItem(profileDataKey, JSON.stringify(data));
+      toast({
+        title: "Profile Updated",
+        description: "Your profile changes have been saved locally.",
+      });
 
-    if (typeof window !== "undefined") {
-        localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
-        const loggedInUserString = localStorage.getItem('loggedInUser');
-        if (loggedInUserString) {
-            try {
-                const loggedInUserDetails = JSON.parse(loggedInUserString);
-                let newDisplayName = data.fullName; 
-                if (currentRole === 'vendor') newDisplayName = data.businessName || data.contactPersonName;
-                else if (currentRole === 'creator') newDisplayName = data.creatorName || data.contactPersonName;
-
-                if (loggedInUserDetails.email === data.email && newDisplayName) { 
-                    localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: newDisplayName, role: currentRole }));
-                }
-            } catch (e) { console.error("Error updating loggedInUser name for role " + currentRole + ":", e); }
-        }
+      if (data.role === 'vendor') {
+        router.push('/vendor-dashboard');
+      } else if (data.role === 'creator') {
+        router.push('/creator-dashboard');
+      } else { // student, parent, or undefined role
+        router.push('/');
+      }
+      setIsLoading(false);
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
-    
-    toast({
-      title: "Profile Data Ready for Backend (Simulated)",
-      description: `${displayNameForToast || 'Your'} profile data logged to console and saved locally. API integration pending for this role.`,
-    });
-    setIsLoading(false);
-    router.push(redirectPath); 
   };
-  
+
   const handleAvatarUploadButtonClick = () => {
     fileInputRef.current?.click();
   };
@@ -346,7 +271,7 @@ export default function EditProfilePage() {
     if (currentRole === 'school') return formSchoolName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "SC";
     return formFullName?.substring(0,2).toUpperCase() || "NA";
   };
-  
+
   const getAvatarAltText = () => {
     if (currentRole === 'vendor') return formBusinessName || formContactPersonName || "Vendor";
     if (currentRole === 'creator') return formCreatorName || formContactPersonName || "Creator";
@@ -361,13 +286,13 @@ export default function EditProfilePage() {
     return { en: "Change Picture", hi: "तस्वीर बदलें" };
   };
   const avatarButtonText = getAvatarButtonText();
-  const currentDataAiHint = watch('dataAiHint') || `${currentRole} avatar`;
+  const currentDataAiHint = watch('dataAiHint') || `${currentRole || 'user'} avatar`;
 
 
   if (initialDataLoading) {
     return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]"><LoadingSpinner size={48} /><p className="ml-4">Loading profile editor...</p></div>;
   }
-
+  
   return (
     <div className="space-y-8">
       <Card className="w-full max-w-2xl mx-auto shadow-lg">
@@ -383,9 +308,9 @@ export default function EditProfilePage() {
           <CardContent className="space-y-6">
             <div className="flex flex-col items-center space-y-3">
               <Avatar className="h-24 w-24 border-2 border-primary">
-                <AvatarImage 
-                  src={avatarUrlPreview || `https://placehold.co/100x100.png`} 
-                  alt={getAvatarAltText()} 
+                <AvatarImage
+                  src={avatarUrlPreview || `https://placehold.co/100x100.png`}
+                  alt={getAvatarAltText()}
                   data-ai-hint={currentDataAiHint || "avatar"}
                 />
                 <AvatarFallback>{getAvatarFallbackText()}</AvatarFallback>
@@ -514,7 +439,7 @@ export default function EditProfilePage() {
                 </div>
               </>
             )}
-            
+
             {currentRole === 'school' && (
                <>
                 <div>
@@ -608,21 +533,4 @@ export default function EditProfilePage() {
       </Card>
     </div>
   );
-}
-
-declare module "@radix-ui/react-select" {
-  interface SelectValueProps {
-    placeholder_en?: string;
-    placeholder_hi?: string;
-  }
-}
-declare module 'react' {
-    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
-      placeholder_en?: string;
-      placeholder_hi?: string;
-    }
-    interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
-        placeholder_en?: string;
-        placeholder_hi?: string;
-    }
 }
