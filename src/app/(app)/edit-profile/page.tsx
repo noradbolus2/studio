@@ -1,92 +1,28 @@
 
 "use client";
 
-import { useEffect, useState, useRef, type ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { CalendarIcon, User, Camera, Save, Mail, Phone, School, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon, BarChart3, Briefcase, Building, Percent, Info, Edit3, List, ShieldCheck, Code2, Palette, Layers } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
+import { User, Save } from "lucide-react";
 
-const profileSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").optional().or(z.literal('')),
-  avatarUrl: z.string().optional(),
-  dataAiHint: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  country: z.string().default("India"),
-  fullName: z.string().optional(),
-  schoolName: z.string().optional(),
-  schoolId: z.string().optional(),
-  addressLine1: z.string().optional(),
-  pincode: z.string().optional(),
-  boardAffiliation: z.string().optional(),
-  principalName: z.string().optional(),
-  aboutSchool: z.string().max(500, "About school should be max 500 characters").optional(),
-  className: z.string().optional(),
-  board: z.string().optional(),
-  stream: z.string().optional(),
-  dateOfBirth: z.date().optional(),
-  gender: z.string().optional(),
-  examTarget: z.string().optional(),
-  contactPersonName: z.string().optional(),
-  businessName: z.string().optional(),
-  gstin: z.string().optional().or(z.literal('')),
-  productCategories: z.string().optional(),
-  businessAddress: z.string().optional(),
-  creatorName: z.string().optional(),
-  expertise: z.string().optional(),
-  bio: z.string().max(300, "Bio must be 300 characters or less").optional(),
-  portfolioLink: z.string().url("Please enter a valid URL").optional().or(z.literal('')),
+// Minimal schema for parsing test
+const profileSchemaMinimal = z.object({
+  email: z.string().email("Invalid email address").optional(),
   role: z.string().optional(),
-  schoolDesignation: z.string().optional(),
 });
 
-export type ProfileFormData = z.infer<typeof profileSchema>;
-
-const studentClasses = ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11 Science", "11 Commerce", "11 Arts", "12 Science", "12 Commerce", "12 Arts", "Competitive Exams"];
-const studentBoards = ["CBSE", "ICSE", "State", "Other"];
-const studentStreams = ["Science", "Commerce", "Arts", "Other"];
-const genders = ["Male", "Female", "Other"];
-const schoolBoards = ["CBSE", "ICSE", "State Board (Specify State)", "IB", "Cambridge (IGCSE)", "Other"];
-const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
-const indianStatesAndUTs = [
-  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh",
-  "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi (NCT)", "Goa", "Gujarat", "Haryana",
-  "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep",
-  "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry",
-  "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
-  "West Bengal"
-].sort();
-
-const stateCityData: Record<string, string[]> = {
-  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
-  "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi", "Belagavi"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"],
-  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi"],
-  "Delhi (NCT)": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
-};
-
-const examTargets = [
-  "School Exams", "JEE Main", "JEE Advanced", "BITSAT", "NEET UG (MBBS, BDS, AYUSH, B.V.Sc)", "CAT", "CLAT (UG)", "UPSC Civil Services Examination (IAS, IPS, IFS, etc.)", "SSC CGL", "IBPS PO", "NDA & NA Examination", "CUET UG", "Other Competitive Exam"
-].sort();
-
+export type ProfileFormDataMinimal = z.infer<typeof profileSchemaMinimal>;
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -95,411 +31,82 @@ export default function EditProfilePage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [initialDataLoading, setInitialDataLoading] = useState(true);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [citiesForSelectedState, setCitiesForSelectedState] = useState<string[]>([]);
   const [currentRole, setCurrentRole] = useState<string | null>(null);
 
-  const { control, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: { country: "India" },
+  const { control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProfileFormDataMinimal>({
+    resolver: zodResolver(profileSchemaMinimal),
+    defaultValues: { role: "student" },
   });
-
-  const avatarUrlPreview = watch("avatarUrl");
-  const selectedState = watch("state");
-  const formFullName = watch("fullName");
-  const formContactPersonName = watch("contactPersonName");
-  const formCreatorName = watch("creatorName");
-  const formSchoolName = watch("schoolName");
-  const formBusinessName = watch("businessName");
-
 
   useEffect(() => {
     setInitialDataLoading(true);
     const roleFromParams = searchParams.get("role") || "student";
     setCurrentRole(roleFromParams);
-
-    const emailFromParam = searchParams.get("email");
-    const nameFromParam = searchParams.get("name");
-    const designationFromParam = searchParams.get("designation");
-
-    let profileDataKey = 'userProfileData';
-    if (roleFromParams === 'vendor') profileDataKey = 'vendorProfileData';
-    else if (roleFromParams === 'creator') profileDataKey = 'creatorProfileData';
-    else if (roleFromParams === 'school') profileDataKey = 'schoolProfileData';
-    else if (roleFromParams === 'parent') profileDataKey = 'parentProfileData';
-
-    let currentDefaultValues: Partial<ProfileFormData> = { country: "India", role: roleFromParams, dataAiHint: `${roleFromParams} avatar` };
-
+    
+    let initialEmail = "";
     if (typeof window !== "undefined") {
-      const storedProfileString = localStorage.getItem(profileDataKey);
-      if (storedProfileString) {
-        try {
-          const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData & {dateOfBirth?: string};
-          currentDefaultValues = {
-            ...parsedProfile,
-            dateOfBirth: parsedProfile.dateOfBirth ? new Date(parsedProfile.dateOfBirth) : undefined,
-            role: roleFromParams,
-            dataAiHint: parsedProfile.dataAiHint || `${roleFromParams} avatar`,
-            schoolDesignation: parsedProfile.schoolDesignation || (roleFromParams === 'school' ? designationFromParam || '' : undefined),
-          };
-        } catch (e) {
-          console.error(`Failed to parse ${profileDataKey} from localStorage`, e);
+        const emailFromParam = searchParams.get("email");
+        if (emailFromParam) {
+            initialEmail = emailFromParam;
         }
-      }
     }
-
-    if (searchParams.get("isNewUser") === "true") {
-      if (emailFromParam) currentDefaultValues.email = emailFromParam;
-      if (nameFromParam) {
-        if (roleFromParams === 'vendor') { currentDefaultValues.businessName = nameFromParam; currentDefaultValues.contactPersonName = nameFromParam; }
-        else if (roleFromParams === 'creator') { currentDefaultValues.creatorName = nameFromParam; currentDefaultValues.contactPersonName = nameFromParam; }
-        else if (roleFromParams === 'school') { currentDefaultValues.schoolName = nameFromParam; currentDefaultValues.contactPersonName = nameFromParam; }
-        else if (roleFromParams === 'parent') { currentDefaultValues.contactPersonName = nameFromParam; currentDefaultValues.fullName = nameFromParam; }
-        else currentDefaultValues.fullName = nameFromParam;
-      }
-      if (roleFromParams === 'school' && designationFromParam) {
-        currentDefaultValues.schoolDesignation = designationFromParam;
-      }
-    }
-
-    reset(currentDefaultValues);
+    reset({ role: roleFromParams, email: initialEmail });
     setInitialDataLoading(false);
   }, [searchParams, reset]);
 
-  useEffect(() => {
-    if (selectedState) {
-      setCitiesForSelectedState(stateCityData[selectedState] || []);
-      const currentCity = watch('city');
-      if (currentCity && !(stateCityData[selectedState] || []).includes(currentCity)) {
-          setValue('city', '', { shouldValidate: true });
-      }
-    } else {
-      setCitiesForSelectedState([]);
-      setValue('city', '', { shouldValidate: true });
-    }
-  }, [selectedState, setValue, watch]);
-
-
-  const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
+  const onSubmitMinimal: SubmitHandler<ProfileFormDataMinimal> = async (data) => {
     setIsLoading(true);
-    console.log("Form Data Submitted:", data);
-    // Simplified logic for now
-    let profileDataKey = 'userProfileData';
-    if (data.role === 'vendor') profileDataKey = 'vendorProfileData';
-    else if (data.role === 'creator') profileDataKey = 'creatorProfileData';
-    else if (data.role === 'school') profileDataKey = 'schoolProfileData';
-    else if (data.role === 'parent') profileDataKey = 'parentProfileData';
-    
-    localStorage.setItem(profileDataKey, JSON.stringify(data));
+    console.log("Minimal Form Data Submitted:", data);
     toast({
-      title: "Profile Update Simulated",
-      description: "Your profile changes have been logged and saved locally.",
+      title: "Profile Save Attempted (Minimal)",
+      description: "Check console for data. Navigation to home.",
     });
-
-    // Basic navigation based on role
-    if (data.role === 'school') {
-      router.push('/school-dashboard');
-    } else if (data.role === 'vendor') {
-      router.push('/vendor-dashboard');
-    } else if (data.role === 'creator') {
-      router.push('/creator-dashboard');
-    } else if (data.role === 'parent') {
-      router.push('/parent-mode');
-    } else { 
-      router.push('/');
-    }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
     setIsLoading(false);
+    router.push('/'); // Navigate to home for simplicity
   };
-
-  const handleAvatarUploadButtonClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast({ title: "Invalid File Type", description: "Please select an image file.", variant: "destructive" });
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) { 
-        toast({ title: "File Too Large", description: "Image must be less than 5MB.", variant: "destructive" });
-        if(fileInputRef.current) fileInputRef.current.value = ""; 
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setValue('avatarUrl', reader.result as string, { shouldValidate: true });
-        toast({ title: "Avatar Preview Updated", description: "Save profile to keep changes." });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const getAvatarFallbackText = () => {
-    if (currentRole === 'vendor') return formBusinessName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "VE";
-    if (currentRole === 'creator') return formCreatorName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "CR";
-    if (currentRole === 'school') return formSchoolName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "SC";
-    if (currentRole === 'parent') return formContactPersonName?.substring(0,2).toUpperCase() || "PA";
-    return formFullName?.substring(0,2).toUpperCase() || "NA";
-  };
-
-  const getAvatarAltText = () => {
-    if (currentRole === 'vendor') return formBusinessName || formContactPersonName || "Vendor";
-    if (currentRole === 'creator') return formCreatorName || formContactPersonName || "Creator";
-    if (currentRole === 'school') return formSchoolName || formContactPersonName || "School";
-    if (currentRole === 'parent') return formContactPersonName || "Parent";
-    return formFullName || "User";
-  };
-
-  const getAvatarButtonText = () => {
-    if (currentRole === 'vendor') return { en: "Upload Shop Logo", hi: "दुकान लोगो अपलोड करें" };
-    if (currentRole === 'creator') return { en: "Change Profile Picture", hi: "प्रोफ़ाइल चित्र बदलें" };
-    if (currentRole === 'school') return { en: "Upload School Logo", hi: "स्कूल लोगो अपलोड करें" };
-    return { en: "Change Picture", hi: "तस्वीर बदलें" };
-  };
-  const avatarButtonText = getAvatarButtonText();
-  const currentDataAiHint = watch('dataAiHint') || `${currentRole || 'user'} avatar`;
 
   if (initialDataLoading) {
-    return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]"><LoadingSpinner size={48} /><p className="ml-4">Loading profile editor...</p></div>;
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+        <LoadingSpinner size={48} />
+        <p className="ml-4">Loading profile editor...</p>
+      </div>
+    );
   }
   
   return (
     <div className="space-y-8">
       <Card className="w-full max-w-2xl mx-auto shadow-lg">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmitMinimal)}>
           <CardHeader>
             <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
               <User className="h-7 w-7" />
-              <BilingualText en="Edit Profile" hi="प्रोफ़ाइल संपादित करें" />
+              <BilingualText en="Edit Profile (Minimal)" hi="प्रोफ़ाइल संपादित करें (न्यूनतम)" />
               {currentRole && <span className="text-base text-muted-foreground">({currentRole.charAt(0).toUpperCase() + currentRole.slice(1)})</span>}
             </CardTitle>
             <CardDescription><BilingualText en="Keep your information up to date." hi="अपनी जानकारी अपडेट रखें।" /></CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex flex-col items-center space-y-3">
-              <Avatar className="h-24 w-24 border-2 border-primary">
-                <AvatarImage
-                  src={avatarUrlPreview || `https://placehold.co/100x100.png`}
-                  alt={getAvatarAltText()}
-                  data-ai-hint={currentDataAiHint || "avatar"}
-                />
-                <AvatarFallback>{getAvatarFallbackText()}</AvatarFallback>
-              </Avatar>
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
-              <Button type="button" variant="outline" size="sm" onClick={handleAvatarUploadButtonClick}>
-                <Camera className="mr-2 h-4 w-4" /> <BilingualText en={avatarButtonText.en} hi={avatarButtonText.hi} />
-              </Button>
-            </div>
-
             <div>
-              <Label htmlFor="email"><Mail className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Email" hi="ईमेल" />*</Label>
-              <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={!(searchParams.get("isNewUser") === "true")} />} />
+              <Label htmlFor="email"><BilingualText en="Email" hi="ईमेल" />*</Label>
+              <Controller 
+                name="email" 
+                control={control} 
+                render={({ field }) => (
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    {...field} 
+                    placeholder="you@example.com" 
+                    value={field.value || ""} // Ensure value is not undefined
+                  />
+                )} 
+              />
               {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
             </div>
-            <div>
-              <Label htmlFor="phoneNumber"><Phone className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Phone Number" hi="फ़ोन नंबर" /></Label>
-              <Controller name="phoneNumber" control={control} render={({ field }) => <Input id="phoneNumber" type="tel" {...field} placeholder_en="e.g., 9876543210" placeholder_hi="उदा., 9876543210" />} />
-              {errors.phoneNumber && <p className="text-xs text-destructive mt-1">{errors.phoneNumber.message}</p>}
-            </div>
-
-            {(currentRole === 'student' || currentRole === 'parent') && (
-              <>
-                <div>
-                  <Label htmlFor="fullName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Your Full Name (Parent)" : "Full Name"} hi={currentRole === 'parent' ? "आपका पूरा नाम (अभिभावक)" : "पूरा नाम"} />*</Label>
-                  <Controller name="fullName" control={control} render={({ field }) => <Input id="fullName" {...field} placeholder_en="e.g., Aarav Sharma" placeholder_hi="उदा., आरव शर्मा" />} />
-                  {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
-                </div>
-                {currentRole === 'parent' && (
-                  <div>
-                     <Label htmlFor="contactPersonName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Child's Full Name" hi="बच्चे का पूरा नाम" /></Label>
-                     <Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} placeholder_en="e.g., Priya Sharma (Child)" placeholder_hi="उदा., प्रिया शर्मा (बच्चा)" />} />
-                     {errors.contactPersonName && <p className="text-xs text-destructive mt-1">{errors.contactPersonName.message}</p>}
-                   </div>
-                )}
-                <div>
-                  <Label htmlFor="schoolName"><School className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's School Name" : "School Name"} hi={currentRole === 'parent' ? "बच्चे के स्कूल का नाम" : "स्कूल का नाम"} /></Label>
-                  <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="Your School Name" placeholder_hi="आपके स्कूल का नाम" />} />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="className"><Percent className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Class" : "Class"} hi={currentRole === 'parent' ? "बच्चे की कक्षा" : "कक्षा"} /></Label>
-                    <Controller name="className" control={control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="className"><SelectValue placeholder_en="Select Class" placeholder_hi="कक्षा चुनें" /></SelectTrigger><SelectContent>{studentClasses.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select>
-                    )} />
-                  </div>
-                  <div>
-                    <Label htmlFor="board"><List className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Board" : "Board"} hi={currentRole === 'parent' ? "बच्चे का बोर्ड" : "बोर्ड"} /></Label>
-                    <Controller name="board" control={control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="board"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{studentBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent></Select>
-                    )} />
-                  </div>
-                  {(watch("className")?.includes("11") || watch("className")?.includes("12")) && (
-                    <div><Label htmlFor="stream"><Palette className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Stream" : "Stream"} hi={currentRole === 'parent' ? "बच्चे की स्ट्रीम" : "स्ट्रीम"} /></Label>
-                     <Controller name="stream" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="stream"><SelectValue placeholder_en="Select Stream" placeholder_hi="स्ट्रीम चुनें" /></SelectTrigger><SelectContent>{studentStreams.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>)} />
-                    </div>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="dateOfBirth"><CalendarIcon className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Date of Birth" : "Date of Birth"} hi={currentRole === 'parent' ? "बच्चे की जन्म तिथि" : "जन्म की तारीख"} /></Label>
-                    <Controller name="dateOfBirth" control={control} render={({ field }) => (
-                      <Popover><PopoverTrigger asChild><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-10",!field.value && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{field.value ? format(field.value, "dd-MM-yyyy") : <span><BilingualText en="Pick a date" hi="एक तारीख चुनें"/></span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus captionLayout="buttons" fromYear={1990} toYear={new Date().getFullYear()} /></PopoverContent></Popover>
-                    )} />
-                  </div>
-                  <div>
-                    <Label htmlFor="gender"><Users className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Gender" : "Gender"} hi={currentRole === 'parent' ? "बच्चे का लिंग" : "लिंग"} /></Label>
-                    <Controller name="gender" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="gender"><SelectValue placeholder_en="Select Gender" placeholder_hi="लिंग चुनें" /></SelectTrigger><SelectContent>{genders.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent></Select>)} />
-                  </div>
-                </div>
-                 {currentRole === 'student' && (
-                    <div>
-                    <Label htmlFor="examTarget"><TargetIcon className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Exam Target" hi="परीक्षा लक्ष्य" /></Label>
-                    <Controller name="examTarget" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="examTarget"><SelectValue placeholder_en="Select Exam Target" placeholder_hi="परीक्षा लक्ष्य चुनें" /></SelectTrigger><SelectContent>{examTargets.map(target => (<SelectItem key={target} value={target}>{target}</SelectItem>))}</SelectContent></Select>)} />
-                    {errors.examTarget && <p className="text-xs text-destructive mt-1">{errors.examTarget.message}</p>}
-                    </div>
-                 )}
-              </>
-            )}
-
-            {currentRole === 'vendor' && (
-              <>
-                <div>
-                  <Label htmlFor="contactPersonName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Contact Person Name" hi="संपर्क व्यक्ति का नाम" />*</Label>
-                  <Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} placeholder_en="e.g., Abhishek Verma" placeholder_hi="उदा., अभिषेक वर्मा" />} />
-                  {errors.contactPersonName && <p className="text-xs text-destructive mt-1">{errors.contactPersonName.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="businessName"><Briefcase className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Business/Shop Name" hi="व्यवसाय/दुकान का नाम" />*</Label>
-                  <Controller name="businessName" control={control} render={({ field }) => <Input id="businessName" {...field} placeholder_en="e.g., Verma Stationery Mart" placeholder_hi="उदा., वर्मा स्टेशनरी मार्ट" />} />
-                  {errors.businessName && <p className="text-xs text-destructive mt-1">{errors.businessName.message}</p>}
-                </div>
-                 <div>
-                  <Label htmlFor="businessAddress"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Business Address" hi="व्यवसाय का पता" />*</Label>
-                  <Controller name="businessAddress" control={control} render={({ field }) => <Textarea id="businessAddress" {...field} placeholder_en="Full Shop Address" placeholder_hi="दुकान का पूरा पता" />} />
-                  {errors.businessAddress && <p className="text-xs text-destructive mt-1">{errors.businessAddress.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="gstin"><Info className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="GSTIN (Optional)" hi="जीएसटीआईएन (वैकल्पिक)" /></Label>
-                  <Controller name="gstin" control={control} render={({ field }) => <Input id="gstin" {...field} placeholder="15-digit GSTIN" />} />
-                </div>
-                <div>
-                  <Label htmlFor="productCategories"><List className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Product Categories" hi="उत्पाद श्रेणियाँ" /></Label>
-                  <Controller name="productCategories" control={control} render={({ field }) => <Textarea id="productCategories" {...field} placeholder_en="e.g., Notebooks, Pens, Art Supplies, Exam Guides" placeholder_hi="उदा., नोटबुक, पेन, कला सामग्री, परीक्षा गाइड" />} />
-                </div>
-              </>
-            )}
-
-            {currentRole === 'creator' && (
-              <>
-                 <div>
-                  <Label htmlFor="contactPersonName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Your Full Name" hi="आपका पूरा नाम" />*</Label>
-                  <Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} placeholder_en="e.g., Ananya Sharma" placeholder_hi="उदा., अनन्या शर्मा" />} />
-                  {errors.contactPersonName && <p className="text-xs text-destructive mt-1">{errors.contactPersonName.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="creatorName"><Edit3 className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Creator/Channel Name (Optional)" hi="निर्माता/चैनल का नाम (वैकल्पिक)" /></Label>
-                  <Controller name="creatorName" control={control} render={({ field }) => <Input id="creatorName" {...field} placeholder_en="e.g., Creative Minds Hub" placeholder_hi="उदा., क्रिएटिव माइंड्स हब" />} />
-                </div>
-                 <div>
-                  <Label htmlFor="expertise"><Code2 className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Expertise/Skills" hi="विशेषज्ञता/कौशल" /></Label>
-                  <Controller name="expertise" control={control} render={({ field }) => <Textarea id="expertise" {...field} placeholder_en="e.g., Science Projects, Python Coding, Oil Painting" placeholder_hi="उदा., विज्ञान प्रोजेक्ट, पायथन कोडिंग, तेल चित्रकला" />} />
-                </div>
-                 <div>
-                  <Label htmlFor="bio"><Info className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Short Bio (Max 300 chars)" hi="संक्षिप्त बायो (अधिकतम 300 अक्षर)" /></Label>
-                  <Controller name="bio" control={control} render={({ field }) => <Textarea id="bio" {...field} className="min-h-[80px]" placeholder_en="Tell us about yourself and your creative work." placeholder_hi="हमें अपने और अपने रचनात्मक काम के बारे में बताएं।" />} />
-                   {errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="portfolioLink"><Link2 className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Portfolio/Website Link (Optional)" hi="पोर्टफोलियो/वेबसाइट लिंक (वैकल्पिक)" /></Label>
-                  <Controller name="portfolioLink" control={control} render={({ field }) => <Input id="portfolioLink" type="url" {...field} placeholder="https://yourportfolio.com" />} />
-                  {errors.portfolioLink && <p className="text-xs text-destructive mt-1">{errors.portfolioLink.message}</p>}
-                </div>
-              </>
-            )}
-
-            {currentRole === 'school' && (
-               <>
-                <div>
-                  <Label htmlFor="contactPersonName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Contact Person Name" hi="संपर्क व्यक्ति का नाम" />*</Label>
-                  <Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} placeholder_en="e.g., Mrs. Anjali Sharma" placeholder_hi="उदा., श्रीमती अंजली शर्मा" />} />
-                  {errors.contactPersonName && <p className="text-xs text-destructive mt-1">{errors.contactPersonName.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="schoolName"><Building className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="School Name" hi="स्कूल का नाम" />*</Label>
-                  <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="e.g., Delhi Public School" placeholder_hi="उदा., दिल्ली पब्लिक स्कूल" />} />
-                  {errors.schoolName && <p className="text-xs text-destructive mt-1">{errors.schoolName.message}</p>}
-                </div>
-                 <div>
-                    <Label htmlFor="schoolDesignation" className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-muted-foreground" /> <BilingualText en="Your Designation in School" hi="स्कूल में आपकी पदवी" />*</Label>
-                    <Controller name="schoolDesignation" control={control} render={({ field }) => (
-                        <Select onValueChange={field.onChange} value={field.value || ""}>
-                            <SelectTrigger id="schoolDesignation"><SelectValue placeholder_en="Select your designation" placeholder_hi="अपनी पदवी चुनें" /></SelectTrigger>
-                            <SelectContent>
-                                {schoolDesignations.map(desig => <SelectItem key={desig} value={desig}>{desig}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    )} />
-                    {errors.schoolDesignation && <p className="text-xs text-destructive mt-1">{errors.schoolDesignation.message}</p>}
-                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="schoolId"><Info className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="School ID (Affiliation/UDISE)" hi="स्कूल आईडी (संबद्धता/यूडीआईएसई)" /></Label>
-                    <Controller name="schoolId" control={control} render={({ field }) => <Input id="schoolId" {...field} placeholder_en="e.g., CBSE/12345" placeholder_hi="उदा., सीबीएसई/12345" />} />
-                  </div>
-                  <div>
-                    <Label htmlFor="boardAffiliation"><List className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Board Affiliation" hi="बोर्ड संबद्धता" />*</Label>
-                    <Controller name="boardAffiliation" control={control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="boardAffiliation"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{schoolBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>))}</SelectContent></Select>
-                    )} />
-                    {errors.boardAffiliation && <p className="text-xs text-destructive mt-1">{errors.boardAffiliation.message}</p>}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="addressLine1"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Full Address" hi="पूरा पता" />*</Label>
-                  <Controller name="addressLine1" control={control} render={({ field }) => <Input id="addressLine1" {...field} placeholder_en="Building No., Street Name, Area" placeholder_hi="बिल्डिंग नंबर, गली का नाम, क्षेत्र" />} />
-                  {errors.addressLine1 && <p className="text-xs text-destructive mt-1">{errors.addressLine1.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="pincode"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Pincode" hi="पिनकोड" />*</Label>
-                  <Controller name="pincode" control={control} render={({ field }) => <Input id="pincode" {...field} placeholder_en="e.g., 110001" placeholder_hi="उदा., 110001" />} />
-                  {errors.pincode && <p className="text-xs text-destructive mt-1">{errors.pincode.message}</p>}
-                </div>
-                 <div>
-                  <Label htmlFor="principalName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Principal's Name (Optional)" hi="प्रधानाचार्य का नाम (वैकल्पिक)" /></Label>
-                  <Controller name="principalName" control={control} render={({ field }) => <Input id="principalName" {...field} placeholder_en="e.g., Dr. R. K. Verma" placeholder_hi="उदा., डॉ. आर. के. वर्मा" />} />
-                </div>
-                <div>
-                  <Label htmlFor="aboutSchool"><Info className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="About School (Optional)" hi="स्कूल के बारे में (वैकल्पिक)" /></Label>
-                  <Controller name="aboutSchool" control={control} render={({ field }) => <Textarea id="aboutSchool" {...field} className="min-h-[100px]" placeholder_en="Brief school description (max 500 chars)" placeholder_hi="स्कूल का संक्षिप्त विवरण (अधिकतम 500 अक्षर)" />} />
-                  {errors.aboutSchool && <p className="text-xs text-destructive mt-1">{errors.aboutSchool.message}</p>}
-                </div>
-              </>
-            )}
-
-            {(currentRole === 'student' || currentRole === 'parent' || currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'school') && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t">
-                <div>
-                  <Label htmlFor="state"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="State" hi="राज्य" /></Label>
-                  <Controller name="state" control={control} render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="state"><SelectValue placeholder_en="Select State" placeholder_hi="राज्य चुनें" /></SelectTrigger><SelectContent>{indianStatesAndUTs.map(s => (<SelectItem key={s} value={s}>{s}</SelectItem>))}</SelectContent></Select>
-                  )} />
-                </div>
-                <div>
-                  <Label htmlFor="city"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="City / District" hi="शहर / जिला" /></Label>
-                  <Controller name="city" control={control} render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value || ""} disabled={!selectedState || citiesForSelectedState.length === 0}><SelectTrigger id="city"><SelectValue placeholder_en={!selectedState ? "Select State first" : "Select City/District"} placeholder_hi={!selectedState ? "पहले राज्य चुनें" : "शहर/जिला चुनें"} /></SelectTrigger><SelectContent>{citiesForSelectedState.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
-                  )} />
-                  {citiesForSelectedState.length === 0 && selectedState && <p className="text-xs text-muted-foreground mt-1">No cities listed for {selectedState}. Type to add.</p>}
-                </div>
-                <div>
-                  <Label htmlFor="country"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Country" hi="देश" /></Label>
-                  <Controller name="country" control={control} render={({ field }) => <Input id="country" {...field} readOnly />} />
-                </div>
-              </div>
-            )}
-
+             <p>Role: {currentRole}</p>
           </CardContent>
           <CardFooter className="flex justify-end">
             <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting || isLoading}>
@@ -512,6 +119,3 @@ export default function EditProfilePage() {
     </div>
   );
 }
-
-
-    
