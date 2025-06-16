@@ -28,8 +28,7 @@ const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
 
 export default function EditNotePage() {
   const router = useRouter();
-  const params = useParams();
-  const noteId = params.noteId as string;
+  const { noteId } = useParams<{ noteId: string }>(); // Changed here
 
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');

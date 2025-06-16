@@ -21,7 +21,7 @@ interface TrackingStep {
   icon: React.ElementType;
 }
 
-interface MapMarkerConfig { // Renamed to avoid conflict with MapDisplay's internal MapMarker type
+interface MapMarkerConfig { 
   id: string;
   position: { lat: number; lng: number };
   label?: string;
@@ -31,8 +31,7 @@ interface MapMarkerConfig { // Renamed to avoid conflict with MapDisplay's inter
 
 export default function TrackOrderPage() {
   const router = useRouter();
-  const { orderId: rawOrderId } = useParams(); 
-  const orderId = rawOrderId as string;
+  const { orderId } = useParams<{ orderId: string }>(); // Changed here
 
   const [isLoading, setIsLoading] = useState(true);
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);

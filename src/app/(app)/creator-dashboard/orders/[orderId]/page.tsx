@@ -41,8 +41,7 @@ const mockOrderDetails: Record<string, ProjectOrderDetail> = {
 
 export default function CreatorOrderDetailPage() {
   const router = useRouter();
-  const params = useParams();
-  const orderId = params.orderId as string;
+  const { orderId } = useParams<{ orderId: string }>(); // Changed here
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -184,4 +183,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-
