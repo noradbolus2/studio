@@ -126,6 +126,7 @@ export default function EditProfilePage() {
     if (roleFromParams === 'vendor') profileDataKey = 'vendorProfileData';
     else if (roleFromParams === 'creator') profileDataKey = 'creatorProfileData';
     else if (roleFromParams === 'school') profileDataKey = 'schoolProfileData';
+    else if (roleFromParams === 'parent') profileDataKey = 'parentProfileData';
 
     let currentDefaultValues: Partial<ProfileFormData> = { country: "India", role: roleFromParams, dataAiHint: `${roleFromParams} avatar` };
 
@@ -150,8 +151,10 @@ export default function EditProfilePage() {
     if (searchParams.get("isNewUser") === "true") {
       if (emailFromParam) currentDefaultValues.email = emailFromParam;
       if (nameFromParam) {
-        if (roleFromParams === 'vendor' || roleFromParams === 'school') currentDefaultValues.contactPersonName = nameFromParam;
-        else if (roleFromParams === 'creator') currentDefaultValues.creatorName = nameFromParam;
+        if (roleFromParams === 'vendor') { currentDefaultValues.businessName = nameFromParam; currentDefaultValues.contactPersonName = nameFromParam; }
+        else if (roleFromParams === 'creator') { currentDefaultValues.creatorName = nameFromParam; currentDefaultValues.contactPersonName = nameFromParam; }
+        else if (roleFromParams === 'school') { currentDefaultValues.schoolName = nameFromParam; currentDefaultValues.contactPersonName = nameFromParam; }
+        else if (roleFromParams === 'parent') { currentDefaultValues.contactPersonName = nameFromParam; currentDefaultValues.fullName = nameFromParam; }
         else currentDefaultValues.fullName = nameFromParam;
       }
       if (roleFromParams === 'school' && designationFromParam) {
@@ -180,69 +183,32 @@ export default function EditProfilePage() {
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsLoading(true);
     console.log("Form Data Submitted:", data);
-
+    // Simplified logic for now
     let profileDataKey = 'userProfileData';
     if (data.role === 'vendor') profileDataKey = 'vendorProfileData';
     else if (data.role === 'creator') profileDataKey = 'creatorProfileData';
     else if (data.role === 'school') profileDataKey = 'schoolProfileData';
+    else if (data.role === 'parent') profileDataKey = 'parentProfileData';
+    
+    localStorage.setItem(profileDataKey, JSON.stringify(data));
+    toast({
+      title: "Profile Update Simulated",
+      description: "Your profile changes have been logged and saved locally.",
+    });
 
+    // Basic navigation based on role
     if (data.role === 'school') {
-      console.log("Attempting to save school profile (simulated backend call):", data);
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-        // const response = await fetch('/api/school/profile', { // Replace with your actual API endpoint
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(data),
-        // });
-
-        // if (!response.ok) {
-        //   let errorData;
-        //   try {
-        //     errorData = await response.json();
-        //   } catch (e) {
-        //     throw new Error(`HTTP error! status: ${response.status}`);
-        //   }
-        //   throw new Error(errorData.message || `Failed to save school profile to backend. Status: ${response.status}`);
-        // }
-        
-        // const result = await response.json(); // Assuming backend returns success message
-        // console.log("Backend response (simulated):", result);
-
-        localStorage.setItem(profileDataKey, JSON.stringify(data));
-        toast({
-          title: "School Profile Updated (Simulated)",
-          description: "Your school profile changes have been saved (simulated backend).",
-        });
-        router.push('/school-dashboard');
-      } catch (error: any) {
-        console.error("Error saving school profile:", error);
-        toast({
-          title: "Error Saving School Profile",
-          description: error.message || "Could not save school profile. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      // For other roles, just save to localStorage and navigate
-      localStorage.setItem(profileDataKey, JSON.stringify(data));
-      toast({
-        title: "Profile Updated",
-        description: "Your profile changes have been saved locally.",
-      });
-
-      if (data.role === 'vendor') {
-        router.push('/vendor-dashboard');
-      } else if (data.role === 'creator') {
-        router.push('/creator-dashboard');
-      } else { // student, parent, or undefined role
-        router.push('/');
-      }
-      setIsLoading(false);
+      router.push('/school-dashboard');
+    } else if (data.role === 'vendor') {
+      router.push('/vendor-dashboard');
+    } else if (data.role === 'creator') {
+      router.push('/creator-dashboard');
+    } else if (data.role === 'parent') {
+      router.push('/parent-mode');
+    } else { 
+      router.push('/');
     }
+    setIsLoading(false);
   };
 
   const handleAvatarUploadButtonClick = () => {
@@ -254,6 +220,11 @@ export default function EditProfilePage() {
     if (file) {
       if (!file.type.startsWith('image/')) {
         toast({ title: "Invalid File Type", description: "Please select an image file.", variant: "destructive" });
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { 
+        toast({ title: "File Too Large", description: "Image must be less than 5MB.", variant: "destructive" });
+        if(fileInputRef.current) fileInputRef.current.value = ""; 
         return;
       }
       const reader = new FileReader();
@@ -269,6 +240,7 @@ export default function EditProfilePage() {
     if (currentRole === 'vendor') return formBusinessName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "VE";
     if (currentRole === 'creator') return formCreatorName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "CR";
     if (currentRole === 'school') return formSchoolName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "SC";
+    if (currentRole === 'parent') return formContactPersonName?.substring(0,2).toUpperCase() || "PA";
     return formFullName?.substring(0,2).toUpperCase() || "NA";
   };
 
@@ -276,6 +248,7 @@ export default function EditProfilePage() {
     if (currentRole === 'vendor') return formBusinessName || formContactPersonName || "Vendor";
     if (currentRole === 'creator') return formCreatorName || formContactPersonName || "Creator";
     if (currentRole === 'school') return formSchoolName || formContactPersonName || "School";
+    if (currentRole === 'parent') return formContactPersonName || "Parent";
     return formFullName || "User";
   };
 
@@ -287,7 +260,6 @@ export default function EditProfilePage() {
   };
   const avatarButtonText = getAvatarButtonText();
   const currentDataAiHint = watch('dataAiHint') || `${currentRole || 'user'} avatar`;
-
 
   if (initialDataLoading) {
     return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]"><LoadingSpinner size={48} /><p className="ml-4">Loading profile editor...</p></div>;
@@ -321,7 +293,6 @@ export default function EditProfilePage() {
               </Button>
             </div>
 
-            {/* Common Fields */}
             <div>
               <Label htmlFor="email"><Mail className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Email" hi="ईमेल" />*</Label>
               <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder_en="you@example.com" placeholder_hi="आप@उदाहरण.कॉम" readOnly={!(searchParams.get("isNewUser") === "true")} />} />
@@ -333,54 +304,62 @@ export default function EditProfilePage() {
               {errors.phoneNumber && <p className="text-xs text-destructive mt-1">{errors.phoneNumber.message}</p>}
             </div>
 
-            {/* Role-Specific Fields */}
             {(currentRole === 'student' || currentRole === 'parent') && (
               <>
                 <div>
-                  <Label htmlFor="fullName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Full Name" hi="पूरा नाम" />*</Label>
+                  <Label htmlFor="fullName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Your Full Name (Parent)" : "Full Name"} hi={currentRole === 'parent' ? "आपका पूरा नाम (अभिभावक)" : "पूरा नाम"} />*</Label>
                   <Controller name="fullName" control={control} render={({ field }) => <Input id="fullName" {...field} placeholder_en="e.g., Aarav Sharma" placeholder_hi="उदा., आरव शर्मा" />} />
                   {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
                 </div>
+                {currentRole === 'parent' && (
+                  <div>
+                     <Label htmlFor="contactPersonName"><User className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Child's Full Name" hi="बच्चे का पूरा नाम" /></Label>
+                     <Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} placeholder_en="e.g., Priya Sharma (Child)" placeholder_hi="उदा., प्रिया शर्मा (बच्चा)" />} />
+                     {errors.contactPersonName && <p className="text-xs text-destructive mt-1">{errors.contactPersonName.message}</p>}
+                   </div>
+                )}
                 <div>
-                  <Label htmlFor="schoolName"><School className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="School Name (Student's)" hi="स्कूल का नाम (छात्र का)" /></Label>
+                  <Label htmlFor="schoolName"><School className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's School Name" : "School Name"} hi={currentRole === 'parent' ? "बच्चे के स्कूल का नाम" : "स्कूल का नाम"} /></Label>
                   <Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder_en="Your School Name" placeholder_hi="आपके स्कूल का नाम" />} />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="className"><Percent className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Class" hi="कक्षा" /></Label>
+                    <Label htmlFor="className"><Percent className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Class" : "Class"} hi={currentRole === 'parent' ? "बच्चे की कक्षा" : "कक्षा"} /></Label>
                     <Controller name="className" control={control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="className"><SelectValue placeholder_en="Select Class" placeholder_hi="कक्षा चुनें" /></SelectTrigger><SelectContent>{studentClasses.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select>
+                      <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="className"><SelectValue placeholder_en="Select Class" placeholder_hi="कक्षा चुनें" /></SelectTrigger><SelectContent>{studentClasses.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select>
                     )} />
                   </div>
                   <div>
-                    <Label htmlFor="board"><List className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Board" hi="बोर्ड" /></Label>
+                    <Label htmlFor="board"><List className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Board" : "Board"} hi={currentRole === 'parent' ? "बच्चे का बोर्ड" : "बोर्ड"} /></Label>
                     <Controller name="board" control={control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="board"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{studentBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent></Select>
+                      <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="board"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{studentBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent></Select>
                     )} />
                   </div>
                   {(watch("className")?.includes("11") || watch("className")?.includes("12")) && (
-                    <div><Label htmlFor="stream"><Palette className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Stream" hi="स्ट्रीम" /></Label>
-                     <Controller name="stream" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="stream"><SelectValue placeholder_en="Select Stream" placeholder_hi="स्ट्रीम चुनें" /></SelectTrigger><SelectContent>{studentStreams.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>)} />
+                    <div><Label htmlFor="stream"><Palette className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Stream" : "Stream"} hi={currentRole === 'parent' ? "बच्चे की स्ट्रीम" : "स्ट्रीम"} /></Label>
+                     <Controller name="stream" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="stream"><SelectValue placeholder_en="Select Stream" placeholder_hi="स्ट्रीम चुनें" /></SelectTrigger><SelectContent>{studentStreams.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select>)} />
                     </div>
                   )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="dateOfBirth"><CalendarIcon className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Date of Birth" hi="जन्म की तारीख" /></Label>
+                    <Label htmlFor="dateOfBirth"><CalendarIcon className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Date of Birth" : "Date of Birth"} hi={currentRole === 'parent' ? "बच्चे की जन्म तिथि" : "जन्म की तारीख"} /></Label>
                     <Controller name="dateOfBirth" control={control} render={({ field }) => (
                       <Popover><PopoverTrigger asChild><Button variant={"outline"} className={cn("w-full justify-start text-left font-normal h-10",!field.value && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{field.value ? format(field.value, "dd-MM-yyyy") : <span><BilingualText en="Pick a date" hi="एक तारीख चुनें"/></span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus captionLayout="buttons" fromYear={1990} toYear={new Date().getFullYear()} /></PopoverContent></Popover>
                     )} />
                   </div>
                   <div>
-                    <Label htmlFor="gender"><Users className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Gender" hi="लिंग" /></Label>
-                    <Controller name="gender" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="gender"><SelectValue placeholder_en="Select Gender" placeholder_hi="लिंग चुनें" /></SelectTrigger><SelectContent>{genders.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent></Select>)} />
+                    <Label htmlFor="gender"><Users className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en={currentRole === 'parent' ? "Child's Gender" : "Gender"} hi={currentRole === 'parent' ? "बच्चे का लिंग" : "लिंग"} /></Label>
+                    <Controller name="gender" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="gender"><SelectValue placeholder_en="Select Gender" placeholder_hi="लिंग चुनें" /></SelectTrigger><SelectContent>{genders.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent></Select>)} />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="examTarget"><TargetIcon className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Exam Target" hi="परीक्षा लक्ष्य" /></Label>
-                  <Controller name="examTarget" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="examTarget"><SelectValue placeholder_en="Select Exam Target" placeholder_hi="परीक्षा लक्ष्य चुनें" /></SelectTrigger><SelectContent>{examTargets.map(target => (<SelectItem key={target} value={target}>{target}</SelectItem>))}</SelectContent></Select>)} />
-                  {errors.examTarget && <p className="text-xs text-destructive mt-1">{errors.examTarget.message}</p>}
-                </div>
+                 {currentRole === 'student' && (
+                    <div>
+                    <Label htmlFor="examTarget"><TargetIcon className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Exam Target" hi="परीक्षा लक्ष्य" /></Label>
+                    <Controller name="examTarget" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="examTarget"><SelectValue placeholder_en="Select Exam Target" placeholder_hi="परीक्षा लक्ष्य चुनें" /></SelectTrigger><SelectContent>{examTargets.map(target => (<SelectItem key={target} value={target}>{target}</SelectItem>))}</SelectContent></Select>)} />
+                    {errors.examTarget && <p className="text-xs text-destructive mt-1">{errors.examTarget.message}</p>}
+                    </div>
+                 )}
               </>
             )}
 
@@ -455,7 +434,7 @@ export default function EditProfilePage() {
                  <div>
                     <Label htmlFor="schoolDesignation" className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-muted-foreground" /> <BilingualText en="Your Designation in School" hi="स्कूल में आपकी पदवी" />*</Label>
                     <Controller name="schoolDesignation" control={control} render={({ field }) => (
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                             <SelectTrigger id="schoolDesignation"><SelectValue placeholder_en="Select your designation" placeholder_hi="अपनी पदवी चुनें" /></SelectTrigger>
                             <SelectContent>
                                 {schoolDesignations.map(desig => <SelectItem key={desig} value={desig}>{desig}</SelectItem>)}
@@ -472,7 +451,7 @@ export default function EditProfilePage() {
                   <div>
                     <Label htmlFor="boardAffiliation"><List className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="Board Affiliation" hi="बोर्ड संबद्धता" />*</Label>
                     <Controller name="boardAffiliation" control={control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="boardAffiliation"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{schoolBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>))}</SelectContent></Select>
+                      <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="boardAffiliation"><SelectValue placeholder_en="Select Board" placeholder_hi="बोर्ड चुनें" /></SelectTrigger><SelectContent>{schoolBoards.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>))}</SelectContent></Select>
                     )} />
                     {errors.boardAffiliation && <p className="text-xs text-destructive mt-1">{errors.boardAffiliation.message}</p>}
                   </div>
@@ -499,19 +478,18 @@ export default function EditProfilePage() {
               </>
             )}
 
-            {/* Location Fields (Common for most roles) */}
             {(currentRole === 'student' || currentRole === 'parent' || currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'school') && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t">
                 <div>
                   <Label htmlFor="state"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="State" hi="राज्य" /></Label>
                   <Controller name="state" control={control} render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}><SelectTrigger id="state"><SelectValue placeholder_en="Select State" placeholder_hi="राज्य चुनें" /></SelectTrigger><SelectContent>{indianStatesAndUTs.map(s => (<SelectItem key={s} value={s}>{s}</SelectItem>))}</SelectContent></Select>
+                    <Select onValueChange={field.onChange} value={field.value || ""}><SelectTrigger id="state"><SelectValue placeholder_en="Select State" placeholder_hi="राज्य चुनें" /></SelectTrigger><SelectContent>{indianStatesAndUTs.map(s => (<SelectItem key={s} value={s}>{s}</SelectItem>))}</SelectContent></Select>
                   )} />
                 </div>
                 <div>
                   <Label htmlFor="city"><MapPin className="inline mr-1 h-4 w-4 text-muted-foreground" /> <BilingualText en="City / District" hi="शहर / जिला" /></Label>
                   <Controller name="city" control={control} render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value} disabled={!selectedState || citiesForSelectedState.length === 0}><SelectTrigger id="city"><SelectValue placeholder_en={!selectedState ? "Select State first" : "Select City/District"} placeholder_hi={!selectedState ? "पहले राज्य चुनें" : "शहर/जिला चुनें"} /></SelectTrigger><SelectContent>{citiesForSelectedState.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
+                    <Select onValueChange={field.onChange} value={field.value || ""} disabled={!selectedState || citiesForSelectedState.length === 0}><SelectTrigger id="city"><SelectValue placeholder_en={!selectedState ? "Select State first" : "Select City/District"} placeholder_hi={!selectedState ? "पहले राज्य चुनें" : "शहर/जिला चुनें"} /></SelectTrigger><SelectContent>{citiesForSelectedState.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}</SelectContent></Select>
                   )} />
                   {citiesForSelectedState.length === 0 && selectedState && <p className="text-xs text-muted-foreground mt-1">No cities listed for {selectedState}. Type to add.</p>}
                 </div>
@@ -534,3 +512,6 @@ export default function EditProfilePage() {
     </div>
   );
 }
+
+
+    
