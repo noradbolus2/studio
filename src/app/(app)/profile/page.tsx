@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon, BarChart3, Trophy } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon, BarChart3, Trophy, ShieldCheck } from "lucide-react"; // Added ShieldCheck
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -416,6 +416,13 @@ export default function ProfilePage() {
                 <Link href="/settings/accounts">
                     <Link2 className="h-5 w-5 text-muted-foreground" />
                     <BilingualText en="Manage Linked Accounts" hi="जुड़े हुए खाते प्रबंधित करें" />
+                </Link>
+            </Button>
+            {/* Placeholder for Platform Admin Link */}
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+                <Link href="/platform-admin">
+                    <ShieldCheck className="h-5 w-5 text-destructive" />
+                    <BilingualText en="Platform Admin (Prototype)" hi="प्लेटफ़ॉर्म एडमिन (प्रोटोटाइप)" />
                 </Link>
             </Button>
         </CardContent>

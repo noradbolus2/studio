@@ -1,0 +1,86 @@
+
+"use client";
+
+import { BilingualText } from "@/components/shared/BilingualText";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+const platformStats = [
+  { id: "total_users", labelEn: "Total Users", labelHi: "कुल उपयोगकर्ता", value: "10,250+", icon: Users, color: "text-blue-500" },
+  { id: "schools", labelEn: "Registered Schools", labelHi: "पंजीकृत स्कूल", value: "52", icon: School, color: "text-green-500" },
+  { id: "vendors", labelEn: "Active Vendors", labelHi: "सक्रिय विक्रेता", value: "180+", icon: Briefcase, color: "text-purple-500" },
+  { id: "creators", labelEn: "Content Creators", labelHi: "सामग्री निर्माता", value: "115", icon: Sparkles, color: "text-pink-500" },
+  { id: "live_classes", labelEn: "Active Live Classes", labelHi: "सक्रिय लाइव कक्षाएं", value: "23", icon: RadioTower, color: "text-orange-500" },
+  { id: "content_items", labelEn: "Total Content Items", labelHi: "कुल सामग्री आइटम", value: "5000+", icon: Package, color: "text-teal-500" },
+];
+
+const adminActions = [
+  { id: "manage_users", labelEn: "User Management", labelHi: "उपयोगकर्ता प्रबंधन", icon: Users, href: "/platform-admin/users" },
+  { id: "content_moderation", labelEn: "Content Moderation", labelHi: "सामग्री मॉडरेशन", icon: FileCog, href: "/platform-admin/content-moderation" },
+  { id: "platform_analytics", labelEn: "Platform Analytics", labelHi: "प्लेटफ़ॉर्म एनालिटिक्स", icon: BarChart3, href: "/platform-admin/analytics" },
+  { id: "system_settings", labelEn: "System Settings", labelHi: "सिस्टम सेटिंग्स", icon: Settings, href: "/platform-admin/settings" },
+  { id: "view_logs", labelEn: "System Logs", labelHi: "सिस्टम लॉग", icon: Eye, href: "/platform-admin/logs" },
+  { id: "manage_roles", labelEn: "Role Management", labelHi: "भूमिका प्रबंधन", icon: ShieldCheck, href: "/platform-admin/roles"},
+];
+
+export default function PlatformAdminDashboardPage() {
+  const router = useRouter();
+
+  const handleActionClick = (href: string) => {
+    // For now, just log or show a toast as pages might not exist
+    console.log(`Navigating to ${href}`);
+    // router.push(href); // Uncomment when pages are ready
+    alert(`Placeholder: Would navigate to ${href}`);
+  };
+
+  return (
+    <div className="space-y-8">
+      <header className="text-center">
+        <ShieldCheck className="h-12 w-12 text-primary mx-auto mb-2" />
+        <h1 className="text-3xl font-bold font-headline text-primary">
+          <BilingualText en="Platform Administration" hi="प्लेटफ़ॉर्म प्रशासन" />
+        </h1>
+        <p className="text-muted-foreground">
+          <BilingualText en="Oversee and manage the OSO Application." hi="ओएसओ एप्लिकेशन का निरीक्षण और प्रबंधन करें।" />
+        </p>
+      </header>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {platformStats.map(stat => (
+          <Card key={stat.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelHi} /></CardTitle>
+              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline"><BilingualText en="Administrative Actions" hi="प्रशासनिक कार्रवाइयां"/></CardTitle>
+            <CardDescription><BilingualText en="Access key platform management modules." hi="प्रमुख प्लेटफ़ॉर्म प्रबंधन मॉड्यूल तक पहुंचें।" /></CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {adminActions.map(action => (
+                <Button
+                    key={action.id}
+                    variant="outline"
+                    className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
+                    onClick={() => handleActionClick(action.href)}
+                >
+                    <action.icon className="h-7 w-7 text-primary mb-1"/>
+                    <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                </Button>
+            ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
