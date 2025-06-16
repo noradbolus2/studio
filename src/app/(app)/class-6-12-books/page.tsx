@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from 'react'; // Added useEffect
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BookText, Search, Filter, BookOpenCheck, DownloadCloud, ShoppingCart, Info } from 'lucide-react';
-import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData
+import type { ProfileFormData } from '../edit-profile/page';
+import Link from 'next/link'; // Added Link for navigation
 
 interface NcertBook {
   id: string;
@@ -20,9 +21,10 @@ interface NcertBook {
   subjectHi: string;
   board: 'NCERT' | 'State Board';
   medium: 'English' | 'Hindi' | 'English/Hindi';
-  imageUrl?: string; // Made optional
+  imageUrl?: string;
   dataAiHint: string;
   status: 'free' | 'buy';
+  pdfUrl?: string; // New field for direct PDF link
 }
 
 const allNcertBooks: NcertBook[] = [
@@ -42,11 +44,11 @@ const allNcertBooks: NcertBook[] = [
 
   // Class 9
   { id: 'c9_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 9, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1509869175650-a1d97972541a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'free' },
-  { id: 'c9_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 9, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1475906089153-644d9452ce87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook", status: 'free' },
+  { id: 'c9_science_e', titleEn: 'Science', titleHi: 'विज्ञान', class: 9, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1475906089153-644d9452ce87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook", status: 'free', pdfUrl: 'https://ncert.nic.in/textbook/pdf/iesc101.pdf' },
   { id: 'c9_sst_sb_e', titleEn: 'Social Studies', titleHi: 'सामाजिक अध्ययन', class: 9, subjectEn: 'Social Science', subjectHi: 'सामाजिक विज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzb2NpYWwlMjBzdHVkaWVzJTIwdGV4dGJvb2t8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "social studies textbook", status: 'free' },
 
   // Class 10
-  { id: 'c10_math_e', titleEn: 'Mathematics', titleHi: 'गणित', class: 10, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'buy' },
+  { id: 'c10_math_e', titleEn: 'Mathematics Ch1: Real Numbers', titleHi: 'गणित अध्याय1: वास्तविक संख्याएँ', class: 10, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYXRocyUyMHRleHRib29rfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook", status: 'free', pdfUrl: 'https://ncert.nic.in/textbook/pdf/jemh101.pdf' },
   { id: 'c10_science_h', titleEn: 'Science (Hindi Med.)', titleHi: 'विज्ञान', class: 10, subjectEn: 'Science', subjectHi: 'विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGV4dGJvb2slMjBoaW5kaXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "science textbook hindi", status: 'free' },
 
   // Class 11
@@ -54,7 +56,7 @@ const allNcertBooks: NcertBook[] = [
   { id: 'c11_chemistry1_h', titleEn: 'Chemistry Part-I (Hindi Med.)', titleHi: 'रसायन विज्ञान भाग-I', class: 11, subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1616908842279-1fdbda128284?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGVtaXN0cnklMjB0ZXh0Ym9vayUyMGhpbmRpfGVufDB8fHx8MTc0OTIyOTgzNHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "chemistry textbook hindi", status: 'buy' },
 
   // Class 12
-  { id: 'c12_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 12, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', dataAiHint: "physics textbook", status: 'free' }, // imageUrl removed to test fallback
+  { id: 'c12_physics1_e', titleEn: 'Physics Part-I', titleHi: 'भौतिकी भाग-I', class: 12, subjectEn: 'Physics', subjectHi: 'भौतिकी', board: 'NCERT', medium: 'English', dataAiHint: "physics textbook", status: 'free' },
   { id: 'c12_maths1_h', titleEn: 'Mathematics Part-I (Hindi Med.)', titleHi: 'गणित भाग-I', class: 12, subjectEn: 'Mathematics', subjectHi: 'गणित', board: 'NCERT', medium: 'Hindi', imageUrl: 'https://images.unsplash.com/photo-1602772576461-31b6d6dba5da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXRocyUyMHRleHRib29rJTIwaGluZGl8ZW58MHx8fHwxNzQ5MjI5ODM0fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "maths textbook hindi", status: 'buy' },
   { id: 'c12_biology_sb_e', titleEn: 'Biology', titleHi: 'जीवविज्ञान', class: 12, subjectEn: 'Biology', subjectHi: 'जीवविज्ञान', board: 'State Board', medium: 'English', imageUrl: 'https://images.unsplash.com/photo-1747769005252-80e91287820a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxiaW9sb2d5JTIwdGV4dGJvb2slMjBzdGF0ZXxlbnwwfHx8fDE3NDkyMjk4MzR8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "biology textbook state", status: 'free' },
 ];
@@ -212,26 +214,49 @@ export default function NcertBooksPage() {
                 </CardDescription>
               </CardContent>
               <CardFooter className="p-2 pt-0 flex flex-col space-y-1.5">
-                {book.status === 'free' ? (
+                {book.pdfUrl ? (
                   <>
-                    <Button variant="outline" size="sm" className="w-full text-xs h-8">
-                      <BookOpenCheck size={14} className="mr-1.5" />
-                      <BilingualText en="Read Online" hi="ऑनलाइन पढ़ें" />
+                    <Button asChild variant="outline" size="sm" className="w-full text-xs h-8">
+                      <a href={book.pdfUrl} target="_blank" rel="noopener noreferrer">
+                        <BookOpenCheck size={14} className="mr-1.5" />
+                        <BilingualText en="Read Online" hi="ऑनलाइन पढ़ें" />
+                      </a>
                     </Button>
-                    <Button variant="outline" size="sm" className="w-full text-xs h-8">
-                      <DownloadCloud size={14} className="mr-1.5" />
-                      <BilingualText en="Download PDF" hi="पीडीएफ डाउनलोड करें" />
+                    <Button asChild variant="outline" size="sm" className="w-full text-xs h-8">
+                      {/* Forcing download is tricky with cross-origin, browser usually handles PDF opening */}
+                      <a href={book.pdfUrl} target="_blank" rel="noopener noreferrer" download>
+                        <DownloadCloud size={14} className="mr-1.5" />
+                        <BilingualText en="Download PDF" hi="पीडीएफ डाउनलोड करें" />
+                      </a>
                     </Button>
+                    {/* If it was a 'buy' book with a sample PDF, the Add to Cart button would still be here based on status */}
+                    {book.status === 'buy' && (
+                        <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90 text-xs h-8 mt-1.5">
+                            <ShoppingCart size={14} className="mr-1.5" />
+                            <BilingualText en="Add to Cart" hi="कार्ट में डालें" />
+                        </Button>
+                    )}
                   </>
-                ) : (
+                ) : book.status === 'buy' ? ( // 'buy' status but no PDF sample
                   <>
-                    <Button variant="outline" size="sm" className="w-full text-xs h-8">
+                    <Button variant="outline" size="sm" className="w-full text-xs h-8 opacity-50 cursor-not-allowed">
                       <Info size={14} className="mr-1.5" />
-                      <BilingualText en="View Sample" hi="नमूना देखें" />
+                      <BilingualText en="Sample N/A" hi="नमूना उपलब्ध नहीं" />
                     </Button>
                     <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90 text-xs h-8">
                       <ShoppingCart size={14} className="mr-1.5" />
                       <BilingualText en="Add to Cart" hi="कार्ट में डालें" />
+                    </Button>
+                  </>
+                ) : ( // 'free' status but no PDF URL
+                  <>
+                    <Button variant="outline" size="sm" className="w-full text-xs h-8 opacity-50 cursor-not-allowed">
+                      <BookOpenCheck size={14} className="mr-1.5" />
+                      <BilingualText en="Read (N/A)" hi="पढ़ें (N/A)" />
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full text-xs h-8 opacity-50 cursor-not-allowed">
+                      <DownloadCloud size={14} className="mr-1.5" />
+                      <BilingualText en="Download (N/A)" hi="डाउनलोड (N/A)" />
                     </Button>
                   </>
                 )}
@@ -265,3 +290,4 @@ export default function NcertBooksPage() {
     
 
     
+
