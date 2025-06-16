@@ -33,23 +33,24 @@ const profileSchema = z.object({
 
   // Student specific
   phoneNumber: z.string().optional(),
-  schoolName: z.string().optional(),
-  schoolId: z.string().optional(), // For student linking to school
-  className: z.string().optional(), // Class for student
+  schoolName: z.string().optional(), // For student, this is their school. For school role, this is THE school's name.
+  schoolId: z.string().optional(), // For student linking to school or THE school's ID from API
+  className: z.string().optional(), 
   board: z.string().optional(),
   stream: z.string().optional(),
-  dateOfBirth: z.string().optional(), // Stored as string, validated as date
+  dateOfBirth: z.string().optional(), 
   gender: z.string().optional(),
-  examTarget: z.string().optional(), // For student
+  examTarget: z.string().optional(), 
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().optional().default("India"),
 
-  // School specific
+  // School specific (when role is 'school')
   schoolAddress: z.string().optional(),
   schoolContact: z.string().optional(),
   affiliationNumber: z.string().optional(),
-  principalName: z.string().optional(),
+  principalName: z.string().optional(), // Name of the principal, could be different from contact person
+  schoolDesignation: z.string().optional(), // Designation of the person filling this form (e.g., Principal)
   
   // Vendor specific
   businessName: z.string().optional(),
@@ -58,8 +59,8 @@ const profileSchema = z.object({
   businessAddress: z.string().optional(),
   
   // Creator specific
-  creatorName: z.string().optional(), // Can be different from fullName for a "brand"
-  expertise: z.string().optional(), // Comma-separated or primary area
+  creatorName: z.string().optional(), 
+  expertise: z.string().optional(), 
   portfolioUrl: z.string().url("Invalid URL").optional().or(z.literal('')),
   
   // Parent specific
@@ -67,13 +68,12 @@ const profileSchema = z.object({
   childClass: z.string().optional(),
   childSchoolName: z.string().optional(),
 
-  // Common for business-type roles
-  contactPersonName: z.string().optional(),
+  // Common for business-type roles (School, Vendor, Creator)
+  contactPersonName: z.string().optional(), // This will be pre-filled by `fullName` from auth step
   contactPersonEmail: z.string().email("Invalid email").optional().or(z.literal('')),
   contactPersonPhone: z.string().optional(),
   
-  // From Auth page
-  schoolDesignation: z.string().optional(),
+  apiSchoolId: z.string().optional(), // To store the ID from the school registration API
 
 }).refine(data => {
   if (data.dateOfBirth) {
@@ -84,7 +84,12 @@ const profileSchema = z.object({
 }, {
   message: "Invalid date of birth format. Use YYYY-MM-DD.",
   path: ["dateOfBirth"],
-});
+}).refine(data => {
+  if (data.role === 'school' && !data.schoolName?.trim()) {
+    return false;
+  }
+  return true;
+}, { message: "School Name is required for school role.", path: ["schoolName"] });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
@@ -99,14 +104,14 @@ export default function EditProfilePage() {
   const avatarFileRef = useRef<HTMLInputElement>(null);
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
-  const [apiSchoolId, setApiSchoolId] = useState<string | null>(null);
+  // No longer need apiSchoolId state here, it's part of form data.
 
   const { control, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting: isRhfSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       role: "student",
-      fullName: "",
-      email: "",
+      fullName: "", // Will be overridden by auth page name or localStorage
+      email: "",    // Will be overridden by auth page email or localStorage
       country: "India",
       avatarUrl: "",
       dataAiHint: "student avatar",
@@ -126,36 +131,35 @@ export default function EditProfilePage() {
 
     if (typeof window !== "undefined") {
         const emailFromParam = searchParams.get("email");
-        const nameFromParam = searchParams.get("name");
-        const designationFromParam = searchParams.get("designation");
+        const nameFromParam = searchParams.get("name"); // This is the contact person's name from auth
+        const designationFromParam = searchParams.get("designation"); // Designation from auth for school role
+        const isNewUser = searchParams.get('isNewUser') === 'true';
 
         if (emailFromParam) initialProfileData.email = emailFromParam;
-        if (nameFromParam) initialProfileData.fullName = nameFromParam; // Use as default fullName
-        if (designationFromParam && roleFromParams === 'school') initialProfileData.schoolDesignation = designationFromParam;
+        if (nameFromParam) {
+            initialProfileData.fullName = nameFromParam; // User's own name / contact person name
+            initialProfileData.contactPersonName = nameFromParam; // Also set as contact person name
+        }
+        if (designationFromParam && roleFromParams === 'school') {
+            initialProfileData.schoolDesignation = designationFromParam;
+        }
 
-
-        // Load existing profile from localStorage if available
-        const profileKey = `${roleFromParams}ProfileData`; // e.g., studentProfileData
-        const storedProfileString = localStorage.getItem(profileKey) || localStorage.getItem('userProfileData'); // Fallback to generic
+        const profileKey = `${roleFromParams}ProfileData`;
+        const storedProfileString = localStorage.getItem(profileKey) || localStorage.getItem('userProfileData');
         
-        if (storedProfileString) {
+        if (storedProfileString && !isNewUser) { // Only load if not a brand new user registration flow
             try {
                 const storedProfile = JSON.parse(storedProfileString) as ProfileFormData;
-                // Only load if email matches, or if it's a new user filling profile first time
-                if (storedProfile.email === emailFromParam || searchParams.get('isNewUser') === 'true') {
-                    initialProfileData = { ...initialProfileData, ...storedProfile, role: roleFromParams };
-                } else if (!emailFromParam) { // If no email in param, assume loading existing profile fully
-                    initialProfileData = { ...storedProfile, role: roleFromParams };
+                if (storedProfile.email === emailFromParam || !emailFromParam) {
+                    initialProfileData = { ...storedProfile, ...initialProfileData, role: roleFromParams }; // Params override stored for key fields
                 }
             } catch (e) { console.error("Failed to parse stored profile", e); }
         }
         
-        // Ensure role-specific name fields are pre-filled from fullName if new and available
-        if (searchParams.get('isNewUser') === 'true' && nameFromParam) {
-            if(roleFromParams === 'school') initialProfileData.schoolName = nameFromParam;
-            if(roleFromParams === 'vendor') initialProfileData.businessName = nameFromParam;
-            if(roleFromParams === 'creator') initialProfileData.creatorName = nameFromParam;
-            // Keep fullName as is, user can change if needed
+        // For new school registration, set principalName to the contact person's name by default
+        if (isNewUser && roleFromParams === 'school' && nameFromParam) {
+            initialProfileData.principalName = nameFromParam;
+            // School Name will be entered by the user in the form
         }
     }
     reset(initialProfileData);
@@ -175,7 +179,7 @@ export default function EditProfilePage() {
         toast({ title: "Invalid File Type", description: "Please select an image file.", variant: "destructive" });
         return;
       }
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+      if (file.size > 2 * 1024 * 1024) { 
         toast({ title: "File Too Large", description: "Image must be less than 2MB.", variant: "destructive" });
         return;
       }
@@ -183,8 +187,7 @@ export default function EditProfilePage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
-        setValue("avatarUrl", reader.result as string); // Store as base64
-        // Simple AI hint based on filename or a generic one
+        setValue("avatarUrl", reader.result as string); 
         setValue("dataAiHint", file.name.toLowerCase().includes("female") || file.name.toLowerCase().includes("girl") ? "female avatar" : 
                                file.name.toLowerCase().includes("male") || file.name.toLowerCase().includes("boy") ? "male avatar" : "person avatar");
       };
@@ -208,12 +211,9 @@ export default function EditProfilePage() {
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsSubmittingProfile(true);
-    const profileKey = `${currentRole}ProfileData`;
-    console.log(`Saving data for role ${currentRole}:`, data);
+    const isNewSchoolRegistration = currentRole === 'school' && searchParams.get('isNewUser') === 'true';
+    let schoolApiIdFromResponse: string | null = null;
 
-    let schoolApiIdToSave: string | null = null;
-
-    // Specific logic for school role
     if (currentRole === 'school') {
         const schoolApiData = {
             schoolName: data.schoolName,
@@ -221,8 +221,11 @@ export default function EditProfilePage() {
             contactNumber: data.schoolContact,
             principalName: data.principalName,
             affiliationNumber: data.affiliationNumber,
-            email: data.email, // Assuming school's primary email is this
-            // Add any other fields your API expects
+            email: data.email, 
+            contactPersonName: data.contactPersonName || data.fullName, // Ensure contactPersonName is prioritized
+            contactPersonEmail: data.contactPersonEmail || data.email,
+            contactPersonPhone: data.contactPersonPhone,
+            designation: data.schoolDesignation,
         };
 
         try {
@@ -238,11 +241,11 @@ export default function EditProfilePage() {
             console.log("API Response Data:", responseData);
 
             if (response.ok && responseData.id) {
-                schoolApiIdToSave = responseData.id; // Capture the ID from API response
-                setApiSchoolId(schoolApiIdToSave); // Store in state if needed elsewhere
+                schoolApiIdFromResponse = responseData.id;
+                setValue('apiSchoolId', schoolApiIdFromResponse); // Set in form data for saving
                 toast({
-                    title: "School Profile Registered",
-                    description: `School "${data.schoolName}" registered with API. ID: ${schoolApiIdToSave}`,
+                    title: "School Profile Registered with API",
+                    description: `School "${data.schoolName}" registered. ID: ${schoolApiIdFromResponse}`,
                 });
             } else {
                  const errorMessage = responseData.error || responseData.message || `Failed to register school with API. Status: ${response.status}`;
@@ -251,8 +254,6 @@ export default function EditProfilePage() {
                     description: errorMessage,
                     variant: "destructive",
                 });
-                // Decide if you want to stop localStorage save on API error
-                // For now, we'll proceed to save to localStorage anyway but you might change this.
                  console.error("School API Error:", errorMessage, "Response Body:", responseData);
             }
         } catch (apiError: any) {
@@ -262,15 +263,21 @@ export default function EditProfilePage() {
                 variant: "destructive",
             });
             console.error("School API Connection Error:", apiError);
-            // Proceed to save to localStorage even if API fails
         }
     }
     
-    // Save to localStorage (common for all roles)
     try {
-        const dataToSave = { ...data, apiSchoolId: currentRole === 'school' ? schoolApiIdToSave : undefined };
+        const profileKey = `${currentRole}ProfileData`;
+        // If it was a new school registration and we got an ID, use it to make the key more specific (optional)
+        // const finalProfileKey = isNewSchoolRegistration && schoolApiIdFromResponse ? `schoolProfileData_${schoolApiIdFromResponse}` : profileKey;
+        
+        const dataToSave: ProfileFormData = { 
+            ...data, 
+            apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId // Ensure apiSchoolId is part of the saved data
+        };
+
         localStorage.setItem(profileKey, JSON.stringify(dataToSave));
-        localStorage.setItem('userProfileData', JSON.stringify(dataToSave)); // Also update the generic key
+        localStorage.setItem('userProfileData', JSON.stringify(dataToSave)); 
 
         toast({
             title: "Profile Saved!",
@@ -283,8 +290,6 @@ export default function EditProfilePage() {
         else if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
         else if (currentRole === 'parent') redirectPath = '/parent-mode';
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
-        // Student defaults to '/' or '/student-dashboard' if you have one
-
         router.push(redirectPath);
 
     } catch (error) {
@@ -321,9 +326,17 @@ export default function EditProfilePage() {
               {currentRole === 'school' && <School className="h-7 w-7" />}
               {currentRole === 'vendor' && <Briefcase className="h-7 w-7" />}
               {currentRole === 'creator' && <CreatorIcon className="h-7 w-7" />}
-              <BilingualText en={`Edit ${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} Profile`} hi={`${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} प्रोफ़ाइल संपादित करें`} />
+              <BilingualText 
+                en={currentRole === 'school' && searchParams.get('isNewUser') === 'true' ? "Register Your School" : `Edit ${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} Profile`} 
+                hi={currentRole === 'school' && searchParams.get('isNewUser') === 'true' ? "अपना स्कूल पंजीकृत करें" : `${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} प्रोफ़ाइल संपादित करें`} 
+              />
             </CardTitle>
-            <CardDescription><BilingualText en="Keep your information up to date." hi="अपनी जानकारी अपडेट रखें।" /></CardDescription>
+            <CardDescription>
+              <BilingualText 
+                en={currentRole === 'school' && searchParams.get('isNewUser') === 'true' ? "Provide details about your school to get started." : "Keep your information up to date."} 
+                hi={currentRole === 'school' && searchParams.get('isNewUser') === 'true' ? "शुरू करने के लिए अपने स्कूल के बारे में विवरण प्रदान करें।" : "अपनी जानकारी अपडेट रखें।" }
+              />
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-col items-center space-y-3">
@@ -338,15 +351,25 @@ export default function EditProfilePage() {
               {selectedFileName && <p className="text-xs text-muted-foreground">{selectedFileName}</p>}
             </div>
             
-            {/* Common Fields */}
+            {/* Common Fields based on role context */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="fullName"><BilingualText en="Full Name" hi="पूरा नाम" />*</Label>
+                <Label htmlFor="fullName">
+                  <BilingualText 
+                    en={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "Contact Person Name" : "Full Name"} 
+                    hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "संपर्क व्यक्ति का नाम" : "पूरा नाम"} 
+                  />*
+                </Label>
                 <Controller name="fullName" control={control} render={({ field }) => <Input id="fullName" {...field} placeholder="Your full name" />} />
                 {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
               </div>
               <div>
-                <Label htmlFor="email"><BilingualText en="Email" hi="ईमेल" />*</Label>
+                <Label htmlFor="email">
+                   <BilingualText 
+                    en={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "Contact Email" : "Email"} 
+                    hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "संपर्क ईमेल" : "ईमेल"} 
+                  />*
+                </Label>
                 <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder="you@example.com" />} />
                 {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
               </div>
@@ -382,6 +405,7 @@ export default function EditProfilePage() {
             )}
             {currentRole === 'school' && (
               <>
+                {/* School Name is the first crucial field for school registration */}
                 <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" />*</Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} required />} />{errors.schoolName && <p className="text-xs text-destructive mt-1">{errors.schoolName.message}</p>}</div>
                 <div><Label htmlFor="schoolAddress"><BilingualText en="School Address" hi="स्कूल का पता" /></Label><Controller name="schoolAddress" control={control} render={({ field }) => <Textarea id="schoolAddress" {...field} />} /></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -389,14 +413,13 @@ export default function EditProfilePage() {
                     <div><Label htmlFor="affiliationNumber"><BilingualText en="Affiliation Number" hi="संबद्धता संख्या" /></Label><Controller name="affiliationNumber" control={control} render={({ field }) => <Input id="affiliationNumber" {...field} />} /></div>
                 </div>
                 <div><Label htmlFor="principalName"><BilingualText en="Principal's Name" hi="प्रधानाचार्य का नाम" /></Label><Controller name="principalName" control={control} render={({ field }) => <Input id="principalName" {...field} />} /></div>
+                
+                {/* Contact person details are important for who is managing the OSO account for the school */}
                 <Card className="bg-muted/50 p-4">
-                    <p className="text-sm font-medium mb-2">Contact Person (for OSO)</p>
-                    <div><Label htmlFor="contactPersonName"><BilingualText en="Name" hi="नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} />} /></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <div><Label htmlFor="contactPersonEmail"><BilingualText en="Email" hi="ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} />} /></div>
-                        <div><Label htmlFor="contactPersonPhone"><BilingualText en="Phone" hi="फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
-                    </div>
-                     <div>
+                    <p className="text-sm font-medium mb-2">OSO Account Contact Person</p>
+                    {/* fullName (Contact Person Name) and email are already at the top */}
+                    <div><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Person Phone" hi="संपर्क व्यक्ति फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
+                    <div>
                         <Label htmlFor="schoolDesignation" className="mt-2 block"><BilingualText en="Your Designation" hi="आपकी पदवी" />*</Label>
                         <Controller name="schoolDesignation" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value} required><SelectTrigger><SelectValue placeholder="Select your designation" /></SelectTrigger><SelectContent>{schoolDesignations.map(desig => (<SelectItem key={desig} value={desig}>{desig}</SelectItem>))}</SelectContent></Select>)} />
                         {errors.schoolDesignation && <p className="text-xs text-destructive mt-1">{errors.schoolDesignation.message}</p>}
@@ -411,12 +434,9 @@ export default function EditProfilePage() {
                 <div><Label htmlFor="gstin"><BilingualText en="GSTIN (Optional)" hi="जीएसटीआईएन (वैकल्पिक)" /></Label><Controller name="gstin" control={control} render={({ field }) => <Input id="gstin" {...field} />} /></div>
                 <div><Label htmlFor="businessAddress"><BilingualText en="Business Address" hi="व्यावसायिक पता" /></Label><Controller name="businessAddress" control={control} render={({ field }) => <Textarea id="businessAddress" {...field} />} /></div>
                 <Card className="bg-muted/50 p-4">
-                    <p className="text-sm font-medium mb-2">Contact Person</p>
-                    <div><Label htmlFor="contactPersonName"><BilingualText en="Name" hi="नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} value={field.value ?? watch('fullName')} />} /></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <div><Label htmlFor="contactPersonEmail"><BilingualText en="Email" hi="ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} value={field.value ?? watch('email')} />} /></div>
-                        <div><Label htmlFor="contactPersonPhone"><BilingualText en="Phone" hi="फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
-                    </div>
+                    <p className="text-sm font-medium mb-2">Contact Person (for OSO)</p>
+                    {/* fullName (Contact Person Name) and email are at top */}
+                    <div><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
                 </Card>
               </>
             )}
@@ -426,12 +446,9 @@ export default function EditProfilePage() {
                 <div><Label htmlFor="expertise"><BilingualText en="Areas of Expertise" hi="विशेषज्ञता के क्षेत्र" /></Label><Controller name="expertise" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select primary expertise" /></SelectTrigger><SelectContent>{creatorExpertiseAreas.map(area => (<SelectItem key={area} value={area}>{area}</SelectItem>))}</SelectContent></Select>)} /></div>
                 <div><Label htmlFor="portfolioUrl"><BilingualText en="Portfolio URL (Optional)" hi="पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} placeholder="https://example.com/my-work" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
                 <Card className="bg-muted/50 p-4">
-                     <p className="text-sm font-medium mb-2">Contact Details (for OSO)</p>
-                    <div><Label htmlFor="contactPersonName"><BilingualText en="Full Name (Private)" hi="पूरा नाम (निजी)" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} value={field.value ?? watch('fullName')} />} /></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Email (Private)" hi="संपर्क ईमेल (निजी)" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} value={field.value ?? watch('email')} />} /></div>
-                        <div><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone (Private)" hi="संपर्क फ़ोन (निजी)" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
-                    </div>
+                     <p className="text-sm font-medium mb-2">Contact Details (Private, for OSO)</p>
+                    {/* fullName (Contact Person Name) and email are at top */}
+                    <div><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
                 </Card>
               </>
             )}
@@ -457,7 +474,6 @@ export default function EditProfilePage() {
   );
 }
 
-// Type declarations for extending HTMLAttributes for bilingual placeholders
 declare module 'react' {
     interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
       placeholder_en?: string;

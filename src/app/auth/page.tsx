@@ -2,7 +2,7 @@
 "use client";
 import { useState, type FormEvent, useEffect } from "react";
 import Image from "next/image";
-import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon, ArrowLeft, Briefcase, School as SchoolIconLucide, Sparkles as CreatorIcon, Edit3, Landmark, ShieldCheck } from "lucide-react"; // Added SchoolIconLucide, Landmark, ShieldCheck
+import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon, ArrowLeft, Briefcase, School as SchoolIconLucide, Sparkles as CreatorIcon, Edit3, Landmark, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -22,7 +22,7 @@ export default function AuthPage() {
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
   const [isLoading, setIsLoading] = useState(false);
 
-  const [name, setName] = useState(''); // Generic name field for signup
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -36,9 +36,8 @@ export default function AuthPage() {
   const selectedRole = searchParams.get('role');
 
   useEffect(() => {
-    console.log("Selected role on auth page:", selectedRole);
     if (selectedRole !== 'school') {
-      setSchoolDesignation(''); // Clear designation if role is not school
+      setSchoolDesignation('');
     }
   }, [selectedRole]);
 
@@ -50,15 +49,16 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    let redirectPath = '/edit-profile'; // Default to consolidated profile page
+    let redirectPath = '/';
     let queryParams = new URLSearchParams();
     queryParams.set('email', email);
-    queryParams.set('isNewUser', 'true');
     if (selectedRole) queryParams.set('role', selectedRole);
-    queryParams.set('name', name); // Pass the generic name field for pre-filling
 
 
     if (mode === 'signUp') {
+      queryParams.set('isNewUser', 'true');
+      queryParams.set('name', name); // Pass the generic name field for pre-filling
+
       if (password !== confirmPassword) {
         toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" });
         setIsLoading(false);
@@ -74,12 +74,15 @@ export default function AuthPage() {
         setIsLoading(false);
         return;
       }
+      if (selectedRole === 'school') {
+        queryParams.set('designation', schoolDesignation);
+      }
       
       localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student', designation: selectedRole === 'school' ? schoolDesignation : undefined }));
+      // Set loggedInUser immediately so edit-profile page can use it for context
       localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student', designation: selectedRole === 'school' ? schoolDesignation : undefined }));
-      toast({ title: "Sign Up Successful", description: "Welcome! Please complete your profile." });
 
-      // All roles now go to /edit-profile, which will handle role-specific fields
+      toast({ title: "Sign Up Initiated", description: "Please complete your profile to finish registration." });
       redirectPath = `/edit-profile?${queryParams.toString()}`;
 
     } else { // Sign In
@@ -92,9 +95,8 @@ export default function AuthPage() {
       if (storedCredentialsString) {
         const storedCredentials = JSON.parse(storedCredentialsString);
         if (storedCredentials.password === password) {
-          // Ensure the role stored during signup is used, or fallback to current selection/student
           const userRole = storedCredentials.role || selectedRole || 'student';
-          const userDesignation = storedCredentials.designation; // Get stored designation
+          const userDesignation = storedCredentials.designation;
 
           localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole, designation: userDesignation }));
           toast({ title: "Sign In Successful", description: "Welcome back!" });
@@ -125,6 +127,7 @@ export default function AuthPage() {
   const getFullNameLabel = () => {
     switch (selectedRole) {
         case 'school':
+            return { en: "Your Full Name (e.g., Principal's Name)", hi: "आपका पूरा नाम (उदा., प्रधानाचार्य का नाम)" };
         case 'vendor':
         case 'creator':
             return { en: "Contact Person Name", hi: "संपर्क व्यक्ति का नाम" };
@@ -186,7 +189,7 @@ export default function AuthPage() {
               {mode === 'signIn' ? (
                 <BilingualText en="Welcome back! Please enter your details." hi="वापसी पर स्वागत है! कृपया अपना विवरण दर्ज करें।" lang={currentLang} />
               ) : (
-                <BilingualText en="Create your OSO account." hi="अपना OSO खाता बनाएं।" lang={currentLang} />
+                <BilingualText en={selectedRole === 'school' ? "Register your school account." : "Create your OSO account."} hi={selectedRole === 'school' ? "अपना स्कूल खाता पंजीकृत करें।" : "अपना OSO खाता बनाएं।"} lang={currentLang} />
               )}
             </CardDescription>
           </CardHeader>
@@ -228,7 +231,7 @@ export default function AuthPage() {
                     <div className="space-y-1 text-left">
                         <Label htmlFor="schoolDesignation" className="flex items-center text-muted-foreground">
                             <ShieldCheck className="h-4 w-4 mr-1.5 text-primary/70" />
-                            <BilingualText en="Your Designation" hi="आपकी पदवी" lang={currentLang} />
+                            <BilingualText en="Your Designation" hi="आपकी पदवी" lang={currentLang} />*
                         </Label>
                         <Select value={schoolDesignation} onValueChange={setSchoolDesignation} required>
                             <SelectTrigger id="schoolDesignation">
@@ -251,7 +254,7 @@ export default function AuthPage() {
                 {mode === 'signIn' ? (
                   <BilingualText en="Sign In" hi="साइन इन करें" lang={currentLang} />
                 ) : (
-                  <BilingualText en="Sign Up" hi="साइन अप करें" lang={currentLang} />
+                  <BilingualText en="Sign Up & Proceed" hi="साइन अप करें और आगे बढ़ें" lang={currentLang} />
                 )}
               </Button>
               <Button
