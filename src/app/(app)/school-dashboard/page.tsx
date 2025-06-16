@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { 
     School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, CheckCircle,
-    BookOpen as LibraryIcon, IndianRupee as RupeeIcon, MessageSquare as InquiryIcon, Settings as GenericStaffIcon, Briefcase
+    BookOpen as LibraryIcon, IndianRupee as RupeeIcon, MessageSquare as InquiryIcon, Settings as GenericStaffIcon, Briefcase, LogOut
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,8 +22,8 @@ import AccountantDashboardView from '@/components/school/AccountantDashboardView
 import StaffDashboardView from '@/components/school/StaffDashboardView'; 
 
 const schoolStatsPlaceholders = [
-  { id: "students", labelEn: "Total Students", labelHi: "कुल छात्र", value: "N/A", icon: Users, color: "text-blue-500" },
-  { id: "staff", labelEn: "Total Staff", labelHi: "कुल कर्मचारी", value: "N/A", icon: UserCog, color: "text-green-500" },
+  { id: "students", labelEn: "Total Students", labelHi: "कुल छात्र", value: "0", icon: Users, color: "text-blue-500" },
+  { id: "staff", labelEn: "Total Staff", labelHi: "कुल कर्मचारी", value: "0", icon: UserCog, color: "text-green-500" },
   { id: "events", labelEn: "Upcoming Events", labelHi: "आगामी कार्यक्रम", value: "0", icon: CalendarDays, color: "text-orange-500" },
 ];
 
@@ -33,7 +33,7 @@ const schoolActionsPrincipal = [
   { id: "manage_staff", labelEn: "Staff Management", labelHi: "कर्मचारी प्रबंधन", icon: UserCog, href: "/school-dashboard/staff" },
   { id: "announcements", labelEn: "Post Announcements", labelHi: "घोषणाएँ पोस्ट करें", icon: Bell, href: "/school-dashboard/announcements" },
   { id: "timetable", labelEn: "Manage Timetable", labelHi: "समय सारिणी प्रबंधित करें", icon: CalendarDays, href: "/school-dashboard/timetable" },
-  { id: "fees", labelEn: "Fee Collection", labelHi: "शुल्क संग्रह", icon: RupeeIcon, href: "/school-dashboard/fees" }, // Changed icon
+  { id: "fees", labelEn: "Fee Collection", labelHi: "शुल्क संग्रह", icon: RupeeIcon, href: "/school-dashboard/fees" },
   { id: "reports", labelEn: "View Reports", labelHi: "रिपोर्ट देखें", icon: BarChart3, href: "/school-dashboard/reports" },
 ];
 
@@ -73,6 +73,7 @@ const schoolActionsGenericStaff = [
 
 export default function SchoolDashboardPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfileFormData | null>(null);
   const [loggedInUser, setLoggedInUser] = useState<{role?: string; designation?: string; fullName?: string; email?:string} | null>(null);
   const [loadingData, setLoadingData] = useState(true);
@@ -92,7 +93,6 @@ export default function SchoolDashboardPage() {
       if (!profileToUse && genericProfileString) {
          try {
           const parsedGeneric = JSON.parse(genericProfileString);
-          // Only use genericProfileData if it's explicitly for school role AND matches loggedInUser email
           if (parsedGeneric.role === 'school' && loggedInUserString) {
             const loggedUser = JSON.parse(loggedInUserString);
             if (parsedGeneric.email === loggedUser.email) {
@@ -116,6 +116,19 @@ export default function SchoolDashboardPage() {
     router.push(href);
   };
 
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem('loggedInUser'); 
+        localStorage.removeItem('userProfileData'); 
+        localStorage.removeItem('schoolProfileData'); 
+    }
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out from the School Dashboard.",
+    });
+    router.push('/login'); 
+  };
+
   if (loadingData) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
@@ -127,8 +140,10 @@ export default function SchoolDashboardPage() {
 
   const userDesignation = loggedInUser?.designation?.toLowerCase() || "";
   let specificDashboardView: React.ReactNode = null;
+  let actionsToDisplay: typeof schoolActionsPrincipal = [];
 
-  if (userDesignation.includes('principal') || userDesignation.includes('vice principal') || userDesignation.includes('coordinator') || userDesignation.includes('admin') && !userDesignation.includes('staff')) { // ensure 'admin staff' doesn't match
+  if (userDesignation.includes('principal') || userDesignation.includes('vice principal') || userDesignation.includes('coordinator') || (userDesignation.includes('admin') && !userDesignation.includes('staff'))) {
+    actionsToDisplay = schoolActionsPrincipal;
     specificDashboardView = ( 
       <>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -151,7 +166,7 @@ export default function SchoolDashboardPage() {
               <CardDescription><BilingualText en="Access key school management modules." hi="प्रमुख स्कूल प्रबंधन मॉड्यूल तक पहुंचें।" /></CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {schoolActionsPrincipal.map(action => (
+              {actionsToDisplay.map(action => (
                   <Button
                       key={action.id}
                       variant="outline"
@@ -182,13 +197,17 @@ export default function SchoolDashboardPage() {
       </>
     );
   } else if (userDesignation === 'teacher') {
-    specificDashboardView = <TeacherDashboardView teacherName={loggedInUser?.fullName || "Teacher"} actions={schoolActionsTeacher} />;
+    actionsToDisplay = schoolActionsTeacher;
+    specificDashboardView = <TeacherDashboardView teacherName={loggedInUser?.fullName || "Teacher"} actions={actionsToDisplay} />;
   } else if (userDesignation === 'librarian') {
-    specificDashboardView = <LibrarianDashboardView librarianName={loggedInUser?.fullName || "Librarian"} actions={schoolActionsLibrarian} />;
+    actionsToDisplay = schoolActionsLibrarian;
+    specificDashboardView = <LibrarianDashboardView librarianName={loggedInUser?.fullName || "Librarian"} actions={actionsToDisplay} />;
   } else if (userDesignation === 'accountant') {
-    specificDashboardView = <AccountantDashboardView accountantName={loggedInUser?.fullName || "Accountant"} actions={schoolActionsAccountant} />;
-  } else { // For "Admin Staff", "IT Support", "Other", or any unhandled designation
-    specificDashboardView = <StaffDashboardView staffName={loggedInUser?.fullName || "Staff Member"} designation={loggedInUser?.designation || "Staff"} actions={schoolActionsGenericStaff} />;
+    actionsToDisplay = schoolActionsAccountant;
+    specificDashboardView = <AccountantDashboardView accountantName={loggedInUser?.fullName || "Accountant"} actions={actionsToDisplay} />;
+  } else { 
+    actionsToDisplay = schoolActionsGenericStaff;
+    specificDashboardView = <StaffDashboardView staffName={loggedInUser?.fullName || "Staff Member"} designation={loggedInUser?.designation || "Staff"} actions={actionsToDisplay} />;
   }
 
 
@@ -205,12 +224,18 @@ export default function SchoolDashboardPage() {
             : <BilingualText en="Oversee and manage your institution effectively." hi="अपने संस्थान का प्रभावी ढंग से निरीक्षण और प्रबंधन करें।" />
           }
         </p>
-         <Button asChild variant="outline" size="sm" className="mt-2">
-            <Link href={`/edit-profile?role=school&email=${loggedInUser?.email || ''}&name=${encodeURIComponent(loggedInUser?.fullName || '')}&designation=${encodeURIComponent(loggedInUser?.designation || '')}`}>
-                <Edit className="mr-2 h-4 w-4"/>
-                <BilingualText en="Edit Your Profile" hi="अपनी प्रोफ़ाइल संपादित करें" />
-            </Link>
-        </Button>
+        <div className="flex items-center justify-center gap-2 mt-3">
+            <Button asChild variant="outline" size="sm">
+                <Link href={`/edit-profile?role=school&email=${loggedInUser?.email || ''}&name=${encodeURIComponent(loggedInUser?.fullName || '')}&designation=${encodeURIComponent(loggedInUser?.designation || '')}`}>
+                    <Edit className="mr-2 h-4 w-4"/>
+                    <BilingualText en="Edit Your Profile" hi="अपनी प्रोफ़ाइल संपादित करें" />
+                </Link>
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4"/>
+                <BilingualText en="Logout" hi="लॉग आउट"/>
+            </Button>
+        </div>
       </header>
 
       {specificDashboardView}
