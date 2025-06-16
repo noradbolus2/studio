@@ -1,24 +1,23 @@
-
 // src/app/(app)/school-dashboard/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, AlertCircle, CheckCircle, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import type { SchoolProfileFormData } from '../edit-school-profile/page';
+import type { ProfileFormData as SchoolProfileFormData } from '../edit-profile/page'; // Updated import path
 import { cn } from '@/lib/utils';
 
 
-const schoolStats = [
-  { id: "students", labelEn: "Total Students", labelHi: "कुल छात्र", value: "1250+", icon: Users, color: "text-blue-500" },
-  { id: "staff", labelEn: "Total Staff", labelHi: "कुल कर्मचारी", value: "75+", icon: UserCog, color: "text-green-500" },
-  { id: "events", labelEn: "Upcoming Events", labelHi: "आगामी कार्यक्रम", value: "3", icon: CalendarDays, color: "text-orange-500" },
+const schoolStatsPlaceholders = [
+  { id: "students", labelEn: "Total Students", labelHi: "कुल छात्र", value: "N/A", icon: Users, color: "text-blue-500" },
+  { id: "staff", labelEn: "Total Staff", labelHi: "कुल कर्मचारी", value: "N/A", icon: UserCog, color: "text-green-500" },
+  { id: "events", labelEn: "Upcoming Events", labelHi: "आगामी कार्यक्रम", value: "0", icon: CalendarDays, color: "text-orange-500" },
 ];
 
 const schoolActions = [
@@ -30,40 +29,44 @@ const schoolActions = [
   { id: "reports", labelEn: "View Reports", labelHi: "रिपोर्ट देखें", icon: BarChart3, href: "/school-dashboard/reports" },
 ];
 
-interface ActivityItem {
-  id: string;
-  textEn: string;
-  textHi: string;
-  timestamp: string; // e.g., "2 hours ago", "Yesterday"
-  icon: React.ElementType;
-  iconColor?: string;
-}
-
-const mockActivities: ActivityItem[] = [
-  { id: "act1", textEn: "New student 'Riya Sharma' enrolled in Class 9A.", textHi: "नई छात्रा 'रिया शर्मा' कक्षा 9A में नामांकित हुई।", timestamp: "1 hour ago", icon: UserPlus, iconColor: "text-green-500" },
-  { id: "act2", textEn: "Parent-Teacher Meeting for Class 10 scheduled.", textHi: "कक्षा 10 के लिए अभिभावक-शिक्षक बैठक निर्धारित।", timestamp: "3 hours ago", icon: CalendarDays, iconColor: "text-blue-500" },
-  { id: "act3", textEn: "Fee reminder sent for overdue payments.", textHi: "अतिदेय भुगतानों के लिए शुल्क अनुस्मारक भेजा गया।", timestamp: "Yesterday", icon: AlertCircle, iconColor: "text-yellow-500" },
-  { id: "act4", textEn: "Staff meeting minutes uploaded.", textHi: "कर्मचारी बैठक के मिनट्स अपलोड किए गए।", timestamp: "2 days ago", icon: FileText, iconColor: "text-purple-500" },
-  { id: "act5", textEn: "Annual Sports Day successfully conducted.", textHi: "वार्षिक खेल दिवस सफलतापूर्वक आयोजित किया गया।", timestamp: "3 days ago", icon: CheckCircle, iconColor: "text-green-500" },
-];
-
-
 export default function SchoolDashboardPage() {
-  const { toast } = useToast();
   const router = useRouter();
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedProfileString = localStorage.getItem('schoolProfileData');
-      if (storedProfileString) {
+      // Attempt to load from the specific key first, then fallback to the general key
+      const specificProfileString = localStorage.getItem('schoolProfileData');
+      const genericProfileString = localStorage.getItem('userProfileData');
+      let profileToUse: SchoolProfileFormData | null = null;
+
+      if (specificProfileString) {
         try {
-          setSchoolProfile(JSON.parse(storedProfileString));
+          const parsed = JSON.parse(specificProfileString);
+          // Basic check to ensure it's a school profile (if it has schoolName for example)
+          if (parsed.role === 'school' || parsed.schoolName) {
+            profileToUse = parsed;
+          }
         } catch (e) {
-          console.error("Failed to parse school profile from localStorage", e);
+          console.error("Failed to parse schoolProfileData from localStorage", e);
         }
       }
+      
+      if (!profileToUse && genericProfileString) {
+         try {
+          const parsedGeneric = JSON.parse(genericProfileString);
+          // Check if the generic profile is actually a school role
+          if (parsedGeneric.role === 'school') {
+            profileToUse = parsedGeneric;
+            // Optionally, save it to schoolProfileData for next time
+            localStorage.setItem('schoolProfileData', JSON.stringify(parsedGeneric));
+          }
+        } catch (e) {
+          console.error("Failed to parse userProfileData as school profile from localStorage", e);
+        }
+      }
+      setSchoolProfile(profileToUse);
     }
     setLoadingProfile(false);
   }, []);
@@ -77,7 +80,7 @@ export default function SchoolDashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
         <LoadingSpinner size={48} />
-        <p className="ml-4">Loading dashboard...</p>
+        <p className="ml-4 text-muted-foreground"><BilingualText en="Loading Dashboard..." hi="डैशबोर्ड लोड हो रहा है..."/></p>
       </div>
     );
   }
@@ -93,7 +96,8 @@ export default function SchoolDashboardPage() {
           <BilingualText en="Oversee and manage your institution effectively." hi="अपने संस्थान का प्रभावी ढंग से निरीक्षण और प्रबंधन करें।" />
         </p>
          <Button asChild variant="outline" size="sm" className="mt-2">
-            <Link href="/edit-school-profile">
+            {/* Updated Link to point to the consolidated edit profile page with role query param */}
+            <Link href="/edit-profile?role=school">
                 <Edit className="mr-2 h-4 w-4"/>
                 <BilingualText en="Edit School Info" hi="स्कूल जानकारी संपादित करें" />
             </Link>
@@ -101,7 +105,7 @@ export default function SchoolDashboardPage() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {schoolStats.map(stat => (
+        {schoolStatsPlaceholders.map(stat => (
           <Card key={stat.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelHi} /></CardTitle>
@@ -109,6 +113,7 @@ export default function SchoolDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
+              {/* Placeholder for potential subtext if needed in future */}
             </CardContent>
           </Card>
         ))}
@@ -143,27 +148,16 @@ export default function SchoolDashboardPage() {
             <CardDescription><BilingualText en="Latest updates and notifications from the school." hi="स्कूल से नवीनतम अपडेट और सूचनाएं।" /></CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-            {mockActivities.length > 0 ? mockActivities.slice(0, 3).map(activity => ( // Show top 3 activities
-                <div key={activity.id} className="flex items-start gap-3 p-2.5 bg-muted/30 rounded-md">
-                    <activity.icon className={cn("h-5 w-5 mt-0.5 shrink-0", activity.iconColor || "text-muted-foreground")} />
-                    <div className="flex-grow">
-                        <p className="text-sm text-foreground"><BilingualText en={activity.textEn} hi={activity.textHi} /></p>
-                        <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
-                    </div>
-                </div>
-            )) : (
-                <p className="text-muted-foreground text-sm text-center py-4">
-                    <BilingualText en="No recent activity." hi="कोई हाल की गतिविधि नहीं।" />
-                </p>
-            )}
-            {mockActivities.length > 3 && (
-                 <Button variant="link" className="w-full justify-center p-0 mt-2 text-primary">
-                    <BilingualText en="View All Activity" hi="सभी गतिविधियाँ देखें" /> <ArrowRight className="ml-1 h-4 w-4"/>
-                 </Button>
-            )}
+            <p className="text-muted-foreground text-sm text-center py-4">
+                <BilingualText en="No recent activity to display. This feed will update with important school events and notifications." hi="प्रदर्शित करने के लिए कोई हालिया गतिविधि नहीं है। यह फ़ीड महत्वपूर्ण स्कूल घटनाओं और सूचनाओं के साथ अपडेट होगी।" />
+            </p>
+             {/* Placeholder for future button if needed
+             <Button variant="link" className="w-full justify-center p-0 mt-2 text-primary">
+                <BilingualText en="View All Activity" hi="सभी गतिविधियाँ देखें" /> <ArrowRight className="ml-1 h-4 w-4"/>
+             </Button>
+            */}
         </CardContent>
       </Card>
     </div>
   );
 }
-
