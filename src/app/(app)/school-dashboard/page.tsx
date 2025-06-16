@@ -5,14 +5,20 @@ import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, CheckCircle } from "lucide-react";
+import { 
+    School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, CheckCircle,
+    BookOpen as LibraryIcon, IndianRupee as RupeeIcon, MessageSquare as InquiryIcon, Briefcase as GenericStaffIcon
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import type { ProfileFormData as SchoolProfileFormData } from '../edit-profile/page';
 import { cn } from '@/lib/utils';
-import TeacherDashboardView from '@/components/school/TeacherDashboardView'; // Import the new component
+import TeacherDashboardView from '@/components/school/TeacherDashboardView';
+import LibrarianDashboardView from '@/components/school/LibrarianDashboardView'; // New
+import AccountantDashboardView from '@/components/school/AccountantDashboardView'; // New
+import StaffDashboardView from '@/components/school/StaffDashboardView'; // New
 
 const schoolStatsPlaceholders = [
   { id: "students", labelEn: "Total Students", labelHi: "कुल छात्र", value: "N/A", icon: Users, color: "text-blue-500" },
@@ -20,7 +26,8 @@ const schoolStatsPlaceholders = [
   { id: "events", labelEn: "Upcoming Events", labelHi: "आगामी कार्यक्रम", value: "0", icon: CalendarDays, color: "text-orange-500" },
 ];
 
-const schoolActionsPrincipal = [ // For Admin/Principal
+// Actions for Principal/Admin
+const schoolActionsPrincipal = [
   { id: "manage_students", labelEn: "Student Management", labelHi: "छात्र प्रबंधन", icon: Users, href: "/school-dashboard/students" },
   { id: "manage_staff", labelEn: "Staff Management", labelHi: "कर्मचारी प्रबंधन", icon: UserCog, href: "/school-dashboard/staff" },
   { id: "announcements", labelEn: "Post Announcements", labelHi: "घोषणाएँ पोस्ट करें", icon: Bell, href: "/school-dashboard/announcements" },
@@ -29,12 +36,36 @@ const schoolActionsPrincipal = [ // For Admin/Principal
   { id: "reports", labelEn: "View Reports", labelHi: "रिपोर्ट देखें", icon: BarChart3, href: "/school-dashboard/reports" },
 ];
 
-// Actions relevant for a Teacher might be different or a subset
+// Actions for Teacher
 const schoolActionsTeacher = [
-  { id: "my_classes", labelEn: "My Classes", labelHi: "मेरी कक्षाएं", icon: Users, href: "/school-dashboard/teacher/my-classes" }, // Example link
+  { id: "my_classes", labelEn: "My Classes", labelHi: "मेरी कक्षाएं", icon: Users, href: "/school-dashboard/teacher/my-classes" },
   { id: "my_timetable", labelEn: "My Timetable", labelHi: "मेरी समय सारिणी", icon: CalendarDays, href: "/school-dashboard/teacher/timetable" },
-  { id: "view_announcements", labelEn: "View Announcements", labelHi: "घोषणाएँ देखें", icon: Bell, href: "/school-dashboard/announcements" },
   { id: "student_attendance", labelEn: "Student Attendance", labelHi: "छात्र उपस्थिति", icon: CheckCircle, href: "/school-dashboard/teacher/attendance" },
+  { id: "assignments", labelEn: "Assignments", labelHi: "असाइनमेंट", icon: LibraryIcon, href: "/school-dashboard/teacher/assignments" },
+  { id: "view_announcements_teacher", labelEn: "School Announcements", labelHi: "स्कूल घोषणाएँ", icon: Bell, href: "/school-dashboard/announcements" },
+];
+
+// Actions for Librarian
+const schoolActionsLibrarian = [
+  { id: "manage_books", labelEn: "Manage Books", labelHi: "पुस्तकें प्रबंधित करें", icon: LibraryIcon, href: "/school-dashboard/librarian/books" },
+  { id: "issue_return", labelEn: "Issue/Return", labelHi: "जारी/वापस करें", icon: ArrowRight, href: "/school-dashboard/librarian/issue-return" },
+  { id: "library_reports", labelEn: "Library Reports", labelHi: "पुस्तकालय रिपोर्ट", icon: BarChart3, href: "/school-dashboard/librarian/reports" },
+  { id: "view_announcements_librarian", labelEn: "School Announcements", labelHi: "स्कूल घोषणाएँ", icon: Bell, href: "/school-dashboard/announcements" },
+];
+
+// Actions for Accountant
+const schoolActionsAccountant = [
+    { id: "fee_records", labelEn: "Fee Records", labelHi: "शुल्क रिकॉर्ड", icon: FileText, href: "/school-dashboard/fees" },
+    { id: "expense_entry", labelEn: "Expense Management", labelHi: "व्यय प्रबंधन", icon: RupeeIcon, href: "/school-dashboard/accountant/expenses" },
+    { id: "financial_reports_acc", labelEn: "Financial Reports", labelHi: "वित्तीय रिपोर्ट", icon: BarChart3, href: "/school-dashboard/accountant/reports" },
+    { id: "view_announcements_accountant", labelEn: "School Announcements", labelHi: "स्कूल घोषणाएँ", icon: Bell, href: "/school-dashboard/announcements" },
+];
+
+// Actions for Admin Staff / Other
+const schoolActionsGenericStaff = [
+    { id: "view_announcements_staff", labelEn: "School Announcements", labelHi: "स्कूल घोषणाएँ", icon: Bell, href: "/school-dashboard/announcements" },
+    { id: "student_inquiries_staff", labelEn: "Student Inquiries", labelHi: "छात्र पूछताछ", icon: InquiryIcon, href: "/school-dashboard/staff/inquiries" },
+    { id: "my_profile_staff", labelEn: "My Profile", labelHi: "मेरी प्रोफ़ाइल", icon: UserCog, href: "/edit-profile?role=school" }, // Ensure role is passed
 ];
 
 
@@ -61,8 +92,6 @@ export default function SchoolDashboardPage() {
           const parsedGeneric = JSON.parse(genericProfileString);
           if (parsedGeneric.role === 'school') {
             profileToUse = parsedGeneric;
-            // Optionally re-save to schoolProfileData if it's the definitive key for school context
-            // localStorage.setItem('schoolProfileData', JSON.stringify(parsedGeneric));
           }
         } catch (e) { console.error("Failed to parse userProfileData as school profile", e); }
       }
@@ -77,9 +106,7 @@ export default function SchoolDashboardPage() {
     setLoadingData(false);
   }, []);
 
-
   const handleActionClick = (href: string, labelEn: string) => {
-    // For prototype, directly navigate. In real app, might check permissions.
     router.push(href);
   };
 
@@ -92,13 +119,78 @@ export default function SchoolDashboardPage() {
     );
   }
 
-  const userDesignation = loggedInUser?.designation?.toLowerCase();
-
-  // Determine which actions to show based on designation
+  const userDesignation = loggedInUser?.designation?.toLowerCase() || "";
   let currentSchoolActions = schoolActionsPrincipal; // Default to Principal actions
-  if (userDesignation === 'teacher') {
-    currentSchoolActions = schoolActionsTeacher; // This list should be defined with teacher-specific actions
-  } // Add more else if for other roles like 'Accountant', 'Admin Staff' etc.
+  let specificDashboardView: React.ReactNode = null;
+
+  if (userDesignation.includes('principal') || userDesignation.includes('vice principal') || userDesignation.includes('coordinator') || userDesignation.includes('admin')) {
+    currentSchoolActions = schoolActionsPrincipal;
+    specificDashboardView = ( // Full Admin Dashboard
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {schoolStatsPlaceholders.map(stat => (
+            <Card key={stat.id} className="hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelHi} /></CardTitle>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Card>
+          <CardHeader>
+              <CardTitle className="font-headline"><BilingualText en="Quick Actions" hi="त्वरित कार्रवाइयां"/></CardTitle>
+              <CardDescription><BilingualText en="Access key school management modules." hi="प्रमुख स्कूल प्रबंधन मॉड्यूल तक पहुंचें।" /></CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {currentSchoolActions.map(action => (
+                  <Button
+                      key={action.id}
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
+                      onClick={() => handleActionClick(action.href, action.labelEn)}
+                  >
+                      <action.icon className="h-7 w-7 text-primary mb-1"/>
+                      <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                  </Button>
+              ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+              <CardTitle className="font-headline flex items-center gap-2">
+                  <Activity className="h-6 w-6 text-primary"/>
+                  <BilingualText en="Recent Activity" hi="हाल की गतिविधि" />
+              </CardTitle>
+              <CardDescription><BilingualText en="Latest updates and notifications from the school." hi="स्कूल से नवीनतम अपडेट और सूचनाएं।" /></CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+              <p className="text-muted-foreground text-sm text-center py-4">
+                  <BilingualText en="No recent activity to display. This feed will update with important school events and notifications." hi="प्रदर्शित करने के लिए कोई हालिया गतिविधि नहीं है। यह फ़ीड महत्वपूर्ण स्कूल घटनाओं और सूचनाओं के साथ अपडेट होगी।" />
+              </p>
+          </CardContent>
+        </Card>
+      </>
+    );
+  } else if (userDesignation === 'teacher') {
+    currentSchoolActions = schoolActionsTeacher;
+    specificDashboardView = <TeacherDashboardView teacherName={loggedInUser?.fullName || "Teacher"} actions={currentSchoolActions} />;
+  } else if (userDesignation === 'librarian') {
+    currentSchoolActions = schoolActionsLibrarian;
+    specificDashboardView = <LibrarianDashboardView librarianName={loggedInUser?.fullName || "Librarian"} actions={currentSchoolActions} />;
+  } else if (userDesignation === 'accountant') {
+    currentSchoolActions = schoolActionsAccountant;
+    specificDashboardView = <AccountantDashboardView accountantName={loggedInUser?.fullName || "Accountant"} actions={currentSchoolActions} />;
+  } else { // For other staff roles like 'Admin Staff', 'IT Support' or any other
+    currentSchoolActions = schoolActionsGenericStaff;
+    specificDashboardView = <StaffDashboardView staffName={loggedInUser?.fullName || "Staff Member"} designation={loggedInUser?.designation || "Staff"} actions={currentSchoolActions} />;
+  }
+
 
   return (
     <div className="space-y-8">
@@ -121,64 +213,8 @@ export default function SchoolDashboardPage() {
         </Button>
       </header>
 
-      {/* Conditional Rendering based on Designation */}
-      {userDesignation === 'teacher' ? (
-        <TeacherDashboardView teacherName={loggedInUser?.fullName || "Teacher"} />
-      ) : (
-        <>
-          {/* Principal/Admin View - Existing Full Dashboard */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {schoolStatsPlaceholders.map(stat => (
-              <Card key={stat.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelHi} /></CardTitle>
-                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <Card>
-            <CardHeader>
-                <CardTitle className="font-headline"><BilingualText en="Quick Actions" hi="त्वरित कार्रवाइयां"/></CardTitle>
-                <CardDescription><BilingualText en="Access key school management modules." hi="प्रमुख स्कूल प्रबंधन मॉड्यूल तक पहुंचें।" /></CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {currentSchoolActions.map(action => ( // Uses the correct action list
-                    <Button
-                        key={action.id}
-                        variant="outline"
-                        className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-                        onClick={() => handleActionClick(action.href, action.labelEn)}
-                    >
-                        <action.icon className="h-7 w-7 text-primary mb-1"/>
-                        <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
-                    </Button>
-                ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-                <CardTitle className="font-headline flex items-center gap-2">
-                    <Activity className="h-6 w-6 text-primary"/>
-                    <BilingualText en="Recent Activity" hi="हाल की गतिविधि" />
-                </CardTitle>
-                <CardDescription><BilingualText en="Latest updates and notifications from the school." hi="स्कूल से नवीनतम अपडेट और सूचनाएं।" /></CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-                <p className="text-muted-foreground text-sm text-center py-4">
-                    <BilingualText en="No recent activity to display. This feed will update with important school events and notifications." hi="प्रदर्शित करने के लिए कोई हालिया गतिविधि नहीं है। यह फ़ीड महत्वपूर्ण स्कूल घटनाओं और सूचनाओं के साथ अपडेट होगी।" />
-                </p>
-            </CardContent>
-          </Card>
-        </>
-      )}
+      {specificDashboardView}
+      
     </div>
   );
 }
-
-    

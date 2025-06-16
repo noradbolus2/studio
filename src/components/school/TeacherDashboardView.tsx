@@ -7,26 +7,26 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { BookOpen, CalendarDays, CheckCircle, Users, Bell, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
-interface TeacherDashboardViewProps {
-  teacherName: string;
+interface ActionItem {
+  id: string;
+  labelEn: string;
+  labelHi: string;
+  icon: React.ElementType;
+  href: string;
 }
 
-const teacherQuickActions = [
-  { id: "my_classes", labelEn: "My Classes & Students", labelHi: "मेरी कक्षाएं और छात्र", icon: Users, href: "/school-dashboard/teacher/my-classes" },
-  { id: "my_timetable", labelEn: "View Timetable", labelHi: "समय सारिणी देखें", icon: CalendarDays, href: "/school-dashboard/teacher/timetable" },
-  { id: "mark_attendance", labelEn: "Mark Attendance", labelHi: "उपस्थिति दर्ज करें", icon: CheckCircle, href: "/school-dashboard/teacher/attendance" },
-  { id: "assignments", labelEn: "Assignments", labelHi: "असाइनमेंट", icon: BookOpen, href: "/school-dashboard/teacher/assignments" },
-  { id: "announcements", labelEn: "School Announcements", labelHi: "स्कूल घोषणाएँ", icon: Bell, href: "/school-dashboard/announcements" },
-  { id: "chat_parents", labelEn: "Chat with Parents", labelHi: "अभिभावकों के साथ चैट करें", icon: MessageSquare, href: "/school-dashboard/teacher/chat" },
-];
+interface TeacherDashboardViewProps {
+  teacherName: string;
+  actions: ActionItem[];
+}
 
-export default function TeacherDashboardView({ teacherName }: TeacherDashboardViewProps) {
+export default function TeacherDashboardView({ teacherName, actions }: TeacherDashboardViewProps) {
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="font-headline text-xl">
-            <BilingualText en={`Welcome, ${teacherName}!`} hi={`स्वागत है, ${teacherName}!`} />
+            <BilingualText en={`Welcome, ${teacherName}! (Teacher)`} hi={`स्वागत है, ${teacherName}! (शिक्षक)`} />
           </CardTitle>
           <CardDescription>
             <BilingualText en="Your personalized dashboard for managing your classes and students." hi="अपनी कक्षाओं और छात्रों के प्रबंधन के लिए आपका व्यक्तिगत डैशबोर्ड।" />
@@ -39,7 +39,7 @@ export default function TeacherDashboardView({ teacherName }: TeacherDashboardVi
             <CardTitle className="font-headline"><BilingualText en="Teacher Quick Actions" hi="शिक्षक त्वरित कार्रवाइयां"/></CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {teacherQuickActions.map(action => (
+            {actions.map(action => (
                 <Button
                     key={action.id}
                     variant="outline"
