@@ -58,7 +58,7 @@ const profileSchema = z.object({
   businessName: z.string().optional(),
   gstin: z.string().optional().or(z.literal('')),
   productCategories: z.string().optional(), // Comma-separated or textarea
-  businessAddress: z.string().optional(), // Added missing field
+  businessAddress: z.string().optional(), 
 
   // Creator specific
   creatorName: z.string().optional(), // Can be pre-filled from signup 'fullName'
@@ -112,7 +112,7 @@ export default function EditProfilePage() {
 
   const { control, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { country: "India" }, // Set default country
+    defaultValues: { country: "India" }, 
   });
   
   const avatarUrlPreview = watch("avatarUrl");
@@ -212,38 +212,104 @@ export default function EditProfilePage() {
       displayNameForToast = data.schoolName || data.contactPersonName;
     }
     
-    console.log("Submitting to backend (simulated):", JSON.stringify(dataToStore, null, 2));
-    console.log("TODO: Replace localStorage with actual API call here.");
+    if (currentRole === 'school') {
+      try {
+        // console.log("Attempting to save school profile to backend:", JSON.stringify(dataToStore, null, 2));
+        // Replace with your actual API endpoint
+        const response = await fetch('/api/school/profile', { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Add any auth headers if needed, e.g., 'Authorization': `Bearer ${your_auth_token}`
+          },
+          body: JSON.stringify(dataToStore),
+        });
 
-    // For now, we'll keep saving to localStorage so the app continues to function visually
-    if (typeof window !== "undefined") {
-        localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
-        const loggedInUserString = localStorage.getItem('loggedInUser');
-        if (loggedInUserString) {
-            try {
-                const loggedInUserDetails = JSON.parse(loggedInUserString);
-                const currentDisplayName = loggedInUserDetails.fullName;
-                let newDisplayName = data.fullName; 
-                if (currentRole === 'vendor') newDisplayName = data.businessName || data.contactPersonName;
-                else if (currentRole === 'creator') newDisplayName = data.creatorName || data.contactPersonName;
-                else if (currentRole === 'school') newDisplayName = data.schoolName || data.contactPersonName;
-
-                if (loggedInUserDetails.email === data.email && currentDisplayName !== newDisplayName && newDisplayName) {
-                    localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: newDisplayName, role: currentRole }));
-                }
-            } catch (e) { console.error("Error updating loggedInUser name:", e); }
+        if (!response.ok) {
+          let errorMsg = `Network response was not ok: ${response.status} ${response.statusText}`;
+          try {
+            const errorData = await response.json();
+            errorMsg = errorData.message || errorMsg; // Use backend error message if available
+          } catch (e) {
+            // Response might not be JSON, stick with the status text
+          }
+          throw new Error(errorMsg);
         }
-    }
+        
+        // const result = await response.json(); // Process result if backend sends confirmation data
+        // console.log("Backend response for school profile:", result);
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
-    
-    toast({
-      title: "Profile Data Ready for Backend",
-      description: `${displayNameForToast || 'Your'} profile data logged to console. Next step: Implement API call.`,
-    });
-    setIsLoading(false);
-    // router.push(redirectPath); // Commenting out redirect for now to see console log
+        toast({
+          title: "School Profile Saved!",
+          description: `${displayNameForToast || 'Your school'} profile has been successfully saved to the server.`,
+        });
+        
+        // Still save to localStorage for now so UI updates immediately,
+        // until "get profile" is also backend-driven. This can be removed later.
+        if (typeof window !== "undefined") {
+            localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
+            const loggedInUserString = localStorage.getItem('loggedInUser');
+            if (loggedInUserString) {
+                try {
+                    const loggedInUserDetails = JSON.parse(loggedInUserString);
+                    const newDisplayNameForLoggedInUser = data.schoolName || data.contactPersonName;
+                    if (loggedInUserDetails.email === data.email && newDisplayNameForLoggedInUser) {
+                        localStorage.setItem('loggedInUser', JSON.stringify({ 
+                            email: data.email, 
+                            fullName: newDisplayNameForLoggedInUser, 
+                            role: currentRole 
+                        }));
+                    }
+                } catch (e) { console.error("Error updating loggedInUser name for school:", e); }
+            }
+        }
+        router.push(redirectPath);
+
+      } catch (apiError: any) {
+        console.error("Failed to save school profile to backend:", apiError);
+        toast({
+          title: "API Error",
+          description: `Failed to save school profile to server: ${apiError.message}. Data saved locally as a backup.`,
+          variant: "destructive",
+        });
+        // Fallback: save to localStorage even if API fails, so user doesn't lose data
+        if (typeof window !== "undefined") {
+            localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // --- Other Roles: Simulated Backend (console log + localStorage) ---
+      console.log("Submitting to backend (simulated for role: " + currentRole + "):", JSON.stringify(dataToStore, null, 2));
+      console.log("TODO: Replace localStorage with actual API call for this role.");
+
+      if (typeof window !== "undefined") {
+          localStorage.setItem(profileDataKey, JSON.stringify(dataToStore));
+          const loggedInUserString = localStorage.getItem('loggedInUser');
+          if (loggedInUserString) {
+              try {
+                  const loggedInUserDetails = JSON.parse(loggedInUserString);
+                  let newDisplayName = data.fullName; 
+                  if (currentRole === 'vendor') newDisplayName = data.businessName || data.contactPersonName;
+                  else if (currentRole === 'creator') newDisplayName = data.creatorName || data.contactPersonName;
+
+                  if (loggedInUserDetails.email === data.email && newDisplayName) { 
+                      localStorage.setItem('loggedInUser', JSON.stringify({ email: data.email, fullName: newDisplayName, role: currentRole }));
+                  }
+              } catch (e) { console.error("Error updating loggedInUser name:", e); }
+          }
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000)); 
+      
+      toast({
+        title: "Profile Data Ready for Backend (Simulated)",
+        description: `${displayNameForToast || 'Your'} profile data logged to console and saved locally. API integration pending for this role.`,
+      });
+      setIsLoading(false);
+      router.push(redirectPath); 
+    }
   };
   
   const handleAvatarUploadButtonClick = () => {
@@ -269,14 +335,14 @@ export default function EditProfilePage() {
   const getAvatarFallbackText = () => {
     if (currentRole === 'vendor') return formBusinessName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "VE";
     if (currentRole === 'creator') return formCreatorName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "CR";
-    if (currentRole === 'school') return formSchoolName?.substring(0,2).toUpperCase() || "SC";
+    if (currentRole === 'school') return formSchoolName?.substring(0,2).toUpperCase() || formContactPersonName?.substring(0,2).toUpperCase() || "SC";
     return formFullName?.substring(0,2).toUpperCase() || "NA";
   };
   
   const getAvatarAltText = () => {
     if (currentRole === 'vendor') return formBusinessName || formContactPersonName || "Vendor";
     if (currentRole === 'creator') return formCreatorName || formContactPersonName || "Creator";
-    if (currentRole === 'school') return formSchoolName || "School";
+    if (currentRole === 'school') return formSchoolName || formContactPersonName || "School";
     return formFullName || "User";
   }
 
