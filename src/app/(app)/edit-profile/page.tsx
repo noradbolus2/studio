@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target } from "lucide-react";
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
@@ -64,7 +65,6 @@ const studentClasses = [
   ...[...Array(12)].map((_, i) => String(i+1)), 
   "12+ (Passed)", "Other"
 ];
-
 
 const profileSchema = z.object({
   role: z.string().optional(),
@@ -134,6 +134,17 @@ const profileSchema = z.object({
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
+// Helper function to check if class is Nursery to 12
+const isClassNurseryTo12 = (className?: string): boolean => {
+  if (!className) return false;
+  const numericClass = parseInt(className.match(/\d+/)?.[0] || "-1");
+  return (
+    ["Nursery", "LKG", "UKG"].includes(className) ||
+    (numericClass >= 1 && numericClass <= 12)
+  );
+};
+
+
 export default function EditProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -147,6 +158,8 @@ export default function EditProfilePage() {
   const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
   const [isInitialSchoolSetup, setIsInitialSchoolSetup] = useState(false);
   const [schoolProfile, setSchoolProfile] = useState<ProfileFormData | null>(null); 
+  const [isSchoolOsoConnected, setIsSchoolOsoConnected] = useState<string>('no');
+
 
   const { control, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting: isRhfSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -163,6 +176,7 @@ export default function EditProfilePage() {
   });
 
   const watchedAvatarUrl = watch("avatarUrl");
+  const watchedClassName = watch("className");
 
   useEffect(() => {
     setInitialDataLoading(true);
@@ -226,8 +240,22 @@ export default function EditProfilePage() {
     }
     reset(initialProfileData);
     if(initialProfileData.avatarUrl) setPreviewUrl(initialProfileData.avatarUrl);
+    
+    if (initialProfileData.schoolId && isClassNurseryTo12(initialProfileData.className)) {
+        setIsSchoolOsoConnected('yes');
+    } else {
+        setIsSchoolOsoConnected('no');
+    }
+
     setInitialDataLoading(false);
   }, [searchParams, reset]);
+
+  useEffect(() => {
+    if (currentRole === 'student' && !isClassNurseryTo12(watchedClassName)) {
+      setIsSchoolOsoConnected('no');
+      setValue('schoolId', undefined);
+    }
+  }, [watchedClassName, currentRole, setValue]);
 
 
   const handleAvatarUploadButtonClick = () => {
@@ -270,6 +298,13 @@ export default function EditProfilePage() {
     </AvatarFallback>
   );
 
+  const handleIsSchoolConnectedChange = (value: 'yes' | 'no') => {
+    setIsSchoolOsoConnected(value);
+    if (value === 'no') {
+      setValue('schoolId', undefined); 
+    }
+  };
+
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsSubmittingProfile(true);
     let schoolApiIdFromResponse: string | null = null;
@@ -290,6 +325,21 @@ export default function EditProfilePage() {
         };
 
         if (isInitialSchoolSetup) {
+            const tempAdminCredsString = localStorage.getItem('tempInitialAdminCredentials');
+            if (!tempAdminCredsString) {
+                toast({ title: "Critical Setup Error", description: "Temporary admin credentials not found. Please try signing up again.", variant: "destructive" });
+                setIsSubmittingProfile(false);
+                return;
+            }
+            let tempAdminCreds;
+            try {
+                tempAdminCreds = JSON.parse(tempAdminCredsString);
+            } catch (parseError) {
+                toast({ title: "Critical Setup Error", description: "Could not parse temporary admin credentials. Please try signing up again.", variant: "destructive"});
+                setIsSubmittingProfile(false);
+                return;
+            }
+
             try {
                 const response = await fetch('https://us-central1-oso-app-425800.cloudfunctions.net/schoolProfile', {
                     method: 'POST',
@@ -312,45 +362,17 @@ export default function EditProfilePage() {
                 setIsSubmittingProfile(false);
                 return;
             }
-        } else if (schoolProfile?.apiSchoolId) {
-            schoolApiIdFromResponse = schoolProfile.apiSchoolId;
-            finalSchoolIdForStorage = schoolProfile.apiSchoolId;
-        } else if (schoolProfile?.schoolId && schoolProfile.schoolId !== DEFAULT_SCHOOL_ID) {
-             finalSchoolIdForStorage = schoolProfile.schoolId;
-        }
-
-        const schoolProfileToSave: ProfileFormData = {
-            ...data,
-            schoolId: finalSchoolIdForStorage,
-            apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId,
-            role: 'school',
-        };
-        localStorage.setItem(`schoolProfileData_${finalSchoolIdForStorage}`, JSON.stringify(schoolProfileToSave));
-
-        if (isInitialSchoolSetup) {
-            const tempAdminCredsString = localStorage.getItem('tempInitialAdminCredentials');
-            if (!tempAdminCredsString) {
-                toast({ title: "Critical Setup Error", description: "Temporary admin credentials not found. Please try signing up again.", variant: "destructive" });
-                setIsSubmittingProfile(false);
-                return;
-            }
-            let tempAdminCreds;
-            try {
-                tempAdminCreds = JSON.parse(tempAdminCredsString);
-            } catch (parseError) {
-                toast({ title: "Critical Setup Error", description: "Could not parse temporary admin credentials. Please try signing up again.", variant: "destructive"});
-                setIsSubmittingProfile(false);
-                return;
-            }
-
+            
             const adminStaffEntry = {
                 id: `staff_${Date.now()}`,
                 name: tempAdminCreds.fullName,
                 email: tempAdminCreds.email,
                 password: tempAdminCreds.password,
-                designation: tempAdminCreds.designation,
+                role: tempAdminCreds.designation, // Store designation as 'role' for staff member
+                subjectOrDepartment: "Administration",
+                contact: data.contactPersonPhone || data.schoolContact || "",
+                status: "Active",
                 schoolId: finalSchoolIdForStorage,
-                status: "Active"
             };
             localStorage.setItem(`schoolStaff_${finalSchoolIdForStorage}`, JSON.stringify([adminStaffEntry]));
             localStorage.removeItem('tempInitialAdminCredentials');
@@ -359,7 +381,7 @@ export default function EditProfilePage() {
                 email: adminStaffEntry.email,
                 fullName: adminStaffEntry.name,
                 role: 'school',
-                designation: adminStaffEntry.designation,
+                designation: adminStaffEntry.role,
                 schoolId: adminStaffEntry.schoolId
             }));
 
@@ -369,31 +391,51 @@ export default function EditProfilePage() {
                 role: 'school',
                 schoolDesignation: tempAdminCreds.designation,
                 schoolId: finalSchoolIdForStorage,
-                apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId,
+                apiSchoolId: schoolApiIdFromResponse,
                 avatarUrl: data.avatarUrl, 
                 dataAiHint: data.dataAiHint,
             };
-            localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData));
+            localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); // Generic user profile for dashboard consistency
             
+            const schoolProfileToSave: ProfileFormData = {
+                ...data,
+                schoolId: finalSchoolIdForStorage,
+                apiSchoolId: schoolApiIdFromResponse,
+                role: 'school',
+            };
+            localStorage.setItem(`schoolProfileData_${finalSchoolIdForStorage}`, JSON.stringify(schoolProfileToSave));
+
             toast({ title: "School & Admin Profile Saved!", description: `School "${data.schoolName}" and your admin profile have been set up.` });
             router.push('/school-dashboard');
         } else { 
+            // Existing school staff editing their profile or school profile
+            const schoolIdToUse = schoolProfile?.apiSchoolId || schoolProfile?.schoolId || finalSchoolIdForStorage;
+            
             const staffUserProfileData: ProfileFormData = {
                 ...data,
                 role: 'school',
-                schoolId: finalSchoolIdForStorage, 
-                apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId,
+                schoolId: schoolIdToUse, 
+                apiSchoolId: schoolProfile?.apiSchoolId, // Preserve existing API ID
             };
             localStorage.setItem('userProfileData', JSON.stringify(staffUserProfileData));
+            
+            const schoolProfileToSave: ProfileFormData = {
+                ...data,
+                schoolId: schoolIdToUse,
+                apiSchoolId: schoolProfile?.apiSchoolId,
+                role: 'school',
+            };
+            localStorage.setItem(`schoolProfileData_${schoolIdToUse}`, JSON.stringify(schoolProfileToSave));
+
             toast({ title: "Profile Updated!", description: "Your school staff profile has been updated." });
             router.push('/school-dashboard');
         }
 
     } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student') {
         const profileKey = currentRole === 'student' ? 'userProfileData' : `${currentRole}ProfileData`;
-        const fullProfileData = { ...data, role: currentRole }; // Ensure role is correctly set
+        const fullProfileData = { ...data, role: currentRole }; 
         localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
-        // Always update userProfileData for consistency if it's not the primary student profile being saved
+        
         if(currentRole !== 'student') {
             localStorage.setItem('userProfileData', JSON.stringify(fullProfileData));
         }
@@ -404,7 +446,7 @@ export default function EditProfilePage() {
         if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
         else if (currentRole === 'parent') redirectPath = '/parent-mode';
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
-        else if (currentRole === 'student') redirectPath = '/'; // Student home
+        else if (currentRole === 'student') redirectPath = '/'; 
         router.push(redirectPath);
     }
     
@@ -499,7 +541,7 @@ export default function EditProfilePage() {
                                     <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
                                     <SelectContent>
                                         {studentClasses.map(cls => (
-                                            <SelectItem key={cls} value={cls}>{cls.startsWith("12+") ? cls : `Class ${cls}`}</SelectItem>
+                                            <SelectItem key={cls} value={cls}>{cls.startsWith("12+") || cls.startsWith("Nursery") || cls.startsWith("LKG") || cls.startsWith("UKG") || cls.startsWith("Other") ? cls : `Class ${cls}`}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -511,9 +553,50 @@ export default function EditProfilePage() {
                     <div><Label htmlFor="board"><BilingualText en="Board" hi="बोर्ड" /></Label><Controller name="board" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Board" /></SelectTrigger><SelectContent><SelectItem value="CBSE">CBSE</SelectItem><SelectItem value="ICSE">ICSE</SelectItem><SelectItem value="State Board">State Board</SelectItem><SelectItem value="IB">IB</SelectItem><SelectItem value="IGCSE">IGCSE</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
                     <div><Label htmlFor="stream"><BilingualText en="Stream (for 11/12th)" hi="स्ट्रीम (11/12वीं के लिए)" /></Label><Controller name="stream" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Stream" /></SelectTrigger><SelectContent><SelectItem value="Science">Science</SelectItem><SelectItem value="Commerce">Commerce</SelectItem><SelectItem value="Arts">Arts/Humanities</SelectItem><SelectItem value="NA">Not Applicable</SelectItem></SelectContent></Select>)} /></div>
                 </div>
-                 <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" /></Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder="Your school's name" />} /></div>
-                 <div><Label htmlFor="schoolId"><BilingualText en="School ID (Provided by OSO)" hi="स्कूल आईडी (OSO द्वारा प्रदान)" /></Label><Controller name="schoolId" control={control} render={({ field }) => <Input id="schoolId" {...field} placeholder="Enter your school's OSO ID" />} /></div>
-                 <div>
+                
+                {isClassNurseryTo12(watchedClassName) && (
+                  <div className="p-4 border rounded-md bg-muted/30 space-y-3">
+                    <Label className="flex items-center gap-1.5 font-medium text-foreground">
+                      <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                      <BilingualText en="OSO School Connection" hi="OSO स्कूल कनेक्शन" />
+                    </Label>
+                    <RadioGroup
+                      value={isSchoolOsoConnected}
+                      onValueChange={(val: string) => handleIsSchoolConnectedChange(val as 'yes' | 'no')}
+                      className="flex space-x-6 items-center"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="osoConnectedYes" />
+                        <Label htmlFor="osoConnectedYes" className="font-normal cursor-pointer">
+                          <BilingualText en="Yes, my school is on OSO" hi="हाँ, मेरा स्कूल OSO पर है" />
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="osoConnectedNo" />
+                        <Label htmlFor="osoConnectedNo" className="font-normal cursor-pointer">
+                          <BilingualText en="No / I don't know" hi="नहीं / मुझे नहीं पता" />
+                        </Label>
+                      </div>
+                    </RadioGroup>
+
+                    {isSchoolOsoConnected === 'yes' && (
+                      <div className="pt-3">
+                        <Label htmlFor="schoolId">
+                          <BilingualText en="School ID (Provided by OSO)" hi="स्कूल आईडी (OSO द्वारा प्रदान)" />*
+                        </Label>
+                        <Controller
+                          name="schoolId"
+                          control={control}
+                          render={({ field }) => <Input id="schoolId" {...field} placeholder="Enter your school's OSO ID" />}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" /></Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder="Your school's name" />} /></div>
+                
+                <div>
                     <Label htmlFor="examTarget" className="flex items-center gap-1.5"><Target className="h-4 w-4"/> <BilingualText en="Primary Exam Target" hi="प्राथमिक परीक्षा लक्ष्य" /></Label>
                     <Controller 
                         name="examTarget" 
@@ -547,7 +630,7 @@ export default function EditProfilePage() {
                       <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger><SelectValue placeholder="Select Child's Class" /></SelectTrigger>
                         <SelectContent>
-                          {studentClasses.filter(c => c !== "12+ (Passed)").map(cls => ( // Exclude 12+ for child's class
+                          {studentClasses.filter(c => c !== "12+ (Passed)").map(cls => ( 
                             <SelectItem key={cls} value={cls}>{cls.startsWith("Nursery") || cls.startsWith("LKG") || cls.startsWith("UKG") || cls.startsWith("Other") ? cls : `Class ${cls}`}</SelectItem>
                           ))}
                         </SelectContent>
