@@ -239,7 +239,7 @@ export default function EditProfilePage() {
         }
     }
     reset(initialProfileData);
-    if(initialProfileData.avatarUrl) setPreviewUrl(initialProfileData.avatarUrl);
+    if(initialProfileData.avatarUrl) setPreviewUrl(initialProfileData.avatarUrl); // <-- THIS IS THE FIX
     
     if (initialProfileData.schoolId && isClassNurseryTo12(initialProfileData.className)) {
         setIsSchoolOsoConnected('yes');
@@ -317,11 +317,11 @@ export default function EditProfilePage() {
             contactNumber: data.schoolContact,
             principalName: data.principalName,
             affiliationNumber: data.affiliationNumber,
-            email: data.email,
-            contactPersonName: data.contactPersonName || data.fullName,
-            contactPersonEmail: data.contactPersonEmail || data.email,
-            contactPersonPhone: data.contactPersonPhone,
-            designation: data.schoolDesignation,
+            email: data.email, // School's primary email
+            contactPersonName: data.contactPersonName || data.fullName, // Logged in user's name as contact
+            contactPersonEmail: data.contactPersonEmail || data.email, // Logged in user's email as contact email
+            contactPersonPhone: data.contactPersonPhone, // Logged in user's direct phone
+            designation: data.schoolDesignation, // Logged in user's designation
         };
 
         if (isInitialSchoolSetup) {
@@ -349,76 +349,87 @@ export default function EditProfilePage() {
                 const responseData = await response.json();
                 if (response.ok && responseData.id) {
                     schoolApiIdFromResponse = responseData.id;
-                    finalSchoolIdForStorage = schoolApiIdFromResponse;
+                    finalSchoolIdForStorage = schoolApiIdFromResponse; // Use API ID if successful
                     toast({ title: "School Profile Registered with API", description: `School "${data.schoolName}" registered. ID: ${schoolApiIdFromResponse}` });
                 } else {
+                    // API Error or Validation error from API
                     const errorMessage = responseData.error || responseData.message || `Failed to register school with API. Status: ${response.status}`;
                     toast({ title: "School API Error", description: errorMessage, variant: "destructive" });
                     setIsSubmittingProfile(false);
-                    return;
+                    return; // Stop further processing if API registration fails
                 }
             } catch (apiError: any) {
                 toast({ title: "School API Connection Error", description: `Could not connect to school registration service: ${apiError.message}`, variant: "destructive" });
                 setIsSubmittingProfile(false);
-                return;
+                return; // Stop further processing
             }
             
+            // Create initial admin staff entry linked to the school
             const adminStaffEntry = {
-                id: `staff_${Date.now()}`,
+                id: `staff_${Date.now()}`, // Unique ID for the staff member
                 name: tempAdminCreds.fullName,
                 email: tempAdminCreds.email,
-                password: tempAdminCreds.password,
+                password: tempAdminCreds.password, // Store plaintext password for prototype
                 role: tempAdminCreds.designation, // Store designation as 'role' for staff member
-                subjectOrDepartment: "Administration",
+                subjectOrDepartment: "Administration", // Default for first admin
                 contact: data.contactPersonPhone || data.schoolContact || "",
                 status: "Active",
-                schoolId: finalSchoolIdForStorage,
+                schoolId: finalSchoolIdForStorage, // Link to the school
             };
-            localStorage.setItem(`schoolStaff_${finalSchoolIdForStorage}`, JSON.stringify([adminStaffEntry]));
-            localStorage.removeItem('tempInitialAdminCredentials');
+            localStorage.setItem(`schoolStaff_${finalSchoolIdForStorage}`, JSON.stringify([adminStaffEntry])); // Store as an array
+            localStorage.removeItem('tempInitialAdminCredentials'); // Clean up temp credentials
             
+            // Log in the admin automatically
             localStorage.setItem('loggedInUser', JSON.stringify({
                 email: adminStaffEntry.email,
                 fullName: adminStaffEntry.name,
-                role: 'school',
-                designation: adminStaffEntry.role,
-                schoolId: adminStaffEntry.schoolId
+                role: 'school', // The user's role is 'school' (i.e., school staff)
+                designation: adminStaffEntry.role, // Their specific designation
+                schoolId: adminStaffEntry.schoolId // The ID of the school they belong to
             }));
 
+            // Save the user's own profile data as a school staff member
             const adminUserProfileData: ProfileFormData = {
-                fullName: tempAdminCreds.fullName,
-                email: tempAdminCreds.email,
-                role: 'school',
-                schoolDesignation: tempAdminCreds.designation,
+                fullName: tempAdminCreds.fullName, // Their name
+                email: tempAdminCreds.email,       // Their email
+                role: 'school',                     // Their role type
+                schoolDesignation: tempAdminCreds.designation, // Their specific designation
                 schoolId: finalSchoolIdForStorage,
-                apiSchoolId: schoolApiIdFromResponse,
-                avatarUrl: data.avatarUrl, 
+                apiSchoolId: schoolApiIdFromResponse, // Store API ID here too
+                avatarUrl: data.avatarUrl, // Use avatar from the form
                 dataAiHint: data.dataAiHint,
             };
             localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); // Generic user profile for dashboard consistency
             
+            // Save the overall school profile data (which includes this admin's details as contact)
             const schoolProfileToSave: ProfileFormData = {
                 ...data,
-                schoolId: finalSchoolIdForStorage,
-                apiSchoolId: schoolApiIdFromResponse,
-                role: 'school',
+                schoolId: finalSchoolIdForStorage, // Ensure schoolId is correctly set
+                apiSchoolId: schoolApiIdFromResponse, // Store the API generated ID
+                role: 'school', // Mark this profile as a school-level profile
             };
+            // Store school-specific profile under a key that includes the school ID
             localStorage.setItem(`schoolProfileData_${finalSchoolIdForStorage}`, JSON.stringify(schoolProfileToSave));
 
             toast({ title: "School & Admin Profile Saved!", description: `School "${data.schoolName}" and your admin profile have been set up.` });
-            router.push('/school-dashboard');
+            router.push('/school-dashboard'); // Redirect to school dashboard
         } else { 
-            // Existing school staff editing their profile or school profile
+            // This block is for an existing school staff member editing their own profile
+            // OR an admin editing the school's general profile details
             const schoolIdToUse = schoolProfile?.apiSchoolId || schoolProfile?.schoolId || finalSchoolIdForStorage;
             
+            // Save the individual staff member's profile
             const staffUserProfileData: ProfileFormData = {
-                ...data,
+                ...data, // Includes their name, email, updated avatar, etc.
                 role: 'school',
                 schoolId: schoolIdToUse, 
                 apiSchoolId: schoolProfile?.apiSchoolId, // Preserve existing API ID
             };
             localStorage.setItem('userProfileData', JSON.stringify(staffUserProfileData));
             
+            // Update the general school profile if an admin is editing it
+            // (Need to ensure only admins can edit general school details, not just their own contact info on it)
+            // For now, assuming if schoolProfile exists and is being edited, we update it.
             const schoolProfileToSave: ProfileFormData = {
                 ...data,
                 schoolId: schoolIdToUse,
@@ -428,25 +439,28 @@ export default function EditProfilePage() {
             localStorage.setItem(`schoolProfileData_${schoolIdToUse}`, JSON.stringify(schoolProfileToSave));
 
             toast({ title: "Profile Updated!", description: "Your school staff profile has been updated." });
-            router.push('/school-dashboard');
+            router.push('/school-dashboard'); // Redirect to school dashboard
         }
 
     } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student') {
+        // Save profile for non-school roles
         const profileKey = currentRole === 'student' ? 'userProfileData' : `${currentRole}ProfileData`;
-        const fullProfileData = { ...data, role: currentRole }; 
+        const fullProfileData = { ...data, role: currentRole }; // Ensure role is correctly saved
         localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
         
+        // Also update/create the generic userProfileData for consistency if not student
         if(currentRole !== 'student') {
             localStorage.setItem('userProfileData', JSON.stringify(fullProfileData));
         }
         
         toast({ title: "Profile Saved!", description: "Your profile information has been updated." });
         
-        let redirectPath = '/';
+        // Determine redirect path based on role
+        let redirectPath = '/'; // Default for student
         if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
         else if (currentRole === 'parent') redirectPath = '/parent-mode';
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
-        else if (currentRole === 'student') redirectPath = '/'; 
+        else if (currentRole === 'student') redirectPath = '/'; // Explicitly for student
         router.push(redirectPath);
     }
     
