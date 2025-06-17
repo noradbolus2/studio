@@ -18,14 +18,14 @@ const QuestionSchema = z.object({
   explanation: z.string().optional().describe('A brief explanation for the correct answer.'),
 });
 
-export const GenerateExamTestInputSchema = z.object({
+const GenerateExamTestInputSchema = z.object({
   examNameOrType: z.string().describe('The name or type of the exam (e.g., "NEET UG", "JEE Main Physics", "Class 10 Science Prelim").'),
   subject: z.string().optional().describe('Specific subject for the test, if applicable (e.g., "Physics", "Organic Chemistry").'),
   numQuestions: z.number().min(3).max(20).default(5).describe('The number of questions to generate (default is 5, min 3, max 20 for this prototype).'),
 });
 export type GenerateExamTestInput = z.infer<typeof GenerateExamTestInputSchema>;
 
-export const GenerateExamTestOutputSchema = z.object({
+const GenerateExamTestOutputSchema = z.object({
   testTitle: z.string().describe('A suitable title for the generated test (e.g., "NEET UG Physics Mini Mock Test").'),
   questions: z.array(QuestionSchema).describe('An array of generated questions.'),
 });
