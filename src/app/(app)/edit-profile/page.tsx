@@ -59,6 +59,12 @@ const competitiveExamsIndia = [
   "Other (Not Listed)"
 ];
 
+const studentClasses = [
+  "Nursery", "LKG", "UKG", 
+  ...[...Array(12)].map((_, i) => String(i+1)), 
+  "12+ (Passed)", "Other"
+];
+
 
 const profileSchema = z.object({
   role: z.string().optional(),
@@ -175,7 +181,9 @@ export default function EditProfilePage() {
         if (emailFromParam) initialProfileData.email = emailFromParam;
         if (nameFromParam) {
             initialProfileData.fullName = nameFromParam; 
-            initialProfileData.contactPersonName = nameFromParam;
+            if (roleFromParams === 'school' || roleFromParams === 'vendor' || roleFromParams === 'creator') {
+              initialProfileData.contactPersonName = nameFromParam;
+            }
         }
         if (designationFromParam && roleFromParams === 'school') {
             initialProfileData.schoolDesignation = designationFromParam;
@@ -382,9 +390,13 @@ export default function EditProfilePage() {
         }
 
     } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student') {
-        const profileKey = `${currentRole}ProfileData`;
-        localStorage.setItem(profileKey, JSON.stringify(data));
-        localStorage.setItem('userProfileData', JSON.stringify(data));
+        const profileKey = currentRole === 'student' ? 'userProfileData' : `${currentRole}ProfileData`;
+        const fullProfileData = { ...data, role: currentRole }; // Ensure role is correctly set
+        localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
+        // Always update userProfileData for consistency if it's not the primary student profile being saved
+        if(currentRole !== 'student') {
+            localStorage.setItem('userProfileData', JSON.stringify(fullProfileData));
+        }
         
         toast({ title: "Profile Saved!", description: "Your profile information has been updated." });
         
@@ -477,7 +489,23 @@ export default function EditProfilePage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div><Label htmlFor="gender"><BilingualText en="Gender" hi="लिंग" /></Label><Controller name="gender" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger><SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
-                    <div><Label htmlFor="className"><BilingualText en="Class" hi="कक्षा" /></Label><Controller name="className" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger><SelectContent>{[...Array(12)].map((_, i) => <SelectItem key={i+1} value={String(i+1)}>{`Class ${i+1}`}</SelectItem>)}<SelectItem value="Nursery">Nursery</SelectItem><SelectItem value="LKG">LKG</SelectItem><SelectItem value="UKG">UKG</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
+                    <div>
+                        <Label htmlFor="className"><BilingualText en="Class" hi="कक्षा" /></Label>
+                        <Controller 
+                            name="className" 
+                            control={control} 
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
+                                    <SelectContent>
+                                        {studentClasses.map(cls => (
+                                            <SelectItem key={cls} value={cls}>{cls.startsWith("12+") ? cls : `Class ${cls}`}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )} 
+                        />
+                    </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div><Label htmlFor="board"><BilingualText en="Board" hi="बोर्ड" /></Label><Controller name="board" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Board" /></SelectTrigger><SelectContent><SelectItem value="CBSE">CBSE</SelectItem><SelectItem value="ICSE">ICSE</SelectItem><SelectItem value="State Board">State Board</SelectItem><SelectItem value="IB">IB</SelectItem><SelectItem value="IGCSE">IGCSE</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
@@ -510,7 +538,23 @@ export default function EditProfilePage() {
               <>
                 <div><Label htmlFor="phoneNumber"><BilingualText en="Phone Number" hi="फ़ोन नंबर" /></Label><Controller name="phoneNumber" control={control} render={({ field }) => <Input id="phoneNumber" {...field} placeholder="+91 XXXXXXXXXX" />} /></div>
                 <div><Label htmlFor="childName"><BilingualText en="Child's Full Name" hi="बच्चे का पूरा नाम" /></Label><Controller name="childName" control={control} render={({ field }) => <Input id="childName" {...field} />} /></div>
-                <div><Label htmlFor="childClass"><BilingualText en="Child's Class" hi="बच्चे की कक्षा" /></Label><Controller name="childClass" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Child's Class" /></SelectTrigger><SelectContent>{[...Array(12)].map((_, i) => <SelectItem key={i+1} value={String(i+1)}>{`Class ${i+1}`}</SelectItem>)}<SelectItem value="Nursery">Nursery</SelectItem><SelectItem value="LKG">LKG</SelectItem><SelectItem value="UKG">UKG</SelectItem></SelectContent></Select>)} /></div>
+                <div>
+                  <Label htmlFor="childClass"><BilingualText en="Child's Class" hi="बच्चे की कक्षा" /></Label>
+                  <Controller 
+                    name="childClass" 
+                    control={control} 
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger><SelectValue placeholder="Select Child's Class" /></SelectTrigger>
+                        <SelectContent>
+                          {studentClasses.filter(c => c !== "12+ (Passed)").map(cls => ( // Exclude 12+ for child's class
+                            <SelectItem key={cls} value={cls}>{cls.startsWith("Nursery") || cls.startsWith("LKG") || cls.startsWith("UKG") || cls.startsWith("Other") ? cls : `Class ${cls}`}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )} 
+                  />
+                </div>
                 <div><Label htmlFor="childSchoolName"><BilingualText en="Child's School Name" hi="बच्चे के स्कूल का नाम" /></Label><Controller name="childSchoolName" control={control} render={({ field }) => <Input id="childSchoolName" {...field} />} /></div>
               </>
             )}
