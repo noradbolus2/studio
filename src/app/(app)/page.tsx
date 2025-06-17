@@ -67,9 +67,9 @@ const recommendationsMock = [
 
 
 const deliveryDeals = [
-  { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, bgColor: "bg-accent/80", textColor: "text-accent-foreground", dataAiHint:"charts diagram" },
-  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, bgColor: "bg-primary/80", textColor: "text-primary-foreground", dataAiHint:"school supplies kit" },
-  { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, bgColor: "bg-destructive/80", textColor: "text-destructive-foreground", dataAiHint:"project materials box" },
+  { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, bgColor: "bg-accent/80", textColor: "text-accent-foreground", dataAiHint:"charts diagram", href: "/delivery" },
+  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, bgColor: "bg-primary/80", textColor: "text-primary-foreground", dataAiHint:"school supplies kit", href: "/delivery" },
+  { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, bgColor: "bg-destructive/80", textColor: "text-destructive-foreground", dataAiHint:"project materials box", href: "/delivery" },
 ];
 
 const studyBoosters = [
@@ -509,13 +509,15 @@ export default function ModernHomePage() {
          <ScrollArea className="w-full whitespace-nowrap pb-3">
             <div className="flex space-x-3">
                 {deliveryDeals.map((deal) => (
-                <Card key={deal.id} className={cn("min-w-[200px] p-4 rounded-lg shadow-md flex items-center gap-3 glass-card", deal.bgColor, deal.textColor)}>
-                    <deal.icon className="h-8 w-8 shrink-0" />
-                    <div>
-                    <h3 className="text-sm font-bold"><BilingualText en={deal.titleEn} hi={deal.titleHi} lang={currentLang}/></h3>
-                    <p className="text-xs opacity-90"><BilingualText en={deal.descriptionEn} hi={deal.descriptionHi} lang={currentLang}/></p>
-                    </div>
-                </Card>
+                <Link href={deal.href} key={deal.id} className="block min-w-[200px] max-w-[240px] hover:opacity-90 transition-opacity">
+                    <Card className={cn("p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card", deal.bgColor, deal.textColor)} data-ai-hint={deal.dataAiHint}>
+                        <deal.icon className="h-8 w-8 shrink-0" />
+                        <div>
+                        <h3 className="text-sm font-bold"><BilingualText en={deal.titleEn} hi={deal.titleHi} lang={currentLang}/></h3>
+                        <p className="text-xs opacity-90"><BilingualText en={deal.descriptionEn} hi={deal.descriptionHi} lang={currentLang}/></p>
+                        </div>
+                    </Card>
+                </Link>
                 ))}
             </div>
             <ScrollBar orientation="horizontal" />
@@ -532,7 +534,7 @@ export default function ModernHomePage() {
               const CardWrapper = booster.href ? Link : 'div';
               return (
                 <CardWrapper href={booster.href || '#'} key={booster.id} className={cn("block min-w-[200px] max-w-[240px]", booster.href ? "hover:opacity-90 transition-opacity" : "")}>
-                  <Card className={cn("p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card", booster.bgColor, booster.textColor)}>
+                  <Card className={cn("p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card", booster.bgColor, booster.textColor)} data-ai-hint={booster.dataAiHint}>
                     <booster.icon className="h-8 w-8 shrink-0" />
                     <div>
                       <h3 className="text-sm font-bold"><BilingualText en={booster.titleEn} hi={booster.titleHi} lang={currentLang}/></h3>
