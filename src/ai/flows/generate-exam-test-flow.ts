@@ -22,7 +22,7 @@ const QuestionSchema = z.object({
 const GenerateExamTestInputSchema = z.object({
   examNameOrType: z.string().describe('The name or type of the exam (e.g., "NEET UG", "JEE Main Physics", "Class 10 Science Prelim").'),
   subject: z.string().optional().describe('Specific subject for the test, if applicable (e.g., "Physics", "Organic Chemistry").'),
-  numQuestions: z.number().min(3).max(20).default(5).describe('The number of questions to generate (default is 5, min 3, max 20 for this prototype).'),
+  numQuestions: z.number().min(3).max(50).default(5).describe('The number of questions to generate (default is 5, min 3, max 50 for this prototype).'),
 });
 export type GenerateExamTestInput = z.infer<typeof GenerateExamTestInputSchema>;
 
@@ -42,8 +42,8 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateExamTestInputSchema},
   output: {schema: GenerateExamTestOutputSchema},
   prompt: `You are an expert AI Test Generator for Indian students.
-Your task is to create a mock test based on the provided exam name/type, subject (if any), and number of questions.
-The questions should be relevant to the typical syllabus and pattern of the specified exam.
+Your task is to create an exam-style mock test based on the provided exam name/type, subject (if any), and number of questions.
+The questions should be closely based on the typical syllabus, question types, and difficulty pattern of the specified exam.
 Ensure each question has exactly four multiple-choice options.
 Indicate the correct answer index (0-3).
 Provide a brief explanation for the correct answer if possible.
@@ -102,11 +102,12 @@ const generateExamTestFlow = ai.defineFlow(
     }
     // Ensure numQuestions matches the output, or truncate/error as needed for robustness
     if (output.questions.length !== input.numQuestions) {
-        console.warn(`AI generated ${output.questions.length} questions, but ${input.numQuestions} were requested. Adjusting output based on actual generation.`);
-        // Allow AI to sometimes generate slightly more or less if it struggles with exact count,
-        // but it's good to be aware of discrepancies.
-        // If strict count is needed, add: output.questions = output.questions.slice(0, input.numQuestions);
-        // or throw an error if output.questions.length < input.numQuestions
+        console.warn(`AI generated ${output.questions.length} questions, but ${input.numQuestions} were requested. Adjusting output based on actual generation if significantly different.`);
+        // For this prototype, we'll allow the AI's output length if it's reasonably close.
+        // If a strict count is paramount, you might add logic here to pad/truncate or error.
+        // e.g., if (Math.abs(output.questions.length - input.numQuestions) > input.numQuestions * 0.2) { // If more than 20% diff
+        //   throw new Error(`AI generated ${output.questions.length} questions, which is too different from the requested ${input.numQuestions}.`);
+        // }
     }
     return output;
   }
