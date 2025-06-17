@@ -2,14 +2,14 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Added useRouter
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { StationeryItemCard, type StationeryItem } from '@/components/delivery/StationeryItemCard';
+import { StationeryItemCard, type StationeryItem } from '@/components/delivery/StationeryItemCard'; 
 import { OrderConfirmationDialog } from '@/components/delivery/OrderConfirmationDialog';
 import { CheckoutDialog } from '@/components/delivery/CheckoutDialog';
-import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter, Apple as AppleIcon, StickyNote, FolderOpen, Palette, Ruler, Scissors, ArrowLeft } from 'lucide-react'; // Added ArrowLeft
+import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter, Apple as AppleIcon, StickyNote, FolderOpen, Palette, Ruler, Scissors, ArrowLeft } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
@@ -71,7 +71,7 @@ const sampleItems: StationeryItem[] = [
 ];
 
 export default function DeliveryPage() {
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoryKey, setSelectedCategoryKey] = useState('all');
   const [cart, setCart] = useState<StationeryItem[]>([]);
@@ -119,12 +119,12 @@ export default function DeliveryPage() {
   );
   
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
-
+  
   return (
     <div className="space-y-6">
       <Card className="sticky top-0 bg-background/95 backdrop-blur-sm z-30 -mx-4 px-4 pt-3 pb-2 shadow-sm rounded-none border-x-0 border-t-0 ">
-        <CardHeader className="flex items-center justify-between p-0 mb-3">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="ml-[-8px] sm:ml-0 text-foreground hover:bg-accent/10">
+        <CardHeader className="flex flex-row items-center justify-between p-2 mb-2">
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-foreground hover:bg-accent/10">
             <ArrowLeft className="h-6 w-6" />
             <span className="sr-only">Back</span>
           </Button>
@@ -136,7 +136,7 @@ export default function DeliveryPage() {
                 <BilingualText en="Stationery & essentials, delivered fast!" hi="स्टेशनरी और आवश्यक वस्तुएं, तेजी से डिलीवर!" />
             </CardDescription>
           </div>
-          <div className="w-10 h-10" /> {/* Invisible spacer to help center title */}
+          <div className="w-10 h-10 flex-shrink-0" /> {/* Invisible spacer to help center title */}
         </CardHeader>
         
         <div className="relative mb-3">
