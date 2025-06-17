@@ -1,3 +1,4 @@
+
 "use client"; 
 
 import { useState, useEffect } from 'react'; 
@@ -12,6 +13,7 @@ import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type 
 import { useToast } from '@/hooks/use-toast';
 import type { ProfileFormData } from '../edit-profile/page'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; 
+import { Label } from "@/components/ui/label"; // Added this import
 
 const testCategories = [ 
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
@@ -30,6 +32,13 @@ const testCategories = [
   { id: 'other_govt_jobs', nameEn: 'Other Govt. Jobs (Railways, etc.)', nameHi: 'अन्य सरकारी नौकरियां (रेलवे, आदि)', descriptionEn: "Specific tests for various roles.", descriptionHi: "विभिन्न भूमिकाओं के लिए विशिष्ट परीक्षण।"},
   { id: 'pharmacy_agriculture', nameEn: 'Pharmacy & Agriculture', nameHi: 'फार्मेसी और कृषि', descriptionEn: "Entrance tests for B.Pharm, Agri BSc.", descriptionHi: "B.Pharm, Agri BSc के लिए प्रवेश परीक्षा।"},
   { id: 'boards', nameEn: 'Class 10 & 12 Boards', nameHi: 'कक्षा 10 और 12 बोर्ड', descriptionEn: "Chapter tests and model papers.", descriptionHi: "अध्याय परीक्षण और मॉडल पेपर।"},
+];
+
+const featuredTests = [
+  { id: 'neet_mock_1', categoryId: 'medical', titleEn: "NEET UG Full Syllabus Mock Test", titleHi: "नीट यूजी पूर्ण पाठ्यक्रम मॉक टेस्ट", descriptionEn: "3 hours, 200 questions, All India Ranking.", descriptionHi: "3 घंटे, 200 प्रश्न, अखिल भारतीय रैंकिंग।", price: "₹199" },
+  { id: 'jee_main_prev_1', categoryId: 'engineering', titleEn: "JEE Main Previous Year Paper (2023)", titleHi: "जेईई मुख्य पिछला वर्ष प्रश्नपत्र (2023)", descriptionEn: "Official paper with solutions.", descriptionHi: "समाधान के साथ आधिकारिक प्रश्नपत्र।", price: "Free" },
+  { id: 'cat_verbal_1', categoryId: 'management', titleEn: "CAT Verbal Ability Sectional Test", titleHi: "कैट मौखिक क्षमता अनुभागीय परीक्षण", descriptionEn: "40 questions, 60 minutes.", descriptionHi: "40 प्रश्न, 60 मिनट।", price: "₹99" },
+  { id: 'class10_maths_ch1', categoryId: 'boards', titleEn: "Class 10 Maths: Real Numbers Test", titleHi: "कक्षा 10 गणित: वास्तविक संख्याएं परीक्षण", descriptionEn: "Chapter-wise test for board prep.", descriptionHi: "बोर्ड तैयारी के लिए अध्याय-वार परीक्षण।", price: "Free" },
 ];
 
 // Helper function (can be shared if used elsewhere)
@@ -234,6 +243,32 @@ export default function TestSeriesPage() {
         </Card>
       )}
       
+      <section className="mt-8">
+        <h2 className="text-xl font-semibold text-foreground mb-3">
+          <BilingualText en="Featured Test Series" hi="विशेष रुप से प्रदर्शित टेस्ट सीरीज़" />
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {featuredTests.map(test => (
+            <Card key={test.id} className="hover:shadow-lg transition-shadow flex flex-col">
+              <CardHeader>
+                <CardTitle className="text-md font-semibold text-primary"><BilingualText en={test.titleEn} hi={test.titleHi} /></CardTitle>
+                <CardDescription className="text-xs"><BilingualText en={test.descriptionEn} hi={test.descriptionHi} /></CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <p className="text-lg font-bold text-accent">{test.price}</p>
+              </CardContent>
+              <CardFooter>
+                <Button asChild size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground">
+                  <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.titleEn)}`}>
+                    <BilingualText en="Take Test" hi="टेस्ट दें" />
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </section>
+      
       <div className="my-6">
         <Label htmlFor="testCategoryFilter" className="text-md font-semibold text-foreground mb-2 block">
           <BilingualText en="Browse Test Categories" hi="टेस्ट श्रेणियां ब्राउज़ करें" />
@@ -258,7 +293,7 @@ export default function TestSeriesPage() {
             <Card key={category.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                     <CardTitle className="font-headline"><BilingualText en={category.nameEn} hi={category.nameHi} /></CardTitle>
-                    <CardDescription><BilingualText en={category.descriptionEn} hi={category.descriptionHi} /></CardDescription>
+                    <CardDescription><BilingualText en={category.descriptionEn || ""} hi={category.descriptionHi || ""} /></CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Button asChild className="w-full">
@@ -296,3 +331,4 @@ export default function TestSeriesPage() {
     </div>
   );
 }
+
