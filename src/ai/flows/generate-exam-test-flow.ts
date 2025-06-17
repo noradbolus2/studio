@@ -19,14 +19,14 @@ const QuestionSchema = z.object({
 });
 
 const GenerateExamTestInputSchema = z.object({
-  examNameOrType: z.string().describe('The name or type of the exam (e.g., "NEET UG", "JEE Main Physics", "Class 10 Science Prelim", "UPSC CSE Prelims GS Paper 1").'),
-  subject: z.string().optional().describe('Specific subject for the test, if applicable (e.g., "Physics", "Organic Chemistry", "Indian Polity").'),
+  examNameOrType: z.string().describe('The name or type of the exam (e.g., "NEET UG", "JEE Main Physics", "Class 10 Science Prelim", "UPSC CSE Prelims GS Paper 1", "NEET SS Cardiology").'),
+  subject: z.string().optional().describe('Specific subject for the test, if applicable (e.g., "Physics", "Organic Chemistry", "Indian Polity", "Cardiology").'),
   numQuestions: z.number().min(3).max(200).default(10).describe('The desired number of questions. For major exams like NEET/JEE, the AI will attempt to generate the standard number of questions for a full test unless a specific (lower) number is requested here.'),
 });
 export type GenerateExamTestInput = z.infer<typeof GenerateExamTestInputSchema>;
 
 const GenerateExamTestOutputSchema = z.object({
-  testTitle: z.string().describe('A suitable title for the generated test (e.g., "NEET UG Physics Mini Mock Test", "JEE Main Full Syllabus Mock Test - Paper 1").'),
+  testTitle: z.string().describe('A suitable title for the generated test (e.g., "NEET UG Physics Mini Mock Test", "JEE Main Full Syllabus Mock Test - Paper 1", "NEET SS Cardiology Mock Test").'),
   questions: z.array(QuestionSchema).describe('An array of generated questions.'),
 });
 export type GenerateExamTestOutput = z.infer<typeof GenerateExamTestOutputSchema>;
@@ -41,20 +41,23 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateExamTestOutputSchema},
   prompt: `You are an expert AI Test Generator for Indian students, creating exam-style mock tests.
 Your task is to create a test based on the provided exam name/type, subject (if any), and number of questions.
-The questions should be closely based on the typical syllabus, question types, and difficulty pattern of the specified exam, reflecting the latest patterns where possible.
-Model questions closely on the style, difficulty, and topics covered in Previous Year Questions (PYQs) for the specified exam. Include variations of PYQ-style questions where data/values are changed, and some questions that are very similar in structure and concept to those found in PYQs.
-Ensure each question has exactly four multiple-choice options.
-Indicate the correct answer index (0-3).
-Provide a brief explanation for the correct answer.
 
-IMPORTANT EXAM PATTERNS:
-- If 'examNameOrType' is a major standardized exam (e.g., "NEET UG", "JEE Main", "UPSC CSE Prelims GS Paper 1", "CAT VARC Section"), you MUST generate the standard number of questions for a full test of that exam/section. The 'numQuestions' input parameter should be IGNORED for these cases if it suggests a lower number than the standard. For example:
-    - "NEET UG": 200 questions total (Physics: 50, Chemistry: 50, Botany: 50, Zoology: 50). If the 'subject' input is specified (e.g., "NEET UG Physics"), generate 50 questions for that subject.
-    - "JEE Main": 90 questions total (Physics: 30, Chemistry: 30, Maths: 30). If the 'subject' input is specified (e.g., "JEE Main Chemistry"), generate 30 questions for that subject.
-    - "UPSC CSE Prelims GS Paper 1": 100 questions.
-    - "CAT VARC Section": 24 questions. "CAT DILR Section": 20 questions. "CAT QA Section": 22 questions.
-- If 'numQuestions' is provided for these major exams and is *higher* than the standard for a specific part (e.g., requesting 60 physics questions for NEET UG), you can generate up to the requested 'numQuestions' if it makes sense for a practice test.
-- For general requests (e.g., "Class 10 Science Prelim", "Physics Practice Test") or if a specific number is requested via 'numQuestions' for a non-standardized test, adhere to 'numQuestions' (up to a maximum of 200 questions).
+CRITICAL INSTRUCTIONS FOR QUESTION QUALITY & EXAM PATTERN:
+1.  **Syllabus, Pattern, and Difficulty:** The questions MUST be closely based on the typical syllabus, question types, and **difficulty pattern** of the specified exam, reflecting the latest patterns where possible.
+2.  **Previous Year Questions (PYQs) Style:** Model questions closely on the style, difficulty, and topics covered in Previous Year Questions (PYQs) for the specified exam. Include variations of PYQ-style questions where data/values are changed, and some questions that are very similar in structure and concept to those found in PYQs.
+3.  **Specialized Exams (Extremely Important):**
+    *   For highly specialized or postgraduate level exams (e.g., "NEET SS Cardiology", "UPSC CSE Mains Optional Paper - History", "GATE Computer Science"), the questions MUST be of an **advanced, postgraduate, or super-specialist difficulty level.** Avoid generating overly simple or foundational questions.
+    *   The questions for specialized exams must reflect the depth of knowledge and analytical skills expected at that level. For instance, a "NEET SS Cardiology" question should be complex and specific to cardiology, not a general medical question.
+4.  **Exam-Specific Question Counts (Override \`numQuestions\` if necessary):**
+    *   If 'examNameOrType' is a major standardized exam (e.g., "NEET UG", "JEE Main", "UPSC CSE Prelims GS Paper 1", "CAT VARC Section"), you MUST generate the standard number of questions for a full test of that exam/section, even if \`numQuestions\` suggests a lower number.
+        *   "NEET UG": 200 questions total (Physics: 50, Chemistry: 50, Botany: 50, Zoology: 50). If 'subject' is specified (e.g., "NEET UG Physics"), generate 50 questions for that subject.
+        *   "JEE Main": 90 questions total (Physics: 30, Chemistry: 30, Maths: 30). If 'subject' is specified (e.g., "JEE Main Chemistry"), generate 30 questions for that subject.
+        *   "UPSC CSE Prelims GS Paper 1": 100 questions.
+        *   "CAT VARC Section": 24 questions. "CAT DILR Section": 20 questions. "CAT QA Section": 22 questions.
+    *   If \`numQuestions\` is provided for these major exams and is *higher* than the standard for a specific part (e.g., requesting 60 physics questions for NEET UG), you can generate up to the requested 'numQuestions' if it makes sense for a practice test, but maintain the exam's difficulty and style.
+    *   For general requests (e.g., "Class 10 Science Prelim", "Physics Practice Test") or if \`numQuestions\` is for a non-standardized test, adhere to \`numQuestions\` (up to a maximum of 200 questions).
+5.  **Answer Options:** Ensure each question has exactly four distinct multiple-choice options.
+6.  **Explanation:** Provide a brief, accurate explanation for the correct answer.
 
 CONTENT FORMATTING:
 - For any chemical formulas, reactions, or logical symbols (like ->, <->, AND, OR, NOT, ~), use only plain text characters. For example, represent 'CH3CH2OH' as is, use '->' for reaction arrows, and 'p AND q' for logical 'p and q'.
@@ -68,7 +71,7 @@ Exam Name/Type: {{{examNameOrType}}}
 Requested Number of Questions (Consider this alongside exam patterns): {{{numQuestions}}}
 
 Generate the test title and the array of questions.
-The test title should be concise and reflect the exam and subject.
+The test title should be concise and reflect the exam and subject (e.g., "NEET SS Cardiology Mock Test - Set 1", "JEE Main Full Syllabus Mock Test").
 
 Your output MUST be a JSON object matching the GenerateExamTestOutputSchema, including both 'testTitle' and 'questions'.
 
@@ -111,7 +114,8 @@ const generateExamTestFlow = ai.defineFlow(
         console.error("AI response missing testTitle or questions array. Output:", JSON.stringify(output));
         throw new Error("AI response did not contain a valid test title or questions array.");
     }
-    console.log(`Test Generation: Requested approx ${input.numQuestions} for ${input.examNameOrType}. AI generated ${output.questions.length} questions titled "${output.testTitle}".`);
+    console.log(`Test Generation: Requested approx ${input.numQuestions} for ${input.examNameOrType} (Subject: ${input.subject || 'N/A'}). AI generated ${output.questions.length} questions titled "${output.testTitle}".`);
     return output;
   }
 );
+
