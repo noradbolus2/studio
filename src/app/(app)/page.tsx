@@ -1,12 +1,12 @@
 
 "use client";
 
-import React, { useState, useEffect, useRef, type FormEvent } from 'react';
+import React, { useState, useEffect, useRef, useMemo, type FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation'; 
 import {
-  MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingBag, Bot,
+  MapPin, Search as SearchIcon, BookOpen as BookIcon, Brain, ShoppingCart, Bot,
   FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIconLucide, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Mic, Lightbulb, Music2, GraduationCap, Video,
   RadioTower,
   Timer,    
@@ -268,8 +268,8 @@ export default function ModernHomePage() {
     }
   };
 
-  const getPersonalizedQuickCategories = () => {
-    if (!profileData) return baseQuickCategories.map(cat => ({ ...cat, isRecommended: false })); // Default if no profile
+  const quickCategories = useMemo(() => {
+    if (!profileData) return baseQuickCategories.map(cat => ({ ...cat, isRecommended: false }));
     
     const { examTarget, className, stream, subject: profileSubject } = profileData;
     let targetKeywords: string[] = [];
@@ -279,7 +279,7 @@ export default function ModernHomePage() {
     if (stream) targetKeywords.push(...stream.toLowerCase().split(/[\s(),/-]+/));
     if (profileSubject) targetKeywords.push(...profileSubject.toLowerCase().split(/[\s(),/-]+/));
     
-    targetKeywords = targetKeywords.filter(Boolean).map(k => k.trim()).filter(k => k.length > 1); // Clean up keywords
+    targetKeywords = targetKeywords.filter(Boolean).map(k => k.trim()).filter(k => k.length > 1);
 
     return baseQuickCategories.map(category => {
         const isRecommended = targetKeywords.some(keyword => 
@@ -287,8 +287,7 @@ export default function ModernHomePage() {
         );
         return { ...category, isRecommended };
     });
-  };
-  const quickCategories = getPersonalizedQuickCategories();
+  }, [profileData]);
 
 
   return (
