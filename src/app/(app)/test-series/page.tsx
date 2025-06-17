@@ -13,7 +13,7 @@ import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type 
 import { useToast } from '@/hooks/use-toast';
 import type { ProfileFormData } from '../edit-profile/page'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; 
-import { Label } from "@/components/ui/label"; // Added this import
+import { Label } from "@/components/ui/label";
 
 const testCategories = [ 
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
@@ -34,8 +34,30 @@ const testCategories = [
   { id: 'boards', nameEn: 'Class 10 & 12 Boards', nameHi: 'कक्षा 10 और 12 बोर्ड', descriptionEn: "Chapter tests and model papers.", descriptionHi: "अध्याय परीक्षण और मॉडल पेपर।"},
 ];
 
-const featuredTests = [
-  { id: 'neet_mock_1', categoryId: 'medical', titleEn: "NEET UG Test Series Pack (25 Tests)", titleHi: "नीट यूजी टेस्ट सीरीज़ पैक (25 टेस्ट)", descriptionEn: "25 Tests: 12 Unit, 4 Part-Syllabus, 9 Full NEET Replica Tests. All India Ranking.", descriptionHi: "25 टेस्ट: 12 यूनिट टेस्ट, 4 भाग सिलेबस टेस्ट, 9 पूर्ण नीट प्रतिकृति टेस्ट। अखिल भारतीय रैंकिंग।", price: "₹199" },
+interface FeaturedTest {
+  id: string;
+  categoryId: string;
+  titleEn: string;
+  titleHi: string;
+  descriptionEn: string;
+  descriptionHi: string;
+  price: string;
+  generationTitleEn?: string; // Optional: Title used for AI test generation
+  defaultNumQuestions?: number; // Optional: Specific number of questions for this test
+}
+
+const featuredTests: FeaturedTest[] = [
+  { 
+    id: 'neet_mock_1', 
+    categoryId: 'medical', 
+    titleEn: "NEET UG Test Series Pack (25 Tests)", 
+    titleHi: "नीट यूजी टेस्ट सीरीज़ पैक (25 टेस्ट)", 
+    descriptionEn: "25 Tests: 12 Unit, 4 Part-Syllabus, 9 Full NEET Replica Tests. All India Ranking.", 
+    descriptionHi: "25 टेस्ट: 12 यूनिट टेस्ट, 4 भाग सिलेबस टेस्ट, 9 पूर्ण नीट प्रतिकृति टेस्ट। अखिल भारतीय रैंकिंग।", 
+    price: "₹199",
+    generationTitleEn: "NEET UG Full Syllabus Mock Test", // Title for AI generation
+    defaultNumQuestions: 50 // Request 50 questions for this test
+  },
   { id: 'jee_main_prev_1', categoryId: 'engineering', titleEn: "JEE Main Previous Year Paper (2023)", titleHi: "जेईई मुख्य पिछला वर्ष प्रश्नपत्र (2023)", descriptionEn: "Official paper with solutions.", descriptionHi: "समाधान के साथ आधिकारिक प्रश्नपत्र।", price: "Free" },
   { id: 'cat_verbal_1', categoryId: 'management', titleEn: "CAT Verbal Ability Sectional Test", titleHi: "कैट मौखिक क्षमता अनुभागीय परीक्षण", descriptionEn: "40 questions, 60 minutes.", descriptionHi: "40 प्रश्न, 60 मिनट।", price: "₹99" },
   { id: 'class10_maths_ch1', categoryId: 'boards', titleEn: "Class 10 Maths: Real Numbers Test", titleHi: "कक्षा 10 गणित: वास्तविक संख्याएं परीक्षण", descriptionEn: "Chapter-wise test for board prep.", descriptionHi: "बोर्ड तैयारी के लिए अध्याय-वार परीक्षण।", price: "Free" },
@@ -259,7 +281,7 @@ export default function TestSeriesPage() {
               </CardContent>
               <CardFooter>
                 <Button asChild size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground">
-                  <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.titleEn)}`}>
+                  <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.generationTitleEn || test.titleEn)}${test.defaultNumQuestions ? `&numQuestions=${test.defaultNumQuestions}` : ''}`}>
                     <BilingualText en="Take Test" hi="टेस्ट दें" />
                   </Link>
                 </Button>
@@ -338,3 +360,4 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
