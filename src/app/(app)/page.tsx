@@ -25,15 +25,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
 import { ClassCard, type LiveClass } from '@/components/live-class/ClassCard';
-import type { ProfileFormData } from './edit-profile/page'; // Import ProfileFormData
-import { Badge } from '@/components/ui/badge'; // For recommended badge
+import type { ProfileFormData } from './edit-profile/page'; 
+import { Badge } from '@/components/ui/badge';
 
 
 // Mock data
 const defaultUser = {
-  name: 'Abhishek', // Default name
+  name: 'Student', 
   avatarUrl: 'https://placehold.co/40x40.png',
-  dataAiHint: 'student avatar male'
+  dataAiHint: 'student avatar'
 };
 
 const heroSlides = [
@@ -43,26 +43,28 @@ const heroSlides = [
 ];
 
 const baseQuickCategories = [
-  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["book", "ncert", "textbook"] },
-  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["project", "model", "assignment"] },
-  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["stationery", "pen", "notebook"] },
-  { id: 'guruji', labelEn: 'Guruji', labelHi: 'गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["ai", "doubt", "guruji"] },
-  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["mind", "mood", "diary"] },
-  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["test", "mock", "exam", "neet", "jee"] },
-  { id: 'brain_scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress"] },
-  { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["peer", "circle", "connect"] },
-  { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["college", "admission", "predictor"] },
-  { id: 'competitive_bookstore', labelEn: 'Exam Books', labelHi: 'परीक्षा पुस्तकें', icon: Award, href: '/competitive-bookstore', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["exam book", "competitive"] },
-  { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["study", "dashboard", "notes"] },
-  { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["class", "live", "schedule"] },
+  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["book", "ncert", "textbook", "syllabus", "class"] },
+  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["project", "model", "assignment", "homework"] },
+  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
+  { id: 'guruji', labelEn: 'Guruji', labelHi: 'गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["ai", "doubt", "guruji", "help"] },
+  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["mind", "mood", "diary", "stress"] },
+  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["test", "mock", "exam", "neet", "jee", "upsc", "cat", "competitive"] },
+  { id: 'brain_scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress", "attention"] },
+  { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["peer", "circle", "connect", "group"] },
+  { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["college", "admission", "predictor", "university"] },
+  { id: 'competitive_bookstore', labelEn: 'Exam Books', labelHi: 'परीक्षा पुस्तकें', icon: Award, href: '/competitive-bookstore', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["exam book", "competitive", "preparation"] },
+  { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["study", "dashboard", "notes", "offline"] },
+  { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["class", "live", "schedule", "online class"] },
 ];
 
-const recommendations = [
-  { id: 'rec1', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Class 10 - Lakhmir Singh Science', titleHi: 'कक्षा 10 - लखमीर सिंह विज्ञान', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "science textbook", href: '/class-6-12-books', priceEn: 'INR 450', priceHi: 'INR 450' },
-  { id: 'rec2', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: 'INR 299', priceHi: 'INR 299' },
-  { id: 'rec3', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: NEET Doubts', titleHi: 'गुरुजी से पूछें: NEET शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क' },
-  { id: 'rec4', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test', titleHi: 'JEE मुख्य मॉक टेस्ट', descriptionEn: 'Full Syllabus', descriptionHi: 'पूर्ण पाठ्यक्रम', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 99', priceHi: 'INR 99' },
+const recommendationsMock = [
+  { id: 'rec_book_neet', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Objective Biology for NEET', titleHi: 'नीट के लिए वस्तुनिष्ठ जीवविज्ञान', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "neet biology book", href: '/competitive-bookstore', priceEn: 'INR 799', priceHi: 'INR 799', relevance: ['neet', 'medical'] },
+  { id: 'rec_project_volcano', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: 'INR 299', priceHi: 'INR 299', relevance: ['science', 'class 6', 'class 7', 'class 8'] },
+  { id: 'rec_guruji_jee', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: JEE Physics Doubts', titleHi: 'गुरुजी से पूछें: JEE भौतिकी शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क', relevance: ['jee', 'physics', 'engineering'] },
+  { id: 'rec_test_jee', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test Series', titleHi: 'JEE मुख्य मॉक टेस्ट सीरीज़', descriptionEn: 'Full Syllabus Coverage', descriptionHi: 'पूर्ण पाठ्यक्रम कवरेज', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 199', priceHi: 'INR 199', relevance: ['jee', 'engineering', 'mock test'] },
+  { id: 'rec_book_class10_math', typeEn: 'Book', typeHi: 'किताब', titleEn: 'NCERT Maths Class 10 Exemplar', titleHi: 'एनसीईआरटी गणित कक्षा 10 उदाहरण', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "class 10 maths book", href: '/class-6-12-books', priceEn: 'INR 150', priceHi: 'INR 150', relevance: ['class 10', 'maths', 'cbse', 'ncert'] },
 ];
+
 
 const deliveryDeals = [
   { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, bgColor: "bg-accent/80", textColor: "text-accent-foreground", dataAiHint:"charts diagram" },
@@ -87,150 +89,17 @@ const mockLocations = [
     { id: "myhome_noida", name: "My Home - Sector 15, Noida", type: "Home" },
     { id: "current_loc", name: "My Current Location", type: "Current" },
     { id: "del_modern", name: "Modern School, Barakhamba Road, Delhi", type: "School" },
-    { id: "del_dps_rkp", name: "DPS, R.K. Puram, New Delhi", type: "School" },
-    { id: "del_sardar_patel", name: "Sardar Patel Vidyalaya, New Delhi", type: "School" },
-    { id: "del_vasant_valley", name: "Vasant Valley School, New Delhi", type: "School" },
-    { id: "del_shriram_school", name: "The Shri Ram School, Vasant Vihar, New Delhi", type: "School" },
-    { id: "del_st_columbas", name: "St. Columba's School, Delhi", type: "School" },
-    { id: "del_springdales_pusa", name: "Springdales School, Pusa Road, New Delhi", type: "School" },
-    { id: "del_mother_intl", name: "The Mother's International School, New Delhi", type: "School" },
-    { id: "del_cp", name: "Connaught Place, New Delhi", type: "Area" },
-    { id: "del_karol_bagh", name: "Karol Bagh, Delhi", type: "Area" },
-    { id: "del_south_ex", name: "South Extension, New Delhi", type: "Area" },
-    { id: "del_saket", name: "Saket, New Delhi", type: "Area" },
-    { id: "del_dwarka", name: "Dwarka, New Delhi", type: "Area" },
-    { id: "del_rohini", name: "Rohini, Delhi", type: "Area" },
-    { id: "del_pitampura", name: "Pitampura, Delhi", type: "Area" },
-    { id: "del_janakpuri", name: "Janakpuri, New Delhi", type: "Area" },
-    { id: "del_greater_kailash", name: "Greater Kailash, New Delhi", type: "Area" },
-    { id: "del_chandni_chowk", name: "Chandni Chowk, Delhi", type: "Area" },
-    { id: "ncr_gurgaon_dlf", name: "DLF Cyber City, Gurgaon", type: "Area" },
-    { id: "ncr_gurgaon_shriram_aravali", name: "The Shri Ram School, Aravali, Gurgaon", type: "School" },
-    { id: "ncr_gurgaon_pathways", name: "Pathways World School, Aravali, Gurgaon", type: "School" },
-    { id: "ncr_noida_sec18", name: "Sector 18, Noida", type: "Area" },
-    { id: "ncr_noida_genesis_global", name: "Genesis Global School, Noida", type: "School" },
-    { id: "ncr_noida_step_by_step", name: "Step by Step School, Noida", type: "School" },
-    { id: "ncr_ghaziabad_dps", name: "DPS Ghaziabad, Vasundhara", type: "School" },
-    { id: "ncr_faridabad_apeejay", name: "Apeejay School, Faridabad", type: "School" },
-    { id: "mum_dais", name: "Dhirubhai Ambani International School, Mumbai", type: "School" },
-    { id: "mum_cathedral", name: "Cathedral and John Connon School, Mumbai", type: "School" },
-    { id: "mum_scottish", name: "Bombay Scottish School, Mahim, Mumbai", type: "School" },
-    { id: "mum_jb_petit", name: "J.B. Petit High School for Girls, Mumbai", type: "School" },
-    { id: "mum_cnms", name: "CNM School, Vile Parle, Mumbai", type: "School" },
-    { id: "mum_ecole_mondiale", name: "École Mondiale World School, Mumbai", type: "School" },
-    { id: "mum_jamnabai_narsee", name: "Jamnabai Narsee School, Mumbai", type: "School" },
-    { id: "mum_bandra", name: "Bandra West, Mumbai", type: "Area" },
-    { id: "mum_andheri", name: "Andheri East, Mumbai", type: "Area" },
-    { id: "mum_juhu", name: "Juhu, Mumbai", type: "Area" },
-    { id: "mum_worli", name: "Worli, Mumbai", type: "Area" },
-    { id: "mum_thane", name: "Thane West, Thane", type: "Area" },
-    { id: "mum_navi_vashi", name: "Vashi, Navi Mumbai", type: "Area" },
-    { id: "mum_colaba", name: "Colaba, Mumbai", type: "Area" },
-    { id: "mum_powai", name: "Powai, Mumbai", type: "Area" },
-    { id: "mum_dadar", name: "Dadar, Mumbai", type: "Area" },
-    { id: "blr_valley", name: "The Valley School, Bengaluru", type: "School" },
-    { id: "blr_bishops", name: "Bishop Cotton Boys' School, Bengaluru", type: "School" },
-    { id: "blr_nps_ind", name: "National Public School, Indiranagar, Bengaluru", type: "School" },
-    { id: "blr_maiya_intl", name: "Mallya Aditi International School, Bengaluru", type: "School" },
-    { id: "blr_inventure", name: "Inventure Academy, Bengaluru", type: "School" },
-    { id: "blr_greenwood_high", name: "Greenwood High International School, Bengaluru", type: "School" },
-    { id: "blr_indus_intl", name: "Indus International School, Bengaluru", type: "School" },
-    { id: "blr_indiranagar", name: "Indiranagar, Bengaluru", type: "Area" },
-    { id: "blr_koramangala", name: "Koramangala, Bengaluru", type: "Area" },
-    { id: "blr_jpnagar", name: "J.P. Nagar, Bengaluru", type: "Area" },
-    { id: "blr_whitefield", name: "Whitefield, Bengaluru", type: "Area" },
-    { id: "blr_electronic_city", name: "Electronic City, Bengaluru", type: "Area" },
-    { id: "blr_mg_road", name: "MG Road, Bengaluru", type: "Area" },
-    { id: "blr_jayanagar", name: "Jayanagar, Bengaluru", type: "Area" },
-    { id: "blr_malleshwaram", name: "Malleshwaram, Bengaluru", type: "Area" },
-    { id: "chn_psbb_nung", name: "Padma Seshadri Bala Bhavan (PSBB), Nungambakkam, Chennai", type: "School" },
-    { id: "chn_sishya", name: "Sishya School, Adyar, Chennai", type: "School" },
-    { id: "chn_chems_gg", name: "Chettinad Vidyashram, R.A. Puram, Chennai", type: "School" },
-    { id: "chn_dav_mogappair", name: "D.A.V. Boys Senior Secondary School, Mogappair, Chennai", type: "School" },
-    { id: "chn_good_shepherd", name: "Good Shepherd Matriculation Higher Secondary School, Chennai", type: "School" },
-    { id: "chn_american_intl", name: "American International School, Chennai", type: "School" },
-    { id: "chn_adyar", name: "Adyar, Chennai", type: "Area" },
-    { id: "chn_anna_nagar", name: "Anna Nagar, Chennai", type: "Area" },
-    { id: "chn_tnagar", name: "T. Nagar, Chennai", type: "Area" },
-    { id: "chn_mylapore", name: "Mylapore, Chennai", type: "Area" },
-    { id: "chn_velachery", name: "Velachery, Chennai", type: "Area" },
-    { id: "chn_nungambakkam", name: "Nungambakkam, Chennai", type: "Area" },
-    { id: "kol_lm_boys", name: "La Martiniere For Boys, Kolkata", type: "School" },
-    { id: "kol_lm_girls", name: "La Martiniere For Girls, Kolkata", type: "School" },
-    { id: "kol_south_point", name: "South Point High School, Kolkata", type: "School" },
-    { id: "kol_modern_high_girls", name: "Modern High School for Girls, Kolkata", type: "School" },
-    { id: "kol_don_bosco", name: "Don Bosco School, Park Circus, Kolkata", type: "School" },
-    { id: "kol_st_xaviers", name: "St. Xavier's Collegiate School, Kolkata", type: "School" },
-    { id: "kol_park_street", name: "Park Street Area, Kolkata", type: "Area" },
-    { id: "kol_salt_lake", name: "Salt Lake City (Bidhannagar), Kolkata", type: "Area" },
-    { id: "kol_gariahat", name: "Gariahat, Kolkata", type: "Area" },
-    { id: "kol_howrah", name: "Howrah AC Market, Howrah", type: "Area" },
-    { id: "kol_new_town", name: "New Town, Kolkata", type: "Area" },
-    { id: "kol_alipore", name: "Alipore, Kolkata", type: "Area" },
-    { id: "hyd_hps_begumpet", name: "Hyderabad Public School, Begumpet, Hyderabad", type: "School" },
-    { id: "hyd_chirec", name: "CHIREC International School, Hyderabad", type: "School" },
-    { id: "hyd_oakridge_gach", name: "Oakridge International School, Gachibowli, Hyderabad", type: "School" },
-    { id: "hyd_nasr_school", name: "Nasr School, Khairatabad, Hyderabad", type: "School" },
-    { id: "hyd_geetanjali_devshala", name: "Geetanjali Devshala, Secunderabad", type: "School" },
-    { id: "hyd_jubilee_hills", name: "Jubilee Hills, Hyderabad", type: "Area" },
-    { id: "hyd_banjara_hills", name: "Banjara Hills, Hyderabad", type: "Area" },
-    { id: "hyd_gachibowli", name: "Gachibowli, Hyderabad", type: "Area" },
-    { id: "hyd_secunderabad", name: "Secunderabad Clock Tower Area", type: "Area" },
-    { id: "hyd_hitech_city", name: "HITEC City, Hyderabad", type: "Area" },
-    { id: "hyd_kondapur", name: "Kondapur, Hyderabad", type: "Area" },
-    { id: "pun_bishops_camp", name: "The Bishop's School, Camp, Pune", type: "School" },
-    { id: "pun_st_marys", name: "St. Mary's School, Pune", type: "School" },
-    { id: "pun_symbiosis_intl", name: "Symbiosis International School, Pune", type: "School" },
-    { id: "pun_mercedes_benz_intl", name: "Mercedes-Benz International School, Pune", type: "School" },
-    { id: "pun_vibgyor_high", name: "VIBGYOR High, Balewadi, Pune", type: "School" },
-    { id: "pun_koregaon_park", name: "Koregaon Park, Pune", type: "Area" },
-    { id: "pun_deccan", name: "Deccan Gymkhana, Pune", type: "Area" },
-    { id: "pun_hinjewadi", name: "Hinjewadi IT Park, Pune", type: "Area" },
-    { id: "pun_viman_nagar", name: "Viman Nagar, Pune", type: "Area" },
-    { id: "pun_aundh", name: "Aundh, Pune", type: "Area" },
-    { id: "amd_st_xaviers_loyola", name: "St. Xavier's High School, Loyola Hall, Ahmedabad", type: "School" },
-    { id: "amd_anand_niketan_shilaj", name: "Anand Niketan, Shilaj Campus, Ahmedabad", type: "School" },
-    { id: "amd_udgam_school", name: "Udgam School For Children, Ahmedabad", type: "School" },
-    { id: "amd_cg_road", name: "C.G. Road, Ahmedabad", type: "Area" },
-    { id: "amd_vastrapur", name: "Vastrapur, Ahmedabad", type: "Area" },
-    { id: "amd_satellite", name: "Satellite, Ahmedabad", type: "Area" },
-    { id: "jpr_mayo_college_ajmer", name: "Mayo College, Ajmer (near Jaipur)", type: "School" },
-    { id: "jpr_mayo_college_girls_ajmer", name: "Mayo College Girls' School, Ajmer (near Jaipur)", type: "School" },
-    { id: "jpr_jphs", name: "Jayshree Periwal High School, Jaipur", type: "School" },
-    { id: "jpr_sms_vidyalaya", name: "Sawai Man Singh Vidyalaya, Jaipur", type: "School" },
-    { id: "jpr_c_scheme", name: "C-Scheme, Jaipur", type: "Area" },
-    { id: "jpr_vaishali_nagar", name: "Vaishali Nagar, Jaipur", type: "Area" },
-    { id: "jpr_malviya_nagar", name: "Malviya Nagar, Jaipur", type: "Area" },
-    { id: "lko_lm_college", name: "La Martiniere College, Lucknow", type: "School" },
-    { id: "lko_cms_gomti", name: "City Montessori School (CMS), Gomti Nagar, Lucknow", type: "School" },
-    { id: "lko_seth_mr_jaipuria", name: "Seth M.R. Jaipuria School, Lucknow", type: "School" },
-    { id: "lko_hazratganj", name: "Hazratganj, Lucknow", type: "Area" },
-    { id: "lko_gomti_nagar", name: "Gomti Nagar, Lucknow", type: "Area" },
-    { id: "lko_aliganj", name: "Aliganj, Lucknow", type: "Area" },
-    { id: "chd_vivek_high", name: "Vivek High School, Chandigarh", type: "School" },
-    { id: "chd_st_johns", name: "St. John's High School, Chandigarh", type: "School" },
-    { id: "chd_carmel_convent", name: "Carmel Convent School, Chandigarh", type: "School" },
-    { id: "chd_sector_17", name: "Sector 17 Market, Chandigarh", type: "Area" },
-    { id: "chd_sector_35", name: "Sector 35, Chandigarh", type: "Area" },
-    { id: "ddn_doon_school", name: "The Doon School, Dehradun", type: "School"},
-    { id: "ddn_welham_boys", name: "Welham Boys' School, Dehradun", type: "School"},
-    { id: "ddn_welham_girls", name: "Welham Girls' School, Dehradun", type: "School"},
-    { id: "ddn_asian_school", name: "The Asian School, Dehradun", type: "School"},
-    { id: "sur_athwa", name: "Athwalines, Surat", type: "Area" },
-    { id: "pat_boring_road", name: "Boring Road, Patna", type: "Area" },
-    { id: "ind_vijay_nagar", name: "Vijay Nagar, Indore", type: "Area" },
-    { id: "bho_mp_nagar", name: "MP Nagar, Bhopal", type: "Area" },
-    { id: "ludh_sarabha_nagar", name: "Sarabha Nagar, Ludhiana", type: "Area" },
-    { id: "kochi_mg_road", name: "MG Road, Kochi", type: "Area" },
-    { id: "vskp_rk_beach", name: "RK Beach Area, Visakhapatnam", type: "Area" },
 ];
 
 
-const mockLiveClasses: LiveClass[] = [
+const mockLiveClassesAll: LiveClass[] = [
   { id: 'live1', titleEn: 'Live: Solving Complex Equations', titleHi: 'लाइव: जटिल समीकरणों का समाधान', subjectEn: 'Maths', subjectHi: 'गणित', creatorNameEn: 'Prof. Algebra', creatorNameHi: 'प्रो. बीजगणित', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'maths equation live', status: 'live', dateTime: new Date().toISOString(), viewers: 102, classLevel: 'JEE', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'math teacher avatar' },
+  { id: 'live2', titleEn: 'NEET Biology: Genetics Q&A', titleHi: 'नीट जीवविज्ञान: आनुवंशिकी प्रश्नोत्तर', subjectEn: 'Biology', subjectHi: 'जीवविज्ञान', creatorNameEn: 'Dr. Bio', creatorNameHi: 'डॉ. बायो', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'biology dna live', status: 'live', dateTime: new Date().toISOString(), viewers: 150, classLevel: 'NEET', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'biology teacher' },
   { id: 'upcoming1', titleEn: 'Organic Chemistry Basics', titleHi: 'कार्बनिक रसायन विज्ञान की मूल बातें', subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', creatorNameEn: 'Dr. Chem', creatorNameHi: 'डॉ. केम', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'chemistry lecture', status: 'upcoming', countdown: 'Tomorrow 6 PM', dateTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), classLevel: 'NEET', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'chemistry teacher' },
   { id: 'upcoming2', titleEn: 'Physics: Laws of Motion', titleHi: 'भौतिकी: गति के नियम', subjectEn: 'Physics', subjectHi: 'भौतिकी', creatorNameEn: 'Newton Jr.', creatorNameHi: 'न्यूटन जूनियर', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'physics gravity apple', status: 'upcoming', countdown: 'In 2 hours', dateTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), classLevel: 'Class 11', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'physics professor' },
+  { id: 'upcoming_jee', titleEn: 'JEE Maths: Calculus Workshop', titleHi: 'जेईई गणित: कैलकुलस कार्यशाला', subjectEn: 'Maths', subjectHi: 'गणित', creatorNameEn: 'Calculus King', creatorNameHi: 'कैलकुलस किंग', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'calculus graph math', status: 'upcoming', countdown: 'Next Monday 7 PM', dateTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'JEE Advanced', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'maths expert' },
   { id: 'recorded1', titleEn: 'Intro to Python Programming', titleHi: 'पायथन प्रोग्रामिंग का परिचय', subjectEn: 'Computer Science', subjectHi: 'कंप्यूटर विज्ञान', creatorNameEn: 'Code Master', creatorNameHi: 'कोड मास्टर', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'python code screen', status: 'recorded', duration: '55min', dateTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'All Ages', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'coder avatar' },
+  { id: 'recorded_neet_chem', titleEn: 'NEET Chemistry: Mole Concept', titleHi: 'नीट रसायन विज्ञान: मोल अवधारणा', subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', creatorNameEn: 'Mole Maestro', creatorNameHi: 'मोल मेस्ट्रो', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'chemistry beakers', status: 'recorded', duration: '48min', dateTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'NEET', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'science teacher avatar' },
 ];
 
 type LangState = 'en' | 'hi' | 'hng';
@@ -250,9 +119,11 @@ export default function ModernHomePage() {
   const [displayName, setDisplayName] = useState(defaultUser.name);
   const [displayAvatar, setDisplayAvatar] = useState(defaultUser.avatarUrl);
   const [displayAvatarHint, setDisplayAvatarHint] = useState(defaultUser.dataAiHint);
+  const [personalizedRecommendations, setPersonalizedRecommendations] = useState(recommendationsMock.slice(0,4)); // Show 4 by default
+  const [personalizedLiveClasses, setPersonalizedLiveClasses] = useState({ liveNow: [] as LiveClass[], upcoming: [] as LiveClass[], recorded: [] as LiveClass[] });
+
 
   useEffect(() => {
-    // Load profile data from localStorage
     if (typeof window !== "undefined") {
       const storedProfile = localStorage.getItem('userProfileData');
       if (storedProfile) {
@@ -268,6 +139,67 @@ export default function ModernHomePage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    // Personalize Recommendations
+    if (profileData) {
+      const profileKeywords = [
+        profileData.examTarget?.toLowerCase(),
+        profileData.className?.toLowerCase(),
+        profileData.subject?.toLowerCase(), 
+        profileData.stream?.toLowerCase()
+      ].filter(Boolean) as string[];
+
+      if (profileKeywords.length > 0) {
+        const filteredRecs = recommendationsMock.filter(rec => 
+          profileKeywords.some(pk => rec.relevance.some(rr => rr.toLowerCase().includes(pk)))
+        );
+        setPersonalizedRecommendations(filteredRecs.length > 0 ? filteredRecs.slice(0, 4) : recommendationsMock.slice(0, 4));
+      }
+    }
+    
+    // Personalize Live Classes
+    let liveNow: LiveClass[] = [];
+    let upcoming: LiveClass[] = [];
+    let recorded: LiveClass[] = [];
+
+    if (profileData) {
+        const examTargetLower = profileData.examTarget?.toLowerCase();
+        const classNameLower = profileData.className?.toLowerCase();
+
+        mockLiveClassesAll.forEach(lc => {
+            let matches = false;
+            if (examTargetLower && lc.classLevel?.toLowerCase().includes(examTargetLower)) {
+                matches = true;
+            } else if (classNameLower && lc.classLevel?.toLowerCase().includes(classNameLower)) {
+                matches = true;
+            } else if (!examTargetLower && !classNameLower && (lc.classLevel?.toLowerCase() === 'all ages' || !lc.classLevel)) { // Show "All Ages" if no specific target
+                matches = true;
+            }
+
+            if (matches) {
+                if (lc.status === 'live') liveNow.push(lc);
+                else if (lc.status === 'upcoming') upcoming.push(lc);
+                else if (lc.status === 'recorded') recorded.push(lc);
+            }
+        });
+    }
+    // If few or no personalized results, fill with general ones to ensure content
+    const fillIfNeeded = (arr: LiveClass[], type: 'live' | 'upcoming' | 'recorded', minCount = 2) => {
+        if (arr.length < minCount) {
+            const generalClasses = mockLiveClassesAll.filter(lc => lc.status === type && !arr.find(pLc => pLc.id === lc.id));
+            arr.push(...generalClasses.slice(0, minCount - arr.length));
+        }
+        return arr;
+    };
+
+    setPersonalizedLiveClasses({
+        liveNow: fillIfNeeded(liveNow, 'live', 1).sort((a,b) => (b.viewers || 0) - (a.viewers || 0)), // Sort live by viewers
+        upcoming: fillIfNeeded(upcoming, 'upcoming', 2).sort((a,b) => new Date(a.dateTime!).getTime() - new Date(b.dateTime!).getTime()),
+        recorded: fillIfNeeded(recorded, 'recorded', 2).sort((a,b) => new Date(b.dateTime!).getTime() - new Date(a.dateTime!).getTime()),
+    });
+
+  }, [profileData]);
 
 
   const startSlideShow = () => {
@@ -336,25 +268,22 @@ export default function ModernHomePage() {
     }
   };
 
-  const liveNowClasses = mockLiveClasses.filter(c => c.status === 'live');
-  const upcomingClasses = mockLiveClasses.filter(c => c.status === 'upcoming').sort((a,b) => new Date(a.dateTime!).getTime() - new Date(b.dateTime!).getTime());
-  const recordedClasses = mockLiveClasses.filter(c => c.status === 'recorded').sort((a,b) => new Date(b.dateTime!).getTime() - new Date(a.dateTime!).getTime());
-
   const getPersonalizedQuickCategories = () => {
-    if (!profileData) return baseQuickCategories;
-    const { examTarget, className } = profileData;
+    if (!profileData) return baseQuickCategories.map(cat => ({ ...cat, isRecommended: false })); // Default if no profile
+    
+    const { examTarget, className, stream, subject: profileSubject } = profileData;
     let targetKeywords: string[] = [];
 
-    if (examTarget) {
-        targetKeywords = examTarget.toLowerCase().split(/[\s,]+/);
-    }
-    if (className) {
-        targetKeywords.push(...className.toLowerCase().split(/[\s,]+/));
-    }
+    if (examTarget) targetKeywords.push(...examTarget.toLowerCase().split(/[\s(),/-]+/));
+    if (className) targetKeywords.push(...className.toLowerCase().split(/[\s(),/-]+/));
+    if (stream) targetKeywords.push(...stream.toLowerCase().split(/[\s(),/-]+/));
+    if (profileSubject) targetKeywords.push(...profileSubject.toLowerCase().split(/[\s(),/-]+/));
     
+    targetKeywords = targetKeywords.filter(Boolean).map(k => k.trim()).filter(k => k.length > 1); // Clean up keywords
+
     return baseQuickCategories.map(category => {
         const isRecommended = targetKeywords.some(keyword => 
-            category.keywords.some(catKeyword => catKeyword.includes(keyword) || keyword.includes(catKeyword))
+            category.keywords.some(catKeyword => catKeyword.toLowerCase().includes(keyword) || keyword.includes(catKeyword.toLowerCase()))
         );
         return { ...category, isRecommended };
     });
@@ -468,47 +397,47 @@ export default function ModernHomePage() {
                 <BilingualText en="View All" hi="सभी देखें" lang={currentLang}/> <ChevronRight className="inline h-4 w-4"/>
             </Link>
         </div>
-        {liveNowClasses.length > 0 && (
+        {personalizedLiveClasses.liveNow.length > 0 && (
             <div className="mb-4">
                 <h3 className="text-md font-medium text-destructive mb-2 flex items-center"> {}
                     <RadioTower size={18} className="mr-1.5 animate-pulse"/> <BilingualText en="Live Now" hi="अभी लाइव" lang={currentLang}/>
                 </h3>
                 <ScrollArea className="w-full whitespace-nowrap pb-2.5">
                     <div className="flex space-x-4">
-                        {liveNowClasses.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px] glass-card"/>)}
+                        {personalizedLiveClasses.liveNow.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px] glass-card"/>)}
                     </div>
                     <ScrollBar orientation="horizontal"/>
                 </ScrollArea>
             </div>
         )}
-        {upcomingClasses.length > 0 && (
+        {personalizedLiveClasses.upcoming.length > 0 && (
              <div className="mb-4">
                 <h3 className="text-md font-medium text-foreground mb-2 flex items-center">
                     <Timer size={18} className="mr-1.5 text-accent"/> <BilingualText en="Upcoming Classes" hi="आगामी कक्षाएं" lang={currentLang}/>
                 </h3>
                 <ScrollArea className="w-full whitespace-nowrap pb-2.5">
                     <div className="flex space-x-4">
-                        {upcomingClasses.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px] glass-card"/>)}
+                        {personalizedLiveClasses.upcoming.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px] glass-card"/>)}
                     </div>
                     <ScrollBar orientation="horizontal"/>
                 </ScrollArea>
             </div>
         )}
-        {recordedClasses.length > 0 && (
+        {personalizedLiveClasses.recorded.length > 0 && (
             <div>
                 <h3 className="text-md font-medium text-foreground mb-2 flex items-center">
                      <PlaySquare size={18} className="mr-1.5 text-accent"/> <BilingualText en="Recently Completed" hi="हाल ही में संपन्न" lang={currentLang}/>
                 </h3>
                  <ScrollArea className="w-full whitespace-nowrap pb-2.5">
                     <div className="flex space-x-4">
-                        {recordedClasses.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px] glass-card"/>)}
+                        {personalizedLiveClasses.recorded.map(lc => <ClassCard key={lc.id} classInfo={{...lc, lang: currentLang}} lang={currentLang} className="min-w-[280px] max-w-[280px] glass-card"/>)}
                     </div>
                     <ScrollBar orientation="horizontal"/>
                 </ScrollArea>
             </div>
         )}
-         {liveNowClasses.length === 0 && upcomingClasses.length === 0 && recordedClasses.length === 0 && (
-             <p className="text-sm text-muted-foreground text-center py-4"><BilingualText en="No live classes scheduled currently. Check back soon!" hi="वर्तमान में कोई लाइव कक्षाएं निर्धारित नहीं हैं। जल्द ही वापस देखें!" lang={currentLang}/></p>
+         {personalizedLiveClasses.liveNow.length === 0 && personalizedLiveClasses.upcoming.length === 0 && personalizedLiveClasses.recorded.length === 0 && (
+             <p className="text-sm text-muted-foreground text-center py-4"><BilingualText en="No live classes relevant to your profile right now. Check 'View All' for more!" hi="अभी आपकी प्रोफ़ाइल के लिए कोई प्रासंगिक लाइव कक्षाएं नहीं हैं। अधिक के लिए 'सभी देखें'!" lang={currentLang}/></p>
          )}
       </section>
 
@@ -521,9 +450,9 @@ export default function ModernHomePage() {
               <Card className={cn(
                 "text-center p-3 rounded-xl shadow-sm hover:shadow-lg transition-all h-full flex flex-col justify-center items-center glass-card relative overflow-hidden", 
                 category.bgColor,
-                (category as any).isRecommended && "border-2 border-yellow-400 shadow-yellow-400/30"
+                category.isRecommended && "border-2 border-yellow-400 shadow-yellow-400/30"
               )}>
-                {(category as any).isRecommended && (
+                {category.isRecommended && (
                     <Badge className="absolute top-1 right-1 text-xs px-1.5 py-0.5 bg-yellow-400 text-yellow-900 border-yellow-500">
                        <BilingualText en="For You" hi="आपके लिए" lang={currentLang}/>
                     </Badge>
@@ -538,16 +467,12 @@ export default function ModernHomePage() {
 
       <section>
         <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Today's Recommendations" hi="आज की सिफारिशें" lang={currentLang}/></h2>
-        <p className="text-xs text-muted-foreground mb-3">
-            <BilingualText 
-                en="Personalized recommendations based on your profile will appear here with dynamic data." 
-                hi="आपकी प्रोफ़ाइल के आधार पर वैयक्तिकृत सिफारिशें गतिशील डेटा के साथ यहां दिखाई देंगी।" 
-                lang={currentLang}
-            />
-        </p>
+        {/* Developer Note: Personalization of these recommendations would ideally come from a dynamic backend based on user profile and activity. 
+            The current implementation shows a static or very simply filtered list from mock data.
+        */}
         <ScrollArea className="w-full whitespace-nowrap pb-3">
           <div className="flex space-x-4">
-            {recommendations.map((item) => (
+            {personalizedRecommendations.map((item) => (
               <Link href={item.href} key={item.id} className="block min-w-[150px] max-w-[150px]">
                 <Card className="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow h-full flex flex-col glass-card">
                   <div className="aspect-[3/4] relative w-full">
@@ -570,6 +495,11 @@ export default function ModernHomePage() {
                 </Card>
               </Link>
             ))}
+             {personalizedRecommendations.length === 0 && (
+                <p className="text-sm text-muted-foreground p-4 text-center w-full">
+                    <BilingualText en="No specific recommendations for you right now. Explore our categories!" hi="अभी आपके लिए कोई विशेष सिफारिशें नहीं हैं। हमारी श्रेणियां देखें!" lang={currentLang} />
+                </p>
+            )}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -671,4 +601,4 @@ export default function ModernHomePage() {
   );
 }
 
-
+    
