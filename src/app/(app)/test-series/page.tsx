@@ -13,7 +13,7 @@ import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type 
 import { useToast } from '@/hooks/use-toast';
 import type { ProfileFormData } from '../edit-profile/page'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; 
-import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label"; // Added import for Label
 
 const testCategories = [ 
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
@@ -42,8 +42,8 @@ interface FeaturedTest {
   descriptionEn: string;
   descriptionHi: string;
   price: string;
-  generationTitleEn?: string; // Optional: Title used for AI test generation
-  defaultNumQuestions?: number; // Optional: Specific number of questions for this test
+  generationTitleEn?: string; 
+  defaultNumQuestions?: number; 
 }
 
 const featuredTests: FeaturedTest[] = [
@@ -52,15 +52,15 @@ const featuredTests: FeaturedTest[] = [
     categoryId: 'medical', 
     titleEn: "NEET UG Test Series Pack (25 Tests)", 
     titleHi: "नीट यूजी टेस्ट सीरीज़ पैक (25 टेस्ट)", 
-    descriptionEn: "25 Tests: 12 Unit, 4 Part-Syllabus, 9 Full NEET Replica Tests. All India Ranking.", 
-    descriptionHi: "25 टेस्ट: 12 यूनिट टेस्ट, 4 भाग सिलेबस टेस्ट, 9 पूर्ण नीट प्रतिकृति टेस्ट। अखिल भारतीय रैंकिंग।", 
+    descriptionEn: "Pack of 25 Tests: 12 Unit Tests, 4 Part-Syllabus Tests, and 9 Full NEET Replica Mock Tests. All India Ranking.", 
+    descriptionHi: "25 टेस्ट का पैक: 12 यूनिट टेस्ट, 4 भाग-सिलेबस टेस्ट, और 9 पूर्ण नीट प्रतिकृति मॉक टेस्ट। अखिल भारतीय रैंकिंग।", 
     price: "₹199",
-    generationTitleEn: "NEET UG Full Syllabus Mock Test", // Title for AI generation
-    defaultNumQuestions: 50 // Request 50 questions for this test
+    generationTitleEn: "NEET UG Full Syllabus Mock Test (Sample)", 
+    defaultNumQuestions: 200 
   },
-  { id: 'jee_main_prev_1', categoryId: 'engineering', titleEn: "JEE Main Previous Year Paper (2023)", titleHi: "जेईई मुख्य पिछला वर्ष प्रश्नपत्र (2023)", descriptionEn: "Official paper with solutions.", descriptionHi: "समाधान के साथ आधिकारिक प्रश्नपत्र।", price: "Free" },
-  { id: 'cat_verbal_1', categoryId: 'management', titleEn: "CAT Verbal Ability Sectional Test", titleHi: "कैट मौखिक क्षमता अनुभागीय परीक्षण", descriptionEn: "40 questions, 60 minutes.", descriptionHi: "40 प्रश्न, 60 मिनट।", price: "₹99" },
-  { id: 'class10_maths_ch1', categoryId: 'boards', titleEn: "Class 10 Maths: Real Numbers Test", titleHi: "कक्षा 10 गणित: वास्तविक संख्याएं परीक्षण", descriptionEn: "Chapter-wise test for board prep.", descriptionHi: "बोर्ड तैयारी के लिए अध्याय-वार परीक्षण।", price: "Free" },
+  { id: 'jee_main_prev_1', categoryId: 'engineering', titleEn: "JEE Main Previous Year Paper (2023)", titleHi: "जेईई मुख्य पिछला वर्ष प्रश्नपत्र (2023)", descriptionEn: "Official paper with solutions.", descriptionHi: "समाधान के साथ आधिकारिक प्रश्नपत्र।", price: "Free", generationTitleEn: "JEE Main 2023 Paper", defaultNumQuestions: 90 },
+  { id: 'cat_verbal_1', categoryId: 'management', titleEn: "CAT Verbal Ability Sectional Test", titleHi: "कैट मौखिक क्षमता अनुभागीय परीक्षण", descriptionEn: "40 questions, 60 minutes.", descriptionHi: "40 प्रश्न, 60 मिनट।", price: "₹99", defaultNumQuestions: 40 },
+  { id: 'class10_maths_ch1', categoryId: 'boards', titleEn: "Class 10 Maths: Real Numbers Test", titleHi: "कक्षा 10 गणित: वास्तविक संख्याएं परीक्षण", descriptionEn: "Chapter-wise test for board prep.", descriptionHi: "बोर्ड तैयारी के लिए अध्याय-वार परीक्षण।", price: "Free", generationTitleEn: "Class 10 Maths Chapter 1 Test", defaultNumQuestions: 15 },
 ];
 
 // Helper function (can be shared if used elsewhere)
@@ -148,7 +148,6 @@ export default function TestSeriesPage() {
             { title: `${examTargetFromProfile} - Advanced Problems`, subject: "Mixed", level: "Hard" },
             { title: "General Knowledge Booster", subject: "GK", level: "Medium" },
             { title: "Verbal Ability Challenge", subject: "English", level: "Tough" },
-            // Add more diverse mock tests to ensure Guruji can pick relevant ones
             { title: "JEE Main Physics Practice Set 1", subject: "Physics", level: "Medium"},
             { title: "NEET UG Biology Concept Reviewer", subject: "Biology", level: "Medium"},
             { title: "CAT Quantitative Aptitude Drills", subject: "Maths", level: "Hard"},
@@ -248,6 +247,7 @@ export default function TestSeriesPage() {
                                     </CardContent>
                                      <CardFooter className="p-3 bg-card border-t">
                                          <Button asChild size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                                            {/* For recommended tests, assume they are full-length or AI will decide based on title */}
                                             <Link href={`/attempt-test?title=${encodeURIComponent(test.title)}`}>
                                                 <BilingualText en="Attempt Test" hi="टेस्ट दें"/>
                                             </Link>
@@ -281,8 +281,12 @@ export default function TestSeriesPage() {
               </CardContent>
               <CardFooter>
                 <Button asChild size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground">
+                   {/* Update the link for the NEET pack to show it's a sample */}
                   <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.generationTitleEn || test.titleEn)}${test.defaultNumQuestions ? `&numQuestions=${test.defaultNumQuestions}` : ''}`}>
-                    <BilingualText en="Take Test" hi="टेस्ट दें" />
+                     <BilingualText 
+                        en={test.id === 'neet_mock_1' ? "Attempt Sample Full Test" : "Take Test"} 
+                        hi={test.id === 'neet_mock_1' ? "सैंपल पूर्ण टेस्ट दें" : "टेस्ट दें"} 
+                    />
                   </Link>
                 </Button>
               </CardFooter>
@@ -319,7 +323,8 @@ export default function TestSeriesPage() {
                 </CardHeader>
                 <CardContent>
                     <Button asChild className="w-full">
-                      <Link href={`/test-series/${category.id}?title=${encodeURIComponent(category.nameEn)}`}>
+                      {/* For category links, we can pass category name as examType to AI */}
+                      <Link href={`/attempt-test?examType=${encodeURIComponent(category.nameEn)}&title=${encodeURIComponent(category.nameEn + " Mock Test")}`}>
                         <BilingualText en="View Tests" hi="टेस्ट देखें" />
                       </Link>
                     </Button>

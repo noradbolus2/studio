@@ -18,17 +18,15 @@ const QuestionSchema = z.object({
   explanation: z.string().optional().describe('A brief explanation for the correct answer.'),
 });
 
-// Remove export for schema as it's not an async function
 const GenerateExamTestInputSchema = z.object({
-  examNameOrType: z.string().describe('The name or type of the exam (e.g., "NEET UG", "JEE Main Physics", "Class 10 Science Prelim").'),
-  subject: z.string().optional().describe('Specific subject for the test, if applicable (e.g., "Physics", "Organic Chemistry").'),
-  numQuestions: z.number().min(3).max(50).default(5).describe('The number of questions to generate (default is 5, min 3, max 50 for this prototype).'),
+  examNameOrType: z.string().describe('The name or type of the exam (e.g., "NEET UG", "JEE Main Physics", "Class 10 Science Prelim", "UPSC CSE Prelims GS Paper 1").'),
+  subject: z.string().optional().describe('Specific subject for the test, if applicable (e.g., "Physics", "Organic Chemistry", "Indian Polity").'),
+  numQuestions: z.number().min(3).max(200).default(10).describe('The desired number of questions. For major exams like NEET/JEE, the AI will attempt to generate the standard number of questions for a full test unless a specific (lower) number is requested here.'),
 });
 export type GenerateExamTestInput = z.infer<typeof GenerateExamTestInputSchema>;
 
-// Remove export for schema as it's not an async function
 const GenerateExamTestOutputSchema = z.object({
-  testTitle: z.string().describe('A suitable title for the generated test (e.g., "NEET UG Physics Mini Mock Test").'),
+  testTitle: z.string().describe('A suitable title for the generated test (e.g., "NEET UG Physics Mini Mock Test", "JEE Main Full Syllabus Mock Test - Paper 1").'),
   questions: z.array(QuestionSchema).describe('An array of generated questions.'),
 });
 export type GenerateExamTestOutput = z.infer<typeof GenerateExamTestOutputSchema>;
@@ -41,22 +39,28 @@ const prompt = ai.definePrompt({
   name: 'generateExamTestPrompt',
   input: {schema: GenerateExamTestInputSchema},
   output: {schema: GenerateExamTestOutputSchema},
-  prompt: `You are an expert AI Test Generator for Indian students.
-Your task is to create an exam-style mock test based on the provided exam name/type, subject (if any), and number of questions.
-The questions should be closely based on the typical syllabus, question types, and difficulty pattern of the specified exam.
+  prompt: `You are an expert AI Test Generator for Indian students, creating exam-style mock tests.
+Your task is to create a test based on the provided exam name/type, subject (if any), and number of questions.
+The questions should be closely based on the typical syllabus, question types, and difficulty pattern of the specified exam, reflecting the latest patterns where possible.
 Ensure each question has exactly four multiple-choice options.
 Indicate the correct answer index (0-3).
-Provide a brief explanation for the correct answer if possible.
+Provide a brief explanation for the correct answer.
 
-IMPORTANT:
+IMPORTANT EXAM PATTERNS:
+- If 'examNameOrType' is a major standardized exam (e.g., "NEET UG", "JEE Main", "UPSC CSE Prelims GS Paper 1", "CAT VARC Section"), you MUST generate the standard number of questions for a full test of that exam/section (e.g., NEET UG: 200 questions total - Physics: 50, Chemistry: 50, Botany: 50, Zoology: 50; JEE Main: 90 questions total - Physics: 30, Chemistry: 30, Maths: 30; UPSC Prelims GS1: 100 questions).
+- In such cases, the 'numQuestions' input parameter should be considered a suggestion if it's lower than the standard exam count, but the official pattern for question count and subject distribution takes precedence. If 'numQuestions' is provided and is *higher* than the standard for a specific part of an exam (e.g. asking for 60 physics questions for NEET UG), you can generate up to the requested 'numQuestions' for that specific subject if it makes sense for a practice test.
+- For general requests (e.g., "Class 10 Science Prelim", "Physics Practice Test") or if a specific number is requested via 'numQuestions' for a non-standardized test, adhere to 'numQuestions' (up to a maximum of 200 questions).
+
+CONTENT FORMATTING:
 - For any chemical formulas, reactions, or logical symbols (like ->, <->, AND, OR, NOT, ~), use only plain text characters. For example, represent 'CH3CH2OH' as is, use '->' for reaction arrows, and 'p AND q' for logical 'p and q'.
 - DO NOT use LaTeX, MathML, or any special math/chemical formatting (e.g., avoid '$...$', '\\xrightarrow', '\\frac', superscripts/subscripts that are not standard characters like ² or ₃ if possible. Prefer linear formulas like H2O, CO2).
 - All question text and options must be plain text strings suitable for direct display in HTML.
 - Each answer option in the 'options' array MUST be a distinct, separate string. Ensure there are exactly four options.
 
+REQUEST DETAILS:
 Exam Name/Type: {{{examNameOrType}}}
 {{#if subject}}Subject: {{{subject}}}{{/if}}
-Number of Questions: {{{numQuestions}}}
+Requested Number of Questions (Consider this alongside exam patterns): {{{numQuestions}}}
 
 Generate the test title and the array of questions.
 The test title should be concise and reflect the exam and subject.
@@ -100,15 +104,15 @@ const generateExamTestFlow = ai.defineFlow(
     if (!output) {
         throw new Error("AI failed to generate the test. Output was null.");
     }
-    // Ensure numQuestions matches the output, or truncate/error as needed for robustness
-    if (output.questions.length !== input.numQuestions) {
-        console.warn(`AI generated ${output.questions.length} questions, but ${input.numQuestions} were requested. Adjusting output based on actual generation if significantly different.`);
-        // For this prototype, we'll allow the AI's output length if it's reasonably close.
-        // If a strict count is paramount, you might add logic here to pad/truncate or error.
-        // e.g., if (Math.abs(output.questions.length - input.numQuestions) > input.numQuestions * 0.2) { // If more than 20% diff
-        //   throw new Error(`AI generated ${output.questions.length} questions, which is too different from the requested ${input.numQuestions}.`);
-        // }
+    // Basic validation: Ensure questions array is present.
+    // The AI is now primarily responsible for the number of questions based on exam type.
+    // Client can still request specific number for custom tests.
+    if (!Array.isArray(output.questions)) {
+        throw new Error("AI response did not contain a valid questions array.");
     }
+    // For example, if NEET UG was requested, and AI generated only 10 Qs, that's an issue, but we trust the AI for now with the new prompt.
+    // If input.numQuestions was for a generic test and AI generates wildly different, it might be a future check.
+    console.log(`Test Generation: Requested approx ${input.numQuestions} for ${input.examNameOrType}. AI generated ${output.questions.length} questions.`);
     return output;
   }
 );
