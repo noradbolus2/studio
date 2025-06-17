@@ -204,6 +204,7 @@ export default function AttemptTestPage() {
         <CardContent className="space-y-6">
           <p className="text-md font-semibold">{currentQuestion.questionText}</p>
           <RadioGroup
+            key={`q-group-${currentQuestionIndex}`} // Added key here
             value={answerSheet[currentQuestionIndex]?.toString()}
             onValueChange={(value) => handleOptionChange(currentQuestionIndex, parseInt(value))}
             className="space-y-2"
