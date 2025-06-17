@@ -12,7 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
 import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow';
-import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData type
+import type { ProfileFormData } from '../edit-profile/page'; 
 
 interface ChatMessage {
   id: string;
@@ -26,8 +26,21 @@ export default function StudentDashboardPage() {
   const [gurujiMessages, setGurujiMessages] = useState<ChatMessage[]>([]);
   const [isGurujiLoading, setIsGurujiLoading] = useState(false);
   const gurujiScrollAreaRef = useRef<HTMLDivElement>(null);
+  const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
 
   useEffect(() => {
+    // Load profile data from localStorage
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem('userProfileData');
+      if (storedProfile) {
+        try {
+          setProfileData(JSON.parse(storedProfile) as ProfileFormData);
+        } catch (err) {
+          console.warn("Could not parse profile data from localStorage for Student Dashboard:", err);
+        }
+      }
+    }
+
     setGurujiMessages([
       {
         id: 'guruji-initial-dash',
@@ -59,32 +72,15 @@ export default function StudentDashboardPage() {
     setGurujiInputValue('');
     setIsGurujiLoading(true);
 
+    const gurujiApiInput: GurujiInput = { 
+      userInput: trimmedInput,
+      studentClass: profileData?.className,
+      studentBoard: profileData?.board,
+      studentStream: profileData?.stream,
+      studentExamTarget: profileData?.examTarget,
+    };
+    
     try {
-      let profileContext: Partial<ProfileFormData> = {};
-      if (typeof window !== "undefined") {
-        const storedProfile = localStorage.getItem('userProfileData');
-        if (storedProfile) {
-          try {
-            const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
-            profileContext = {
-              className: parsedProfile.className,
-              board: parsedProfile.board,
-              stream: parsedProfile.stream,
-              examTarget: parsedProfile.examTarget,
-            };
-          } catch (err) {
-            console.warn("Could not parse profile data from localStorage for Student Dashboard Guruji context:", err);
-          }
-        }
-      }
-
-      const gurujiApiInput: GurujiInput = { 
-        userInput: trimmedInput,
-        studentClass: profileContext.className,
-        studentBoard: profileContext.board,
-        studentStream: profileContext.stream,
-        studentExamTarget: profileContext.examTarget,
-      };
       const response = await askGuruji(gurujiApiInput);
       
       if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
@@ -249,7 +245,6 @@ export default function StudentDashboardPage() {
   );
 }
 
-// Add placeholder to Textarea component for bilingual support if not already done globally
 declare module 'react' {
     interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
       placeholder_en?: string;

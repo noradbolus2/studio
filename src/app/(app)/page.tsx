@@ -25,11 +25,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
 import { ClassCard, type LiveClass } from '@/components/live-class/ClassCard';
+import type { ProfileFormData } from './edit-profile/page'; // Import ProfileFormData
+import { Badge } from '@/components/ui/badge'; // For recommended badge
 
 
 // Mock data
-const user = {
-  name: 'Abhishek',
+const defaultUser = {
+  name: 'Abhishek', // Default name
   avatarUrl: 'https://placehold.co/40x40.png',
   dataAiHint: 'student avatar male'
 };
@@ -40,19 +42,19 @@ const heroSlides = [
   { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://placehold.co/800x300.png", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
 ];
 
-const quickCategories = [
-  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'guruji', labelEn: 'Guruji', labelHi: 'गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' }, // Primary for AI
-  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'brain_scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' }, // Primary for AI feature
-  { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20' }, // Primary for AI feature
-  { id: 'competitive_bookstore', labelEn: 'Exam Books', labelHi: 'परीक्षा पुस्तकें', icon: Award, href: '/competitive-bookstore', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
-  { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20' },
+const baseQuickCategories = [
+  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["book", "ncert", "textbook"] },
+  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["project", "model", "assignment"] },
+  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["stationery", "pen", "notebook"] },
+  { id: 'guruji', labelEn: 'Guruji', labelHi: 'गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["ai", "doubt", "guruji"] },
+  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["mind", "mood", "diary"] },
+  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["test", "mock", "exam", "neet", "jee"] },
+  { id: 'brain_scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress"] },
+  { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["peer", "circle", "connect"] },
+  { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["college", "admission", "predictor"] },
+  { id: 'competitive_bookstore', labelEn: 'Exam Books', labelHi: 'परीक्षा पुस्तकें', icon: Award, href: '/competitive-bookstore', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["exam book", "competitive"] },
+  { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["study", "dashboard", "notes"] },
+  { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["class", "live", "schedule"] },
 ];
 
 const recommendations = [
@@ -82,11 +84,8 @@ const searchIcons = [
 ];
 
 const mockLocations = [
-    // Personalized
     { id: "myhome_noida", name: "My Home - Sector 15, Noida", type: "Home" },
     { id: "current_loc", name: "My Current Location", type: "Current" },
-
-    // Delhi Schools & Areas
     { id: "del_modern", name: "Modern School, Barakhamba Road, Delhi", type: "School" },
     { id: "del_dps_rkp", name: "DPS, R.K. Puram, New Delhi", type: "School" },
     { id: "del_sardar_patel", name: "Sardar Patel Vidyalaya, New Delhi", type: "School" },
@@ -113,9 +112,6 @@ const mockLocations = [
     { id: "ncr_noida_step_by_step", name: "Step by Step School, Noida", type: "School" },
     { id: "ncr_ghaziabad_dps", name: "DPS Ghaziabad, Vasundhara", type: "School" },
     { id: "ncr_faridabad_apeejay", name: "Apeejay School, Faridabad", type: "School" },
-
-
-    // Mumbai Schools & Areas
     { id: "mum_dais", name: "Dhirubhai Ambani International School, Mumbai", type: "School" },
     { id: "mum_cathedral", name: "Cathedral and John Connon School, Mumbai", type: "School" },
     { id: "mum_scottish", name: "Bombay Scottish School, Mahim, Mumbai", type: "School" },
@@ -132,8 +128,6 @@ const mockLocations = [
     { id: "mum_colaba", name: "Colaba, Mumbai", type: "Area" },
     { id: "mum_powai", name: "Powai, Mumbai", type: "Area" },
     { id: "mum_dadar", name: "Dadar, Mumbai", type: "Area" },
-
-    // Bangalore Schools & Areas
     { id: "blr_valley", name: "The Valley School, Bengaluru", type: "School" },
     { id: "blr_bishops", name: "Bishop Cotton Boys' School, Bengaluru", type: "School" },
     { id: "blr_nps_ind", name: "National Public School, Indiranagar, Bengaluru", type: "School" },
@@ -149,8 +143,6 @@ const mockLocations = [
     { id: "blr_mg_road", name: "MG Road, Bengaluru", type: "Area" },
     { id: "blr_jayanagar", name: "Jayanagar, Bengaluru", type: "Area" },
     { id: "blr_malleshwaram", name: "Malleshwaram, Bengaluru", type: "Area" },
-
-    // Chennai Schools & Areas
     { id: "chn_psbb_nung", name: "Padma Seshadri Bala Bhavan (PSBB), Nungambakkam, Chennai", type: "School" },
     { id: "chn_sishya", name: "Sishya School, Adyar, Chennai", type: "School" },
     { id: "chn_chems_gg", name: "Chettinad Vidyashram, R.A. Puram, Chennai", type: "School" },
@@ -163,8 +155,6 @@ const mockLocations = [
     { id: "chn_mylapore", name: "Mylapore, Chennai", type: "Area" },
     { id: "chn_velachery", name: "Velachery, Chennai", type: "Area" },
     { id: "chn_nungambakkam", name: "Nungambakkam, Chennai", type: "Area" },
-
-    // Kolkata Schools & Areas
     { id: "kol_lm_boys", name: "La Martiniere For Boys, Kolkata", type: "School" },
     { id: "kol_lm_girls", name: "La Martiniere For Girls, Kolkata", type: "School" },
     { id: "kol_south_point", name: "South Point High School, Kolkata", type: "School" },
@@ -177,8 +167,6 @@ const mockLocations = [
     { id: "kol_howrah", name: "Howrah AC Market, Howrah", type: "Area" },
     { id: "kol_new_town", name: "New Town, Kolkata", type: "Area" },
     { id: "kol_alipore", name: "Alipore, Kolkata", type: "Area" },
-
-    // Hyderabad Schools & Areas
     { id: "hyd_hps_begumpet", name: "Hyderabad Public School, Begumpet, Hyderabad", type: "School" },
     { id: "hyd_chirec", name: "CHIREC International School, Hyderabad", type: "School" },
     { id: "hyd_oakridge_gach", name: "Oakridge International School, Gachibowli, Hyderabad", type: "School" },
@@ -190,8 +178,6 @@ const mockLocations = [
     { id: "hyd_secunderabad", name: "Secunderabad Clock Tower Area", type: "Area" },
     { id: "hyd_hitech_city", name: "HITEC City, Hyderabad", type: "Area" },
     { id: "hyd_kondapur", name: "Kondapur, Hyderabad", type: "Area" },
-    
-    // Pune Schools & Areas
     { id: "pun_bishops_camp", name: "The Bishop's School, Camp, Pune", type: "School" },
     { id: "pun_st_marys", name: "St. Mary's School, Pune", type: "School" },
     { id: "pun_symbiosis_intl", name: "Symbiosis International School, Pune", type: "School" },
@@ -202,16 +188,12 @@ const mockLocations = [
     { id: "pun_hinjewadi", name: "Hinjewadi IT Park, Pune", type: "Area" },
     { id: "pun_viman_nagar", name: "Viman Nagar, Pune", type: "Area" },
     { id: "pun_aundh", name: "Aundh, Pune", type: "Area" },
-
-    // Ahmedabad Schools & Areas
     { id: "amd_st_xaviers_loyola", name: "St. Xavier's High School, Loyola Hall, Ahmedabad", type: "School" },
     { id: "amd_anand_niketan_shilaj", name: "Anand Niketan, Shilaj Campus, Ahmedabad", type: "School" },
     { id: "amd_udgam_school", name: "Udgam School For Children, Ahmedabad", type: "School" },
     { id: "amd_cg_road", name: "C.G. Road, Ahmedabad", type: "Area" },
     { id: "amd_vastrapur", name: "Vastrapur, Ahmedabad", type: "Area" },
     { id: "amd_satellite", name: "Satellite, Ahmedabad", type: "Area" },
-
-    // Jaipur Schools & Areas
     { id: "jpr_mayo_college_ajmer", name: "Mayo College, Ajmer (near Jaipur)", type: "School" },
     { id: "jpr_mayo_college_girls_ajmer", name: "Mayo College Girls' School, Ajmer (near Jaipur)", type: "School" },
     { id: "jpr_jphs", name: "Jayshree Periwal High School, Jaipur", type: "School" },
@@ -219,29 +201,21 @@ const mockLocations = [
     { id: "jpr_c_scheme", name: "C-Scheme, Jaipur", type: "Area" },
     { id: "jpr_vaishali_nagar", name: "Vaishali Nagar, Jaipur", type: "Area" },
     { id: "jpr_malviya_nagar", name: "Malviya Nagar, Jaipur", type: "Area" },
-
-    // Lucknow Schools & Areas
     { id: "lko_lm_college", name: "La Martiniere College, Lucknow", type: "School" },
     { id: "lko_cms_gomti", name: "City Montessori School (CMS), Gomti Nagar, Lucknow", type: "School" },
     { id: "lko_seth_mr_jaipuria", name: "Seth M.R. Jaipuria School, Lucknow", type: "School" },
     { id: "lko_hazratganj", name: "Hazratganj, Lucknow", type: "Area" },
     { id: "lko_gomti_nagar", name: "Gomti Nagar, Lucknow", type: "Area" },
     { id: "lko_aliganj", name: "Aliganj, Lucknow", type: "Area" },
-
-    // Chandigarh Schools & Areas
     { id: "chd_vivek_high", name: "Vivek High School, Chandigarh", type: "School" },
     { id: "chd_st_johns", name: "St. John's High School, Chandigarh", type: "School" },
     { id: "chd_carmel_convent", name: "Carmel Convent School, Chandigarh", type: "School" },
     { id: "chd_sector_17", name: "Sector 17 Market, Chandigarh", type: "Area" },
     { id: "chd_sector_35", name: "Sector 35, Chandigarh", type: "Area" },
-
-    // Dehradun Schools
     { id: "ddn_doon_school", name: "The Doon School, Dehradun", type: "School"},
     { id: "ddn_welham_boys", name: "Welham Boys' School, Dehradun", type: "School"},
     { id: "ddn_welham_girls", name: "Welham Girls' School, Dehradun", type: "School"},
     { id: "ddn_asian_school", name: "The Asian School, Dehradun", type: "School"},
-
-    // Other Major City Areas
     { id: "sur_athwa", name: "Athwalines, Surat", type: "Area" },
     { id: "pat_boring_road", name: "Boring Road, Patna", type: "Area" },
     { id: "ind_vijay_nagar", name: "Vijay Nagar, Indore", type: "Area" },
@@ -265,13 +239,36 @@ export default function ModernHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [currentLang, setCurrentLang] = useState<LangState>('en');
-  const [location, setLocation] = useState("Modern School, Barakhamba Road, Delhi"); // Default
+  const [location, setLocation] = useState("Modern School, Barakhamba Road, Delhi"); 
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
   const [selectedTempLocation, setSelectedTempLocation] = useState(location);
   const { toast } = useToast();
   const router = useRouter(); 
   const [searchQuery, setSearchQuery] = useState(''); 
+  const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
+  const [displayName, setDisplayName] = useState(defaultUser.name);
+  const [displayAvatar, setDisplayAvatar] = useState(defaultUser.avatarUrl);
+  const [displayAvatarHint, setDisplayAvatarHint] = useState(defaultUser.dataAiHint);
+
+  useEffect(() => {
+    // Load profile data from localStorage
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem('userProfileData');
+      if (storedProfile) {
+        try {
+          const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+          setProfileData(parsedProfile);
+          if (parsedProfile.fullName) setDisplayName(parsedProfile.fullName);
+          if (parsedProfile.avatarUrl) setDisplayAvatar(parsedProfile.avatarUrl);
+          if (parsedProfile.dataAiHint) setDisplayAvatarHint(parsedProfile.dataAiHint);
+        } catch (err) {
+          console.warn("Could not parse profile data from localStorage for Home Page:", err);
+        }
+      }
+    }
+  }, []);
+
 
   const startSlideShow = () => {
     slideIntervalRef.current = setInterval(() => {
@@ -300,7 +297,7 @@ export default function ModernHomePage() {
     setCurrentLang(prevLang => {
       if (prevLang === 'en') return 'hi';
       if (prevLang === 'hi') return 'hng';
-      return 'en'; // 'hng' goes back to 'en'
+      return 'en'; 
     });
   };
 
@@ -321,7 +318,7 @@ export default function ModernHomePage() {
   };
 
   const handleUseCurrentLocation = () => {
-    const detectedLocation = "My Current Area (Detected)"; // This would use geolocation API in real app
+    const detectedLocation = "My Current Area (Detected)"; 
     setSelectedTempLocation(detectedLocation);
     toast({
       title: "Using Current Location (Simulated)",
@@ -343,6 +340,27 @@ export default function ModernHomePage() {
   const upcomingClasses = mockLiveClasses.filter(c => c.status === 'upcoming').sort((a,b) => new Date(a.dateTime!).getTime() - new Date(b.dateTime!).getTime());
   const recordedClasses = mockLiveClasses.filter(c => c.status === 'recorded').sort((a,b) => new Date(b.dateTime!).getTime() - new Date(a.dateTime!).getTime());
 
+  const getPersonalizedQuickCategories = () => {
+    if (!profileData) return baseQuickCategories;
+    const { examTarget, className } = profileData;
+    let targetKeywords: string[] = [];
+
+    if (examTarget) {
+        targetKeywords = examTarget.toLowerCase().split(/[\s,]+/);
+    }
+    if (className) {
+        targetKeywords.push(...className.toLowerCase().split(/[\s,]+/));
+    }
+    
+    return baseQuickCategories.map(category => {
+        const isRecommended = targetKeywords.some(keyword => 
+            category.keywords.some(catKeyword => catKeyword.includes(keyword) || keyword.includes(catKeyword))
+        );
+        return { ...category, isRecommended };
+    });
+  };
+  const quickCategories = getPersonalizedQuickCategories();
+
 
   return (
     <div className="space-y-6 pb-10 min-h-screen -m-4 p-4 bg-background">
@@ -359,15 +377,15 @@ export default function ModernHomePage() {
             </Button>
             <Link href="/profile">
               <Avatar className="h-8 w-8 border-2 border-accent">
-                <AvatarImage src={user.avatarUrl || 'https://placehold.co/40x40.png'} alt={user.name} data-ai-hint={user.dataAiHint || 'avatar'} />
-                <AvatarFallback>{user.name.substring(0,1)}</AvatarFallback>
+                <AvatarImage src={displayAvatar || 'https://placehold.co/40x40.png'} alt={displayName} data-ai-hint={displayAvatarHint || 'avatar'} />
+                <AvatarFallback>{displayName.substring(0,1)}</AvatarFallback>
               </Avatar>
             </Link>
           </div>
         </div>
         <div className="px-0">
             <h1 className="text-2xl font-bold text-foreground">
-                <BilingualText en={`Hello, ${user.name}`} hi={`नमस्ते, ${user.name}`} lang={currentLang} /> <Hand className="inline h-6 w-6 text-yellow-400" />
+                <BilingualText en={`Hello, ${displayName}`} hi={`नमस्ते, ${displayName}`} lang={currentLang} /> <Hand className="inline h-6 w-6 text-yellow-400" />
             </h1>
             <p className="text-muted-foreground text-sm"><BilingualText en="Ready to learn something new?" hi="कुछ नया सीखने के लिए तैयार हैं?" lang={currentLang} /></p>
         </div>
@@ -500,7 +518,16 @@ export default function ModernHomePage() {
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
           {quickCategories.map((category) => (
             <Link href={category.href} key={category.id}>
-              <Card className={cn("text-center p-3 rounded-xl shadow-sm hover:shadow-lg transition-all h-full flex flex-col justify-center items-center glass-card", category.bgColor)}>
+              <Card className={cn(
+                "text-center p-3 rounded-xl shadow-sm hover:shadow-lg transition-all h-full flex flex-col justify-center items-center glass-card relative overflow-hidden", 
+                category.bgColor,
+                (category as any).isRecommended && "border-2 border-yellow-400 shadow-yellow-400/30"
+              )}>
+                {(category as any).isRecommended && (
+                    <Badge className="absolute top-1 right-1 text-xs px-1.5 py-0.5 bg-yellow-400 text-yellow-900 border-yellow-500">
+                       <BilingualText en="For You" hi="आपके लिए" lang={currentLang}/>
+                    </Badge>
+                )}
                 <category.icon className={cn("h-6 w-6 mx-auto mb-1", category.color)} />
                 <p className={cn("text-xs font-medium", category.color)}><BilingualText en={category.labelEn} hi={category.labelHi} lang={currentLang} separator=" "/></p>
               </Card>
@@ -511,6 +538,13 @@ export default function ModernHomePage() {
 
       <section>
         <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Today's Recommendations" hi="आज की सिफारिशें" lang={currentLang}/></h2>
+        <p className="text-xs text-muted-foreground mb-3">
+            <BilingualText 
+                en="Personalized recommendations based on your profile will appear here with dynamic data." 
+                hi="आपकी प्रोफ़ाइल के आधार पर वैयक्तिकृत सिफारिशें गतिशील डेटा के साथ यहां दिखाई देंगी।" 
+                lang={currentLang}
+            />
+        </p>
         <ScrollArea className="w-full whitespace-nowrap pb-3">
           <div className="flex space-x-4">
             {recommendations.map((item) => (
@@ -636,4 +670,5 @@ export default function ModernHomePage() {
     </div>
   );
 }
+
 

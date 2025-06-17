@@ -8,11 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mic, Send, Loader2, Paperclip, XCircle, FileText, Image as ImageIcon } from "lucide-react";
-import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow'; // Changed import
+import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
-import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData type
+import type { ProfileFormData } from '../edit-profile/page'; 
 
 interface Message {
   id: string;
@@ -36,7 +36,7 @@ const ALLOWED_DOC_TYPES = ['application/pdf', 'application/msword', 'application
 const ALLOWED_FILE_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOC_TYPES];
 
 
-export default function GurujiPage() { // Renamed component for clarity
+export default function GurujiPage() { 
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -127,44 +127,52 @@ export default function GurujiPage() { // Renamed component for clarity
     
     setIsLoading(true);
 
-    try {
-      let profileContext: Partial<ProfileFormData> = {};
-      if (typeof window !== "undefined") {
-        const storedProfile = localStorage.getItem('userProfileData');
-        if (storedProfile) {
-          try {
-            const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
-            profileContext = {
-              className: parsedProfile.className,
-              board: parsedProfile.board,
-              stream: parsedProfile.stream,
-              examTarget: parsedProfile.examTarget,
-            };
-          } catch (err) {
-            console.warn("Could not parse profile data from localStorage for Guruji context:", err);
-          }
+    let profileContext: Partial<ProfileFormData> = {};
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem('userProfileData');
+      if (storedProfile) {
+        try {
+          const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+          profileContext = {
+            className: parsedProfile.className,
+            board: parsedProfile.board,
+            stream: parsedProfile.stream,
+            examTarget: parsedProfile.examTarget,
+          };
+        } catch (err) {
+          console.warn("Could not parse profile data from localStorage for Guruji context:", err);
         }
       }
+    }
 
-      const gurujiInput: GurujiInput = { 
-        userInput: trimmedInput,
-        studentClass: profileContext.className,
-        studentBoard: profileContext.board,
-        studentStream: profileContext.stream,
-        studentExamTarget: profileContext.examTarget,
+    const gurujiInput: GurujiInput = { 
+      userInput: trimmedInput,
+      studentClass: profileContext.className,
+      studentBoard: profileContext.board,
+      studentStream: profileContext.stream,
+      studentExamTarget: profileContext.examTarget,
+    };
+
+    if (attachmentPreview) {
+      gurujiInput.attachmentInfo = {
+        name: attachmentPreview.name,
+        type: attachmentPreview.type,
+        isImage: attachmentPreview.isImage,
       };
-
-      if (attachmentPreview) {
-        gurujiInput.attachmentInfo = {
-          name: attachmentPreview.name,
-          type: attachmentPreview.type,
-          isImage: attachmentPreview.isImage,
-        };
-        if (attachmentPreview.isImage && attachmentPreview.dataUri) {
-          gurujiInput.attachmentDataUri = attachmentPreview.dataUri;
-        }
+      // Only include dataUri if it's an image and exists
+      if (attachmentPreview.isImage && attachmentPreview.dataUri) {
+        gurujiInput.attachmentDataUri = attachmentPreview.dataUri;
+      } else if (!attachmentPreview.isImage) {
+        // For non-image files, if we want to send content, we'd read it differently (e.g. as text)
+        // For now, we are only sending dataUri for images.
+        // If we were to send text file content, it would be:
+        // const textContent = await file.text(); // This needs to be handled during file select
+        // gurujiInput.attachmentTextContent = textContent; 
+        // And the flow schema would need an 'attachmentTextContent' field.
       }
-      
+    }
+    
+    try {
       const response = await askGuruji(gurujiInput);
       
       if (!response || typeof response.responseText !== 'string' || !response.respondedInLanguage) {
