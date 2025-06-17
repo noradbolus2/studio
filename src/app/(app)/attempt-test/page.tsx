@@ -3,6 +3,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
+import Image from 'next/image'; // Import next/image
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target, Image as ImageIcon } from 'lucide-react';
 import { generateExamTest, type GenerateExamTestInput, type GenerateExamTestOutput } from '@/ai/flows/generate-exam-test-flow';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,7 +25,12 @@ interface QuestionResult {
   correctOption: string;
   isCorrect: boolean;
   explanation?: string;
+  diagramDataUri?: string; // Added for results page
 }
+
+// Define Question type based on the schema (it's part of GenerateExamTestOutput)
+type Question = GenerateExamTestOutput['questions'][0];
+
 
 export default function AttemptTestPage() {
   const searchParams = useSearchParams();
@@ -32,7 +38,7 @@ export default function AttemptTestPage() {
   const { toast } = useToast();
 
   const testTitleFromQuery = searchParams.get('title') || "AI Generated Test";
-  const examTypeFromQuery = searchParams.get('examType') || testTitleFromQuery; // Use title as fallback for examType
+  const examTypeFromQuery = searchParams.get('examType') || testTitleFromQuery; 
   const subjectFromQuery = searchParams.get('subject');
   const numQuestionsFromQuery = searchParams.get('numQuestions') ? parseInt(searchParams.get('numQuestions') as string) : 5;
 
@@ -55,10 +61,12 @@ export default function AttemptTestPage() {
           subject: subjectFromQuery || undefined,
           numQuestions: numQuestionsFromQuery,
         };
+        console.log("AttemptTestPage: Generating test with input:", input);
         const generatedTest = await generateExamTest(input);
+        console.log("AttemptTestPage: Test data received:", generatedTest);
         setTestData(generatedTest);
       } catch (err: any) {
-        console.error("Failed to generate test:", err);
+        console.error("AttemptTestPage: Failed to generate test:", err);
         setTestError(err.message || "Could not load the test. Please try again.");
         toast({
           title: "Error Loading Test",
@@ -91,6 +99,7 @@ export default function AttemptTestPage() {
         correctOption: q.options[q.correctAnswerIndex],
         isCorrect: isCorrect,
         explanation: q.explanation,
+        diagramDataUri: q.diagramDataUri, // Pass diagram URI to results
       };
     });
     setScore(correctAnswers);
@@ -165,7 +174,20 @@ export default function AttemptTestPage() {
           <Card key={index} className={result.isCorrect ? "border-green-500 bg-green-500/5" : "border-red-500 bg-red-500/5"}>
             <CardHeader>
               <CardTitle className="text-md">
-                <span className="text-sm font-normal text-muted-foreground">Q{index + 1}. </span>{result.questionText}
+                <span className="text-sm font-normal text-muted-foreground">Q{index + 1}. </span>
+                {result.diagramDataUri && (
+                  <div className="my-2 p-2 border rounded-md bg-muted/20 max-w-md mx-auto">
+                    <Image 
+                      src={result.diagramDataUri} 
+                      alt={`Diagram for question ${index + 1}`} 
+                      width={400} 
+                      height={300} 
+                      className="rounded-md object-contain mx-auto"
+                      data-ai-hint="exam question diagram"
+                    />
+                  </div>
+                )}
+                {result.questionText}
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm space-y-2">
@@ -202,9 +224,21 @@ export default function AttemptTestPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {currentQuestion.diagramDataUri && (
+            <div className="my-4 p-2 border rounded-md bg-muted/30 shadow-sm max-w-lg mx-auto">
+               <Image 
+                  src={currentQuestion.diagramDataUri} 
+                  alt={`Diagram for question ${currentQuestionIndex + 1}`} 
+                  width={500} // Adjust as needed
+                  height={375} // Adjust for aspect ratio
+                  className="rounded-md object-contain mx-auto"
+                  data-ai-hint="exam question diagram"
+                />
+            </div>
+          )}
           <p className="text-md font-semibold">{currentQuestion.questionText}</p>
           <RadioGroup
-            key={`q-group-${currentQuestionIndex}`} // Added key here
+            key={`q-group-${currentQuestionIndex}`}
             value={answerSheet[currentQuestionIndex]?.toString()}
             onValueChange={(value) => handleOptionChange(currentQuestionIndex, parseInt(value))}
             className="space-y-2"
