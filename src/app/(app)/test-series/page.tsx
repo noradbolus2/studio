@@ -13,30 +13,51 @@ import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type 
 import { useToast } from '@/hooks/use-toast';
 import type { ProfileFormData } from '../edit-profile/page'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; 
-import { Label } from "@/components/ui/label"; // Added import for Label
+import { Label } from "@/components/ui/label";
 
-const testCategories = [ 
-  { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
-  { id: 'engineering', nameEn: 'Engineering (JEE, BITSAT, etc.)', nameHi: 'इंजीनियरिंग (जेईई, बिटसैट, आदि)', descriptionEn: "Full syllabus mock tests, previous year papers.", descriptionHi: "पूर्ण पाठ्यक्रम मॉक टेस्ट, पिछले वर्ष के प्रश्नपत्र।"},
-  { id: 'medical', nameEn: 'Medical (NEET UG/PG, AIIMS)', nameHi: 'मेडिकल (नीट यूजी/पीजी, एम्स)', descriptionEn: "Subject-wise tests, all India ranking.", descriptionHi: "विषयवार टेस्ट, अखिल भारतीय रैंकिंग।"},
-  { id: 'management', nameEn: 'MBA & Management (CAT, XAT)', nameHi: 'एमबीए और प्रबंधन (कैट, एक्सएटी)', descriptionEn: "Practice tests for top B-schools.", descriptionHi: "शीर्ष बी-स्कूलों के लिए अभ्यास परीक्षण।"},
-  { id: 'law', nameEn: 'Law (CLAT, AILET, Judiciary)', nameHi: 'कानून (क्लैट, एआईएलईटी, न्यायपालिका)', descriptionEn: "Mock tests for national law universities.", descriptionHi: "राष्ट्रीय विधि विश्वविद्यालयों के लिए मॉक टेस्ट।"},
-  { id: 'upsc_civil_services', nameEn: 'UPSC & Civil Services', nameHi: 'यूपीएससी और सिविल सेवा', descriptionEn: "Prelims and Mains oriented test series.", descriptionHi: "प्रारंभिक और मुख्य परीक्षा उन्मुख टेस्ट सीरीज़।"},
-  { id: 'ssc_banking', nameEn: 'SSC & Banking', nameHi: 'एसएससी और बैंकिंग', descriptionEn: "Tier-wise tests for govt. jobs.", descriptionHi: "सरकारी नौकरियों के लिए टियर-वार टेस्ट।"},
-  { id: 'defence', nameEn: 'Defence (NDA, CDS, AFCAT)', nameHi: 'रक्षा (एनडीए, सीडीएस, एएफसीएटी)', descriptionEn: "Prepare for officer cadre entries.", descriptionHi: "अधिकारी कैडर प्रविष्टियों के लिए तैयारी करें।"},
-  { id: 'cuet_general_uni', nameEn: 'CUET & General University', nameHi: 'सीयूईटी और सामान्य विश्वविद्यालय', descriptionEn: "Practice tests for all sections.", descriptionHi: "सभी वर्गों के लिए अभ्यास परीक्षण।"},
-  { id: 'design_architecture', nameEn: 'Design & Architecture', nameHi: 'डिज़ाइन और आर्किटेक्चर', descriptionEn: "Mock tests for NID, NIFT, NATA.", descriptionHi: "NID, NIFT, NATA के लिए मॉक टेस्ट।"},
-  { id: 'teaching', nameEn: 'Teaching (CTET, NET, TETs)', nameHi: 'शिक्षण (सीटीईटी, नेट, टीईटी)', descriptionEn: "Eligibility tests for teachers.", descriptionHi: "शिक्षकों के लिए पात्रता परीक्षा।"},
-  { id: 'commerce_professional', nameEn: 'Commerce Professional (CA, CS, CMA)', nameHi: 'वाणिज्य पेशेवर (सीए, सीएस, सीएमए)', descriptionEn: "Foundation to Final level tests.", descriptionHi: "फाउंडेशन से फाइनल लेवल तक के टेस्ट।"},
-  { id: 'school_olympiads', nameEn: 'School Olympiads & Talent', nameHi: 'स्कूल ओलंपियाड और प्रतिभा खोज', descriptionEn: "Tests for NTSE, KVPY, Olympiads.", descriptionHi: "NTSE, KVPY, ओलंपियाड के लिए टेस्ट।"},
-  { id: 'other_govt_jobs', nameEn: 'Other Govt. Jobs (Railways, etc.)', nameHi: 'अन्य सरकारी नौकरियां (रेलवे, आदि)', descriptionEn: "Specific tests for various roles.", descriptionHi: "विभिन्न भूमिकाओं के लिए विशिष्ट परीक्षण।"},
-  { id: 'pharmacy_agriculture', nameEn: 'Pharmacy & Agriculture', nameHi: 'फार्मेसी और कृषि', descriptionEn: "Entrance tests for B.Pharm, Agri BSc.", descriptionHi: "B.Pharm, Agri BSc के लिए प्रवेश परीक्षा।"},
-  { id: 'boards', nameEn: 'Class 10 & 12 Boards', nameHi: 'कक्षा 10 और 12 बोर्ड', descriptionEn: "Chapter tests and model papers.", descriptionHi: "अध्याय परीक्षण और मॉडल पेपर।"},
+const testCategories = [
+  { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं', descriptionEn: "Browse all available test series.", descriptionHi: "सभी उपलब्ध टेस्ट सीरीज़ ब्राउज़ करें।" },
+  // Engineering
+  { id: 'engineering_jee_main', nameEn: 'JEE Main', nameHi: 'जेईई मुख्य', descriptionEn: "Mock tests for Joint Entrance Examination Main.", descriptionHi: "संयुक्त प्रवेश परीक्षा मुख्य के लिए मॉक टेस्ट।" },
+  { id: 'engineering_jee_advanced', nameEn: 'JEE Advanced', nameHi: 'जेईई एडवांस्ड', descriptionEn: "Practice tests for IIT admissions.", descriptionHi: "आईआईटी प्रवेश के लिए अभ्यास परीक्षण।" },
+  { id: 'engineering_bitsat', nameEn: 'BITSAT', nameHi: 'बिटसैट', descriptionEn: "Tests for Birla Institute of Technology and Science.", descriptionHi: "बिरला इंस्टीट्यूट ऑफ टेक्नोलॉजी एंड साइंस के लिए टेस्ट।" },
+  // Medical
+  { id: 'medical_neet_ug', nameEn: 'NEET UG', nameHi: 'नीट यूजी', descriptionEn: "Mock tests for National Eligibility cum Entrance Test (UG).", descriptionHi: "राष्ट्रीय पात्रता सह प्रवेश परीक्षा (यूजी) के लिए मॉक टेस्ट।" },
+  { id: 'medical_neet_pg', nameEn: 'NEET PG', nameHi: 'नीट पीजी', descriptionEn: "Tests for postgraduate medical courses.", descriptionHi: "स्नातकोत्तर चिकित्सा पाठ्यक्रमों के लिए टेस्ट।" },
+  { id: 'medical_aiims_nursing', nameEn: 'AIIMS Nursing', nameHi: 'एम्स नर्सिंग', descriptionEn: "Entrance tests for AIIMS B.Sc. Nursing.", descriptionHi: "एम्स बी.एससी. नर्सिंग के लिए प्रवेश परीक्षा।" },
+  // Management
+  { id: 'management_cat', nameEn: 'CAT', nameHi: 'कैट', descriptionEn: "Tests for Common Admission Test (MBA).", descriptionHi: "कॉमन एडमिशन टेस्ट (एमबीए) के लिए टेस्ट।" },
+  { id: 'management_xat', nameEn: 'XAT', nameHi: 'एक्सएटी', descriptionEn: "Tests for Xavier Aptitude Test (MBA).", descriptionHi: "जेवियर एप्टीट्यूड टेस्ट (एमबीए) के लिए टेस्ट।" },
+  // Law
+  { id: 'law_clat', nameEn: 'CLAT', nameHi: 'क्लैट', descriptionEn: "Tests for Common Law Admission Test.", descriptionHi: "कॉमन लॉ एडमिशन टेस्ट के लिए टेस्ट।" },
+  { id: 'law_ailet', nameEn: 'AILET', nameHi: 'एआईएलईटी', descriptionEn: "Tests for All India Law Entrance Test.", descriptionHi: "अखिल भारतीय विधि प्रवेश परीक्षा के लिए टेस्ट।" },
+  // UPSC & Civil Services
+  { id: 'upsc_cse_prelims', nameEn: 'UPSC CSE Prelims', nameHi: 'यूपीएससी सीएसई प्रीलिम्स', descriptionEn: "Tests for Civil Services Preliminary Exam.", descriptionHi: "सिविल सेवा प्रारंभिक परीक्षा के लिए टेस्ट।" },
+  { id: 'upsc_cse_mains', nameEn: 'UPSC CSE Mains', nameHi: 'यूपीएससी सीएसई मेन्स', descriptionEn: "Practice for Civil Services Main Exam.", descriptionHi: "सिविल सेवा मुख्य परीक्षा के लिए अभ्यास।" },
+  // SSC & Banking
+  { id: 'ssc_cgl', nameEn: 'SSC CGL', nameHi: 'एसएससी सीजीएल', descriptionEn: "Tests for Staff Selection Commission CGL.", descriptionHi: "कर्मचारी चयन आयोग सीजीएल के लिए टेस्ट।" },
+  { id: 'ibps_po', nameEn: 'IBPS PO', nameHi: 'आईबीपीएस पीओ', descriptionEn: "Tests for IBPS Probationary Officer exam.", descriptionHi: "आईबीपीएस प्रोबेशनरी ऑफिसर परीक्षा के लिए टेस्ट।" },
+  { id: 'sbi_po', nameEn: 'SBI PO', nameHi: 'एसबीआई पीओ', descriptionEn: "Tests for SBI Probationary Officer exam.", descriptionHi: "एसबीआई प्रोबेशनरी ऑफिसर परीक्षा के लिए टेस्ट।" },
+  // Defence
+  { id: 'defence_nda', nameEn: 'NDA & NA', nameHi: 'एनडीए और एनए', descriptionEn: "Tests for National Defence Academy entrance.", descriptionHi: "राष्ट्रीय रक्षा अकादमी प्रवेश के लिए टेस्ट।" },
+  { id: 'defence_cds', nameEn: 'CDS', nameHi: 'सीडीएस', descriptionEn: "Tests for Combined Defence Services exam.", descriptionHi: "संयुक्त रक्षा सेवा परीक्षा के लिए टेस्ट।" },
+  // CUET
+  { id: 'cuet_ug', nameEn: 'CUET UG', nameHi: 'सीयूईटी यूजी', descriptionEn: "Tests for Common University Entrance Test (UG).", descriptionHi: "कॉमन यूनिवर्सिटी एंट्रेंस टेस्ट (यूजी) के लिए टेस्ट।" },
+  // School Boards
+  { id: 'school_boards_class10', nameEn: 'Class 10 Boards', nameHi: 'कक्षा 10 बोर्ड', descriptionEn: "Practice tests for Class 10 board exams.", descriptionHi: "कक्षा 10 बोर्ड परीक्षाओं के लिए अभ्यास परीक्षण।" },
+  { id: 'school_boards_class12', nameEn: 'Class 12 Boards', nameHi: 'कक्षा 12 बोर्ड', descriptionEn: "Practice tests for Class 12 board exams.", descriptionHi: "कक्षा 12 बोर्ड परीक्षाओं के लिए अभ्यास परीक्षण।" },
+  // Other popular exams
+  { id: 'other_gate', nameEn: 'GATE', nameHi: 'गेट', descriptionEn: "Graduate Aptitude Test in Engineering.", descriptionHi: "इंजीनियरिंग में स्नातक योग्यता परीक्षा।" },
+  { id: 'other_ugc_net', nameEn: 'UGC NET', nameHi: 'यूजीसी नेट', descriptionEn: "National Eligibility Test for lecturership.", descriptionHi: "लेक्चररशिप के लिए राष्ट्रीय पात्रता परीक्षा।" },
+  { id: 'other_ctet', nameEn: 'CTET', nameHi: 'सीटीईटी', descriptionEn: "Central Teacher Eligibility Test.", descriptionHi: "केंद्रीय शिक्षक पात्रता परीक्षा।" },
+  { id: 'olympiad_nso', nameEn: 'NSO (Science Olympiad)', nameHi: 'एनएसओ (विज्ञान ओलंपियाड)', descriptionEn: "National Science Olympiad practice.", descriptionHi: "राष्ट्रीय विज्ञान ओलंपियाड अभ्यास।" },
+  { id: 'olympiad_imo', nameEn: 'IMO (Maths Olympiad)', nameHi: 'आईएमओ (गणित ओलंपियाड)', descriptionEn: "International Maths Olympiad practice.", descriptionHi: "अंतर्राष्ट्रीय गणित ओलंपियाड अभ्यास।" },
 ];
+
 
 interface FeaturedTest {
   id: string;
-  categoryId: string;
+  categoryId: string; // Should now match one of the granular IDs above
   titleEn: string;
   titleHi: string;
   descriptionEn: string;
@@ -49,7 +70,7 @@ interface FeaturedTest {
 const featuredTests: FeaturedTest[] = [
   { 
     id: 'neet_mock_1', 
-    categoryId: 'medical', 
+    categoryId: 'medical_neet_ug', 
     titleEn: "NEET UG Test Series Pack (25 Tests)", 
     titleHi: "नीट यूजी टेस्ट सीरीज़ पैक (25 टेस्ट)", 
     descriptionEn: "Pack of 25 Tests: 12 Unit Tests, 4 Part-Syllabus Tests, and 9 Full NEET Replica Mock Tests. All India Ranking.", 
@@ -58,37 +79,45 @@ const featuredTests: FeaturedTest[] = [
     generationTitleEn: "NEET UG Full Syllabus Mock Test (Sample)", 
     defaultNumQuestions: 200 
   },
-  { id: 'jee_main_prev_1', categoryId: 'engineering', titleEn: "JEE Main Previous Year Paper (2023)", titleHi: "जेईई मुख्य पिछला वर्ष प्रश्नपत्र (2023)", descriptionEn: "Official paper with solutions.", descriptionHi: "समाधान के साथ आधिकारिक प्रश्नपत्र।", price: "Free", generationTitleEn: "JEE Main 2023 Paper", defaultNumQuestions: 90 },
-  { id: 'cat_verbal_1', categoryId: 'management', titleEn: "CAT Verbal Ability Sectional Test", titleHi: "कैट मौखिक क्षमता अनुभागीय परीक्षण", descriptionEn: "40 questions, 60 minutes.", descriptionHi: "40 प्रश्न, 60 मिनट।", price: "₹99", defaultNumQuestions: 40 },
-  { id: 'class10_maths_ch1', categoryId: 'boards', titleEn: "Class 10 Maths: Real Numbers Test", titleHi: "कक्षा 10 गणित: वास्तविक संख्याएं परीक्षण", descriptionEn: "Chapter-wise test for board prep.", descriptionHi: "बोर्ड तैयारी के लिए अध्याय-वार परीक्षण।", price: "Free", generationTitleEn: "Class 10 Maths Chapter 1 Test", defaultNumQuestions: 15 },
+  { id: 'jee_main_prev_1', categoryId: 'engineering_jee_main', titleEn: "JEE Main Previous Year Paper (2023)", titleHi: "जेईई मुख्य पिछला वर्ष प्रश्नपत्र (2023)", descriptionEn: "Official paper with solutions.", descriptionHi: "समाधान के साथ आधिकारिक प्रश्नपत्र।", price: "Free", generationTitleEn: "JEE Main 2023 Paper", defaultNumQuestions: 90 },
+  { id: 'cat_verbal_1', categoryId: 'management_cat', titleEn: "CAT Verbal Ability Sectional Test", titleHi: "कैट मौखिक क्षमता अनुभागीय परीक्षण", descriptionEn: "40 questions, 60 minutes.", descriptionHi: "40 प्रश्न, 60 मिनट।", price: "₹99", generationTitleEn: "CAT Verbal Ability Sectional Test", defaultNumQuestions: 40 },
+  { id: 'class10_maths_ch1', categoryId: 'school_boards_class10', titleEn: "Class 10 Maths: Real Numbers Test", titleHi: "कक्षा 10 गणित: वास्तविक संख्याएं परीक्षण", descriptionEn: "Chapter-wise test for board prep.", descriptionHi: "बोर्ड तैयारी के लिए अध्याय-वार परीक्षण।", price: "Free", generationTitleEn: "Class 10 Maths Chapter 1 Test", defaultNumQuestions: 15 },
 ];
 
-// Helper function (can be shared if used elsewhere)
+
 function getCategoryFromExamTarget(examTarget?: string): string {
   if (!examTarget) return 'all';
   const targetLower = examTarget.toLowerCase();
+
+  // Prioritize direct matches from testCategories
+  const directMatch = testCategories.find(cat => cat.nameEn.toLowerCase() === targetLower || cat.id === targetLower);
+  if (directMatch && directMatch.id !== 'all') return directMatch.id;
+
   const categoryKeywordsMap: Record<string, string[]> = {
-    engineering: ['jee', 'engineering', 'bitsat', 'viteee', 'srmjeee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet (eng', 'gujcet', 'eamcet (eng', 'kcet (eng', 'gate'],
-    medical: ['neet', 'medical', 'aiims', 'ini cet', 'fmge', 'nursing', 'aiapget', 'bds', 'mbbs', 'ayush', 'b.v.sc'],
-    management: ['cat', 'mba', 'xat', 'cmat', 'snap', 'nmat', 'mat', 'atma', 'iift', 'tissnet', 'ibsat', 'micat', 'gmat'],
-    law: ['clat', 'law', 'ailet', 'lsat', 'slat', 'mh cet law', 'lawcet', 'klee', 'judicial'],
-    upsc_civil_services: ['upsc', 'civil services', 'ias', 'ifos', 'ese', 'ies', 'geo-scientist', 'cms', 'capf'],
-    ssc_banking: ['ssc', 'banking', 'ibps', 'sbi po', 'sbi clerk', 'rbi grade', 'rbi assist', 'nabard', 'lic aao', 'lic ado', 'uiic', 'niacl', 'esic', 'fci', 'cgl', 'chsl', 'cpo'],
-    defence: ['nda', 'defence', 'cds', 'afcat', 'inet', 'army tes', 'navy sailors', 'airmen', 'coast guard', 'territorial army'],
-    cuet_general_uni: ['cuet', 'jmi entrance', 'amu entrance', 'university entrance'],
-    design_architecture: ['nid dat', 'uceed', 'ceed', 'nift', 'nata', 'b.arch', 'b.plan', 'aieed', 'design', 'architecture'],
-    teaching: ['ctet', 'teaching', 'tet', 'net', 'set', 'slet', 'kvs', 'nvs', 'dsssb', 'b.ed'],
-    commerce_professional: ['ca (', 'cs (', 'cma (', 'chartered accountant', 'company secretary', 'cost management accountant'],
-    school_olympiads: ['olympiad', 'ntse', 'kvpy', 'homi bhabha', 'talent search'],
-    other_govt_jobs: ['rrb ntpc', 'rrb je', 'rrb alp', 'rrb group d', 'state psc', 'police', 'high court', 'railway'],
-    pharmacy_agriculture: ['pharmacy', 'gpat', 'niper', 'agriculture', 'icar aieea', 'veterinary'],
+    engineering_jee_main: ['jee main'], engineering_jee_advanced: ['jee advanced'], engineering_bitsat: ['bitsat'],
+    medical_neet_ug: ['neet ug', 'neet'], medical_neet_pg: ['neet pg'], medical_aiims_nursing: ['aiims nursing'],
+    management_cat: ['cat'], management_xat: ['xat'],
+    law_clat: ['clat'], law_ailet: ['ailet'],
+    upsc_cse_prelims: ['upsc prelims', 'ias prelims', 'civil services prelims'], upsc_cse_mains: ['upsc mains', 'ias mains'],
+    ssc_cgl: ['ssc cgl'], ibps_po: ['ibps po'], sbi_po: ['sbi po'],
+    defence_nda: ['nda', 'na exam'], defence_cds: ['cds'],
+    cuet_ug: ['cuet ug', 'cuet'],
+    school_boards_class10: ['class 10 board', '10th board', 'matriculation'],
+    school_boards_class12: ['class 12 board', '12th board', 'intermediate'],
+    other_gate: ['gate'], other_ugc_net: ['ugc net'], other_ctet: ['ctet'],
+    olympiad_nso: ['nso', 'science olympiad'], olympiad_imo: ['imo', 'maths olympiad'],
   };
+
   for (const categoryId in categoryKeywordsMap) {
     if (categoryKeywordsMap[categoryId].some(keyword => targetLower.includes(keyword))) {
       return categoryId;
     }
   }
-  if (targetLower.includes('board') || targetLower.match(/class\s*(10|12)/)) return 'boards';
+  
+  // Fallback for general class mentions if not caught by board-specific keywords
+  if (targetLower.includes("class 10") || targetLower.includes("10th")) return 'school_boards_class10';
+  if (targetLower.includes("class 12") || targetLower.includes("12th")) return 'school_boards_class12';
+
   return 'all';
 }
 
@@ -113,7 +142,7 @@ export default function TestSeriesPage() {
             if (testCategories.some(cat => cat.id === categoryId)) {
               setSelectedTestCategory(categoryId);
             }
-          } else if (parsedProfile.className) { // Fallback to class if examTarget is not set
+          } else if (parsedProfile.className) { 
              const categoryId = getCategoryFromExamTarget(parsedProfile.className.toLowerCase());
              if (testCategories.some(cat => cat.id === categoryId)) {
                setSelectedTestCategory(categoryId);
@@ -132,7 +161,7 @@ export default function TestSeriesPage() {
     setRecommendations(null);
 
     const studentNameFromProfile = profileData?.fullName || "Student";
-    const examTargetFromProfile = profileData?.examTarget || "General Competitive Exam"; // Fallback
+    const examTargetFromProfile = profileData?.examTarget || "General Competitive Exam"; 
 
     const dynamicStudentInput: TestSeriesRecommendationInput = {
         studentName: studentNameFromProfile,
@@ -247,7 +276,6 @@ export default function TestSeriesPage() {
                                     </CardContent>
                                      <CardFooter className="p-3 bg-card border-t">
                                          <Button asChild size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                                            {/* For recommended tests, assume they are full-length or AI will decide based on title */}
                                             <Link href={`/attempt-test?title=${encodeURIComponent(test.title)}`}>
                                                 <BilingualText en="Attempt Test" hi="टेस्ट दें"/>
                                             </Link>
@@ -281,7 +309,6 @@ export default function TestSeriesPage() {
               </CardContent>
               <CardFooter>
                 <Button asChild size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground">
-                   {/* Update the link for the NEET pack to show it's a sample */}
                   <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.generationTitleEn || test.titleEn)}${test.defaultNumQuestions ? `&numQuestions=${test.defaultNumQuestions}` : ''}`}>
                      <BilingualText 
                         en={test.id === 'neet_mock_1' ? "Attempt Sample Full Test" : "Take Test"} 
@@ -323,7 +350,6 @@ export default function TestSeriesPage() {
                 </CardHeader>
                 <CardContent>
                     <Button asChild className="w-full">
-                      {/* For category links, we can pass category name as examType to AI */}
                       <Link href={`/attempt-test?examType=${encodeURIComponent(category.nameEn)}&title=${encodeURIComponent(category.nameEn + " Mock Test")}`}>
                         <BilingualText en="View Tests" hi="टेस्ट देखें" />
                       </Link>
