@@ -75,11 +75,11 @@ CRITICAL INSTRUCTIONS FOR QUESTION QUALITY & EXAM PATTERN (100% ACCURACY REQUIRE
 6.  **Explanation:** Provide a brief, accurate explanation for the correct answer.
 7.  **Test Title:** The 'testTitle' field in the output JSON MUST be accurately generated to reflect the exam name/type, subject (if any), and whether it's a full mock or a sample. E.g., "NEET UG Full Syllabus Mock Test - Set 1", "JEE Main Physics Practice Test (30 Questions)".
 8.  **Diagrams (Text Prompt for Diagram):**
-    *   For questions that critically require a diagram for understanding (e.g., circuit diagrams, geometric figures, biological structures, physics setups, complex data interpretation), you MUST include a `diagramPrompt` field in the question's JSON object.
-    *   This `diagramPrompt` should be a clear, concise textual description of what the diagram should visually represent (e.g., "A pulley system with two masses, M1 and M2, connected by a string over a frictionless pulley. M1 is on an inclined plane at 30 degrees, M2 hangs vertically.").
-    *   The `questionText` should then refer to this diagram (e.g., "Based on the diagram provided...").
-    *   If no diagram is needed for a question, omit the `diagramPrompt` field.
-    *   DO NOT attempt to generate image data or use ASCII art in the `diagramPrompt` or `questionText`.
+    *   For questions that critically require a diagram for understanding (e.g., circuit diagrams, geometric figures, biological structures, physics setups, complex data interpretation), you MUST include a \\\`diagramPrompt\\\` field in the question's JSON object.
+    *   This \\\`diagramPrompt\\\` should be a clear, concise textual description of what the diagram should visually represent (e.g., "A pulley system with two masses, M1 and M2, connected by a string over a frictionless pulley. M1 is on an inclined plane at 30 degrees, M2 hangs vertically.").
+    *   The \`questionText\` should then refer to this diagram (e.g., "Based on the diagram provided...").
+    *   If no diagram is needed for a question, omit the \\\`diagramPrompt\\\` field.
+    *   DO NOT attempt to generate image data or use ASCII art in the \\\`diagramPrompt\\\` or \`questionText\`.
 
 CONTENT FORMATTING:
 - For any chemical formulas, reactions, or logical symbols (like ->, <->, AND, OR, NOT, ~), use only plain text characters. For example, represent 'CH3CH2OH' as is, use '->' for reaction arrows, and 'p AND q' for logical 'p and q'.
