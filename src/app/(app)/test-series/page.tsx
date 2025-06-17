@@ -169,20 +169,124 @@ interface FeaturedTest {
 }
 
 const featuredTests: FeaturedTest[] = [
-  { 
-    id: 'neet_mock_1', 
-    categoryId: 'medical_neet_ug', 
-    titleEn: "NEET UG Test Series Pack (25 Tests)", 
-    titleHi: "नीट यूजी टेस्ट सीरीज़ पैक (25 टेस्ट)", 
-    descriptionEn: "Pack of 25 Tests: 12 Unit Tests, 4 Part-Syllabus Tests, and 9 Full NEET Replica Mock Tests. All India Ranking.", 
-    descriptionHi: "25 टेस्ट का पैक: 12 यूनिट टेस्ट, 4 भाग-सिलेबस टेस्ट, और 9 पूर्ण नीट प्रतिकृति मॉक टेस्ट। अखिल भारतीय रैंकिंग।", 
+  // Medical
+  {
+    id: 'neet_mock_1',
+    categoryId: 'medical_neet_ug',
+    titleEn: "NEET UG Test Series Pack (25 Tests)",
+    titleHi: "नीट यूजी टेस्ट सीरीज़ पैक (25 टेस्ट)",
+    descriptionEn: "Comprehensive pack: 12 Unit Tests, 4 Part-Syllabus Tests, and 9 Full NEET Replica Mock Tests. All India Ranking.",
+    descriptionHi: "व्यापक पैक: 12 यूनिट टेस्ट, 4 भाग-सिलेबस टेस्ट, और 9 पूर्ण नीट प्रतिकृति मॉक टेस्ट। अखिल भारतीय रैंकिंग।",
     price: "₹199",
-    generationTitleEn: "NEET UG Full Syllabus Mock Test (Sample)", 
-    defaultNumQuestions: 200 
+    generationTitleEn: "NEET UG Full Syllabus Mock Test (Sample)",
+    defaultNumQuestions: 200
   },
-  { id: 'jee_main_prev_1', categoryId: 'engineering_jee_main', titleEn: "JEE Main Previous Year Paper (2023)", titleHi: "जेईई मुख्य पिछला वर्ष प्रश्नपत्र (2023)", descriptionEn: "Official paper with solutions.", descriptionHi: "समाधान के साथ आधिकारिक प्रश्नपत्र।", price: "Free", generationTitleEn: "JEE Main 2023 Paper", defaultNumQuestions: 90 },
-  { id: 'cat_verbal_1', categoryId: 'management_cat', titleEn: "CAT Verbal Ability Sectional Test", titleHi: "कैट मौखिक क्षमता अनुभागीय परीक्षण", descriptionEn: "40 questions, 60 minutes.", descriptionHi: "40 प्रश्न, 60 मिनट।", price: "₹99", generationTitleEn: "CAT Verbal Ability Sectional Test", defaultNumQuestions: 40 },
-  { id: 'class10_maths_ch1', categoryId: 'school_boards_class10', titleEn: "Class 10 Maths: Real Numbers Test", titleHi: "कक्षा 10 गणित: वास्तविक संख्याएं परीक्षण", descriptionEn: "Chapter-wise test for board prep.", descriptionHi: "बोर्ड तैयारी के लिए अध्याय-वार परीक्षण।", price: "Free", generationTitleEn: "Class 10 Maths Chapter 1 Test", defaultNumQuestions: 15 },
+  // Engineering
+  {
+    id: 'jee_main_pack_1',
+    categoryId: 'engineering_jee_main',
+    titleEn: "JEE Main Test Series Pack (20 Tests)",
+    titleHi: "जेईई मुख्य टेस्ट सीरीज़ पैक (20 टेस्ट)",
+    descriptionEn: "Boost your prep: 10 Topic Tests, 5 Part-Syllabus Tests, and 5 Full JEE Main Replica Mocks.",
+    descriptionHi: "अपनी तैयारी बढ़ाएँ: 10 टॉपिक टेस्ट, 5 भाग-सिलेबस टेस्ट, और 5 पूर्ण जेईई मुख्य प्रतिकृति मॉक।",
+    price: "₹179",
+    generationTitleEn: "JEE Main Full Mock (Sample)",
+    defaultNumQuestions: 90
+  },
+  {
+    id: 'jee_advanced_pack_1',
+    categoryId: 'engineering_jee_advanced',
+    titleEn: "JEE Advanced Test Series Pack (15 Tests)",
+    titleHi: "जेईई एडवांस्ड टेस्ट सीरीज़ पैक (15 टेस्ट)",
+    descriptionEn: "Ace IITs: 7 Challenging Topic Tests, 3 Part-Syllabus Tests, and 5 Full JEE Advanced Replica Mocks.",
+    descriptionHi: "आईआईटी में सफलता: 7 चुनौतीपूर्ण टॉपिक टेस्ट, 3 भाग-सिलेबस टेस्ट, और 5 पूर्ण जेईई एडवांस्ड प्रतिकृति मॉक।",
+    price: "₹249",
+    generationTitleEn: "JEE Advanced Full Mock (Sample)",
+    defaultNumQuestions: 54 // Example: 1 Paper (18P+18C+18M)
+  },
+  // Management
+  {
+    id: 'cat_pack_1',
+    categoryId: 'management_cat',
+    titleEn: "CAT Full Test Series Pack (10 Tests)",
+    titleHi: "कैट पूर्ण टेस्ट सीरीज़ पैक (10 टेस्ट)",
+    descriptionEn: "Conquer CAT: 4 Sectional Tests (VARC, DILR, QA) and 6 Full-Length CAT Replica Mocks.",
+    descriptionHi: "कैट पर विजय: 4 अनुभागीय टेस्ट (वीएआरसी, डीआईएलआर, क्यूए) और 6 पूर्ण-लंबाई कैट प्रतिकृति मॉक।",
+    price: "₹299",
+    generationTitleEn: "CAT Full Mock (Sample)",
+    defaultNumQuestions: 66 // (VARC 24, DILR 20, QA 22)
+  },
+  // Law
+  {
+    id: 'clat_pack_1',
+    categoryId: 'law_clat_ug_pg',
+    titleEn: "CLAT UG Test Series Pack (15 Tests)",
+    titleHi: "क्लैट यूजी टेस्ट सीरीज़ पैक (15 टेस्ट)",
+    descriptionEn: "Law School Ready: 5 Sectional Tests (English, Legal, Logical, GK, Quant) and 10 Full CLAT UG Mocks.",
+    descriptionHi: "लॉ स्कूल के लिए तैयार: 5 अनुभागीय टेस्ट (अंग्रेजी, कानूनी, तार्किक, जीके, मात्रात्मक) और 10 पूर्ण क्लैट यूजी मॉक।",
+    price: "₹199",
+    generationTitleEn: "CLAT UG Full Mock (Sample)",
+    defaultNumQuestions: 120 // New pattern
+  },
+  // Civil Services
+  {
+    id: 'upsc_prelims_pack_1',
+    categoryId: 'govt_upsc_cse',
+    titleEn: "UPSC CSE Prelims GS Pack (20 Tests)",
+    titleHi: "यूपीएससी सीएसई प्रीलिम्स जीएस पैक (20 टेस्ट)",
+    descriptionEn: "Crack Civils: 10 Subject-wise Tests, 5 Current Affairs Mocks, and 5 Full GS Paper 1 Replicas.",
+    descriptionHi: "सिविल सेवा में सफलता: 10 विषय-वार टेस्ट, 5 करंट अफेयर्स मॉक, और 5 पूर्ण जीएस पेपर 1 प्रतिकृति।",
+    price: "₹349",
+    generationTitleEn: "UPSC CSE Prelims GS Paper 1 Mock (Sample)",
+    defaultNumQuestions: 100
+  },
+   // Defence
+  {
+    id: 'nda_pack_1',
+    categoryId: 'defence_nda_na',
+    titleEn: "NDA & NA Test Series Pack (15 Tests)",
+    titleHi: "एनडीए और एनए टेस्ट सीरीज़ पैक (15 टेस्ट)",
+    descriptionEn: "Join the Forces: 5 Maths Tests, 5 GAT Tests, and 5 Full NDA Replica Mocks.",
+    descriptionHi: "सेना में शामिल हों: 5 गणित टेस्ट, 5 जीएटी टेस्ट, और 5 पूर्ण एनडीए प्रतिकृति मॉक।",
+    price: "₹229",
+    generationTitleEn: "NDA GAT Mock (Sample)", 
+    defaultNumQuestions: 150 
+  },
+  // University Entrance
+  {
+    id: 'cuet_ug_pack_1',
+    categoryId: 'uni_cuet_ug',
+    titleEn: "CUET UG Comprehensive Pack (Humanities)",
+    titleHi: "सीयूईटी यूजी व्यापक पैक (मानविकी)",
+    descriptionEn: "College Ready: Tests for English, General Test, and 3 Domain Subjects (e.g., History, Pol Sci, Eco).",
+    descriptionHi: "कॉलेज के लिए तैयार: अंग्रेजी, सामान्य परीक्षा, और 3 डोमेन विषयों (जैसे, इतिहास, राजनीति विज्ञान, अर्थशास्त्र) के लिए टेस्ट।",
+    price: "₹279",
+    generationTitleEn: "CUET UG General Test (Sample)", 
+    defaultNumQuestions: 60 
+  },
+  // School Boards
+  {
+    id: 'class10_board_pack_1',
+    categoryId: 'school_boards_class10',
+    titleEn: "Class 10 Board Exam Prep Pack (Science)",
+    titleHi: "कक्षा 10 बोर्ड परीक्षा तैयारी पैक (विज्ञान)",
+    descriptionEn: "Excel in Boards: Chapter-wise tests for Science, 3 Pre-Board Science Mocks, and sample papers.",
+    descriptionHi: "बोर्ड में उत्कृष्टता: विज्ञान के लिए अध्याय-वार टेस्ट, 3 प्री-बोर्ड विज्ञान मॉक, और नमूना पत्र।",
+    price: "₹149",
+    generationTitleEn: "Class 10 Science Board Mock (Sample)",
+    defaultNumQuestions: 38 
+  },
+  {
+    id: 'class12_board_pack_1',
+    categoryId: 'school_boards_class12',
+    titleEn: "Class 12 Board Exam Prep Pack (Commerce)",
+    titleHi: "कक्षा 12 बोर्ड परीक्षा तैयारी पैक (वाणिज्य)",
+    descriptionEn: "Score High: Chapter tests for Accountancy, Business Studies, Economics, 3 Full Pre-Board Mocks.",
+    descriptionHi: "उच्च अंक प्राप्त करें: अकाउंटेंसी, बिजनेस स्टडीज, इकोनॉमिक्स के लिए अध्याय टेस्ट, 3 पूर्ण प्री-बोर्ड मॉक।",
+    price: "₹229",
+    generationTitleEn: "Class 12 Accountancy Board Mock (Sample)", 
+    defaultNumQuestions: 34 
+  }
 ];
 
 
@@ -439,10 +543,10 @@ export default function TestSeriesPage() {
               </CardContent>
               <CardFooter>
                 <Button asChild size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground">
-                  <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.generationTitleEn || test.titleEn)}${test.defaultNumQuestions ? `&numQuestions=${test.defaultNumQuestions}` : ''}`}>
+                  <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.generationTitleEn || test.titleEn)}${test.defaultNumQuestions ? `&numQuestions=${test.defaultNumQuestions}` : ''}&examType=${encodeURIComponent(testCategories.find(tc => tc.id === test.categoryId)?.nameEn || test.generationTitleEn || test.titleEn)}`}>
                      <BilingualText 
-                        en={test.id === 'neet_mock_1' ? "Attempt Sample Full Test" : "Take Test"} 
-                        hi={test.id === 'neet_mock_1' ? "सैंपल पूर्ण टेस्ट दें" : "टेस्ट दें"} 
+                        en="Attempt Sample Full Test"
+                        hi="सैंपल पूर्ण टेस्ट दें" 
                     />
                   </Link>
                 </Button>
@@ -522,3 +626,4 @@ declare module "@radix-ui/react-select" {
   }
 }
 
+    
