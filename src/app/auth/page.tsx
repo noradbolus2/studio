@@ -17,6 +17,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const DEFAULT_SCHOOL_ID = "defaultSchool"; // For prototype simplicity
 
+// Simplified interface for staff member data stored/retrieved for login
+interface LoggedInStaff {
+  email: string;
+  password?: string; // Password check is direct within handleSubmit
+  name: string;
+  role: string; // This 'role' is the designation from schoolStaff list
+  schoolId: string;
+}
+
+
 export default function AuthPage() {
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
@@ -48,74 +58,82 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    let redirectPath = '/';
-    let queryParams = new URLSearchParams();
-    queryParams.set('email', email);
+    const queryParams = new URLSearchParams();
     if (selectedRole) queryParams.set('role', selectedRole);
+    queryParams.set('email', email); // Pass email for profile page context
 
     if (mode === 'signUp') {
+      // --- Sign Up Validations ---
       if (!name.trim() || !email.trim() || !password.trim()) {
         toast({ title: "Error", description: "All fields are required for sign up.", variant: "destructive" });
-        setIsLoading(false);
-        return;
+        setIsLoading(false); return;
       }
       if (password !== confirmPassword) {
         toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" });
-        setIsLoading(false);
-        return;
+        setIsLoading(false); return;
       }
 
       if (selectedRole === 'school') {
         if (!schoolDesignation) {
           toast({ title: "Error", description: "Please select your designation for school registration.", variant: "destructive" });
-          setIsLoading(false);
-          return;
+          setIsLoading(false); return;
         }
-        // This is the initial school admin registration
+        // --- School Admin Sign Up Logic ---
         localStorage.setItem('tempInitialAdminCredentials', JSON.stringify({ email, password, fullName: name, designation: schoolDesignation }));
-        queryParams.set('isSchoolSetup', 'true'); // Mark for initial school profile creation
-        queryParams.set('name', name); // Pass admin's name
-        queryParams.set('designation', schoolDesignation); // Pass admin's designation
-        redirectPath = `/edit-profile?${queryParams.toString()}`;
+        
+        queryParams.set('isSchoolSetup', 'true'); 
+        queryParams.set('name', name); 
+        queryParams.set('designation', schoolDesignation); 
+        const schoolSignupRedirectPath = `/edit-profile?${queryParams.toString()}`;
+        
         toast({ title: "Admin Registration Initiated", description: "Please complete school profile setup." });
+        router.push(schoolSignupRedirectPath);
+        setIsLoading(false); 
+        return; 
       } else {
-        // Regular user signup (student, parent, vendor, creator)
+        // --- Other Roles Sign Up Logic ---
         localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student' }));
         localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student' }));
         queryParams.set('isNewUser', 'true');
         queryParams.set('name', name);
-        redirectPath = `/edit-profile?${queryParams.toString()}`;
+        const otherSignupRedirectPath = `/edit-profile?${queryParams.toString()}`;
+
         toast({ title: "Sign Up Successful", description: "Please complete your profile." });
+        router.push(otherSignupRedirectPath);
+        setIsLoading(false);
+        return; 
       }
     } else { // Sign In
+      // --- Sign In Validations ---
       if (!email.trim() || !password.trim()) {
         toast({ title: "Error", description: "Email and password are required.", variant: "destructive" });
-        setIsLoading(false);
-        return;
+        setIsLoading(false); return;
       }
 
+      let signinRedirectPath = '/'; 
+
       if (selectedRole === 'school') {
-        const schoolStaffString = localStorage.getItem(`schoolStaff_${DEFAULT_SCHOOL_ID}`);
-        const schoolStaff = schoolStaffString ? JSON.parse(schoolStaffString) : [];
-        const staffMember = schoolStaff.find((staff: any) => staff.email === email && staff.password === password);
+        // --- School Staff Sign In Logic ---
+        const schoolId = DEFAULT_SCHOOL_ID; 
+        const schoolStaffString = localStorage.getItem(`schoolStaff_${schoolId}`);
+        const schoolStaffList: LoggedInStaff[] = schoolStaffString ? JSON.parse(schoolStaffString) : [];
+        const staffMember = schoolStaffList.find(staff => staff.email === email && staff.password === password);
 
         if (staffMember) {
           localStorage.setItem('loggedInUser', JSON.stringify({
             email: staffMember.email,
             fullName: staffMember.name,
-            role: 'school',
-            designation: staffMember.designation,
-            schoolId: DEFAULT_SCHOOL_ID // Add schoolId context
+            role: 'school', 
+            designation: staffMember.role, 
+            schoolId: staffMember.schoolId 
           }));
           toast({ title: "Sign In Successful", description: `Welcome back, ${staffMember.name}!` });
-          redirectPath = '/school-dashboard';
+          signinRedirectPath = '/school-dashboard';
         } else {
           toast({ title: "Sign In Failed", description: "Invalid staff credentials or staff account not found.", variant: "destructive" });
-          setIsLoading(false);
-          return;
+          setIsLoading(false); return;
         }
-      } else {
-        // Sign in for other roles
+      } else { // Other roles sign in
         const storedCredentialsString = localStorage.getItem(`userCredentials_${email}`);
         if (storedCredentialsString) {
           const storedCredentials = JSON.parse(storedCredentialsString);
@@ -124,26 +142,28 @@ export default function AuthPage() {
             localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole }));
             toast({ title: "Sign In Successful", description: "Welcome back!" });
             switch (userRole) {
-              case 'parent': redirectPath = '/parent-mode'; break;
-              case 'vendor': redirectPath = '/vendor-dashboard'; break;
-              case 'creator': redirectPath = '/creator-dashboard'; break;
-              case 'student':
-              default: redirectPath = '/'; break;
+              case 'parent': signinRedirectPath = '/parent-mode'; break;
+              case 'vendor': signinRedirectPath = '/vendor-dashboard'; break;
+              case 'creator': signinRedirectPath = '/creator-dashboard'; break;
+              case 'student': default: signinRedirectPath = '/'; break;
             }
           } else {
             toast({ title: "Sign In Failed", description: "Invalid credentials.", variant: "destructive" });
-            setIsLoading(false);
-            return;
+            setIsLoading(false); return;
           }
         } else {
           toast({ title: "Sign In Failed", description: "User not found. Please sign up.", variant: "destructive" });
-          setIsLoading(false);
-          return;
+          setIsLoading(false); return;
         }
       }
+      router.push(signinRedirectPath);
+      setIsLoading(false);
+      return; 
     }
-    router.push(redirectPath);
+    // Fallback if no explicit return was hit, though all paths should be covered.
+    setIsLoading(false);
   };
+
 
   const getFullNameLabel = () => {
     if (selectedRole === 'school' && mode === 'signUp') {
