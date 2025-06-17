@@ -42,20 +42,25 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert AI Test Generator for Indian students, creating exam-style mock tests.
 Your task is to create a test based on the provided exam name/type, subject (if any), and number of questions.
 The questions should be closely based on the typical syllabus, question types, and difficulty pattern of the specified exam, reflecting the latest patterns where possible.
+Model questions closely on the style, difficulty, and topics covered in Previous Year Questions (PYQs) for the specified exam. Include variations of PYQ-style questions where data/values are changed, and some questions that are very similar in structure and concept to those found in PYQs.
 Ensure each question has exactly four multiple-choice options.
 Indicate the correct answer index (0-3).
 Provide a brief explanation for the correct answer.
 
 IMPORTANT EXAM PATTERNS:
-- If 'examNameOrType' is a major standardized exam (e.g., "NEET UG", "JEE Main", "UPSC CSE Prelims GS Paper 1", "CAT VARC Section"), you MUST generate the standard number of questions for a full test of that exam/section (e.g., NEET UG: 200 questions total - Physics: 50, Chemistry: 50, Botany: 50, Zoology: 50; JEE Main: 90 questions total - Physics: 30, Chemistry: 30, Maths: 30; UPSC Prelims GS1: 100 questions).
-- In such cases, the 'numQuestions' input parameter should be considered a suggestion if it's lower than the standard exam count, but the official pattern for question count and subject distribution takes precedence. If 'numQuestions' is provided and is *higher* than the standard for a specific part of an exam (e.g. asking for 60 physics questions for NEET UG), you can generate up to the requested 'numQuestions' for that specific subject if it makes sense for a practice test.
+- If 'examNameOrType' is a major standardized exam (e.g., "NEET UG", "JEE Main", "UPSC CSE Prelims GS Paper 1", "CAT VARC Section"), you MUST generate the standard number of questions for a full test of that exam/section. The 'numQuestions' input parameter should be IGNORED for these cases if it suggests a lower number than the standard. For example:
+    - "NEET UG": 200 questions total (Physics: 50, Chemistry: 50, Botany: 50, Zoology: 50). If the 'subject' input is specified (e.g., "NEET UG Physics"), generate 50 questions for that subject.
+    - "JEE Main": 90 questions total (Physics: 30, Chemistry: 30, Maths: 30). If the 'subject' input is specified (e.g., "JEE Main Chemistry"), generate 30 questions for that subject.
+    - "UPSC CSE Prelims GS Paper 1": 100 questions.
+    - "CAT VARC Section": 24 questions. "CAT DILR Section": 20 questions. "CAT QA Section": 22 questions.
+- If 'numQuestions' is provided for these major exams and is *higher* than the standard for a specific part (e.g., requesting 60 physics questions for NEET UG), you can generate up to the requested 'numQuestions' if it makes sense for a practice test.
 - For general requests (e.g., "Class 10 Science Prelim", "Physics Practice Test") or if a specific number is requested via 'numQuestions' for a non-standardized test, adhere to 'numQuestions' (up to a maximum of 200 questions).
 
 CONTENT FORMATTING:
 - For any chemical formulas, reactions, or logical symbols (like ->, <->, AND, OR, NOT, ~), use only plain text characters. For example, represent 'CH3CH2OH' as is, use '->' for reaction arrows, and 'p AND q' for logical 'p and q'.
 - DO NOT use LaTeX, MathML, or any special math/chemical formatting (e.g., avoid '$...$', '\\xrightarrow', '\\frac', superscripts/subscripts that are not standard characters like ² or ₃ if possible. Prefer linear formulas like H2O, CO2).
 - All question text and options must be plain text strings suitable for direct display in HTML.
-- Each answer option in the 'options' array MUST be a distinct, separate string. Ensure there are exactly four options.
+- Each answer option in the 'options' array MUST be a distinct, separate string. Ensure there are exactly four options. For example, if options for a logic question are 'p -> q', 'p <-> q', '~p -> q', 'q -> p', each must be a separate string in the array.
 
 REQUEST DETAILS:
 Exam Name/Type: {{{examNameOrType}}}
@@ -101,16 +106,12 @@ const generateExamTestFlow = ai.defineFlow(
     if (!output) {
         throw new Error("AI failed to generate the test. Output was null.");
     }
-    // Basic validation: Ensure questions array is present.
-    // The AI is now primarily responsible for the number of questions based on exam type.
-    // Client can still request specific number for custom tests.
-    if (!Array.isArray(output.questions)) {
-        throw new Error("AI response did not contain a valid questions array.");
+    // Basic validation: Ensure questions array is present and testTitle is present.
+    if (!output.testTitle || !Array.isArray(output.questions)) {
+        console.error("AI response missing testTitle or questions array. Output:", JSON.stringify(output));
+        throw new Error("AI response did not contain a valid test title or questions array.");
     }
     console.log(`Test Generation: Requested approx ${input.numQuestions} for ${input.examNameOrType}. AI generated ${output.questions.length} questions titled "${output.testTitle}".`);
     return output;
   }
 );
-
-    
-
