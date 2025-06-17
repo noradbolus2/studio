@@ -23,7 +23,7 @@ import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Us
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const vendorCategories = ["Stationery", "Books", "Uniforms", "Electronics", "Snacks", "Project Kits", "Other"];
 const creatorExpertiseAreas = ["Science Projects", "Art & Craft", "Coding & AI", "Robotics", "Essay Writing", "Video Content", "Tutoring", "Other"];
-const DEFAULT_SCHOOL_ID = "defaultSchool"; // For prototype simplicity
+const DEFAULT_SCHOOL_ID = "defaultSchool"; 
 
 const profileSchema = z.object({
   role: z.string().optional(),
@@ -105,6 +105,7 @@ export default function EditProfilePage() {
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
   const [isInitialSchoolSetup, setIsInitialSchoolSetup] = useState(false);
+  const [schoolProfile, setSchoolProfile] = useState<ProfileFormData | null>(null); // To hold existing school profile if staff editing
 
   const { control, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting: isRhfSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -146,20 +147,39 @@ export default function EditProfilePage() {
         }
 
         const profileKey = `${roleFromParams}ProfileData`;
-        // For initial school setup, don't load existing profile data.
-        const storedProfileString = !isSchoolSetupParam ? (localStorage.getItem(profileKey) || localStorage.getItem('userProfileData')) : null;
+        const genericProfileKey = 'userProfileData';
         
-        if (storedProfileString) {
-            try {
-                const storedProfile = JSON.parse(storedProfileString) as ProfileFormData;
-                if (storedProfile.email === emailFromParam || !emailFromParam) {
-                    initialProfileData = { ...storedProfile, ...initialProfileData, role: roleFromParams }; 
-                }
-            } catch (e) { console.error("Failed to parse stored profile", e); }
+        let storedProfile: ProfileFormData | null = null;
+
+        if (!isSchoolSetupParam) { // Only load existing if not initial school setup
+            const specificProfileString = localStorage.getItem(profileKey);
+            const genericProfileString = localStorage.getItem(genericProfileKey);
+
+            if (specificProfileString) {
+                try { storedProfile = JSON.parse(specificProfileString); } 
+                catch (e) { console.error(`Failed to parse ${profileKey}`, e); }
+            }
+            if (!storedProfile && genericProfileString) {
+                 try { 
+                    const parsedGeneric = JSON.parse(genericProfileString);
+                    // Ensure generic profile matches current user if email is available
+                    if (parsedGeneric.role === roleFromParams && (!emailFromParam || parsedGeneric.email === emailFromParam)) {
+                        storedProfile = parsedGeneric;
+                    }
+                } 
+                catch (e) { console.error(`Failed to parse ${genericProfileKey}`, e); }
+            }
+        }
+        
+        if (storedProfile) {
+            initialProfileData = { ...storedProfile, ...initialProfileData, role: roleFromParams };
+             if (roleFromParams === 'school') {
+                setSchoolProfile(storedProfile); // Store loaded school profile for reference
+            }
         }
         
         if (isSchoolSetupParam && roleFromParams === 'school' && nameFromParam) {
-            initialProfileData.principalName = nameFromParam;
+            initialProfileData.principalName = nameFromParam; // Sets Principal's name from query param for new school
         }
     }
     reset(initialProfileData);
@@ -208,10 +228,10 @@ export default function EditProfilePage() {
     </AvatarFallback>
   );
 
-
   const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
     setIsSubmittingProfile(true);
     let schoolApiIdFromResponse: string | null = null;
+    let finalSchoolIdForStorage: string = data.schoolId || DEFAULT_SCHOOL_ID;
 
     if (currentRole === 'school') {
         const schoolApiData = {
@@ -220,124 +240,135 @@ export default function EditProfilePage() {
             contactNumber: data.schoolContact,
             principalName: data.principalName,
             affiliationNumber: data.affiliationNumber,
-            email: data.email, 
+            email: data.email, // The admin's email is the school's primary contact email
             contactPersonName: data.contactPersonName || data.fullName,
             contactPersonEmail: data.contactPersonEmail || data.email,
             contactPersonPhone: data.contactPersonPhone,
             designation: data.schoolDesignation,
         };
 
-        try {
-            console.log("Attempting to POST to school API:", JSON.stringify(schoolApiData));
-            const response = await fetch('https://us-central1-oso-app-425800.cloudfunctions.net/schoolProfile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(schoolApiData),
-            });
-
-            const responseData = await response.json();
-            console.log("API Response Status:", response.status);
-            console.log("API Response Data:", responseData);
-
-            if (response.ok && responseData.id) {
-                schoolApiIdFromResponse = responseData.id;
-                setValue('apiSchoolId', schoolApiIdFromResponse); 
-                toast({
-                    title: "School Profile Registered with API",
-                    description: `School "${data.schoolName}" registered. ID: ${schoolApiIdFromResponse}`,
+        if (isInitialSchoolSetup) { // API call only for initial setup
+            try {
+                console.log("Attempting to POST to school API:", JSON.stringify(schoolApiData));
+                const response = await fetch('https://us-central1-oso-app-425800.cloudfunctions.net/schoolProfile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(schoolApiData),
                 });
-            } else {
-                 const errorMessage = responseData.error || responseData.message || `Failed to register school with API. Status: ${response.status}`;
-                toast({
-                    title: "School API Error",
-                    description: errorMessage,
-                    variant: "destructive",
-                });
-                 console.error("School API Error:", errorMessage, "Response Body:", responseData);
-                 // Don't proceed with local save if API call fails critically during initial setup
-                 if (isInitialSchoolSetup) {
+                const responseData = await response.json();
+                if (response.ok && responseData.id) {
+                    schoolApiIdFromResponse = responseData.id;
+                    finalSchoolIdForStorage = schoolApiIdFromResponse; // Use API ID if available
+                    toast({ title: "School Profile Registered with API", description: `School "${data.schoolName}" registered. ID: ${schoolApiIdFromResponse}` });
+                } else {
+                    const errorMessage = responseData.error || responseData.message || `Failed to register school with API. Status: ${response.status}`;
+                    toast({ title: "School API Error", description: errorMessage, variant: "destructive" });
+                    console.error("School API Error:", errorMessage, "Response Body:", responseData);
                     setIsSubmittingProfile(false);
-                    return;
-                 }
+                    return; // Critical failure for initial setup
+                }
+            } catch (apiError: any) {
+                toast({ title: "School API Connection Error", description: `Could not connect to school registration service: ${apiError.message}`, variant: "destructive" });
+                console.error("School API Connection Error:", apiError);
+                setIsSubmittingProfile(false);
+                return; // Critical failure for initial setup
             }
-        } catch (apiError: any) {
-            toast({
-                title: "School API Connection Error",
-                description: `Could not connect to school registration service: ${apiError.message}`,
-                variant: "destructive",
-            });
-            console.error("School API Connection Error:", apiError);
-            if (isInitialSchoolSetup) {
+        } else if (schoolProfile?.apiSchoolId) { // For existing schools, use their stored API ID
+            schoolApiIdFromResponse = schoolProfile.apiSchoolId;
+            finalSchoolIdForStorage = schoolProfile.apiSchoolId;
+        } else if (schoolProfile?.schoolId && schoolProfile.schoolId !== DEFAULT_SCHOOL_ID) {
+             finalSchoolIdForStorage = schoolProfile.schoolId; // Use manually set school ID if API one not there
+        }
+
+
+        // Save school's main profile data
+        const schoolProfileToSave: ProfileFormData = {
+            ...data,
+            schoolId: finalSchoolIdForStorage,
+            apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId, // Persist API ID if obtained
+            role: 'school',
+        };
+        localStorage.setItem(`schoolProfileData_${finalSchoolIdForStorage}`, JSON.stringify(schoolProfileToSave));
+
+        if (isInitialSchoolSetup) {
+            const tempAdminCredsString = localStorage.getItem('tempInitialAdminCredentials');
+            if (!tempAdminCredsString) {
+                toast({ title: "Critical Setup Error", description: "Temporary admin credentials not found. Please try signing up again.", variant: "destructive" });
                 setIsSubmittingProfile(false);
                 return;
             }
-        }
-    }
-    
-    try {
-        const profileKey = `${currentRole}ProfileData`;
-        const dataToSave: ProfileFormData = { 
-            ...data, 
-            apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId 
-        };
-
-        localStorage.setItem(profileKey, JSON.stringify(dataToSave));
-        localStorage.setItem('userProfileData', JSON.stringify(dataToSave)); // Also update generic one
-
-        // If it's the initial school setup, create the first staff member (the admin)
-        if (isInitialSchoolSetup && currentRole === 'school') {
-            const tempAdminCredsString = localStorage.getItem('tempInitialAdminCredentials');
-            if (tempAdminCredsString) {
-                const tempAdminCreds = JSON.parse(tempAdminCredsString);
-                const adminStaffEntry = {
-                    id: `staff_${Date.now()}`, // Generate a unique ID
-                    name: tempAdminCreds.fullName,
-                    email: tempAdminCreds.email,
-                    password: tempAdminCreds.password, // Storing plaintext for prototype
-                    designation: tempAdminCreds.designation,
-                    schoolId: schoolApiIdFromResponse || DEFAULT_SCHOOL_ID, // Use API ID or default
-                    status: "Active"
-                };
-                const staffListKey = `schoolStaff_${schoolApiIdFromResponse || DEFAULT_SCHOOL_ID}`;
-                localStorage.setItem(staffListKey, JSON.stringify([adminStaffEntry]));
-                localStorage.removeItem('tempInitialAdminCredentials'); // Clean up
-
-                // Also set loggedInUser for this admin
-                 localStorage.setItem('loggedInUser', JSON.stringify({
-                    email: adminStaffEntry.email,
-                    fullName: adminStaffEntry.name,
-                    role: 'school',
-                    designation: adminStaffEntry.designation,
-                    schoolId: adminStaffEntry.schoolId
-                }));
-            } else {
-                console.warn("Temporary admin credentials not found for initial school setup staff creation.");
+            let tempAdminCreds;
+            try {
+                tempAdminCreds = JSON.parse(tempAdminCredsString);
+            } catch (parseError) {
+                console.error("Error parsing tempAdminCredsString:", parseError);
+                toast({ title: "Critical Setup Error", description: "Could not parse temporary admin credentials. Please try signing up again.", variant: "destructive"});
+                setIsSubmittingProfile(false);
+                return;
             }
+
+            const adminStaffEntry = {
+                id: `staff_${Date.now()}`,
+                name: tempAdminCreds.fullName,
+                email: tempAdminCreds.email,
+                password: tempAdminCreds.password,
+                designation: tempAdminCreds.designation,
+                schoolId: finalSchoolIdForStorage,
+                status: "Active"
+            };
+            localStorage.setItem(`schoolStaff_${finalSchoolIdForStorage}`, JSON.stringify([adminStaffEntry]));
+            localStorage.removeItem('tempInitialAdminCredentials');
+            
+            localStorage.setItem('loggedInUser', JSON.stringify({
+                email: adminStaffEntry.email,
+                fullName: adminStaffEntry.name,
+                role: 'school',
+                designation: adminStaffEntry.designation,
+                schoolId: adminStaffEntry.schoolId
+            }));
+
+            // Save the admin's own user profile separately
+            const adminUserProfileData: ProfileFormData = {
+                fullName: tempAdminCreds.fullName,
+                email: tempAdminCreds.email,
+                role: 'school',
+                schoolDesignation: tempAdminCreds.designation,
+                schoolId: finalSchoolIdForStorage,
+                apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId,
+                avatarUrl: data.avatarUrl, 
+                dataAiHint: data.dataAiHint,
+            };
+            localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); // This is the admin's individual profile
+            
+            toast({ title: "School & Admin Profile Saved!", description: `School "${data.schoolName}" and your admin profile have been set up.` });
+            router.push('/school-dashboard');
+        } else { // Existing school staff editing their profile
+            const staffUserProfileData: ProfileFormData = {
+                ...data,
+                role: 'school',
+                schoolId: finalSchoolIdForStorage, 
+                apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId,
+            };
+            localStorage.setItem('userProfileData', JSON.stringify(staffUserProfileData)); // Update current staff's profile
+            toast({ title: "Profile Updated!", description: "Your school staff profile has been updated." });
+            router.push('/school-dashboard');
         }
 
-
-        toast({
-            title: "Profile Saved!",
-            description: "Your profile information has been updated locally.",
-        });
-
+    } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student') {
+        const profileKey = `${currentRole}ProfileData`;
+        localStorage.setItem(profileKey, JSON.stringify(data));
+        localStorage.setItem('userProfileData', JSON.stringify(data)); // Generic user profile update
+        
+        toast({ title: "Profile Saved!", description: "Your profile information has been updated." });
+        
         let redirectPath = '/';
-        if (currentRole === 'school') redirectPath = '/school-dashboard';
-        else if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
+        if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
         else if (currentRole === 'parent') redirectPath = '/parent-mode';
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
         router.push(redirectPath);
-
-    } catch (error) {
-        console.error("Error saving profile to localStorage:", error);
-        toast({
-            title: "Error Saving Profile Locally",
-            description: "Could not save your profile to local storage.",
-            variant: "destructive",
-        });
-    } finally {
-        setIsSubmittingProfile(false);
     }
+    
+    setIsSubmittingProfile(false);
   };
 
   if (initialDataLoading) {
@@ -405,7 +436,7 @@ export default function EditProfilePage() {
                     hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "संपर्क ईमेल" : "ईमेल"} 
                   />*
                 </Label>
-                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder="you@example.com" readOnly={!isInitialSchoolSetup} />} />
+                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder="you@example.com" readOnly={!isInitialSchoolSetup && currentRole === 'school'} />} />
                 {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
               </div>
             </div>
@@ -449,9 +480,13 @@ export default function EditProfilePage() {
                 
                 <Card className="bg-muted/50 p-4">
                     <p className="text-sm font-medium mb-2">OSO Account Contact Person</p>
-                    <div><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Person Phone" hi="संपर्क व्यक्ति फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} />} /></div>
+                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} />} /></div>
+                    </div>
+                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Person Phone" hi="संपर्क व्यक्ति फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
                     <div>
-                        <Label htmlFor="schoolDesignation" className="mt-2 block"><BilingualText en="Your Designation" hi="आपकी पदवी" />*</Label>
+                        <Label htmlFor="schoolDesignation" className="mt-4 block"><BilingualText en="Your Designation" hi="आपकी पदवी" />*</Label>
                         <Controller name="schoolDesignation" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value} required><SelectTrigger><SelectValue placeholder="Select your designation" /></SelectTrigger><SelectContent>{schoolDesignations.map(desig => (<SelectItem key={desig} value={desig}>{desig}</SelectItem>))}</SelectContent></Select>)} />
                         {errors.schoolDesignation && <p className="text-xs text-destructive mt-1">{errors.schoolDesignation.message}</p>}
                     </div>
@@ -466,7 +501,11 @@ export default function EditProfilePage() {
                 <div><Label htmlFor="businessAddress"><BilingualText en="Business Address" hi="व्यावसायिक पता" /></Label><Controller name="businessAddress" control={control} render={({ field }) => <Textarea id="businessAddress" {...field} />} /></div>
                 <Card className="bg-muted/50 p-4">
                     <p className="text-sm font-medium mb-2">Contact Person (for OSO)</p>
-                    <div><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} />} /></div>
+                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} />} /></div>
+                    </div>
+                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
                 </Card>
               </>
             )}
@@ -477,7 +516,11 @@ export default function EditProfilePage() {
                 <div><Label htmlFor="portfolioUrl"><BilingualText en="Portfolio URL (Optional)" hi="पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} placeholder="https://example.com/my-work" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
                 <Card className="bg-muted/50 p-4">
                      <p className="text-sm font-medium mb-2">Contact Details (Private, for OSO)</p>
-                    <div><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} />} /></div>
+                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} />} /></div>
+                    </div>
+                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
                 </Card>
               </>
             )}
