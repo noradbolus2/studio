@@ -18,12 +18,47 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck } from "lucide-react";
+import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target } from "lucide-react";
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const vendorCategories = ["Stationery", "Books", "Uniforms", "Electronics", "Snacks", "Project Kits", "Other"];
 const creatorExpertiseAreas = ["Science Projects", "Art & Craft", "Coding & AI", "Robotics", "Essay Writing", "Video Content", "Tutoring", "Other"];
 const DEFAULT_SCHOOL_ID = "defaultSchool"; 
+
+const competitiveExamsIndia = [
+  // Engineering
+  "JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "SRMJEEE", "MET (Manipal)", "COMEDK UGET", "KIITEE", "WBJEE", "MHT CET (Engineering)", "GUJCET", "AP EAMCET (Engineering)", "TS EAMCET (Engineering)", "KCET (Engineering)", "GATE (for PG/PSU)",
+  // Medical
+  "NEET UG (MBBS, BDS, AYUSH, B.V.Sc)", "NEET PG (MD, MS, PG Diploma)", "INI CET (AIIMS, JIPMER, PGIMER, NIMHANS)", "NEET SS (DM, MCh)", "FMGE", "AIIMS Nursing", "Indian Army B.Sc Nursing / MNS", "AIAPGET (PG AYUSH)",
+  // Management
+  "CAT", "XAT", "CMAT", "SNAP", "NMAT by GMAC", "MAT", "ATMA", "IIFT", "TISSNET", "IBSAT", "MICAT", "GMAT (for Indian B-schools)",
+  // Law
+  "CLAT (UG & PG)", "AILET (UG & PG)", "LSAT India", "SLAT", "MH CET Law", "AP LAWCET", "TS LAWCET", "Kerala KLEE", "State Judicial Services Examination (PCS-J)",
+  // Civil Services & Government Jobs
+  "UPSC CSE (IAS, IPS, IFS, IRS etc.)", "UPSC IFoS", "UPSC ESE/IES", "UPSC Combined Geo-Scientist", "UPSC CMS", "UPSC CAPF", "SSC CGL", "SSC CHSL", "SSC JE", "SSC Stenographer", "SSC MTS", "SSC GD Constable", "SSC CPO", "IBPS PO", "IBPS Clerk", "IBPS SO", "IBPS RRB", "SBI PO", "SBI Clerk", "SBI SO", "RBI Grade B", "RBI Assistant", "NABARD Grade A & B", "LIC AAO", "LIC ADO", "UIIC/NIACL Exams", "ESIC", "FCI", "RRB NTPC", "RRB JE", "RRB ALP", "RRB Group D", "State PSCs (General)", "State Level Police Recruitment", "High Court Exams",
+  // Defence
+  "NDA & NA", "CDS", "AFCAT", "INET", "Indian Army TES", "Indian Navy Sailors (SSR, AA, MR)", "Indian Air Force Airmen (Group X & Y)", "Indian Coast Guard (Navik, Yantrik)", "Territorial Army",
+  // General University Entrance
+  "CUET UG", "CUET PG", "JMI Entrance", "AMU Entrance",
+  // Design & Architecture
+  "NID DAT", "UCEED", "CEED", "NIFT Entrance", "NATA", "JEE Main Paper 2 (B.Arch/B.Plan)", "AIEED",
+  // Hotel Management
+  "NCHM JEE", "State IHM Entrances",
+  // Agriculture & Veterinary Science
+  "ICAR AIEEA (UG, PG, PhD)", "State Agriculture University Entrances",
+  // Teaching
+  "CTET", "State TETs", "UGC NET", "CSIR UGC NET", "SET/SLET", "KVS Recruitment", "NVS Recruitment", "DSSSB", "B.Ed. Entrances",
+  // Pharmacy
+  "GPAT", "State CETs for B.Pharm", "NIPER JEE",
+  // Research Fellowships & PhD Entrance
+  "UGC NET JRF", "CSIR NET JRF", "ICMR JRF", "DBT JRF", "University/Institute PhD Entrances",
+  // Commerce & Finance Professional Courses
+  "CA (Foundation, Intermediate, Final)", "CS (CSEET, Executive, Professional)", "CMA (Foundation, Intermediate, Final)",
+  // School Level Olympiads & Talent Search
+  "NTSE", "KVPY (Status to be checked by student)", "SOF Olympiads (NSO, IMO, IEO, etc.)", "Homi Bhabha Balvaidnyanik Spardha",
+  "Other (Not Listed)"
+];
+
 
 const profileSchema = z.object({
   role: z.string().optional(),
@@ -105,7 +140,7 @@ export default function EditProfilePage() {
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
   const [isInitialSchoolSetup, setIsInitialSchoolSetup] = useState(false);
-  const [schoolProfile, setSchoolProfile] = useState<ProfileFormData | null>(null); // To hold existing school profile if staff editing
+  const [schoolProfile, setSchoolProfile] = useState<ProfileFormData | null>(null); 
 
   const { control, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting: isRhfSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -151,7 +186,7 @@ export default function EditProfilePage() {
         
         let storedProfile: ProfileFormData | null = null;
 
-        if (!isSchoolSetupParam) { // Only load existing if not initial school setup
+        if (!isSchoolSetupParam) { 
             const specificProfileString = localStorage.getItem(profileKey);
             const genericProfileString = localStorage.getItem(genericProfileKey);
 
@@ -162,7 +197,6 @@ export default function EditProfilePage() {
             if (!storedProfile && genericProfileString) {
                  try { 
                     const parsedGeneric = JSON.parse(genericProfileString);
-                    // Ensure generic profile matches current user if email is available
                     if (parsedGeneric.role === roleFromParams && (!emailFromParam || parsedGeneric.email === emailFromParam)) {
                         storedProfile = parsedGeneric;
                     }
@@ -174,12 +208,12 @@ export default function EditProfilePage() {
         if (storedProfile) {
             initialProfileData = { ...storedProfile, ...initialProfileData, role: roleFromParams };
              if (roleFromParams === 'school') {
-                setSchoolProfile(storedProfile); // Store loaded school profile for reference
+                setSchoolProfile(storedProfile); 
             }
         }
         
         if (isSchoolSetupParam && roleFromParams === 'school' && nameFromParam) {
-            initialProfileData.principalName = nameFromParam; // Sets Principal's name from query param for new school
+            initialProfileData.principalName = nameFromParam; 
         }
     }
     reset(initialProfileData);
@@ -240,16 +274,15 @@ export default function EditProfilePage() {
             contactNumber: data.schoolContact,
             principalName: data.principalName,
             affiliationNumber: data.affiliationNumber,
-            email: data.email, // The admin's email is the school's primary contact email
+            email: data.email,
             contactPersonName: data.contactPersonName || data.fullName,
             contactPersonEmail: data.contactPersonEmail || data.email,
             contactPersonPhone: data.contactPersonPhone,
             designation: data.schoolDesignation,
         };
 
-        if (isInitialSchoolSetup) { // API call only for initial setup
+        if (isInitialSchoolSetup) {
             try {
-                console.log("Attempting to POST to school API:", JSON.stringify(schoolApiData));
                 const response = await fetch('https://us-central1-oso-app-425800.cloudfunctions.net/schoolProfile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -258,34 +291,30 @@ export default function EditProfilePage() {
                 const responseData = await response.json();
                 if (response.ok && responseData.id) {
                     schoolApiIdFromResponse = responseData.id;
-                    finalSchoolIdForStorage = schoolApiIdFromResponse; // Use API ID if available
+                    finalSchoolIdForStorage = schoolApiIdFromResponse;
                     toast({ title: "School Profile Registered with API", description: `School "${data.schoolName}" registered. ID: ${schoolApiIdFromResponse}` });
                 } else {
                     const errorMessage = responseData.error || responseData.message || `Failed to register school with API. Status: ${response.status}`;
                     toast({ title: "School API Error", description: errorMessage, variant: "destructive" });
-                    console.error("School API Error:", errorMessage, "Response Body:", responseData);
                     setIsSubmittingProfile(false);
-                    return; // Critical failure for initial setup
+                    return;
                 }
             } catch (apiError: any) {
                 toast({ title: "School API Connection Error", description: `Could not connect to school registration service: ${apiError.message}`, variant: "destructive" });
-                console.error("School API Connection Error:", apiError);
                 setIsSubmittingProfile(false);
-                return; // Critical failure for initial setup
+                return;
             }
-        } else if (schoolProfile?.apiSchoolId) { // For existing schools, use their stored API ID
+        } else if (schoolProfile?.apiSchoolId) {
             schoolApiIdFromResponse = schoolProfile.apiSchoolId;
             finalSchoolIdForStorage = schoolProfile.apiSchoolId;
         } else if (schoolProfile?.schoolId && schoolProfile.schoolId !== DEFAULT_SCHOOL_ID) {
-             finalSchoolIdForStorage = schoolProfile.schoolId; // Use manually set school ID if API one not there
+             finalSchoolIdForStorage = schoolProfile.schoolId;
         }
 
-
-        // Save school's main profile data
         const schoolProfileToSave: ProfileFormData = {
             ...data,
             schoolId: finalSchoolIdForStorage,
-            apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId, // Persist API ID if obtained
+            apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId,
             role: 'school',
         };
         localStorage.setItem(`schoolProfileData_${finalSchoolIdForStorage}`, JSON.stringify(schoolProfileToSave));
@@ -301,7 +330,6 @@ export default function EditProfilePage() {
             try {
                 tempAdminCreds = JSON.parse(tempAdminCredsString);
             } catch (parseError) {
-                console.error("Error parsing tempAdminCredsString:", parseError);
                 toast({ title: "Critical Setup Error", description: "Could not parse temporary admin credentials. Please try signing up again.", variant: "destructive"});
                 setIsSubmittingProfile(false);
                 return;
@@ -327,7 +355,6 @@ export default function EditProfilePage() {
                 schoolId: adminStaffEntry.schoolId
             }));
 
-            // Save the admin's own user profile separately
             const adminUserProfileData: ProfileFormData = {
                 fullName: tempAdminCreds.fullName,
                 email: tempAdminCreds.email,
@@ -338,18 +365,18 @@ export default function EditProfilePage() {
                 avatarUrl: data.avatarUrl, 
                 dataAiHint: data.dataAiHint,
             };
-            localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); // This is the admin's individual profile
+            localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData));
             
             toast({ title: "School & Admin Profile Saved!", description: `School "${data.schoolName}" and your admin profile have been set up.` });
             router.push('/school-dashboard');
-        } else { // Existing school staff editing their profile
+        } else { 
             const staffUserProfileData: ProfileFormData = {
                 ...data,
                 role: 'school',
                 schoolId: finalSchoolIdForStorage, 
                 apiSchoolId: schoolApiIdFromResponse || data.apiSchoolId,
             };
-            localStorage.setItem('userProfileData', JSON.stringify(staffUserProfileData)); // Update current staff's profile
+            localStorage.setItem('userProfileData', JSON.stringify(staffUserProfileData));
             toast({ title: "Profile Updated!", description: "Your school staff profile has been updated." });
             router.push('/school-dashboard');
         }
@@ -357,7 +384,7 @@ export default function EditProfilePage() {
     } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student') {
         const profileKey = `${currentRole}ProfileData`;
         localStorage.setItem(profileKey, JSON.stringify(data));
-        localStorage.setItem('userProfileData', JSON.stringify(data)); // Generic user profile update
+        localStorage.setItem('userProfileData', JSON.stringify(data));
         
         toast({ title: "Profile Saved!", description: "Your profile information has been updated." });
         
@@ -365,6 +392,7 @@ export default function EditProfilePage() {
         if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
         else if (currentRole === 'parent') redirectPath = '/parent-mode';
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
+        else if (currentRole === 'student') redirectPath = '/'; // Student home
         router.push(redirectPath);
     }
     
@@ -457,7 +485,25 @@ export default function EditProfilePage() {
                 </div>
                  <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" /></Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder="Your school's name" />} /></div>
                  <div><Label htmlFor="schoolId"><BilingualText en="School ID (Provided by OSO)" hi="स्कूल आईडी (OSO द्वारा प्रदान)" /></Label><Controller name="schoolId" control={control} render={({ field }) => <Input id="schoolId" {...field} placeholder="Enter your school's OSO ID" />} /></div>
-                 <div><Label htmlFor="examTarget"><BilingualText en="Primary Exam Target" hi="प्राथमिक परीक्षा लक्ष्य" /></Label><Controller name="examTarget" control={control} render={({ field }) => <Input id="examTarget" {...field} placeholder="e.g., NEET, JEE, UPSC, CAT" />} /></div>
+                 <div>
+                    <Label htmlFor="examTarget" className="flex items-center gap-1.5"><Target className="h-4 w-4"/> <BilingualText en="Primary Exam Target" hi="प्राथमिक परीक्षा लक्ष्य" /></Label>
+                    <Controller 
+                        name="examTarget" 
+                        control={control} 
+                        render={({ field }) => (
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger id="examTarget">
+                                    <SelectValue placeholder={<BilingualText en="Select Exam Target" hi="परीक्षा लक्ष्य चुनें" />} />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[250px]">
+                                    {competitiveExamsIndia.map(exam => (
+                                        <SelectItem key={exam} value={exam}>{exam}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )} 
+                    />
+                 </div>
               </>
             )}
             {currentRole === 'parent' && (
