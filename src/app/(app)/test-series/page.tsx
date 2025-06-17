@@ -1,7 +1,6 @@
-
 "use client"; 
 
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react'; 
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,10 +10,10 @@ import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
 import { useToast } from '@/hooks/use-toast';
-import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // For category filter
+import type { ProfileFormData } from '../edit-profile/page'; 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; 
 
-const testCategories = [ // This list matches competitive-bookstore for consistency
+const testCategories = [ 
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
   { id: 'engineering', nameEn: 'Engineering (JEE, BITSAT, etc.)', nameHi: 'इंजीनियरिंग (जेईई, बिटसैट, आदि)', descriptionEn: "Full syllabus mock tests, previous year papers.", descriptionHi: "पूर्ण पाठ्यक्रम मॉक टेस्ट, पिछले वर्ष के प्रश्नपत्र।"},
   { id: 'medical', nameEn: 'Medical (NEET UG/PG, AIIMS)', nameHi: 'मेडिकल (नीट यूजी/पीजी, एम्स)', descriptionEn: "Subject-wise tests, all India ranking.", descriptionHi: "विषयवार टेस्ट, अखिल भारतीय रैंकिंग।"},
@@ -83,6 +82,11 @@ export default function TestSeriesPage() {
             if (testCategories.some(cat => cat.id === categoryId)) {
               setSelectedTestCategory(categoryId);
             }
+          } else if (parsedProfile.className) { // Fallback to class if examTarget is not set
+             const categoryId = getCategoryFromExamTarget(parsedProfile.className.toLowerCase());
+             if (testCategories.some(cat => cat.id === categoryId)) {
+               setSelectedTestCategory(categoryId);
+             }
           }
         } catch (e) {
           console.error("Failed to parse profile for Test Series page:", e);
@@ -103,15 +107,21 @@ export default function TestSeriesPage() {
         studentName: studentNameFromProfile,
         examType: examTargetFromProfile, 
         preferredLanguage: 'en', 
-        lastTestPerformances: [ // These remain mock for now
+        lastTestPerformances: [ 
             { title: "General Aptitude Mock 1", score: "70/100", weakTopics: ["Quantitative Reasoning", "Logical Puzzles"] },
             { title: "Subject Proficiency Test - Physics", score: "60/100", weakTopics: ["Rotational Motion", "Thermodynamics"] },
+             { title: `Previous ${examTargetFromProfile} Mock`, score: "65%", weakTopics: ["Topic A", "Topic B"] }
         ],
         availableTestSets: [ 
             { title: `${examTargetFromProfile} Full Syllabus Mock (Set A)`, subject: "All", level: "Medium" },
             { title: `${examTargetFromProfile} - Advanced Problems`, subject: "Mixed", level: "Hard" },
             { title: "General Knowledge Booster", subject: "GK", level: "Medium" },
             { title: "Verbal Ability Challenge", subject: "English", level: "Tough" },
+            // Add more diverse mock tests to ensure Guruji can pick relevant ones
+            { title: "JEE Main Physics Practice Set 1", subject: "Physics", level: "Medium"},
+            { title: "NEET UG Biology Concept Reviewer", subject: "Biology", level: "Medium"},
+            { title: "CAT Quantitative Aptitude Drills", subject: "Maths", level: "Hard"},
+            { title: "UPSC Prelims Current Affairs Quiz", subject: "Current Affairs", level: "Medium"},
         ]
     };
 
@@ -251,10 +261,26 @@ export default function TestSeriesPage() {
                     <CardDescription><BilingualText en={category.descriptionEn} hi={category.descriptionHi} /></CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button className="w-full"><BilingualText en="View Tests" hi="टेस्ट देखें" /></Button>
+                    <Button asChild className="w-full">
+                      <Link href={`/test-series/${category.id}?title=${encodeURIComponent(category.nameEn)}`}>
+                        <BilingualText en="View Tests" hi="टेस्ट देखें" />
+                      </Link>
+                    </Button>
                 </CardContent>
             </Card>
         ))}
+         {selectedTestCategory !== 'all' && !testCategories.find(tc => tc.id === selectedTestCategory) && (
+          <Card className="md:col-span-2 text-center">
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">
+                <BilingualText 
+                    en={`No specific category found for "${selectedTestCategory}". Showing all categories below or adjust filter.`} 
+                    hi={`"${selectedTestCategory}" के लिए कोई विशिष्ट श्रेणी नहीं मिली। नीचे सभी श्रेणियां देखें या फ़िल्टर समायोजित करें।`}
+                />
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Card className="bg-accent/10 border-accent/30">
@@ -270,4 +296,3 @@ export default function TestSeriesPage() {
     </div>
   );
 }
-
