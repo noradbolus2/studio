@@ -12,8 +12,8 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const QuestionSchema = z.object({
-  questionText: z.string().describe('The main text of the question.'),
-  options: z.array(z.string()).length(4).describe('An array of exactly four answer options.'),
+  questionText: z.string().describe('The main text of the question. Any chemical formulas or reactions must be represented in plain text (e.g., CH3-CH2-OH, A + B -> C). No LaTeX or special formatting.'),
+  options: z.array(z.string()).length(4).describe('An array of exactly four distinct answer options, each as a plain text string. Chemical formulas within options must also be plain text.'),
   correctAnswerIndex: z.number().min(0).max(3).describe('The 0-based index of the correct answer in the options array.'),
   explanation: z.string().optional().describe('A brief explanation for the correct answer.'),
 });
@@ -46,6 +46,12 @@ Ensure each question has exactly four multiple-choice options.
 Indicate the correct answer index (0-3).
 Provide a brief explanation for the correct answer if possible.
 
+IMPORTANT:
+- For any chemical formulas or reactions, use only plain text characters. For example, represent 'CH3CH2OH' as is, and use '->' for reaction arrows.
+- DO NOT use LaTeX, MathML, or any special math/chemical formatting (e.g., avoid '$...$', '\\xrightarrow', '\\frac', superscripts/subscripts that are not standard characters like ² or ₃ if possible. Prefer linear formulas like H2O, CO2).
+- All question text and options must be plain text strings suitable for direct display in HTML.
+- Each answer option in the 'options' array must be a distinct, separate string. Ensure there are exactly four options.
+
 Exam Name/Type: {{{examNameOrType}}}
 {{#if subject}}Subject: {{{subject}}}{{/if}}
 Number of Questions: {{{numQuestions}}}
@@ -53,12 +59,12 @@ Number of Questions: {{{numQuestions}}}
 Generate the test title and the array of questions.
 The test title should be concise and reflect the exam and subject.
 
-Example Question Format:
+Example Question Format (Plain Text):
 {
-  "questionText": "What is the capital of France?",
-  "options": ["Berlin", "Madrid", "Paris", "Rome"],
-  "correctAnswerIndex": 2,
-  "explanation": "Paris is the capital and most populous city of France."
+  "questionText": "What is the chemical formula for water?",
+  "options": ["H2O", "CO2", "O2", "NaCl"],
+  "correctAnswerIndex": 0,
+  "explanation": "Water is composed of two hydrogen atoms and one oxygen atom, hence H2O."
 }
 
 Generate the test now.
@@ -86,3 +92,4 @@ const generateExamTestFlow = ai.defineFlow(
   }
 );
 
+    
