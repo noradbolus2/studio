@@ -61,7 +61,12 @@ CRITICAL INSTRUCTIONS FOR QUESTION QUALITY & EXAM PATTERN (100% ACCURACY REQUIRE
         *   If "UPSC CSE Mains Optional - History", questions must require deep analytical and historical interpretation skills on niche topics within the optional syllabus, not just factual recall suitable for GS Paper 1.
     *   The question style, cognitive demand, and specific topics must mirror those found in *actual Previous Year Questions (PYQs)* for that specific super-specialty exam.
     *   The level of detail and nuance expected in the questions and their correct answers should be appropriate for an expert in that specific field.
-4.  **Exam-Specific Question Counts & Subject Distribution (Override \`numQuestions\` if necessary for full mocks):**
+4.  **Calculation-Based (Numerical) Questions:**
+    *   For subjects and exams where numerical problems are common (e.g., Physics, Mathematics, Physical Chemistry, Quantitative Aptitude sections), you MUST include a significant proportion of calculation-based questions.
+    *   These questions should require students to apply formulas, perform calculations, and arrive at a numerical answer (which will be one of the options).
+    *   Ensure the numerical values and options are realistic and test understanding of concepts, not just rote memorization of formulas.
+    *   For advanced medical exams, numerical questions might involve calculations based on interpreting lab values, physiological parameters, or drug dosage calculations.
+5.  **Exam-Specific Question Counts & Subject Distribution (Override \`numQuestions\` if necessary for full mocks):**
     *   If 'examNameOrType' indicates a major standardized exam, you MUST attempt to generate the standard number of questions for a full test of that exam/section, and try to maintain subject distribution (if applicable and no specific subject is requested for a sub-part). This takes precedence over \`numQuestions\` unless \`numQuestions\` is very small (e.g., < 10, indicating a mini-sample).
         *   **NEET UG**: 200 questions total (Physics: 50, Chemistry: 50, Botany: 50, Zoology: 50). If 'subject' is specified (e.g., "NEET UG Physics"), generate 50 questions for that subject.
         *   **JEE Main**: 90 questions total (Physics: 30, Chemistry: 30, Maths: 30). If 'subject' is specified (e.g., "JEE Main Chemistry"), generate 30 questions for that subject.
@@ -71,10 +76,10 @@ CRITICAL INSTRUCTIONS FOR QUESTION QUALITY & EXAM PATTERN (100% ACCURACY REQUIRE
         *   **CAT VARC Section**: 24 questions. **CAT DILR Section**: 20 questions. **CAT QA Section**: 22 questions.
     *   If \`numQuestions\` is provided for these major exams and is *higher* than the standard for a specific part (e.g., requesting 60 physics questions for NEET UG), you can generate up to the requested 'numQuestions' if it makes sense for a practice test, but maintain the exam's difficulty and style.
     *   For other exams or general requests (e.g., "Class 10 Science Prelim", "Physics Practice Test"), or if \`numQuestions\` is for a non-standardized test, adhere to \`numQuestions\` (up to a maximum of 200 questions).
-5.  **Answer Options:** Ensure each question has exactly four distinct multiple-choice options.
-6.  **Explanation:** Provide a brief, accurate explanation for the correct answer.
-7.  **Test Title:** The 'testTitle' field in the output JSON MUST be accurately generated to reflect the exam name/type, subject (if any), and whether it's a full mock or a sample. E.g., "NEET UG Full Syllabus Mock Test - Set 1", "JEE Main Physics Practice Test (30 Questions)".
-8.  **Diagrams (Text Prompt for Diagram):**
+6.  **Answer Options:** Ensure each question has exactly four distinct multiple-choice options.
+7.  **Explanation:** Provide a brief, accurate explanation for the correct answer.
+8.  **Test Title:** The 'testTitle' field in the output JSON MUST be accurately generated to reflect the exam name/type, subject (if any), and whether it's a full mock or a sample. E.g., "NEET UG Full Syllabus Mock Test - Set 1", "JEE Main Physics Practice Test (30 Questions)".
+9.  **Diagrams (Text Prompt for Diagram):**
     *   For questions that critically require a diagram for understanding (e.g., circuit diagrams, geometric figures, biological structures, physics setups, complex data interpretation), you MUST include a \\\`diagramPrompt\\\` field in the question's JSON object.
     *   This \\\`diagramPrompt\\\` should be a clear, concise textual description of what the diagram should visually represent (e.g., "A pulley system with two masses, M1 and M2, connected by a string over a frictionless pulley. M1 is on an inclined plane at 30 degrees, M2 hangs vertically.").
     *   The \`questionText\` should then refer to this diagram (e.g., "Based on the diagram provided...").
@@ -181,3 +186,4 @@ const generateExamTestFlow = ai.defineFlow(
     return finalOutput;
   }
 );
+
