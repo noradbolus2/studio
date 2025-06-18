@@ -30,6 +30,21 @@ interface QuestionResult {
 
 type Question = GenerateExamTestOutput['questions'][0];
 
+const getSecondsPerQuestion = (examType: string): number => {
+    const lowerExamType = examType.toLowerCase();
+    if (lowerExamType.includes("neet ug")) return 60; // 200 Qs / 200 mins
+    if (lowerExamType.includes("jee main")) return 120; // 90 Qs / 180 mins
+    if (lowerExamType.includes("jee advanced")) return 180; // ~54 Qs per paper / 180 mins per paper => ~3.33 mins/Q. Rounded to 3 mins.
+    if (lowerExamType.includes("upsc cse prelims gs paper 1")) return 72; // 100 Qs / 120 mins
+    if (lowerExamType.includes("cat varc")) return 100; // 24 Qs / 40 mins ~ 1.67 mins/Q
+    if (lowerExamType.includes("cat dilr")) return 120; // 20 Qs / 40 mins = 2 mins/Q
+    if (lowerExamType.includes("cat qa")) return 109; // 22 Qs / 40 mins ~ 1.82 mins/Q
+    if (lowerExamType.includes("cat") && !lowerExamType.includes("section")) return 109; // Overall CAT average if no specific section
+    if (lowerExamType.includes("neet ss")) return 90; // e.g., 100 Qs / 150 mins or 150 Qs / 150 mins. Using 90s as a general value.
+    // Add more specific exam timings as needed
+    return 90; // Default 1.5 minutes per question
+};
+
 
 export default function AttemptTestPage() {
   const searchParams = useSearchParams();
@@ -39,7 +54,7 @@ export default function AttemptTestPage() {
   const testTitleFromQuery = searchParams.get('title') || "AI Generated Test";
   const examTypeFromQuery = searchParams.get('examType') || testTitleFromQuery;
   const subjectFromQuery = searchParams.get('subject');
-  const numQuestionsFromQuery = searchParams.get('numQuestions') ? parseInt(searchParams.get('numQuestions') as string) : 5;
+  const numQuestionsFromQuery = searchParams.get('numQuestions') ? parseInt(searchParams.get('numQuestions') as string) : 5; // Default if not provided, but AI prompt may override
 
   const [isLoadingTest, setIsLoadingTest] = useState(true);
   const [testData, setTestData] = useState<GenerateExamTestOutput | null>(null);
@@ -119,10 +134,11 @@ export default function AttemptTestPage() {
   
   useEffect(() => {
     if (testData && testData.questions.length > 0 && !isSubmitted && timeLeft === null) {
-      const calculatedDurationSeconds = testData.questions.length * 90; 
+      const secondsPerQuestion = getSecondsPerQuestion(examTypeFromQuery);
+      const calculatedDurationSeconds = testData.questions.length * secondsPerQuestion; 
       setTimeLeft(calculatedDurationSeconds);
     }
-  }, [testData, isSubmitted, timeLeft]);
+  }, [testData, isSubmitted, timeLeft, examTypeFromQuery]);
 
   useEffect(() => {
     if (timeLeft === null || isSubmitted || !testData) {
@@ -149,7 +165,7 @@ export default function AttemptTestPage() {
       return;
     }
 
-    if (timerIdRef.current) { // Clear previous timer if one was running for some reason
+    if (timerIdRef.current) { 
         clearInterval(timerIdRef.current);
     }
     timerIdRef.current = setInterval(() => {
@@ -171,11 +187,7 @@ export default function AttemptTestPage() {
 
   const handleManualSubmit = () => {
     if (!isSubmitted) {
-        // The score state will update after handleSubmitTest causes a re-render.
-        // So, the toast here should be generic or shown after score is confirmed.
         handleSubmitTest(); 
-        // Toast can be shown immediately, but won't have the final score yet in this exact call.
-        // The score will be correct in the results view.
         toast({
             title: "Test Submitted!",
             description: "Your test results are being calculated.",
