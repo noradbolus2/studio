@@ -49,7 +49,7 @@ const generateTextQuestionsPrompt = ai.definePrompt({
   output: {schema: GenerateExamTestOutputSchema.extend({ questions: z.array(QuestionSchema.omit({ diagramDataUri: true })) }) },
   prompt: `You are an expert AI Test Generator for Indian students, tasked with creating exam-style mock tests.
 Your output MUST be a JSON object perfectly matching the provided schema.
-The generated test MUST have a 'testTitle' and a 'questions' array.
+The generated test MUST have a 'testTitle' (string) and a 'questions' (array of question objects) at the root level.
 
 CRITICAL INSTRUCTIONS FOR QUESTION QUALITY & EXAM PATTERN (100% ACCURACY REQUIRED - NON-NEGOTIABLE):
 These are not suggestions; they are strict requirements for the test generation. Failure to adhere will result in an unusable test.
@@ -92,7 +92,7 @@ These are not suggestions; they are strict requirements for the test generation.
 
 6.  **Answer Options:** Ensure each question has exactly four distinct multiple-choice options.
 7.  **Explanation:** Provide a brief, accurate explanation for the correct answer.
-8.  **Test Title Generation (MANDATORY):** The 'testTitle' field in the output JSON MUST be accurately generated to reflect the exam name/type, subject (if any), and whether it's a full mock or a sample. E.g., "NEET UG Full Syllabus Mock Test - Set 1", "JEE Main Physics Practice Test (30 Questions)", "NEET SS Cardiology Full Mock Test".
+8.  **Test Title Generation (MANDATORY):** The 'testTitle' field in the output JSON MUST be accurately generated to reflect the exam name/type, subject (if any), and whether it's a full mock or a sample. E.g., "NEET UG Full Syllabus Mock Test - Set 1", "JEE Main Physics Practice Test (30 Questions)", "NEET SS Cardiology Full Mock Test". This field is a direct property of the root JSON object, at the same level as 'questions'.
 9.  **Diagrams (Text Prompt for Diagram):**
     *   For questions that critically require a diagram for understanding (e.g., circuit diagrams, geometric figures, biological structures, physics setups, complex data interpretation), you MUST include a \\\`diagramPrompt\\\` field in the question's JSON object.
     *   This \\\`diagramPrompt\\\` should be a clear, concise textual description of what the diagram should visually represent (e.g., "A pulley system with two masses, M1 and M2, connected by a string over a frictionless pulley. M1 is on an inclined plane at 30 degrees, M2 hangs vertically.").
@@ -112,6 +112,7 @@ Exam Name/Type: {{{examNameOrType}}}
 Requested Number of Questions (Consider this alongside exam patterns): {{{numQuestions}}}
 
 Your output MUST be a JSON object perfectly matching the schema provided in the 'output' section (including 'testTitle', 'questions', and optionally 'diagramPrompt' within each question).
+The 'testTitle' MUST be a string property at the root of the JSON object.
 Strictly adhere to ALL instructions, especially regarding difficulty, pattern, and question counts for the specified exam.
 
 EXAMPLE FULL OUTPUT FORMAT (Illustrative - content will vary based on request):
