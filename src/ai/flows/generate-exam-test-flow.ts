@@ -111,8 +111,11 @@ Exam Name/Type: {{{examNameOrType}}}
 {{#if subject}}Subject: {{{subject}}}{{/if}}
 Requested Number of Questions (Consider this alongside exam patterns): {{{numQuestions}}}
 
-Your output MUST be a JSON object perfectly matching the schema provided in the 'output' section (including 'testTitle', 'questions', and optionally 'diagramPrompt' within each question).
-The 'testTitle' MUST be a string property at the root of the JSON object.
+Your output MUST be a JSON object.
+The root of this JSON object MUST contain exactly two properties:
+1.  \`testTitle\`: A string representing the title of the test, generated according to instruction #8.
+2.  \`questions\`: An array of question objects, where each question object adheres to the schema defined for questions (including \`questionText\`, \`options\`, \`correctAnswerIndex\`, \`explanation\`, and optionally \`diagramPrompt\`).
+
 Strictly adhere to ALL instructions, especially regarding difficulty, pattern, and question counts for the specified exam.
 
 EXAMPLE FULL OUTPUT FORMAT (Illustrative - content will vary based on request):
@@ -210,5 +213,4 @@ const generateExamTestFlow = ai.defineFlow(
 );
 
 // Add a new dev entry for this flow
-import '@/ai/flows/generate-exam-test-flow.ts';
-
+// import '@/ai/flows/generate-exam-test-flow.ts'; // This is already in dev.ts
