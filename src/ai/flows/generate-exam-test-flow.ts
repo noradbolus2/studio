@@ -45,8 +45,11 @@ export async function generateExamTest(input: GenerateExamTestInput): Promise<Ge
 const generateTextQuestionsPrompt = ai.definePrompt({
   name: 'generateTextQuestionsPrompt',
   input: {schema: GenerateExamTestInputSchema},
-  // Output schema includes diagramPrompt, but not diagramDataUri as this prompt doesn't generate images.
-  output: {schema: GenerateExamTestOutputSchema.extend({ questions: z.array(QuestionSchema.omit({ diagramDataUri: true })) }) },
+  output: {
+    schema: GenerateExamTestOutputSchema
+      .extend({ questions: z.array(QuestionSchema.omit({ diagramDataUri: true })) })
+      .partial({ testTitle: true }) // Makes testTitle optional for this specific prompt's output validation
+  },
   prompt: `You are an expert AI Test Generator for Indian students, tasked with creating exam-style mock tests.
 Your output MUST be a JSON object perfectly matching the provided schema.
 
@@ -150,7 +153,7 @@ const generateExamTestFlow = ai.defineFlow(
   {
     name: 'generateExamTestFlow',
     inputSchema: GenerateExamTestInputSchema,
-    outputSchema: GenerateExamTestOutputSchema, // Final output schema includes diagramDataUri
+    outputSchema: GenerateExamTestOutputSchema, // Final output schema includes diagramDataUri and REQUIRES testTitle
   },
   async (input) => {
     console.log(`[Genkit Flow - generateExamTestFlow] Starting test generation for: ${input.examNameOrType}, Subject: ${input.subject || 'N/A'}, Requested Qs: ${input.numQuestions}`);
@@ -160,7 +163,7 @@ const generateExamTestFlow = ai.defineFlow(
 
     let textOutput = rawTextOutput;
 
-    // Fallback for missing testTitle
+    // Fallback for missing testTitle - this ensures testTitle is present before further processing
     if (textOutput && Array.isArray(textOutput.questions) && !textOutput.testTitle) {
         console.warn("[Genkit Flow - generateExamTestFlow] AI output was missing 'testTitle'. Generating a default title.");
         let defaultTitle = `${input.examNameOrType}`;
@@ -169,9 +172,10 @@ const generateExamTestFlow = ai.defineFlow(
         }
         defaultTitle += " Mock Test (AI Generated)";
         
+        // Create a new object that definitely includes testTitle
         textOutput = {
-            ...textOutput,
             testTitle: defaultTitle,
+            questions: textOutput.questions, // Preserve the questions from raw output
         };
     }
 
@@ -193,7 +197,7 @@ const generateExamTestFlow = ai.defineFlow(
 
     // Step 2: Iterate through questions and generate diagrams if diagramPrompt is present
     const questionsWithDiagrams = await Promise.all(
-      textOutput.questions.map(async (question: any) => { // Use 'any' for question from textOutput to access diagramPrompt
+      textOutput.questions.map(async (question: any) => { 
         if (question.diagramPrompt && typeof question.diagramPrompt === 'string' && question.diagramPrompt.trim() !== "") {
           console.log(`[Genkit Flow - generateExamTestFlow] Diagram prompt found for question: "${question.questionText.substring(0,30)}...". Prompt: "${question.diagramPrompt}"`);
           try {
@@ -201,14 +205,14 @@ const generateExamTestFlow = ai.defineFlow(
               model: 'googleai/gemini-2.0-flash-exp',
               prompt: `Generate a clear, simple diagram suitable for a multiple-choice question based on this description: ${question.diagramPrompt}. The diagram should visually represent the key elements needed to understand the question. Avoid text in the diagram unless absolutely necessary for labels.`,
               config: {
-                responseModalities: ['TEXT', 'IMAGE'], // Must provide both as per docs
+                responseModalities: ['TEXT', 'IMAGE'], 
               },
             });
             console.log(`[Genkit Flow - generateExamTestFlow] Diagram generated for: "${question.diagramPrompt.substring(0,30)}...". Media URL available.`);
             return { 
               ...question, 
               diagramDataUri: media?.url,
-              diagramPrompt: undefined // Clear the prompt after use
+              diagramPrompt: undefined 
             } as z.infer<typeof QuestionSchema>;
           } catch (imgError) {
             console.error(`[Genkit Flow - generateExamTestFlow] Failed to generate diagram for question "${question.questionText.substring(0,30)}...":`, imgError);
@@ -220,7 +224,7 @@ const generateExamTestFlow = ai.defineFlow(
     );
     
     const finalOutput: GenerateExamTestOutput = {
-      testTitle: textOutput.testTitle,
+      testTitle: textOutput.testTitle, // Ensured by fallback
       questions: questionsWithDiagrams,
     };
 
