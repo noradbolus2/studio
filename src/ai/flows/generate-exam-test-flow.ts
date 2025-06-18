@@ -208,3 +208,6 @@ const generateExamTestFlow = ai.defineFlow(
   }
 );
 
+// Add a new dev entry for this flow
+import '@/ai/flows/generate-exam-test-flow.ts';
+
