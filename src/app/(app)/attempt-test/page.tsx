@@ -2,7 +2,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback, type FormEvent } from 'react'; // Added useCallback
+import { useEffect, useState, useCallback, useRef, type FormEvent } from 'react';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target, Image as ImageIcon, Timer } from 'lucide-react'; // Added Timer
+import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target, Image as ImageIcon, Timer } from 'lucide-react';
 import { generateExamTest, type GenerateExamTestInput, type GenerateExamTestOutput } from '@/ai/flows/generate-exam-test-flow';
 import { useToast } from '@/hooks/use-toast';
 
@@ -51,7 +51,7 @@ export default function AttemptTestPage() {
   const [results, setResults] = useState<QuestionResult[]>([]);
 
   const [timeLeft, setTimeLeft] = useState<number | null>(null); // in seconds
-  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
+  const timerIdRef = useRef<NodeJS.Timeout | null>(null);
 
   const formatTime = (totalSeconds: number | null): string => {
     if (totalSeconds === null || totalSeconds < 0) return "00:00";
@@ -61,13 +61,13 @@ export default function AttemptTestPage() {
   };
 
   const handleSubmitTest = useCallback(() => {
-    if (timerId) {
-      clearInterval(timerId);
-      setTimerId(null);
+    if (timerIdRef.current) {
+      clearInterval(timerIdRef.current);
+      timerIdRef.current = null;
     }
-    if (!testData || isSubmitted) return; // Prevent multiple submissions
+    if (!testData || isSubmitted) return;
 
-    setIsSubmitted(true); // Set this early
+    setIsSubmitted(true);
     let correctAnswers = 0;
     const detailedResults: QuestionResult[] = testData.questions.map((q, index) => {
       const selectedOptionIndex = answerSheet[index];
@@ -86,8 +86,7 @@ export default function AttemptTestPage() {
     });
     setScore(correctAnswers);
     setResults(detailedResults);
-    // Toast is now shown either on manual submit or by timer expiry effect
-  }, [timerId, testData, answerSheet, isSubmitted]); // Removed toast from here, isSubmitted added
+  }, [testData, answerSheet, isSubmitted]); 
 
   useEffect(() => {
     const loadTest = async () => {
@@ -120,24 +119,24 @@ export default function AttemptTestPage() {
   
   useEffect(() => {
     if (testData && testData.questions.length > 0 && !isSubmitted && timeLeft === null) {
-      const calculatedDurationSeconds = testData.questions.length * 90; // 1.5 minutes per question
+      const calculatedDurationSeconds = testData.questions.length * 90; 
       setTimeLeft(calculatedDurationSeconds);
     }
   }, [testData, isSubmitted, timeLeft]);
 
   useEffect(() => {
     if (timeLeft === null || isSubmitted || !testData) {
-      if (timerId) {
-          clearInterval(timerId);
-          setTimerId(null);
+      if (timerIdRef.current) {
+          clearInterval(timerIdRef.current);
+          timerIdRef.current = null;
       }
       return;
     }
 
     if (timeLeft <= 0) {
-      if (timerId) {
-          clearInterval(timerId);
-          setTimerId(null);
+      if (timerIdRef.current) {
+          clearInterval(timerIdRef.current);
+          timerIdRef.current = null;
       }
       if (!isSubmitted) { 
         toast({
@@ -150,13 +149,20 @@ export default function AttemptTestPage() {
       return;
     }
 
-    const newTimerId = setInterval(() => {
+    if (timerIdRef.current) { // Clear previous timer if one was running for some reason
+        clearInterval(timerIdRef.current);
+    }
+    timerIdRef.current = setInterval(() => {
       setTimeLeft((prevTime) => (prevTime !== null && prevTime > 0 ? prevTime - 1 : 0));
     }, 1000);
-    setTimerId(newTimerId);
 
-    return () => clearInterval(newTimerId);
-  }, [timeLeft, isSubmitted, testData, timerId, handleSubmitTest, toast]);
+    return () => {
+        if (timerIdRef.current) {
+            clearInterval(timerIdRef.current);
+            timerIdRef.current = null;
+        }
+    };
+  }, [timeLeft, isSubmitted, testData, handleSubmitTest, toast]);
 
 
   const handleOptionChange = (questionIndex: number, optionIndex: number) => {
@@ -165,11 +171,15 @@ export default function AttemptTestPage() {
 
   const handleManualSubmit = () => {
     if (!isSubmitted) {
+        // The score state will update after handleSubmitTest causes a re-render.
+        // So, the toast here should be generic or shown after score is confirmed.
+        handleSubmitTest(); 
+        // Toast can be shown immediately, but won't have the final score yet in this exact call.
+        // The score will be correct in the results view.
         toast({
             title: "Test Submitted!",
-            description: `You scored ${score} out of ${testData?.questions.length || 0}. Check results below.`,
+            description: "Your test results are being calculated.",
         });
-        handleSubmitTest();
     }
   };
 
