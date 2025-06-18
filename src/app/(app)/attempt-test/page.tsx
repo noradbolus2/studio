@@ -2,8 +2,8 @@
 "use client";
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, type FormEvent } from 'react';
-import Image from 'next/image'; // Import next/image
+import { useEffect, useState, useCallback, type FormEvent } from 'react'; // Added useCallback
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target, Image as ImageIcon, Timer } from 'lucide-react'; // Added Timer
 import { generateExamTest, type GenerateExamTestInput, type GenerateExamTestOutput } from '@/ai/flows/generate-exam-test-flow';
 import { useToast } from '@/hooks/use-toast';
 
@@ -25,10 +25,9 @@ interface QuestionResult {
   correctOption: string;
   isCorrect: boolean;
   explanation?: string;
-  diagramDataUri?: string; // Added for results page
+  diagramDataUri?: string;
 }
 
-// Define Question type based on the schema (it's part of GenerateExamTestOutput)
 type Question = GenerateExamTestOutput['questions'][0];
 
 
@@ -38,7 +37,7 @@ export default function AttemptTestPage() {
   const { toast } = useToast();
 
   const testTitleFromQuery = searchParams.get('title') || "AI Generated Test";
-  const examTypeFromQuery = searchParams.get('examType') || testTitleFromQuery; 
+  const examTypeFromQuery = searchParams.get('examType') || testTitleFromQuery;
   const subjectFromQuery = searchParams.get('subject');
   const numQuestionsFromQuery = searchParams.get('numQuestions') ? parseInt(searchParams.get('numQuestions') as string) : 5;
 
@@ -50,6 +49,45 @@ export default function AttemptTestPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [results, setResults] = useState<QuestionResult[]>([]);
+
+  const [timeLeft, setTimeLeft] = useState<number | null>(null); // in seconds
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
+
+  const formatTime = (totalSeconds: number | null): string => {
+    if (totalSeconds === null || totalSeconds < 0) return "00:00";
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleSubmitTest = useCallback(() => {
+    if (timerId) {
+      clearInterval(timerId);
+      setTimerId(null);
+    }
+    if (!testData || isSubmitted) return; // Prevent multiple submissions
+
+    setIsSubmitted(true); // Set this early
+    let correctAnswers = 0;
+    const detailedResults: QuestionResult[] = testData.questions.map((q, index) => {
+      const selectedOptionIndex = answerSheet[index];
+      const isCorrect = selectedOptionIndex === q.correctAnswerIndex;
+      if (isCorrect) {
+        correctAnswers++;
+      }
+      return {
+        questionText: q.questionText,
+        selectedOption: selectedOptionIndex !== undefined ? q.options[selectedOptionIndex] : "Not Answered",
+        correctOption: q.options[q.correctAnswerIndex],
+        isCorrect: isCorrect,
+        explanation: q.explanation,
+        diagramDataUri: q.diagramDataUri,
+      };
+    });
+    setScore(correctAnswers);
+    setResults(detailedResults);
+    // Toast is now shown either on manual submit or by timer expiry effect
+  }, [timerId, testData, answerSheet, isSubmitted]); // Removed toast from here, isSubmitted added
 
   useEffect(() => {
     const loadTest = async () => {
@@ -79,37 +117,62 @@ export default function AttemptTestPage() {
     };
     loadTest();
   }, [examTypeFromQuery, subjectFromQuery, numQuestionsFromQuery, toast]);
+  
+  useEffect(() => {
+    if (testData && testData.questions.length > 0 && !isSubmitted && timeLeft === null) {
+      const calculatedDurationSeconds = testData.questions.length * 90; // 1.5 minutes per question
+      setTimeLeft(calculatedDurationSeconds);
+    }
+  }, [testData, isSubmitted, timeLeft]);
+
+  useEffect(() => {
+    if (timeLeft === null || isSubmitted || !testData) {
+      if (timerId) {
+          clearInterval(timerId);
+          setTimerId(null);
+      }
+      return;
+    }
+
+    if (timeLeft <= 0) {
+      if (timerId) {
+          clearInterval(timerId);
+          setTimerId(null);
+      }
+      if (!isSubmitted) { 
+        toast({
+            title: "Time's Up!",
+            description: "Your test has been automatically submitted.",
+            variant: "destructive"
+        });
+        handleSubmitTest();
+      }
+      return;
+    }
+
+    const newTimerId = setInterval(() => {
+      setTimeLeft((prevTime) => (prevTime !== null && prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
+    setTimerId(newTimerId);
+
+    return () => clearInterval(newTimerId);
+  }, [timeLeft, isSubmitted, testData, timerId, handleSubmitTest, toast]);
+
 
   const handleOptionChange = (questionIndex: number, optionIndex: number) => {
     setAnswerSheet(prev => ({ ...prev, [questionIndex]: optionIndex }));
   };
 
-  const handleSubmitTest = () => {
-    if (!testData) return;
-    let correctAnswers = 0;
-    const detailedResults: QuestionResult[] = testData.questions.map((q, index) => {
-      const selectedOptionIndex = answerSheet[index];
-      const isCorrect = selectedOptionIndex === q.correctAnswerIndex;
-      if (isCorrect) {
-        correctAnswers++;
-      }
-      return {
-        questionText: q.questionText,
-        selectedOption: selectedOptionIndex !== undefined ? q.options[selectedOptionIndex] : "Not Answered",
-        correctOption: q.options[q.correctAnswerIndex],
-        isCorrect: isCorrect,
-        explanation: q.explanation,
-        diagramDataUri: q.diagramDataUri, // Pass diagram URI to results
-      };
-    });
-    setScore(correctAnswers);
-    setResults(detailedResults);
-    setIsSubmitted(true);
-    toast({
-        title: "Test Submitted!",
-        description: `You scored ${correctAnswers} out of ${testData.questions.length}.`,
-    });
+  const handleManualSubmit = () => {
+    if (!isSubmitted) {
+        toast({
+            title: "Test Submitted!",
+            description: `You scored ${score} out of ${testData?.questions.length || 0}. Check results below.`,
+        });
+        handleSubmitTest();
+    }
   };
+
 
   if (isLoadingTest) {
     return (
@@ -177,11 +240,11 @@ export default function AttemptTestPage() {
                 <span className="text-sm font-normal text-muted-foreground">Q{index + 1}. </span>
                 {result.diagramDataUri && (
                   <div className="my-2 p-2 border rounded-md bg-muted/20 max-w-md mx-auto">
-                    <Image 
-                      src={result.diagramDataUri} 
-                      alt={`Diagram for question ${index + 1}`} 
-                      width={400} 
-                      height={300} 
+                    <Image
+                      src={result.diagramDataUri}
+                      alt={`Diagram for question ${index + 1}`}
+                      width={400}
+                      height={300}
                       className="rounded-md object-contain mx-auto"
                       data-ai-hint="exam question diagram"
                     />
@@ -219,18 +282,26 @@ export default function AttemptTestPage() {
               <ArrowLeft className="mr-1 h-4 w-4" /> <BilingualText en="Exit Test" hi="टेस्ट से बाहर निकलें" />
             </Button>
           </div>
-          <CardDescription>
-            <BilingualText en={`Question ${currentQuestionIndex + 1} of ${testData.questions.length}`} hi={`प्रश्न ${currentQuestionIndex + 1} का ${testData.questions.length}`} />
+          <CardDescription className="flex justify-between items-center text-sm">
+            <span>
+              <BilingualText en={`Question ${currentQuestionIndex + 1} of ${testData.questions.length}`} hi={`प्रश्न ${currentQuestionIndex + 1} का ${testData.questions.length}`} />
+            </span>
+            {timeLeft !== null && (
+                <span className="flex items-center font-medium text-destructive">
+                    <Timer className="mr-1 h-4 w-4"/>
+                    {formatTime(timeLeft)}
+                </span>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {currentQuestion.diagramDataUri && (
             <div className="my-4 p-2 border rounded-md bg-muted/30 shadow-sm max-w-lg mx-auto">
-               <Image 
-                  src={currentQuestion.diagramDataUri} 
-                  alt={`Diagram for question ${currentQuestionIndex + 1}`} 
-                  width={500} // Adjust as needed
-                  height={375} // Adjust for aspect ratio
+               <Image
+                  src={currentQuestion.diagramDataUri}
+                  alt={`Diagram for question ${currentQuestionIndex + 1}`}
+                  width={500}
+                  height={375}
                   className="rounded-md object-contain mx-auto"
                   data-ai-hint="exam question diagram"
                 />
@@ -264,7 +335,7 @@ export default function AttemptTestPage() {
               <BilingualText en="Next" hi="अगला" />
             </Button>
           ) : (
-            <Button onClick={handleSubmitTest} className="bg-green-600 hover:bg-green-700 text-white">
+            <Button onClick={handleManualSubmit} className="bg-green-600 hover:bg-green-700 text-white">
               <BilingualText en="Submit Test" hi="टेस्ट सबमिट करें" />
             </Button>
           )}
@@ -273,3 +344,4 @@ export default function AttemptTestPage() {
     </div>
   );
 }
+
