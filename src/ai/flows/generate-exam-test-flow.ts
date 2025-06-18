@@ -49,7 +49,6 @@ const generateTextQuestionsPrompt = ai.definePrompt({
   output: {schema: GenerateExamTestOutputSchema.extend({ questions: z.array(QuestionSchema.omit({ diagramDataUri: true })) }) },
   prompt: `You are an expert AI Test Generator for Indian students, tasked with creating exam-style mock tests.
 Your output MUST be a JSON object perfectly matching the provided schema.
-The generated test MUST have a 'testTitle' (string) and a 'questions' (array of question objects) at the root level.
 
 CRITICAL INSTRUCTIONS FOR QUESTION QUALITY & EXAM PATTERN (100% ACCURACY REQUIRED - NON-NEGOTIABLE):
 These are not suggestions; they are strict requirements for the test generation. Failure to adhere will result in an unusable test.
@@ -157,7 +156,25 @@ const generateExamTestFlow = ai.defineFlow(
     console.log(`[Genkit Flow - generateExamTestFlow] Starting test generation for: ${input.examNameOrType}, Subject: ${input.subject || 'N/A'}, Requested Qs: ${input.numQuestions}`);
     
     // Step 1: Generate textual content of questions, including diagram prompts
-    const {output: textOutput} = await generateTextQuestionsPrompt(input);
+    const {output: rawTextOutput} = await generateTextQuestionsPrompt(input);
+
+    let textOutput = rawTextOutput;
+
+    // Fallback for missing testTitle
+    if (textOutput && Array.isArray(textOutput.questions) && !textOutput.testTitle) {
+        console.warn("[Genkit Flow - generateExamTestFlow] AI output was missing 'testTitle'. Generating a default title.");
+        let defaultTitle = `${input.examNameOrType}`;
+        if (input.subject) {
+            defaultTitle += ` - ${input.subject}`;
+        }
+        defaultTitle += " Mock Test (AI Generated)";
+        
+        textOutput = {
+            ...textOutput,
+            testTitle: defaultTitle,
+        };
+    }
+
 
     if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions)) {
         console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure (text part). Output was null or malformed:", textOutput);
@@ -214,3 +231,4 @@ const generateExamTestFlow = ai.defineFlow(
 
 // Add a new dev entry for this flow
 // import '@/ai/flows/generate-exam-test-flow.ts'; // This is already in dev.ts
+
