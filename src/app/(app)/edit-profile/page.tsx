@@ -165,13 +165,41 @@ export default function EditProfilePage() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       role: "student",
-      fullName: "", 
-      email: "",    
-      country: "India",
+      fullName: "",
+      email: "",
       avatarUrl: "",
       dataAiHint: "student avatar",
+      phoneNumber: "",
+      schoolName: "",
+      schoolId: "",
+      className: "",
+      board: "",
+      stream: "",
+      dateOfBirth: "",
+      gender: "",
+      examTarget: "",
+      city: "",
+      state: "",
+      country: "India",
+      schoolAddress: "",
+      schoolContact: "",
+      affiliationNumber: "",
+      principalName: "",
+      schoolDesignation: "",
+      businessName: "",
+      vendorCategory: "",
+      gstin: "",
+      businessAddress: "",
+      creatorName: "",
+      expertise: "",
       portfolioUrl: "",
+      childName: "",
+      childClass: "",
+      childSchoolName: "",
+      contactPersonName: "",
       contactPersonEmail: "",
+      contactPersonPhone: "",
+      apiSchoolId: "",
     },
   });
 
@@ -238,10 +266,20 @@ export default function EditProfilePage() {
             initialProfileData.principalName = nameFromParam; 
         }
     }
-    reset(initialProfileData);
-    if(initialProfileData.avatarUrl) setPreviewUrl(initialProfileData.avatarUrl); // <-- THIS IS THE FIX
+    // Ensure all fields in initialProfileData that map to string inputs are at least empty strings
+    // to prevent undefined values being passed to controlled inputs.
+    const sanitizedInitialProfileData = { ...useForm<ProfileFormData>({ defaultValues: { /* comprehensive defaults from above */ } }).getValues(), ...initialProfileData };
+    Object.keys(sanitizedInitialProfileData).forEach(key => {
+        const k = key as keyof ProfileFormData;
+        if (sanitizedInitialProfileData[k] === undefined && typeof useForm<ProfileFormData>({ defaultValues: { /* comprehensive defaults from above */ } }).getValues()[k] === 'string') {
+            (sanitizedInitialProfileData[k] as any) = '';
+        }
+    });
+    reset(sanitizedInitialProfileData);
+
+    if(sanitizedInitialProfileData.avatarUrl) setPreviewUrl(sanitizedInitialProfileData.avatarUrl);
     
-    if (initialProfileData.schoolId && isClassNurseryTo12(initialProfileData.className)) {
+    if (sanitizedInitialProfileData.schoolId && isClassNurseryTo12(sanitizedInitialProfileData.className)) {
         setIsSchoolOsoConnected('yes');
     } else {
         setIsSchoolOsoConnected('no');
@@ -301,7 +339,7 @@ export default function EditProfilePage() {
   const handleIsSchoolConnectedChange = (value: 'yes' | 'no') => {
     setIsSchoolOsoConnected(value);
     if (value === 'no') {
-      setValue('schoolId', undefined); 
+      setValue('schoolId', ''); 
     }
   };
 
@@ -317,11 +355,11 @@ export default function EditProfilePage() {
             contactNumber: data.schoolContact,
             principalName: data.principalName,
             affiliationNumber: data.affiliationNumber,
-            email: data.email, // School's primary email
-            contactPersonName: data.contactPersonName || data.fullName, // Logged in user's name as contact
-            contactPersonEmail: data.contactPersonEmail || data.email, // Logged in user's email as contact email
-            contactPersonPhone: data.contactPersonPhone, // Logged in user's direct phone
-            designation: data.schoolDesignation, // Logged in user's designation
+            email: data.email, 
+            contactPersonName: data.contactPersonName || data.fullName, 
+            contactPersonEmail: data.contactPersonEmail || data.email, 
+            contactPersonPhone: data.contactPersonPhone, 
+            designation: data.schoolDesignation, 
         };
 
         if (isInitialSchoolSetup) {
@@ -349,87 +387,77 @@ export default function EditProfilePage() {
                 const responseData = await response.json();
                 if (response.ok && responseData.id) {
                     schoolApiIdFromResponse = responseData.id;
-                    finalSchoolIdForStorage = schoolApiIdFromResponse; // Use API ID if successful
+                    finalSchoolIdForStorage = schoolApiIdFromResponse; 
                     toast({ title: "School Profile Registered with API", description: `School "${data.schoolName}" registered. ID: ${schoolApiIdFromResponse}` });
                 } else {
-                    // API Error or Validation error from API
                     const errorMessage = responseData.error || responseData.message || `Failed to register school with API. Status: ${response.status}`;
                     toast({ title: "School API Error", description: errorMessage, variant: "destructive" });
                     setIsSubmittingProfile(false);
-                    return; // Stop further processing if API registration fails
+                    return; 
                 }
             } catch (apiError: any) {
                 toast({ title: "School API Connection Error", description: `Could not connect to school registration service: ${apiError.message}`, variant: "destructive" });
                 setIsSubmittingProfile(false);
-                return; // Stop further processing
+                return; 
             }
             
-            // Create initial admin staff entry linked to the school
             const adminStaffEntry = {
-                id: `staff_${Date.now()}`, // Unique ID for the staff member
+                id: `staff_${Date.now()}`, 
                 name: tempAdminCreds.fullName,
                 email: tempAdminCreds.email,
-                password: tempAdminCreds.password, // Store plaintext password for prototype
-                role: tempAdminCreds.designation, // Store designation as 'role' for staff member
-                subjectOrDepartment: "Administration", // Default for first admin
+                password: tempAdminCreds.password, 
+                role: tempAdminCreds.designation, 
+                subjectOrDepartment: "Administration", 
                 contact: data.contactPersonPhone || data.schoolContact || "",
                 status: "Active",
-                schoolId: finalSchoolIdForStorage, // Link to the school
+                schoolId: finalSchoolIdForStorage, 
             };
-            localStorage.setItem(`schoolStaff_${finalSchoolIdForStorage}`, JSON.stringify([adminStaffEntry])); // Store as an array
-            localStorage.removeItem('tempInitialAdminCredentials'); // Clean up temp credentials
+            localStorage.setItem(`schoolStaff_${finalSchoolIdForStorage}`, JSON.stringify([adminStaffEntry])); 
+            localStorage.removeItem('tempInitialAdminCredentials'); 
             
-            // Log in the admin automatically
             localStorage.setItem('loggedInUser', JSON.stringify({
                 email: adminStaffEntry.email,
                 fullName: adminStaffEntry.name,
-                role: 'school', // The user's role is 'school' (i.e., school staff)
-                designation: adminStaffEntry.role, // Their specific designation
-                schoolId: adminStaffEntry.schoolId // The ID of the school they belong to
+                role: 'school', 
+                designation: adminStaffEntry.role, 
+                schoolId: adminStaffEntry.schoolId 
             }));
 
-            // Save the user's own profile data as a school staff member
             const adminUserProfileData: ProfileFormData = {
-                fullName: tempAdminCreds.fullName, // Their name
-                email: tempAdminCreds.email,       // Their email
-                role: 'school',                     // Their role type
-                schoolDesignation: tempAdminCreds.designation, // Their specific designation
+                fullName: tempAdminCreds.fullName, 
+                email: tempAdminCreds.email,       
+                role: 'school',                     
+                schoolDesignation: tempAdminCreds.designation, 
                 schoolId: finalSchoolIdForStorage,
-                apiSchoolId: schoolApiIdFromResponse, // Store API ID here too
-                avatarUrl: data.avatarUrl, // Use avatar from the form
+                apiSchoolId: schoolApiIdFromResponse, 
+                avatarUrl: data.avatarUrl, 
                 dataAiHint: data.dataAiHint,
+                 // Add all other potential fields with default empty strings or appropriate defaults
+                phoneNumber: "", schoolName: data.schoolName ?? "", className: "", board: "", stream: "", dateOfBirth: "", gender: "", examTarget: "", city: "", state: "", country: data.country ?? "India", schoolAddress: data.schoolAddress ?? "", schoolContact: data.schoolContact ?? "", affiliationNumber: data.affiliationNumber ?? "", principalName: data.principalName ?? "", businessName: "", vendorCategory: "", gstin: "", businessAddress: "", creatorName: "", expertise: "", portfolioUrl: "", childName: "", childClass: "", childSchoolName: "", contactPersonName: tempAdminCreds.fullName, contactPersonEmail: tempAdminCreds.email, contactPersonPhone: data.contactPersonPhone ?? ""
             };
-            localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); // Generic user profile for dashboard consistency
+            localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); 
             
-            // Save the overall school profile data (which includes this admin's details as contact)
             const schoolProfileToSave: ProfileFormData = {
                 ...data,
-                schoolId: finalSchoolIdForStorage, // Ensure schoolId is correctly set
-                apiSchoolId: schoolApiIdFromResponse, // Store the API generated ID
-                role: 'school', // Mark this profile as a school-level profile
+                schoolId: finalSchoolIdForStorage, 
+                apiSchoolId: schoolApiIdFromResponse, 
+                role: 'school', 
             };
-            // Store school-specific profile under a key that includes the school ID
             localStorage.setItem(`schoolProfileData_${finalSchoolIdForStorage}`, JSON.stringify(schoolProfileToSave));
 
             toast({ title: "School & Admin Profile Saved!", description: `School "${data.schoolName}" and your admin profile have been set up.` });
-            router.push('/school-dashboard'); // Redirect to school dashboard
+            router.push('/school-dashboard'); 
         } else { 
-            // This block is for an existing school staff member editing their own profile
-            // OR an admin editing the school's general profile details
             const schoolIdToUse = schoolProfile?.apiSchoolId || schoolProfile?.schoolId || finalSchoolIdForStorage;
             
-            // Save the individual staff member's profile
             const staffUserProfileData: ProfileFormData = {
-                ...data, // Includes their name, email, updated avatar, etc.
+                ...data, 
                 role: 'school',
                 schoolId: schoolIdToUse, 
-                apiSchoolId: schoolProfile?.apiSchoolId, // Preserve existing API ID
+                apiSchoolId: schoolProfile?.apiSchoolId, 
             };
             localStorage.setItem('userProfileData', JSON.stringify(staffUserProfileData));
             
-            // Update the general school profile if an admin is editing it
-            // (Need to ensure only admins can edit general school details, not just their own contact info on it)
-            // For now, assuming if schoolProfile exists and is being edited, we update it.
             const schoolProfileToSave: ProfileFormData = {
                 ...data,
                 schoolId: schoolIdToUse,
@@ -439,28 +467,25 @@ export default function EditProfilePage() {
             localStorage.setItem(`schoolProfileData_${schoolIdToUse}`, JSON.stringify(schoolProfileToSave));
 
             toast({ title: "Profile Updated!", description: "Your school staff profile has been updated." });
-            router.push('/school-dashboard'); // Redirect to school dashboard
+            router.push('/school-dashboard'); 
         }
 
     } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student') {
-        // Save profile for non-school roles
         const profileKey = currentRole === 'student' ? 'userProfileData' : `${currentRole}ProfileData`;
-        const fullProfileData = { ...data, role: currentRole }; // Ensure role is correctly saved
+        const fullProfileData = { ...data, role: currentRole }; 
         localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
         
-        // Also update/create the generic userProfileData for consistency if not student
         if(currentRole !== 'student') {
             localStorage.setItem('userProfileData', JSON.stringify(fullProfileData));
         }
         
         toast({ title: "Profile Saved!", description: "Your profile information has been updated." });
         
-        // Determine redirect path based on role
-        let redirectPath = '/'; // Default for student
+        let redirectPath = '/'; 
         if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
         else if (currentRole === 'parent') redirectPath = '/parent-mode';
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
-        else if (currentRole === 'student') redirectPath = '/'; // Explicitly for student
+        else if (currentRole === 'student') redirectPath = '/'; 
         router.push(redirectPath);
     }
     
@@ -522,7 +547,7 @@ export default function EditProfilePage() {
                     hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "संपर्क व्यक्ति का नाम" : "पूरा नाम"} 
                   />*
                 </Label>
-                <Controller name="fullName" control={control} render={({ field }) => <Input id="fullName" {...field} placeholder="Your full name" />} />
+                <Controller name="fullName" control={control} render={({ field }) => <Input id="fullName" {...field} value={field.value ?? ''} placeholder="Your full name" />} />
                 {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
               </div>
               <div>
@@ -532,7 +557,7 @@ export default function EditProfilePage() {
                     hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "संपर्क ईमेल" : "ईमेल"} 
                   />*
                 </Label>
-                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} placeholder="you@example.com" readOnly={!isInitialSchoolSetup && currentRole === 'school'} />} />
+                <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} value={field.value ?? ''} placeholder="you@example.com" readOnly={!isInitialSchoolSetup && currentRole === 'school'} />} />
                 {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
               </div>
             </div>
@@ -540,18 +565,18 @@ export default function EditProfilePage() {
             {currentRole === 'student' && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><Label htmlFor="phoneNumber"><BilingualText en="Phone Number" hi="फ़ोन नंबर" /></Label><Controller name="phoneNumber" control={control} render={({ field }) => <Input id="phoneNumber" {...field} placeholder="+91 XXXXXXXXXX" />} /></div>
-                    <div><Label htmlFor="dateOfBirth"><BilingualText en="Date of Birth" hi="जन्म की तारीख" /></Label><Controller name="dateOfBirth" control={control} render={({ field }) => <Input id="dateOfBirth" type="date" {...field} />} />{errors.dateOfBirth && <p className="text-xs text-destructive mt-1">{errors.dateOfBirth.message}</p>}</div>
+                    <div><Label htmlFor="phoneNumber"><BilingualText en="Phone Number" hi="फ़ोन नंबर" /></Label><Controller name="phoneNumber" control={control} render={({ field }) => <Input id="phoneNumber" {...field} value={field.value ?? ''} placeholder="+91 XXXXXXXXXX" />} /></div>
+                    <div><Label htmlFor="dateOfBirth"><BilingualText en="Date of Birth" hi="जन्म की तारीख" /></Label><Controller name="dateOfBirth" control={control} render={({ field }) => <Input id="dateOfBirth" type="date" {...field} value={field.value ?? ''} />} />{errors.dateOfBirth && <p className="text-xs text-destructive mt-1">{errors.dateOfBirth.message}</p>}</div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><Label htmlFor="gender"><BilingualText en="Gender" hi="लिंग" /></Label><Controller name="gender" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger><SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
+                    <div><Label htmlFor="gender"><BilingualText en="Gender" hi="लिंग" /></Label><Controller name="gender" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value ?? ''}><SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger><SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
                     <div>
                         <Label htmlFor="className"><BilingualText en="Class" hi="कक्षा" /></Label>
                         <Controller 
                             name="className" 
                             control={control} 
                             render={({ field }) => (
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value ?? ''}>
                                     <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
                                     <SelectContent>
                                         {studentClasses.map(cls => (
@@ -564,8 +589,8 @@ export default function EditProfilePage() {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><Label htmlFor="board"><BilingualText en="Board" hi="बोर्ड" /></Label><Controller name="board" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Board" /></SelectTrigger><SelectContent><SelectItem value="CBSE">CBSE</SelectItem><SelectItem value="ICSE">ICSE</SelectItem><SelectItem value="State Board">State Board</SelectItem><SelectItem value="IB">IB</SelectItem><SelectItem value="IGCSE">IGCSE</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
-                    <div><Label htmlFor="stream"><BilingualText en="Stream (for 11/12th)" hi="स्ट्रीम (11/12वीं के लिए)" /></Label><Controller name="stream" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Stream" /></SelectTrigger><SelectContent><SelectItem value="Science">Science</SelectItem><SelectItem value="Commerce">Commerce</SelectItem><SelectItem value="Arts">Arts/Humanities</SelectItem><SelectItem value="NA">Not Applicable</SelectItem></SelectContent></Select>)} /></div>
+                    <div><Label htmlFor="board"><BilingualText en="Board" hi="बोर्ड" /></Label><Controller name="board" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value ?? ''}><SelectTrigger><SelectValue placeholder="Select Board" /></SelectTrigger><SelectContent><SelectItem value="CBSE">CBSE</SelectItem><SelectItem value="ICSE">ICSE</SelectItem><SelectItem value="State Board">State Board</SelectItem><SelectItem value="IB">IB</SelectItem><SelectItem value="IGCSE">IGCSE</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select>)} /></div>
+                    <div><Label htmlFor="stream"><BilingualText en="Stream (for 11/12th)" hi="स्ट्रीम (11/12वीं के लिए)" /></Label><Controller name="stream" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value ?? ''}><SelectTrigger><SelectValue placeholder="Select Stream" /></SelectTrigger><SelectContent><SelectItem value="Science">Science</SelectItem><SelectItem value="Commerce">Commerce</SelectItem><SelectItem value="Arts">Arts/Humanities</SelectItem><SelectItem value="NA">Not Applicable</SelectItem></SelectContent></Select>)} /></div>
                 </div>
                 
                 {isClassNurseryTo12(watchedClassName) && (
@@ -601,14 +626,14 @@ export default function EditProfilePage() {
                         <Controller
                           name="schoolId"
                           control={control}
-                          render={({ field }) => <Input id="schoolId" {...field} placeholder="Enter your school's OSO ID" />}
+                          render={({ field }) => <Input id="schoolId" {...field} value={field.value ?? ''} placeholder="Enter your school's OSO ID" />}
                         />
                       </div>
                     )}
                   </div>
                 )}
                 
-                <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" /></Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} placeholder="Your school's name" />} /></div>
+                <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" /></Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} value={field.value ?? ''} placeholder="Your school's name" />} /></div>
                 
                 <div>
                     <Label htmlFor="examTarget" className="flex items-center gap-1.5"><Target className="h-4 w-4"/> <BilingualText en="Primary Exam Target" hi="प्राथमिक परीक्षा लक्ष्य" /></Label>
@@ -616,7 +641,7 @@ export default function EditProfilePage() {
                         name="examTarget" 
                         control={control} 
                         render={({ field }) => (
-                            <Select onValueChange={field.onChange} value={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value ?? ''}>
                                 <SelectTrigger id="examTarget">
                                     <SelectValue placeholder={<BilingualText en="Select Exam Target" hi="परीक्षा लक्ष्य चुनें" />} />
                                 </SelectTrigger>
@@ -633,15 +658,15 @@ export default function EditProfilePage() {
             )}
             {currentRole === 'parent' && (
               <>
-                <div><Label htmlFor="phoneNumber"><BilingualText en="Phone Number" hi="फ़ोन नंबर" /></Label><Controller name="phoneNumber" control={control} render={({ field }) => <Input id="phoneNumber" {...field} placeholder="+91 XXXXXXXXXX" />} /></div>
-                <div><Label htmlFor="childName"><BilingualText en="Child's Full Name" hi="बच्चे का पूरा नाम" /></Label><Controller name="childName" control={control} render={({ field }) => <Input id="childName" {...field} />} /></div>
+                <div><Label htmlFor="phoneNumber"><BilingualText en="Phone Number" hi="फ़ोन नंबर" /></Label><Controller name="phoneNumber" control={control} render={({ field }) => <Input id="phoneNumber" {...field} value={field.value ?? ''} placeholder="+91 XXXXXXXXXX" />} /></div>
+                <div><Label htmlFor="childName"><BilingualText en="Child's Full Name" hi="बच्चे का पूरा नाम" /></Label><Controller name="childName" control={control} render={({ field }) => <Input id="childName" {...field} value={field.value ?? ''} />} /></div>
                 <div>
                   <Label htmlFor="childClass"><BilingualText en="Child's Class" hi="बच्चे की कक्षा" /></Label>
                   <Controller 
                     name="childClass" 
                     control={control} 
                     render={({ field }) => (
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ''}>
                         <SelectTrigger><SelectValue placeholder="Select Child's Class" /></SelectTrigger>
                         <SelectContent>
                           {studentClasses.filter(c => c !== "12+ (Passed)").map(cls => ( 
@@ -652,29 +677,29 @@ export default function EditProfilePage() {
                     )} 
                   />
                 </div>
-                <div><Label htmlFor="childSchoolName"><BilingualText en="Child's School Name" hi="बच्चे के स्कूल का नाम" /></Label><Controller name="childSchoolName" control={control} render={({ field }) => <Input id="childSchoolName" {...field} />} /></div>
+                <div><Label htmlFor="childSchoolName"><BilingualText en="Child's School Name" hi="बच्चे के स्कूल का नाम" /></Label><Controller name="childSchoolName" control={control} render={({ field }) => <Input id="childSchoolName" {...field} value={field.value ?? ''} />} /></div>
               </>
             )}
             {currentRole === 'school' && (
               <>
-                <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" />*</Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} required />} />{errors.schoolName && <p className="text-xs text-destructive mt-1">{errors.schoolName.message}</p>}</div>
-                <div><Label htmlFor="schoolAddress"><BilingualText en="School Address" hi="स्कूल का पता" /></Label><Controller name="schoolAddress" control={control} render={({ field }) => <Textarea id="schoolAddress" {...field} />} /></div>
+                <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" />*</Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} value={field.value ?? ''} required />} />{errors.schoolName && <p className="text-xs text-destructive mt-1">{errors.schoolName.message}</p>}</div>
+                <div><Label htmlFor="schoolAddress"><BilingualText en="School Address" hi="स्कूल का पता" /></Label><Controller name="schoolAddress" control={control} render={({ field }) => <Textarea id="schoolAddress" {...field} value={field.value ?? ''} />} /></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><Label htmlFor="schoolContact"><BilingualText en="School Contact Number" hi="स्कूल संपर्क नंबर" /></Label><Controller name="schoolContact" control={control} render={({ field }) => <Input id="schoolContact" {...field} />} /></div>
-                    <div><Label htmlFor="affiliationNumber"><BilingualText en="Affiliation Number" hi="संबद्धता संख्या" /></Label><Controller name="affiliationNumber" control={control} render={({ field }) => <Input id="affiliationNumber" {...field} />} /></div>
+                    <div><Label htmlFor="schoolContact"><BilingualText en="School Contact Number" hi="स्कूल संपर्क नंबर" /></Label><Controller name="schoolContact" control={control} render={({ field }) => <Input id="schoolContact" {...field} value={field.value ?? ''} />} /></div>
+                    <div><Label htmlFor="affiliationNumber"><BilingualText en="Affiliation Number" hi="संबद्धता संख्या" /></Label><Controller name="affiliationNumber" control={control} render={({ field }) => <Input id="affiliationNumber" {...field} value={field.value ?? ''} />} /></div>
                 </div>
-                <div><Label htmlFor="principalName"><BilingualText en="Principal's Name" hi="प्रधानाचार्य का नाम" /></Label><Controller name="principalName" control={control} render={({ field }) => <Input id="principalName" {...field} />} /></div>
+                <div><Label htmlFor="principalName"><BilingualText en="Principal's Name" hi="प्रधानाचार्य का नाम" /></Label><Controller name="principalName" control={control} render={({ field }) => <Input id="principalName" {...field} value={field.value ?? ''} />} /></div>
                 
                 <Card className="bg-muted/50 p-4">
                     <p className="text-sm font-medium mb-2">OSO Account Contact Person</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} />} /></div>
-                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} />} /></div>
+                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} value={field.value ?? ''} />} /></div>
+                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} value={field.value ?? ''} />} /></div>
                     </div>
-                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Person Phone" hi="संपर्क व्यक्ति फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
+                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Person Phone" hi="संपर्क व्यक्ति फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} value={field.value ?? ''} />} /></div>
                     <div>
                         <Label htmlFor="schoolDesignation" className="mt-4 block"><BilingualText en="Your Designation" hi="आपकी पदवी" />*</Label>
-                        <Controller name="schoolDesignation" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value} required><SelectTrigger><SelectValue placeholder="Select your designation" /></SelectTrigger><SelectContent>{schoolDesignations.map(desig => (<SelectItem key={desig} value={desig}>{desig}</SelectItem>))}</SelectContent></Select>)} />
+                        <Controller name="schoolDesignation" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value ?? ''} required><SelectTrigger><SelectValue placeholder="Select your designation" /></SelectTrigger><SelectContent>{schoolDesignations.map(desig => (<SelectItem key={desig} value={desig}>{desig}</SelectItem>))}</SelectContent></Select>)} />
                         {errors.schoolDesignation && <p className="text-xs text-destructive mt-1">{errors.schoolDesignation.message}</p>}
                     </div>
                 </Card>
@@ -682,43 +707,43 @@ export default function EditProfilePage() {
             )}
             {currentRole === 'vendor' && (
               <>
-                <div><Label htmlFor="businessName"><BilingualText en="Business Name" hi="व्यवसाय का नाम" />*</Label><Controller name="businessName" control={control} render={({ field }) => <Input id="businessName" {...field} required />} /></div>
-                <div><Label htmlFor="vendorCategory"><BilingualText en="Vendor Category" hi="विक्रेता श्रेणी" /></Label><Controller name="vendorCategory" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger><SelectContent>{vendorCategories.map(cat => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}</SelectContent></Select>)} /></div>
-                <div><Label htmlFor="gstin"><BilingualText en="GSTIN (Optional)" hi="जीएसटीआईएन (वैकल्पिक)" /></Label><Controller name="gstin" control={control} render={({ field }) => <Input id="gstin" {...field} />} /></div>
-                <div><Label htmlFor="businessAddress"><BilingualText en="Business Address" hi="व्यावसायिक पता" /></Label><Controller name="businessAddress" control={control} render={({ field }) => <Textarea id="businessAddress" {...field} />} /></div>
+                <div><Label htmlFor="businessName"><BilingualText en="Business Name" hi="व्यवसाय का नाम" />*</Label><Controller name="businessName" control={control} render={({ field }) => <Input id="businessName" {...field} value={field.value ?? ''} required />} /></div>
+                <div><Label htmlFor="vendorCategory"><BilingualText en="Vendor Category" hi="विक्रेता श्रेणी" /></Label><Controller name="vendorCategory" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value ?? ''}><SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger><SelectContent>{vendorCategories.map(cat => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}</SelectContent></Select>)} /></div>
+                <div><Label htmlFor="gstin"><BilingualText en="GSTIN (Optional)" hi="जीएसटीआईएन (वैकल्पिक)" /></Label><Controller name="gstin" control={control} render={({ field }) => <Input id="gstin" {...field} value={field.value ?? ''} />} /></div>
+                <div><Label htmlFor="businessAddress"><BilingualText en="Business Address" hi="व्यावसायिक पता" /></Label><Controller name="businessAddress" control={control} render={({ field }) => <Textarea id="businessAddress" {...field} value={field.value ?? ''} />} /></div>
                 <Card className="bg-muted/50 p-4">
                     <p className="text-sm font-medium mb-2">Contact Person (for OSO)</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} />} /></div>
-                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} />} /></div>
+                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} value={field.value ?? ''} />} /></div>
+                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} value={field.value ?? ''} />} /></div>
                     </div>
-                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
+                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} value={field.value ?? ''} />} /></div>
                 </Card>
               </>
             )}
              {currentRole === 'creator' && (
               <>
-                <div><Label htmlFor="creatorName"><BilingualText en="Creator/Brand Name" hi="निर्माता/ब्रांड नाम" />*</Label><Controller name="creatorName" control={control} render={({ field }) => <Input id="creatorName" {...field} placeholder="Your public creator name" required />} /></div>
-                <div><Label htmlFor="expertise"><BilingualText en="Areas of Expertise" hi="विशेषज्ञता के क्षेत्र" /></Label><Controller name="expertise" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value}><SelectTrigger><SelectValue placeholder="Select primary expertise" /></SelectTrigger><SelectContent>{creatorExpertiseAreas.map(area => (<SelectItem key={area} value={area}>{area}</SelectItem>))}</SelectContent></Select>)} /></div>
-                <div><Label htmlFor="portfolioUrl"><BilingualText en="Portfolio URL (Optional)" hi="पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} placeholder="https://example.com/my-work" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
+                <div><Label htmlFor="creatorName"><BilingualText en="Creator/Brand Name" hi="निर्माता/ब्रांड नाम" />*</Label><Controller name="creatorName" control={control} render={({ field }) => <Input id="creatorName" {...field} value={field.value ?? ''} placeholder="Your public creator name" required />} /></div>
+                <div><Label htmlFor="expertise"><BilingualText en="Areas of Expertise" hi="विशेषज्ञता के क्षेत्र" /></Label><Controller name="expertise" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value ?? ''}><SelectTrigger><SelectValue placeholder="Select primary expertise" /></SelectTrigger><SelectContent>{creatorExpertiseAreas.map(area => (<SelectItem key={area} value={area}>{area}</SelectItem>))}</SelectContent></Select>)} /></div>
+                <div><Label htmlFor="portfolioUrl"><BilingualText en="Portfolio URL (Optional)" hi="पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} value={field.value ?? ''} placeholder="https://example.com/my-work" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
                 <Card className="bg-muted/50 p-4">
                      <p className="text-sm font-medium mb-2">Contact Details (Private, for OSO)</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} />} /></div>
-                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} />} /></div>
+                      <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} value={field.value ?? ''} />} /></div>
+                      <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} value={field.value ?? ''} />} /></div>
                     </div>
-                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} />} /></div>
+                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} value={field.value ?? ''} />} /></div>
                 </Card>
               </>
             )}
 
             {(currentRole === 'student' || currentRole === 'parent') && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><Label htmlFor="city"><BilingualText en="City" hi="शहर" /></Label><Controller name="city" control={control} render={({ field }) => <Input id="city" {...field} />} /></div>
-                    <div><Label htmlFor="state"><BilingualText en="State" hi="राज्य" /></Label><Controller name="state" control={control} render={({ field }) => <Input id="state" {...field} />} /></div>
+                    <div><Label htmlFor="city"><BilingualText en="City" hi="शहर" /></Label><Controller name="city" control={control} render={({ field }) => <Input id="city" {...field} value={field.value ?? ''} />} /></div>
+                    <div><Label htmlFor="state"><BilingualText en="State" hi="राज्य" /></Label><Controller name="state" control={control} render={({ field }) => <Input id="state" {...field} value={field.value ?? ''} />} /></div>
                 </div>
             )}
-             <div><Label htmlFor="country"><BilingualText en="Country" hi="देश" /></Label><Controller name="country" control={control} render={({ field }) => <Input id="country" {...field} />} /></div>
+             <div><Label htmlFor="country"><BilingualText en="Country" hi="देश" /></Label><Controller name="country" control={control} render={({ field }) => <Input id="country" {...field} value={field.value ?? ''} />} /></div>
 
           </CardContent>
           <CardFooter className="flex justify-end">
