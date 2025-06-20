@@ -46,4 +46,7 @@ export interface OsoSmartId {
    * Firestore will automatically convert a JavaScript Date object to a Firestore Timestamp.
    */
   created_at: Date;
+
+  /** Firebase Cloud Messaging (FCM) token for sending push notifications to the parent's device (or student's, if parent mode is on same device). Optional. */
+  fcm_token?: string | null;
 }
