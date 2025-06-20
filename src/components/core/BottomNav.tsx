@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Truck, Bot, User, Sparkles, Brain } from 'lucide-react'; 
+import { Home, BookOpen, Truck, Bot, User, Sparkles, Brain, GraduationCap } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react'; 
 
@@ -10,8 +11,9 @@ const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/study', label: 'Study', icon: BookOpen },
   { href: '/creator-marketplace', label: 'Projects', icon: Sparkles }, 
+  { href: '/teach', label: 'Teach', icon: GraduationCap }, // New Teach Tab
   { href: '/ai-guruji', label: 'AI', icon: Bot },
-  { href: '/brain-scan-report', label: 'Aura Map', icon: Brain }, // Changed label
+  // { href: '/brain-scan-report', label: 'Aura Map', icon: Brain }, // Aura map can be part of profile or a sub-section
   { href: '/profile', label: 'Me', icon: User },
 ];
 
@@ -23,25 +25,21 @@ export function BottomNav() {
     setIsClient(true);
   }, []);
 
-  // Filter out Aura Map if it's already active from another route or to avoid duplication if a direct /brain-scan link exists
-  const filteredNavItems = navItems.filter(item => {
-    if (item.href === '/brain-scan-report') {
-        return pathname !== '/brain-scan-report'; // Hide if already on the page
-    }
-    return true;
-  }).slice(0, 5); // Ensure max 5 items for aesthetics
+  // Ensure max 5 items for aesthetics, dynamically adjust if needed
+  const itemsToDisplay = navItems.slice(0, 5);
 
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-card/95 backdrop-blur-md border-t border-border shadow- ऊपर flex md:hidden z-50">
-      {filteredNavItems.map((item) => {
+      {itemsToDisplay.map((item) => {
         let itemIsActive = false;
         if (isClient) {
           itemIsActive = (pathname === item.href) ||
                        (item.href === "/ai-guruji" && pathname.startsWith("/ai-guruji")) ||
                        (item.href === "/study" && pathname.startsWith("/study")) ||
                        (item.href === "/creator-marketplace" && pathname.startsWith("/creator-marketplace")) ||
-                       (item.href === "/brain-scan-report" && pathname.startsWith("/brain-scan-report")); // Check for Aura Map active state
+                       (item.href === "/teach" && pathname.startsWith("/teach")) || // Check for Teach active state
+                       (item.href === "/brain-scan-report" && pathname.startsWith("/brain-scan-report"));
         }
         
         return (
