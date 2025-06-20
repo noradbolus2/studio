@@ -134,7 +134,6 @@ const profileSchema = z.object({
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
-// Helper function to check if class is Nursery to 12
 const isClassNurseryTo12 = (className?: string): boolean => {
   if (!className) return false;
   const numericClass = parseInt(className.match(/\d+/)?.[0] || "-1");
@@ -266,27 +265,19 @@ export default function EditProfilePage() {
             initialProfileData.principalName = nameFromParam; 
         }
     }
-    // Ensure all fields in initialProfileData that map to string inputs are at least empty strings
-    // to prevent undefined values being passed to controlled inputs.
-    const sanitizedInitialProfileData = { ...useForm<ProfileFormData>({ defaultValues: { /* comprehensive defaults from above */ } }).getValues(), ...initialProfileData };
-    Object.keys(sanitizedInitialProfileData).forEach(key => {
-        const k = key as keyof ProfileFormData;
-        if (sanitizedInitialProfileData[k] === undefined && typeof useForm<ProfileFormData>({ defaultValues: { /* comprehensive defaults from above */ } }).getValues()[k] === 'string') {
-            (sanitizedInitialProfileData[k] as any) = '';
-        }
-    });
-    reset(sanitizedInitialProfileData);
-
-    if(sanitizedInitialProfileData.avatarUrl) setPreviewUrl(sanitizedInitialProfileData.avatarUrl);
     
-    if (sanitizedInitialProfileData.schoolId && isClassNurseryTo12(sanitizedInitialProfileData.className)) {
+    reset(initialProfileData); // Reset the form with loaded or default data
+
+    if(initialProfileData.avatarUrl) setPreviewUrl(initialProfileData.avatarUrl);
+    
+    if (initialProfileData.schoolId && isClassNurseryTo12(initialProfileData.className)) {
         setIsSchoolOsoConnected('yes');
     } else {
         setIsSchoolOsoConnected('no');
     }
 
     setInitialDataLoading(false);
-  }, [searchParams, reset]);
+  }, [searchParams, reset]); // reset is stable, searchParams is the dependency
 
   useEffect(() => {
     if (currentRole === 'student' && !isClassNurseryTo12(watchedClassName)) {
@@ -432,7 +423,6 @@ export default function EditProfilePage() {
                 apiSchoolId: schoolApiIdFromResponse, 
                 avatarUrl: data.avatarUrl, 
                 dataAiHint: data.dataAiHint,
-                 // Add all other potential fields with default empty strings or appropriate defaults
                 phoneNumber: "", schoolName: data.schoolName ?? "", className: "", board: "", stream: "", dateOfBirth: "", gender: "", examTarget: "", city: "", state: "", country: data.country ?? "India", schoolAddress: data.schoolAddress ?? "", schoolContact: data.schoolContact ?? "", affiliationNumber: data.affiliationNumber ?? "", principalName: data.principalName ?? "", businessName: "", vendorCategory: "", gstin: "", businessAddress: "", creatorName: "", expertise: "", portfolioUrl: "", childName: "", childClass: "", childSchoolName: "", contactPersonName: tempAdminCreds.fullName, contactPersonEmail: tempAdminCreds.email, contactPersonPhone: data.contactPersonPhone ?? ""
             };
             localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); 
