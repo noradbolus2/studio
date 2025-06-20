@@ -4,23 +4,11 @@
 @tailwind utilities;
 
 /*
-  HOW TO USE THEMES:
-  The default theme is "Student Pink Glow".
-  To apply other themes, add the corresponding class to the <html> or <body> tag dynamically using JavaScript
-  based on the user's role (fetched from localStorage, for example).
-  - For Partner (Parent/Vendor) theme: class="theme-partner"
-  - For School Staff theme: class="theme-school"
-
-  Example JS (in RootLayout or AppLayout useEffect):
-  const userRole = JSON.parse(localStorage.getItem('loggedInUser') || '{}').role;
-  let themeClass = '';
-  if (userRole === 'parent' || userRole === 'vendor') {
-    themeClass = 'theme-partner';
-  } else if (userRole === 'school') {
-    themeClass = 'theme-school';
-  }
-  document.documentElement.className = ''; // Clear existing theme classes first
-  if (themeClass) document.documentElement.classList.add(themeClass);
+  OSO App Theme System:
+  - Default: Student Pink Glow (applied via :root)
+  - Partner Theme: Add class="theme-partner" to <html> or <body>
+  - School Staff Theme: Add class="theme-school" to <html> or <body>
+  Theme switching is typically handled in a layout component using JavaScript.
 */
 
 @layer base {
@@ -47,8 +35,11 @@
     --accent: 345 100% 59%; /* #FF2E63 - Accent Pink (Youth) - For CTAs, icons */
     --accent-foreground: 0 0% 100%; /* White */
 
-    --destructive: 42 100% 50%; /* #FFB300 - Warning/Alert Yellow */
-    --destructive-foreground: 270 100% 9%; /* Dark Purple for contrast on Yellow */
+    --destructive: 0 63% 30%; /* Darker Red #B32424 for general destructive, not yellow */
+    --destructive-foreground: 0 0% 100%; /* White for contrast */
+    
+    --warning: 42 100% 50%; /* #FFB300 - Warning/Alert Yellow */
+    --warning-foreground: 270 100% 9%; /* Dark Purple for contrast on Yellow */
     
     --success: 156 100% 50%; /* #00FF94 - Success/Positive Green */
     --success-foreground: 270 100% 9%; /* Dark Purple for contrast on Green */
@@ -63,7 +54,7 @@
     --chart-1: hsl(var(--success));   /* Green */
     --chart-2: hsl(var(--accent));   /* Pink */
     --chart-3: hsl(var(--primary));   /* Blue (AI) */
-    --chart-4: hsl(var(--destructive));    /* Yellow */
+    --chart-4: hsl(var(--warning));    /* Yellow for warnings */
     --chart-5: 270 70% 60%;   /* A general purple from the theme */
     
     /* Sidebar variables (will adapt as they use the root variables) */
@@ -94,8 +85,10 @@
     --muted-foreground: 330 100% 92%;
     --accent: 345 100% 59%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 42 100% 50%;
-    --destructive-foreground: 270 100% 9%;
+    --destructive: 0 63% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 42 100% 50%;
+    --warning-foreground: 270 100% 9%;
     --success: 156 100% 50%;
     --success-foreground: 270 100% 9%;
     --border: 0 0% 100% / 0.1;
@@ -104,7 +97,7 @@
     --chart-1: hsl(var(--success));
     --chart-2: hsl(var(--accent));
     --chart-3: hsl(var(--primary));
-    --chart-4: hsl(var(--destructive));
+    --chart-4: hsl(var(--warning));
     --chart-5: 270 70% 60%;
     --sidebar-background: 270 90% 12%;
     --sidebar-foreground: 0 0% 100%;
@@ -139,8 +132,10 @@
     --accent: 345 100% 59%; /* #FF2E63 - Accent Pink - Secondary interactive */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 42 100% 50%; /* Warning/Alert Yellow */
-    --destructive-foreground: 270 50% 7%; /* Darker for contrast on Yellow */
+    --destructive: 0 63% 30%; 
+    --destructive-foreground: 0 0% 100%;
+    --warning: 42 100% 50%;
+    --warning-foreground: 270 50% 7%; 
 
     --success: 156 100% 50%; /* #00FF94 - Success/Positive Green */
     --success-foreground: 270 50% 7%; /* Darker for contrast on Green */
@@ -173,8 +168,10 @@
     --accent: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) - Secondary highlight */
     --accent-foreground: 255 60% 10%; /* Dark Indigo for contrast on Glow Blue */
 
-    --destructive: 42 100% 50%; /* Warning/Alert Yellow */
-    --destructive-foreground: 255 60% 10%; /* Dark Indigo for contrast on Yellow */
+    --destructive: 0 63% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 42 100% 50%;
+    --warning-foreground: 255 60% 10%; 
     
     --success: hsl(var(--primary)); /* Use the main green as success for this theme */
     --success-foreground: hsl(var(--primary-foreground));
@@ -237,4 +234,39 @@
 }
 .text-shadow-sm {
   text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.15));
+}
+
+/* Added Animations for Aura Map */
+@layer utilities {
+  @keyframes red-flicker {
+    0%, 100% { opacity: 1; box-shadow: 0 0 15px 3px hsla(var(--destructive), 0.6); } /* Use destructive for red */
+    50% { opacity: 0.7; box-shadow: 0 0 10px 1px hsla(var(--destructive), 0.4); }
+  }
+  .animate-red-flicker {
+    animation: red-flicker 1.5s infinite ease-in-out;
+  }
+
+  @keyframes blue-pulse { /* High Clarity */
+    0%, 100% { transform: scale(1); box-shadow: 0 0 12px 2px hsla(var(--primary), 0.5); } /* primary is blue */
+    50% { transform: scale(1.03); box-shadow: 0 0 18px 4px hsla(var(--primary), 0.65); }
+  }
+  .animate-blue-pulse {
+    animation: blue-pulse 2.5s infinite ease-in-out;
+  }
+
+  @keyframes green-pulse { /* Balance */
+    0%, 100% { transform: scale(1); box-shadow: 0 0 10px 2px hsla(var(--success), 0.5); }
+    50% { transform: scale(1.02); box-shadow: 0 0 15px 3px hsla(var(--success), 0.65); }
+  }
+  .animate-green-pulse {
+    animation: green-pulse 3s infinite ease-in-out;
+  }
+
+  @keyframes yellow-pulse { /* Low Attention */
+    0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 12px 2px hsla(var(--warning), 0.4); } /* Use warning for yellow */
+    50% { transform: scale(1.02); opacity: 0.6; box-shadow: 0 0 18px 4px hsla(var(--warning), 0.5); }
+  }
+  .animate-yellow-pulse {
+    animation: yellow-pulse 2s infinite ease-in-out;
+  }
 }
