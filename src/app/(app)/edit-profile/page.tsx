@@ -20,12 +20,12 @@ import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target } from "lucide-react";
-import { Switch } from "@/components/ui/switch"; // Corrected import
+import { Switch } from "@/components/ui/switch";
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const vendorCategories = ["Stationery", "Books", "Uniforms", "Electronics", "Snacks", "Project Kits", "Other"];
 const creatorExpertiseAreas = ["Science Projects", "Art & Craft", "Coding & AI", "Robotics", "Essay Writing", "Video Content", "Tutoring", "Other"];
-const teacherSubjects = ["Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "AI/ML", "Art & Craft", "General Knowledge", "Entrepreneurship", "Other"]; // Re-using creator for teacher subjects
+const teacherSubjects = ["Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "AI/ML", "Art & Craft", "General Knowledge", "Entrepreneurship", "Other"]; 
 
 const DEFAULT_SCHOOL_ID = "defaultSchool"; 
 
@@ -278,7 +278,7 @@ export default function EditProfilePage() {
     }
 
     setInitialDataLoading(false);
-  }, [searchParams, reset, currentRole]); 
+  }, [searchParams, reset, currentRole]); // Added currentRole to ensure effect runs if it changes
 
   useEffect(() => {
     if (currentRole === 'student' && !isClassNurseryTo12(watchedClassName)) {
@@ -715,12 +715,33 @@ export default function EditProfilePage() {
             )}
              {(currentRole === 'creator' || currentRole === 'teacher') && (
               <>
-                <div><Label htmlFor="creatorName"><BilingualText en="Public Display Name" hi="सार्वजनिक प्रदर्शन नाम" />*</Label><Controller name="creatorName" control={control} render={({ field }) => <Input id="creatorName" {...field} value={field.value ?? ''} placeholder="Your public creator/teacher name" required />} /></div>
-                <div><Label htmlFor="expertise"><BilingualText en={currentRole === 'teacher' ? "Teaching Subjects (comma-separated)" : "Areas of Expertise (comma-separated)"} hi={currentRole === 'teacher' ? "शिक्षण विषय (अल्पविराम से अलग)" : "विशेषज्ञता के क्षेत्र (अल्पविराम से अलग)"} />*</Label><Controller name="expertise" control={control} render={({ field }) => <Input id="expertise" {...field} value={field.value ?? ''} placeholder={currentRole === 'teacher' ? "e.g., Physics, JEE Maths" : "e.g., Science Projects, AI"} required />} /></div>
-                <div><Label htmlFor="bio"><BilingualText en="Bio / About Me (max 300 chars)" hi="बायो / मेरे बारे में (अधिकतम 300 अक्षर)" /></Label><Controller name="bio" control={control} render={({ field }) => <Textarea id="bio" {...field} value={field.value ?? ''} placeholder="Tell students/users about your experience and style." className="min-h-[100px]" maxLength={300} />} />{errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio.message}</p>}</div>
+                <div>
+                    <Label htmlFor="creatorName"><BilingualText en="Public Display Name" hi="सार्वजनिक प्रदर्शन नाम" />*</Label>
+                    <Controller name="creatorName" control={control} render={({ field }) => <Input id="creatorName" {...field} value={field.value ?? ''} placeholder="Your public creator/teacher name" />} rules={{ required: "Public display name is required" }} />
+                    {errors.creatorName && <p className="text-xs text-destructive mt-1">{errors.creatorName.message}</p>}
+                </div>
                 
                 {currentRole === 'teacher' && (
-                    <>
+                  <>
+                    <div>
+                      <Label htmlFor="expertise"><BilingualText en="Primary Teaching Subject" hi="प्राथमिक शिक्षण विषय" />*</Label>
+                      <Controller
+                        name="expertise"
+                        control={control}
+                        rules={{ required: "Primary teaching subject is required" }}
+                        render={({ field }) => (
+                          <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                            <SelectTrigger id="expertise">
+                              <SelectValue placeholder={<BilingualText en="Select Primary Subject" hi="प्राथमिक विषय चुनें" />} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {teacherSubjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errors.expertise && <p className="text-xs text-destructive mt-1">{errors.expertise.message}</p>}
+                    </div>
                     <div>
                         <Label htmlFor="examTarget" className="flex items-center gap-1.5"><Target className="h-4 w-4"/> <BilingualText en="Primary Exam Focus" hi="प्राथमिक परीक्षा लक्ष्य" /></Label>
                         <Controller 
@@ -746,9 +767,18 @@ export default function EditProfilePage() {
                         )} />
                         <Label htmlFor="availability_for_doubts"><BilingualText en="Available for Doubt Solving?" hi="शंका समाधान के लिए उपलब्ध हैं?" /></Label>
                     </div>
-                    </>
+                  </>
                 )}
-                
+                {currentRole === 'creator' && (
+                     <div>
+                        <Label htmlFor="expertise"><BilingualText en="Areas of Expertise (comma-separated)" hi="विशेषज्ञता के क्षेत्र (अल्पविराम से अलग)" />*</Label>
+                        <Controller name="expertise" control={control} render={({ field }) => <Input id="expertise" {...field} value={field.value ?? ''} placeholder="e.g., Science Projects, AI" />} rules={{ required: "Expertise is required" }} />
+                        {errors.expertise && <p className="text-xs text-destructive mt-1">{errors.expertise.message}</p>}
+                    </div>
+                )}
+
+
+                <div><Label htmlFor="bio"><BilingualText en="Bio / About Me (max 300 chars)" hi="बायो / मेरे बारे में (अधिकतम 300 अक्षर)" /></Label><Controller name="bio" control={control} render={({ field }) => <Textarea id="bio" {...field} value={field.value ?? ''} placeholder="Tell students/users about your experience and style." className="min-h-[100px]" maxLength={300} />} />{errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio.message}</p>}</div>
                 <div><Label htmlFor="portfolioUrl"><BilingualText en="YouTube/Portfolio URL (Optional)" hi="यूट्यूब/पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} value={field.value ?? ''} placeholder="https://youtube.com/yourchannel" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
                 
                 <Card className="bg-muted/50 p-4">
