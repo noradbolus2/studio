@@ -19,7 +19,8 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target, Switch as SwitchIcon } from "lucide-react"; // Added SwitchIcon
+import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target } from "lucide-react";
+import { Switch } from "@/components/ui/switch"; // Corrected import
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const vendorCategories = ["Stationery", "Books", "Uniforms", "Electronics", "Snacks", "Project Kits", "Other"];
@@ -201,7 +202,7 @@ export default function EditProfilePage() {
     let initialProfileData: Partial<ProfileFormData> = { 
       role: roleFromParams, 
       country: "India",
-      availability_for_doubts: false, // Default for new teacher profiles
+      availability_for_doubts: false, 
     };
 
     if (typeof window !== "undefined") {
@@ -215,7 +216,7 @@ export default function EditProfilePage() {
             if (roleFromParams === 'school' || roleFromParams === 'vendor' || roleFromParams === 'creator' || roleFromParams === 'teacher') {
               initialProfileData.contactPersonName = nameFromParam;
               if (roleFromParams === 'creator' || roleFromParams === 'teacher') {
-                initialProfileData.creatorName = nameFromParam; // Use for public teacher/creator name
+                initialProfileData.creatorName = nameFromParam; 
               }
             }
         }
@@ -235,7 +236,7 @@ export default function EditProfilePage() {
             if (specificProfileString) {
                 try { 
                   const parsedSpecific = JSON.parse(specificProfileString);
-                  if (parsedSpecific.role === roleFromParams || (roleFromParams === 'teacher' && parsedSpecific.role === 'creator')) { // Allow loading creator as teacher base
+                  if (parsedSpecific.role === roleFromParams || (roleFromParams === 'teacher' && parsedSpecific.role === 'creator')) { 
                      storedProfile = parsedSpecific;
                   }
                 } 
@@ -277,7 +278,7 @@ export default function EditProfilePage() {
     }
 
     setInitialDataLoading(false);
-  }, [searchParams, reset, currentRole]); // Added currentRole to deps
+  }, [searchParams, reset, currentRole]); 
 
   useEffect(() => {
     if (currentRole === 'student' && !isClassNurseryTo12(watchedClassName)) {
@@ -465,8 +466,8 @@ export default function EditProfilePage() {
         const fullProfileData = { ...data, role: currentRole }; 
         localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
         
-        if(currentRole !== 'student' && currentRole !== 'teacher' && currentRole !== 'creator') { // For vendor, parent - if they have separate specific stores
-            localStorage.setItem('userProfileData', JSON.stringify(fullProfileData)); // Also update generic if their specific store is the primary one
+        if(currentRole !== 'student' && currentRole !== 'teacher' && currentRole !== 'creator') { 
+            localStorage.setItem('userProfileData', JSON.stringify(fullProfileData)); 
         }
         
         toast({ title: "Profile Saved!", description: "Your profile information has been updated." });
@@ -708,7 +709,7 @@ export default function EditProfilePage() {
                       <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} value={field.value ?? ''} />} /></div>
                       <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} value={field.value ?? ''} />} /></div>
                     </div>
-                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} value={field.value ?? ''} />} /></div>
+                    <div className="mt-4"><Label htmlFor="contactPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} value={field.value ?? ''} />} /></div>
                 </Card>
               </>
             )}
@@ -741,7 +742,7 @@ export default function EditProfilePage() {
                     </div>
                     <div className="flex items-center space-x-2 pt-2">
                         <Controller name="availability_for_doubts" control={control} render={({ field }) => (
-                            <SwitchIcon id="availability_for_doubts" checked={field.value} onCheckedChange={field.onChange} />
+                            <Switch id="availability_for_doubts" checked={field.value} onCheckedChange={field.onChange} />
                         )} />
                         <Label htmlFor="availability_for_doubts"><BilingualText en="Available for Doubt Solving?" hi="शंका समाधान के लिए उपलब्ध हैं?" /></Label>
                     </div>
@@ -781,4 +782,6 @@ export default function EditProfilePage() {
     </div>
   );
 }
+    
+
     
