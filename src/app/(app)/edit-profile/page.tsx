@@ -19,43 +19,30 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target } from "lucide-react";
+import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target, Switch as SwitchIcon } from "lucide-react"; // Added SwitchIcon
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const vendorCategories = ["Stationery", "Books", "Uniforms", "Electronics", "Snacks", "Project Kits", "Other"];
 const creatorExpertiseAreas = ["Science Projects", "Art & Craft", "Coding & AI", "Robotics", "Essay Writing", "Video Content", "Tutoring", "Other"];
+const teacherSubjects = ["Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "AI/ML", "Art & Craft", "General Knowledge", "Entrepreneurship", "Other"]; // Re-using creator for teacher subjects
+
 const DEFAULT_SCHOOL_ID = "defaultSchool"; 
 
 const competitiveExamsIndia = [
-  // Engineering
   "JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "SRMJEEE", "MET (Manipal)", "COMEDK UGET", "KIITEE", "WBJEE", "MHT CET (Engineering)", "GUJCET", "AP EAMCET (Engineering)", "TS EAMCET (Engineering)", "KCET (Engineering)", "GATE (for PG/PSU)",
-  // Medical
   "NEET UG (MBBS, BDS, AYUSH, B.V.Sc)", "NEET PG (MD, MS, PG Diploma)", "INI CET (AIIMS, JIPMER, PGIMER, NIMHANS)", "NEET SS (DM, MCh)", "FMGE", "AIIMS Nursing", "Indian Army B.Sc Nursing / MNS", "AIAPGET (PG AYUSH)",
-  // Management
   "CAT", "XAT", "CMAT", "SNAP", "NMAT by GMAC", "MAT", "ATMA", "IIFT", "TISSNET", "IBSAT", "MICAT", "GMAT (for Indian B-schools)",
-  // Law
   "CLAT (UG & PG)", "AILET (UG & PG)", "LSAT India", "SLAT", "MH CET Law", "AP LAWCET", "TS LAWCET", "Kerala KLEE", "State Judicial Services Examination (PCS-J)",
-  // Civil Services & Government Jobs
   "UPSC CSE (IAS, IPS, IFS, IRS etc.)", "UPSC IFoS", "UPSC ESE/IES", "UPSC Combined Geo-Scientist", "UPSC CMS", "UPSC CAPF", "SSC CGL", "SSC CHSL", "SSC JE", "SSC Stenographer", "SSC MTS", "SSC GD Constable", "SSC CPO", "IBPS PO", "IBPS Clerk", "IBPS SO", "IBPS RRB", "SBI PO", "SBI Clerk", "SBI SO", "RBI Grade B", "RBI Assistant", "NABARD Grade A & B", "LIC AAO", "LIC ADO", "UIIC/NIACL Exams", "ESIC", "FCI", "RRB NTPC", "RRB JE", "RRB ALP", "RRB Group D", "State PSCs (General)", "State Level Police Recruitment", "High Court Exams",
-  // Defence
   "NDA & NA", "CDS", "AFCAT", "INET", "Indian Army TES", "Indian Navy Sailors (SSR, AA, MR)", "Indian Air Force Airmen (Group X & Y)", "Indian Coast Guard (Navik, Yantrik)", "Territorial Army",
-  // General University Entrance
   "CUET UG", "CUET PG", "JMI Entrance", "AMU Entrance",
-  // Design & Architecture
   "NID DAT", "UCEED", "CEED", "NIFT Entrance", "NATA", "JEE Main Paper 2 (B.Arch/B.Plan)", "AIEED",
-  // Hotel Management
   "NCHM JEE", "State IHM Entrances",
-  // Agriculture & Veterinary Science
   "ICAR AIEEA (UG, PG, PhD)", "State Agriculture University Entrances",
-  // Teaching
   "CTET", "State TETs", "UGC NET", "CSIR UGC NET", "SET/SLET", "KVS Recruitment", "NVS Recruitment", "DSSSB", "B.Ed. Entrances",
-  // Pharmacy
   "GPAT", "State CETs for B.Pharm", "NIPER JEE",
-  // Research Fellowships & PhD Entrance
   "UGC NET JRF", "CSIR NET JRF", "ICMR JRF", "DBT JRF", "University/Institute PhD Entrances",
-  // Commerce & Finance Professional Courses
   "CA (Foundation, Intermediate, Final)", "CS (CSEET, Executive, Professional)", "CMA (Foundation, Intermediate, Final)",
-  // School Level Olympiads & Talent Search
   "NTSE", "KVPY (Status to be checked by student)", "SOF Olympiads (NSO, IMO, IEO, etc.)", "Homi Bhabha Balvaidnyanik Spardha",
   "Other (Not Listed)"
 ];
@@ -73,7 +60,6 @@ const profileSchema = z.object({
   avatarUrl: z.string().optional(),
   dataAiHint: z.string().optional(),
 
-  // Student specific
   phoneNumber: z.string().optional(),
   schoolName: z.string().optional(), 
   schoolId: z.string().optional(), 
@@ -87,25 +73,23 @@ const profileSchema = z.object({
   state: z.string().optional(),
   country: z.string().optional().default("India"),
 
-  // School specific (when role is 'school')
   schoolAddress: z.string().optional(),
   schoolContact: z.string().optional(),
   affiliationNumber: z.string().optional(),
   principalName: z.string().optional(), 
   schoolDesignation: z.string().optional(), 
   
-  // Vendor specific
   businessName: z.string().optional(),
   vendorCategory: z.string().optional(),
   gstin: z.string().optional(),
   businessAddress: z.string().optional(),
   
-  // Creator specific
   creatorName: z.string().optional(), 
   expertise: z.string().optional(), 
   portfolioUrl: z.string().url("Invalid URL").optional().or(z.literal('')),
+  bio: z.string().max(300, "Bio must be 300 characters or less").optional(),
+  availability_for_doubts: z.boolean().optional(),
   
-  // Parent specific
   childName: z.string().optional(),
   childClass: z.string().optional(),
   childSchoolName: z.string().optional(),
@@ -192,6 +176,8 @@ export default function EditProfilePage() {
       creatorName: "",
       expertise: "",
       portfolioUrl: "",
+      bio: "",
+      availability_for_doubts: false,
       childName: "",
       childClass: "",
       childSchoolName: "",
@@ -212,7 +198,11 @@ export default function EditProfilePage() {
     setIsInitialSchoolSetup(isSchoolSetupParam);
     setCurrentRole(roleFromParams);
     
-    let initialProfileData: Partial<ProfileFormData> = { role: roleFromParams, country: "India" };
+    let initialProfileData: Partial<ProfileFormData> = { 
+      role: roleFromParams, 
+      country: "India",
+      availability_for_doubts: false, // Default for new teacher profiles
+    };
 
     if (typeof window !== "undefined") {
         const emailFromParam = searchParams.get("email");
@@ -222,15 +212,18 @@ export default function EditProfilePage() {
         if (emailFromParam) initialProfileData.email = emailFromParam;
         if (nameFromParam) {
             initialProfileData.fullName = nameFromParam; 
-            if (roleFromParams === 'school' || roleFromParams === 'vendor' || roleFromParams === 'creator') {
+            if (roleFromParams === 'school' || roleFromParams === 'vendor' || roleFromParams === 'creator' || roleFromParams === 'teacher') {
               initialProfileData.contactPersonName = nameFromParam;
+              if (roleFromParams === 'creator' || roleFromParams === 'teacher') {
+                initialProfileData.creatorName = nameFromParam; // Use for public teacher/creator name
+              }
             }
         }
         if (designationFromParam && roleFromParams === 'school') {
             initialProfileData.schoolDesignation = designationFromParam;
         }
 
-        const profileKey = `${roleFromParams}ProfileData`;
+        const profileKey = (roleFromParams === 'teacher' || roleFromParams === 'student') ? 'userProfileData' : `${roleFromParams}ProfileData`;
         const genericProfileKey = 'userProfileData';
         
         let storedProfile: ProfileFormData | null = null;
@@ -240,14 +233,21 @@ export default function EditProfilePage() {
             const genericProfileString = localStorage.getItem(genericProfileKey);
 
             if (specificProfileString) {
-                try { storedProfile = JSON.parse(specificProfileString); } 
+                try { 
+                  const parsedSpecific = JSON.parse(specificProfileString);
+                  if (parsedSpecific.role === roleFromParams || (roleFromParams === 'teacher' && parsedSpecific.role === 'creator')) { // Allow loading creator as teacher base
+                     storedProfile = parsedSpecific;
+                  }
+                } 
                 catch (e) { console.error(`Failed to parse ${profileKey}`, e); }
             }
             if (!storedProfile && genericProfileString) {
                  try { 
                     const parsedGeneric = JSON.parse(genericProfileString);
-                    if (parsedGeneric.role === roleFromParams && (!emailFromParam || parsedGeneric.email === emailFromParam)) {
-                        storedProfile = parsedGeneric;
+                    if (parsedGeneric.role === roleFromParams || (roleFromParams === 'teacher' && parsedGeneric.role === 'creator')) {
+                        if (!emailFromParam || parsedGeneric.email === emailFromParam) {
+                            storedProfile = parsedGeneric;
+                        }
                     }
                 } 
                 catch (e) { console.error(`Failed to parse ${genericProfileKey}`, e); }
@@ -266,7 +266,7 @@ export default function EditProfilePage() {
         }
     }
     
-    reset(initialProfileData); // Reset the form with loaded or default data
+    reset(initialProfileData); 
 
     if(initialProfileData.avatarUrl) setPreviewUrl(initialProfileData.avatarUrl);
     
@@ -277,7 +277,7 @@ export default function EditProfilePage() {
     }
 
     setInitialDataLoading(false);
-  }, [searchParams, reset]); // reset is stable, searchParams is the dependency
+  }, [searchParams, reset, currentRole]); // Added currentRole to deps
 
   useEffect(() => {
     if (currentRole === 'student' && !isClassNurseryTo12(watchedClassName)) {
@@ -423,7 +423,7 @@ export default function EditProfilePage() {
                 apiSchoolId: schoolApiIdFromResponse, 
                 avatarUrl: data.avatarUrl, 
                 dataAiHint: data.dataAiHint,
-                phoneNumber: "", schoolName: data.schoolName ?? "", className: "", board: "", stream: "", dateOfBirth: "", gender: "", examTarget: "", city: "", state: "", country: data.country ?? "India", schoolAddress: data.schoolAddress ?? "", schoolContact: data.schoolContact ?? "", affiliationNumber: data.affiliationNumber ?? "", principalName: data.principalName ?? "", businessName: "", vendorCategory: "", gstin: "", businessAddress: "", creatorName: "", expertise: "", portfolioUrl: "", childName: "", childClass: "", childSchoolName: "", contactPersonName: tempAdminCreds.fullName, contactPersonEmail: tempAdminCreds.email, contactPersonPhone: data.contactPersonPhone ?? ""
+                phoneNumber: "", schoolName: data.schoolName ?? "", className: "", board: "", stream: "", dateOfBirth: "", gender: "", examTarget: "", city: "", state: "", country: data.country ?? "India", schoolAddress: data.schoolAddress ?? "", schoolContact: data.schoolContact ?? "", affiliationNumber: data.affiliationNumber ?? "", principalName: data.principalName ?? "", businessName: "", vendorCategory: "", gstin: "", businessAddress: "", creatorName: "", expertise: "", portfolioUrl: "", bio:"", availability_for_doubts: false, childName: "", childClass: "", childSchoolName: "", contactPersonName: tempAdminCreds.fullName, contactPersonEmail: tempAdminCreds.email, contactPersonPhone: data.contactPersonPhone ?? ""
             };
             localStorage.setItem('userProfileData', JSON.stringify(adminUserProfileData)); 
             
@@ -460,13 +460,13 @@ export default function EditProfilePage() {
             router.push('/school-dashboard'); 
         }
 
-    } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student') {
-        const profileKey = currentRole === 'student' ? 'userProfileData' : `${currentRole}ProfileData`;
+    } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student' || currentRole === 'teacher') {
+        const profileKey = (currentRole === 'student' || currentRole === 'teacher' || currentRole === 'creator') ? 'userProfileData' : `${currentRole}ProfileData`;
         const fullProfileData = { ...data, role: currentRole }; 
         localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
         
-        if(currentRole !== 'student') {
-            localStorage.setItem('userProfileData', JSON.stringify(fullProfileData));
+        if(currentRole !== 'student' && currentRole !== 'teacher' && currentRole !== 'creator') { // For vendor, parent - if they have separate specific stores
+            localStorage.setItem('userProfileData', JSON.stringify(fullProfileData)); // Also update generic if their specific store is the primary one
         }
         
         toast({ title: "Profile Saved!", description: "Your profile information has been updated." });
@@ -475,6 +475,7 @@ export default function EditProfilePage() {
         if (currentRole === 'vendor') redirectPath = '/vendor-dashboard';
         else if (currentRole === 'parent') redirectPath = '/parent-mode';
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
+        else if (currentRole === 'teacher') redirectPath = '/coaching-panel';
         else if (currentRole === 'student') redirectPath = '/'; 
         router.push(redirectPath);
     }
@@ -503,7 +504,7 @@ export default function EditProfilePage() {
               {currentRole === 'parent' && <ParentIcon className="h-7 w-7" />}
               {currentRole === 'school' && <School className="h-7 w-7" />}
               {currentRole === 'vendor' && <Briefcase className="h-7 w-7" />}
-              {currentRole === 'creator' && <CreatorIcon className="h-7 w-7" />}
+              {(currentRole === 'creator' || currentRole === 'teacher') && <CreatorIcon className="h-7 w-7" />}
               <BilingualText 
                 en={isInitialSchoolSetup ? "Register Your School" : `Edit ${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} Profile`} 
                 hi={isInitialSchoolSetup ? "अपना स्कूल पंजीकृत करें" : `${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} प्रोफ़ाइल संपादित करें`} 
@@ -533,8 +534,8 @@ export default function EditProfilePage() {
               <div>
                 <Label htmlFor="fullName">
                   <BilingualText 
-                    en={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "Contact Person Name" : "Full Name"} 
-                    hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "संपर्क व्यक्ति का नाम" : "पूरा नाम"} 
+                    en={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'teacher' ? "Contact Person Name" : "Full Name"} 
+                    hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'teacher' ? "संपर्क व्यक्ति का नाम" : "पूरा नाम"} 
                   />*
                 </Label>
                 <Controller name="fullName" control={control} render={({ field }) => <Input id="fullName" {...field} value={field.value ?? ''} placeholder="Your full name" />} />
@@ -543,8 +544,8 @@ export default function EditProfilePage() {
               <div>
                 <Label htmlFor="email">
                    <BilingualText 
-                    en={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "Contact Email" : "Email"} 
-                    hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' ? "संपर्क ईमेल" : "ईमेल"} 
+                    en={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'teacher' ? "Contact Email" : "Email"} 
+                    hi={currentRole === 'school' || currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'teacher' ? "संपर्क ईमेल" : "ईमेल"} 
                   />*
                 </Label>
                 <Controller name="email" control={control} render={({ field }) => <Input id="email" type="email" {...field} value={field.value ?? ''} placeholder="you@example.com" readOnly={!isInitialSchoolSetup && currentRole === 'school'} />} />
@@ -711,11 +712,44 @@ export default function EditProfilePage() {
                 </Card>
               </>
             )}
-             {currentRole === 'creator' && (
+             {(currentRole === 'creator' || currentRole === 'teacher') && (
               <>
-                <div><Label htmlFor="creatorName"><BilingualText en="Creator/Brand Name" hi="निर्माता/ब्रांड नाम" />*</Label><Controller name="creatorName" control={control} render={({ field }) => <Input id="creatorName" {...field} value={field.value ?? ''} placeholder="Your public creator name" required />} /></div>
-                <div><Label htmlFor="expertise"><BilingualText en="Areas of Expertise" hi="विशेषज्ञता के क्षेत्र" /></Label><Controller name="expertise" control={control} render={({ field }) => (<Select onValueChange={field.onChange} value={field.value ?? ''}><SelectTrigger><SelectValue placeholder="Select primary expertise" /></SelectTrigger><SelectContent>{creatorExpertiseAreas.map(area => (<SelectItem key={area} value={area}>{area}</SelectItem>))}</SelectContent></Select>)} /></div>
-                <div><Label htmlFor="portfolioUrl"><BilingualText en="Portfolio URL (Optional)" hi="पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} value={field.value ?? ''} placeholder="https://example.com/my-work" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
+                <div><Label htmlFor="creatorName"><BilingualText en="Public Display Name" hi="सार्वजनिक प्रदर्शन नाम" />*</Label><Controller name="creatorName" control={control} render={({ field }) => <Input id="creatorName" {...field} value={field.value ?? ''} placeholder="Your public creator/teacher name" required />} /></div>
+                <div><Label htmlFor="expertise"><BilingualText en={currentRole === 'teacher' ? "Teaching Subjects (comma-separated)" : "Areas of Expertise (comma-separated)"} hi={currentRole === 'teacher' ? "शिक्षण विषय (अल्पविराम से अलग)" : "विशेषज्ञता के क्षेत्र (अल्पविराम से अलग)"} />*</Label><Controller name="expertise" control={control} render={({ field }) => <Input id="expertise" {...field} value={field.value ?? ''} placeholder={currentRole === 'teacher' ? "e.g., Physics, JEE Maths" : "e.g., Science Projects, AI"} required />} /></div>
+                <div><Label htmlFor="bio"><BilingualText en="Bio / About Me (max 300 chars)" hi="बायो / मेरे बारे में (अधिकतम 300 अक्षर)" /></Label><Controller name="bio" control={control} render={({ field }) => <Textarea id="bio" {...field} value={field.value ?? ''} placeholder="Tell students/users about your experience and style." className="min-h-[100px]" maxLength={300} />} />{errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio.message}</p>}</div>
+                
+                {currentRole === 'teacher' && (
+                    <>
+                    <div>
+                        <Label htmlFor="examTarget" className="flex items-center gap-1.5"><Target className="h-4 w-4"/> <BilingualText en="Primary Exam Focus" hi="प्राथमिक परीक्षा लक्ष्य" /></Label>
+                        <Controller 
+                            name="examTarget" 
+                            control={control} 
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                                    <SelectTrigger id="examTarget">
+                                        <SelectValue placeholder={<BilingualText en="Select Primary Exam Focus" hi="प्राथमिक परीक्षा लक्ष्य चुनें" />} />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[250px]">
+                                        {competitiveExamsIndia.map(exam => (
+                                            <SelectItem key={exam} value={exam}>{exam}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )} 
+                        />
+                    </div>
+                    <div className="flex items-center space-x-2 pt-2">
+                        <Controller name="availability_for_doubts" control={control} render={({ field }) => (
+                            <SwitchIcon id="availability_for_doubts" checked={field.value} onCheckedChange={field.onChange} />
+                        )} />
+                        <Label htmlFor="availability_for_doubts"><BilingualText en="Available for Doubt Solving?" hi="शंका समाधान के लिए उपलब्ध हैं?" /></Label>
+                    </div>
+                    </>
+                )}
+                
+                <div><Label htmlFor="portfolioUrl"><BilingualText en="YouTube/Portfolio URL (Optional)" hi="यूट्यूब/पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} value={field.value ?? ''} placeholder="https://youtube.com/yourchannel" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
+                
                 <Card className="bg-muted/50 p-4">
                      <p className="text-sm font-medium mb-2">Contact Details (Private, for OSO)</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

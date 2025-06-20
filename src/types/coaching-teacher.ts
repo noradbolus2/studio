@@ -22,40 +22,42 @@ export interface CoachingTeacher {
   /** AI hint for the profile image (optional). */
   dataAiHintProfile?: string | null;
 
-  /** Array of subjects the teacher specializes in. */
+  /** 
+   * Array of subjects the teacher specializes in.
+   * Can be a comma-separated string from ProfileFormData.expertise, parsed into an array.
+   */
   subjects_specialized: string[];
 
   /**
    * Array of exam_ids the teacher targets.
    * References exam_master_list.exam_id.
+   * Can be derived or an extension of ProfileFormData.examTarget.
    */
   target_exam_ids: string[];
 
   /**
    * The exam_id currently active on the teacher's dashboard.
    * Should be one of the IDs from target_exam_ids.
+   * Maps from ProfileFormData.examTarget.
    */
   current_active_exam_id?: string | null;
 
-  /** A short biography or professional summary of the teacher. */
+  /** A short biography or professional summary of the teacher. Maps from ProfileFormData.bio. */
   bio?: string | null;
 
-  /**
-   * Indicates if the teacher's profile has been verified by the OSO platform admin.
-   * Defaults to false.
+  /** 
+   * Indicates if the teacher is currently available for doubt-solving sessions. 
+   * Maps from ProfileFormData.availability_for_doubts.
    */
-  is_verified?: boolean;
-
-  /** Indicates if the teacher is currently available for doubt-solving sessions. */
   availability_for_doubts?: boolean;
 
-  /** Current status of the teacher regarding live classes. */
+  /** Current status of the teacher regarding live classes. (System-managed) */
   live_class_status?: "offline" | "online_available" | "in_live_session";
 
-  /** Overall rating of the teacher, typically an average from course feedback. */
+  /** Overall rating of the teacher, typically an average from course feedback. (System-managed) */
   overall_rating?: number | null;
 
-  /** Optional social media or portfolio links for the teacher. */
+  /** Optional social media or portfolio links for the teacher. Maps from ProfileFormData.portfolioUrl. */
   social_links?: {
     youtube?: string;
     linkedin?: string;

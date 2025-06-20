@@ -71,7 +71,7 @@ export default function ScheduleClassPage() {
       description: `"${data.title}" has been scheduled.`,
     });
     setIsLoading(false);
-    router.push("/"); // Redirect to homepage or a "my classes" page
+    router.push("/coaching-panel"); 
   };
 
   const handleThumbnailFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -177,7 +177,7 @@ export default function ScheduleClassPage() {
                                             newDate.setHours(hours);
                                             newDate.setMinutes(minutes);
                                             field.onChange(newDate);
-                                        } else if (time) { // if date not set, set a default date (today) then time
+                                        } else if (time) { 
                                             const today = new Date();
                                             const [hours, minutes] = time.split(':').map(Number);
                                             today.setHours(hours);

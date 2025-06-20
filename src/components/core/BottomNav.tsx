@@ -11,9 +11,8 @@ const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/study', label: 'Study', icon: BookOpen },
   { href: '/creator-marketplace', label: 'Projects', icon: Sparkles }, 
-  { href: '/teach', label: 'Teach', icon: GraduationCap }, // New Teach Tab
+  { href: '/coaching-panel', label: 'Teach', icon: GraduationCap }, // Updated href
   { href: '/ai-guruji', label: 'AI', icon: Bot },
-  // { href: '/brain-scan-report', label: 'Aura Map', icon: Brain }, // Aura map can be part of profile or a sub-section
   { href: '/profile', label: 'Me', icon: User },
 ];
 
@@ -25,7 +24,6 @@ export function BottomNav() {
     setIsClient(true);
   }, []);
 
-  // Ensure max 5 items for aesthetics, dynamically adjust if needed
   const itemsToDisplay = navItems.slice(0, 5);
 
 
@@ -38,7 +36,7 @@ export function BottomNav() {
                        (item.href === "/ai-guruji" && pathname.startsWith("/ai-guruji")) ||
                        (item.href === "/study" && pathname.startsWith("/study")) ||
                        (item.href === "/creator-marketplace" && pathname.startsWith("/creator-marketplace")) ||
-                       (item.href === "/teach" && pathname.startsWith("/teach")) || // Check for Teach active state
+                       (item.href === "/coaching-panel" && pathname.startsWith("/coaching-panel")) || // Updated check
                        (item.href === "/brain-scan-report" && pathname.startsWith("/brain-scan-report"));
         }
         
