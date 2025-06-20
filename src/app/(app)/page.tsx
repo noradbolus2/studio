@@ -43,7 +43,7 @@ const heroSlides = [
 ];
 
 const baseQuickCategories = [
-  { id: 'books', labelEn: 'Books', labelHi: 'किताबें', icon: BookIcon, href: '/class-6-12-books', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["book", "ncert", "textbook", "syllabus", "class"] },
+  { id: 'oso_library', labelEn: 'OSO Library', labelHi: 'OSO पुस्तकालय', icon: Library, href: '/class-6-12-books', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["book", "library", "ncert", "textbook", "syllabus", "class", "exam book", "competitive", "preparation"] },
   { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["project", "model", "assignment", "homework"] },
   { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
   { id: 'guruji', labelEn: 'Guruji', labelHi: 'गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["ai", "doubt", "guruji", "help"] },
@@ -52,7 +52,6 @@ const baseQuickCategories = [
   { id: 'brain_scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress", "attention"] },
   { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["peer", "circle", "connect", "group"] },
   { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["college", "admission", "predictor", "university"] },
-  { id: 'competitive_bookstore', labelEn: 'Exam Books', labelHi: 'परीक्षा पुस्तकें', icon: Award, href: '/competitive-bookstore', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["exam book", "competitive", "preparation"] },
   { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["study", "dashboard", "notes", "offline"] },
   { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["class", "live", "schedule", "online class"] },
 ];
@@ -79,7 +78,7 @@ const studyBoosters = [
 ];
 
 const searchIcons = [
-    {labelEn: "Books", labelHi: "किताबें", icon: BookIcon, href:"/class-6-12-books"},
+    {labelEn: "Library", labelHi: "पुस्तकालय", icon: Library, href:"/class-6-12-books"},
     {labelEn: "Projects", labelHi: "प्रोजेक्ट", icon: Brain, href:"/services/projects"},
     {labelEn: "Stationery", labelHi: "स्टेशनरी", icon: PackageIcon, href:"/delivery"},
     {labelEn: "Guruji", labelHi: "गुरुजी", icon: Bot, href:"/ai-guruji"},
