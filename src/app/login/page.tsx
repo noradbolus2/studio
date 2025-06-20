@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon } from "lucide-react";
+import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, GraduationCap } from "lucide-react"; // Added GraduationCap
 import { Button } from "@/components/ui/button";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,7 @@ export default function RoleSelectionPage() {
     { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User },
     { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck },
     { role: 'school', labelEn: 'School', labelHi: 'स्कूल', icon: School },
+    { role: 'teacher', labelEn: 'Teacher', labelHi: 'शिक्षक', icon: GraduationCap }, // Added Teacher role
     { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase },
     { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon },
   ];
@@ -100,3 +101,4 @@ export default function RoleSelectionPage() {
     </div>
   );
 }
+
