@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Activity, AlertTriangle, CheckCircle, BrainCircuit, Lightbulb, Target, Bot, BookOpen, ChevronDown, ChevronUp, ListChecks, Sparkles, MessageSquareQuestion } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle, BrainCircuit, Lightbulb, Target, Bot, BookOpen, ChevronDown, ChevronUp, ListChecks, Sparkles, MessageSquareQuote, Headphones, Edit } from "lucide-react"; // Changed MessageSquareQuestion to MessageSquareQuote
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -208,7 +208,7 @@ export default function StudyDashboardPage() {
             <CardContent>
                 <p className="text-sm mb-3"><BilingualText en="Would you like to ask Guruji for clarification or a quick explanation?" hi="क्या आप गुरुजी से स्पष्टीकरण या त्वरित व्याख्या पूछना चाहेंगे?"/></p>
                 <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => router.push('/ai-guruji')}>
-                    <MessageSquareQuestion className="mr-2"/> <BilingualText en="Chat with Guruji" hi="गुरुजी से चैट करें"/>
+                    <MessageSquareQuote className="mr-2"/> <BilingualText en="Chat with Guruji" hi="गुरुजी से चैट करें"/>
                 </Button>
             </CardContent>
         </Card>
@@ -294,3 +294,5 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
+    
