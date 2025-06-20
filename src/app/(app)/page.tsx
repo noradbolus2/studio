@@ -49,10 +49,10 @@ const baseQuickCategories = [
   { id: 'guruji', labelEn: 'Guruji', labelHi: 'गुरुजी', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["ai", "doubt", "guruji", "help"] },
   { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["mind", "mood", "diary", "stress"] },
   { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["test", "mock", "exam", "neet", "jee", "upsc", "cat", "competitive"] },
-  { id: 'brain_scan', labelEn: 'Brain Scan', labelHi: 'ब्रेन स्कैन', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress", "attention"] },
+  { id: 'brain_scan', labelEn: 'Aura Map', labelHi: 'ऑरा मैप', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress", "attention", "aura"] },
   { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["peer", "circle", "connect", "group"] },
   { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["college", "admission", "predictor", "university"] },
-  { id: 'study_dashboard', labelEn: 'Study Space', labelHi: 'अध्ययन स्थान', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["study", "dashboard", "notes", "offline"] },
+  { id: 'study_dashboard', labelEn: 'Study Dashboard', labelHi: 'अध्ययन डैशबोर्ड', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["study", "dashboard", "notes", "offline", "tracker", "progress"] },
   { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["class", "live", "schedule", "online class"] },
 ];
 
