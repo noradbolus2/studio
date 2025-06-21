@@ -1,3 +1,4 @@
+
 "use client";
 
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -15,12 +16,13 @@ const plans = [
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
-      { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: false },
+      { textEn: "Basic AI Guruji Access", textHi: "बेसिक एआई गुरुजी एक्सेस", included: true },
+      { textEn: "Mind Diary Access", textHi: "माइंड डायरी एक्सेस", included: true },
+      { textEn: "Purchase Courses Individually", textHi: "व्यक्तिगत रूप से पाठ्यक्रम खरीदें", included: true },
+      { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: true },
       { textEn: "Limited Recorded Video Access", textHi: "सीमित रिकॉर्डेड वीडियो एक्सेस", included: false },
-      { textEn: "Notes & Assignments", textHi: "नोट्स और असाइनमेंट", included: false },
       { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: false },
       { textEn: "Smart Progress Tracker", textHi: "स्मार्ट प्रगति ट्रैकर", included: false },
-      { textEn: "Brain Scan, Aura Map Access", textHi: "ब्रेन स्कैन, ऑरा मैप एक्सेस", included: false },
       { textEn: "Bonus Doubt Sessions", textHi: "बोनस शंका समाधान सत्र", included: false },
     ],
     isPopular: false,
@@ -36,12 +38,13 @@ const plans = [
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
-      { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: false },
+      { textEn: "Advanced AI Guruji Access", textHi: "उन्नत एआई गुरुजी एक्सेस", included: true },
+      { textEn: "Mind Diary Access", textHi: "माइंड डायरी एक्सेस", included: true },
+      { textEn: "Purchase Courses Individually", textHi: "व्यक्तिगत रूप से पाठ्यक्रम खरीदें", included: true },
+      { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: true },
       { textEn: "Unlimited Video Replays", textHi: "असीमित वीडियो रिप्ले", included: true },
-      { textEn: "Full Notes & Assignments", textHi: "पूर्ण नोट्स और असाइनमेंट", included: true },
       { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: true },
       { textEn: "Smart Progress Tracker", textHi: "स्मार्ट प्रगति ट्रैकर", included: true },
-      { textEn: "Brain Scan, Aura Map Access", textHi: "ब्रेन स्कैन, ऑरा मैप एक्सेस", included: true },
       { textEn: "Bonus Doubt Sessions", textHi: "बोनस शंका समाधान सत्र", included: true },
     ],
     isPopular: true,
