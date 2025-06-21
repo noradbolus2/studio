@@ -16,13 +16,13 @@ const plans = [
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
-      { textEn: "Limited AI Guruji Queries", textHi: "सीमित एआई गुरुजी प्रश्न", included: true },
-      { textEn: "Basic Test Series Access", textHi: "बुनियादी टेस्ट सीरीज एक्सेस", included: true },
-      { textEn: "Standard Brain Scan Report", textHi: "मानक ब्रेन स्कैन रिपोर्ट", included: true },
-      { textEn: "Peer Matching", textHi: "सहकर्मी मिलान", included: true },
-      { textEn: "Advanced Performance Analytics", textHi: "उन्नत प्रदर्शन विश्लेषण", included: false },
-      { textEn: "Unlimited Live Doubt Solving", textHi: "असीमित लाइव शंका समाधान", included: false },
-      { textEn: "Exclusive Course Content", textHi: "विशेष पाठ्यक्रम सामग्री", included: false },
+      { textEn: "Limited Live Class Access", textHi: "सीमित लाइव क्लास एक्सेस", included: false },
+      { textEn: "Limited Recorded Video Access", textHi: "सीमित रिकॉर्डेड वीडियो एक्सेस", included: false },
+      { textEn: "Notes & Assignments", textHi: "नोट्स और असाइनमेंट", included: false },
+      { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: false },
+      { textEn: "Smart Progress Tracker", textHi: "स्मार्ट प्रगति ट्रैकर", included: false },
+      { textEn: "Brain Scan, Aura Map Access", textHi: "ब्रेन स्कैन, ऑरा मैप एक्सेस", included: false },
+      { textEn: "Bonus Doubt Sessions", textHi: "बोनस शंका समाधान सत्र", included: false },
     ],
     isPopular: false,
     ctaEn: "Your Current Plan",
@@ -32,18 +32,18 @@ const plans = [
   {
     nameEn: "Premium",
     nameHi: "प्रीमियम",
-    priceEn: "₹499",
-    priceHi: "₹४९९",
+    priceEn: "₹149",
+    priceHi: "₹१४९",
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
-      { textEn: "Unlimited AI Guruji Queries", textHi: "असीमित एआई गुरुजी प्रश्न", included: true },
-      { textEn: "Full Test Series Access", textHi: "पूर्ण टेस्ट सीरीज एक्सेस", included: true },
-      { textEn: "Advanced Brain Scan Report", textHi: "उन्नत ब्रेन स्कैन रिपोर्ट", included: true },
-      { textEn: "Priority Peer Matching", textHi: "प्राथमिकता सहकर्मी मिलान", included: true },
-      { textEn: "Advanced Performance Analytics", textHi: "उन्नत प्रदर्शन विश्लेषण", included: true },
-      { textEn: "Unlimited Live Doubt Solving", textHi: "असीमित लाइव शंका समाधान", included: true },
-      { textEn: "Exclusive Course Content", textHi: "विशेष पाठ्यक्रम सामग्री", included: true },
+      { textEn: "Full Live Class Access", textHi: "पूर्ण लाइव क्लास एक्सेस", included: true },
+      { textEn: "Unlimited Video Replays", textHi: "असीमित वीडियो रिप्ले", included: true },
+      { textEn: "Full Notes & Assignments", textHi: "पूर्ण नोट्स और असाइनमेंट", included: true },
+      { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: true },
+      { textEn: "Smart Progress Tracker", textHi: "स्मार्ट प्रगति ट्रैकर", included: true },
+      { textEn: "Brain Scan, Aura Map Access", textHi: "ब्रेन स्कैन, ऑरा मैप एक्सेस", included: true },
+      { textEn: "Bonus Doubt Sessions", textHi: "बोनस शंका समाधान सत्र", included: true },
     ],
     isPopular: true,
     ctaEn: "Upgrade to Premium",
@@ -79,11 +79,11 @@ export default function SubscribePage() {
             <CardContent className="space-y-4 flex-grow">
               <ul className="space-y-3">
                 {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center text-sm">
+                  <li key={i} className="flex items-start text-sm">
                     {feature.included ? (
-                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      <Check className="h-4 w-4 text-green-500 mr-2 shrink-0 mt-0.5" />
                     ) : (
-                      <X className="h-4 w-4 text-red-500 mr-2" />
+                      <X className="h-4 w-4 text-red-500 mr-2 shrink-0 mt-0.5" />
                     )}
                     <BilingualText en={feature.textEn} hi={feature.textHi} />
                   </li>

@@ -9,26 +9,28 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Activity, AlertTriangle, CheckCircle, BrainCircuit, Lightbulb, Target, Bot, BookOpen, ChevronDown, ChevronUp, ListChecks, Sparkles, MessageSquareQuote, Headphones, Edit } from "lucide-react"; // Changed MessageSquareQuestion to MessageSquareQuote
+import { Activity, AlertTriangle, CheckCircle, BrainCircuit, Lightbulb, Target, Bot, BookOpen, ChevronDown, ChevronUp, ListChecks, Sparkles, MessageSquareQuote, Headphones, Edit, Video, FileText as NoteIcon, HelpCircle as QuizIcon } from "lucide-react"; // Changed MessageSquareQuestion to MessageSquareQuote
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { ProfileFormData } from '../edit-profile/page';
 
-interface Topic {
+interface LessonItem {
   id: string;
   titleEn: string;
   titleHi: string;
+  type: 'video' | 'quiz' | 'notes';
   completed: boolean;
-  clarity?: 'high' | 'medium' | 'low'; // Optional: from Aura Map
+  replays_played?: number;
+  max_replays?: number;
 }
 
 interface Chapter {
   id: string;
   titleEn: string;
   titleHi: string;
-  topics: Topic[];
+  lessons: LessonItem[];
   isCurrent?: boolean;
 }
 
@@ -46,21 +48,20 @@ const mockChapters: Chapter[] = [
     titleEn: "Chapter 1: Chemical Reactions and Equations",
     titleHi: "अध्याय 1: रासायनिक अभिक्रियाएँ एवं समीकरण",
     isCurrent: true,
-    topics: [
-      { id: "t1a", titleEn: "Introduction to Chemical Reactions", titleHi: "रासायनिक अभिक्रियाओं का परिचय", completed: true, clarity: 'high' },
-      { id: "t1b", titleEn: "Types of Chemical Reactions", titleHi: "रासायनिक अभिक्रियाओं के प्रकार", completed: false, clarity: 'medium' },
-      { id: "t1c", titleEn: "Balancing Chemical Equations", titleHi: "रासायनिक समीकरणों को संतुलित करना", completed: false },
-      { id: "t1d", titleEn: "Redox Reactions", titleHi: "रेडॉक्स अभिक्रियाएँ", completed: false, clarity: 'low' },
+    lessons: [
+      { id: "l1a", titleEn: "Video 1: Types of Reactions", titleHi: "वीडियो 1: अभिक्रियाओं के प्रकार", type: 'video', completed: true, replays_played: 2, max_replays: 10 },
+      { id: "l1b", titleEn: "Video 2: Balancing Equations", titleHi: "वीडियो 2: समीकरणों को संतुलित करना", type: 'video', completed: false, replays_played: 9, max_replays: 10 },
+      { id: "l1c", titleEn: "Notes: Redox Reactions", titleHi: "नोट्स: रेडॉक्स अभिक्रियाएँ", type: 'notes', completed: false },
+      { id: "l1d", titleEn: "Quiz: Chapter 1", titleHi: "प्रश्नोत्तरी: अध्याय 1", type: 'quiz', completed: false },
     ],
   },
   {
     id: "ch2",
     titleEn: "Chapter 2: Acids, Bases, and Salts",
     titleHi: "अध्याय 2: अम्ल, क्षारक एवं लवण",
-    topics: [
-      { id: "t2a", titleEn: "Properties of Acids and Bases", titleHi: "अम्ल एवं क्षारक के गुणधर्म", completed: false },
-      { id: "t2b", titleEn: "pH Scale and Importance", titleHi: "pH स्केल एवं महत्व", completed: false },
-      { id: "t2c", titleEn: "Common Salts", titleHi: "सामान्य लवण", completed: false },
+    lessons: [
+      { id: "l2a", titleEn: "Video: Properties of Acids", titleHi: "वीडियो: अम्ल के गुणधर्म", type: 'video', completed: false, replays_played: 0, max_replays: 10 },
+      { id: "l2b", titleEn: "Notes: pH Scale", titleHi: "नोट्स: पीएच स्केल", type: 'notes', completed: false },
     ],
   },
 ];
@@ -70,7 +71,7 @@ const mockPendingTasks: PendingTask[] = [
   { id: "task2", descriptionEn: "Read Chapter 2 - Acids & Bases", descriptionHi: "अध्याय 2 पढ़ें - अम्ल और क्षारक", type: 'reading' },
 ];
 
-const mockWeakTopics: string[] = ["Redox Reactions", "Balancing Complex Equations"];
+const mockWeakTopics: string[] = ["Balancing Complex Equations"];
 
 export default function StudyDashboardPage() {
   const router = useRouter();
@@ -88,63 +89,57 @@ export default function StudyDashboardPage() {
         } catch (err) { console.warn("Could not parse profile for Study Dashboard:", err); }
       }
     }
-    // Simulate inactivity check
-    const timer = setTimeout(() => {
-      const currentChapter = chapters.find(ch => ch.isCurrent);
-      if (currentChapter && currentChapter.topics.some(t => t.clarity === 'low' && !t.completed)) {
-        setShowAiHelp(true);
-      }
-    }, 15000); // Show after 15 seconds if low clarity on current topic
-    return () => clearTimeout(timer);
-  }, [chapters]);
+  }, []);
 
 
-  const handleTopicCompletion = (chapterId: string, topicId: string, completed: boolean) => {
+  const handleLessonCompletion = (chapterId: string, lessonId: string, completed: boolean) => {
     setChapters(prevChapters =>
       prevChapters.map(chapter =>
         chapter.id === chapterId
           ? {
               ...chapter,
-              topics: chapter.topics.map(topic =>
-                topic.id === topicId ? { ...topic, completed } : topic
+              lessons: chapter.lessons.map(lesson =>
+                lesson.id === lessonId ? { ...lesson, completed } : lesson
               ),
             }
           : chapter
       )
     );
     if (completed) {
-      toast({ title: "Topic Completed!", description: "Great job! Consider a quick review quiz."});
+      toast({ title: "Lesson Completed!", description: "Great job keeping up!"});
     }
   };
+  
+  const getLessonIcon = (type: LessonItem['type']) => {
+    switch (type) {
+      case 'video': return <Video className="h-4 w-4 text-muted-foreground" />;
+      case 'notes': return <NoteIcon className="h-4 w-4 text-muted-foreground" />;
+      case 'quiz': return <QuizIcon className="h-4 w-4 text-muted-foreground" />;
+      default: return <BookOpen className="h-4 w-4 text-muted-foreground" />;
+    }
+  }
 
   const overallProgress = useMemo(() => {
-    const totalTopics = chapters.reduce((sum, chapter) => sum + chapter.topics.length, 0);
-    const completedTopics = chapters.reduce((sum, chapter) => sum + chapter.topics.filter(t => t.completed).length, 0);
-    return totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
+    const totalLessons = chapters.reduce((sum, chapter) => sum + chapter.lessons.length, 0);
+    const completedLessons = chapters.reduce((sum, chapter) => sum + chapter.lessons.filter(l => l.completed).length, 0);
+    return totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
   }, [chapters]);
 
   const currentChapterForDisplay = chapters.find(ch => ch.isCurrent) || chapters[0];
-
-  const getClarityMeterColor = (clarity?: 'high' | 'medium' | 'low'): string => {
-    if (clarity === 'high') return 'bg-green-500';
-    if (clarity === 'medium') return 'bg-yellow-500';
-    if (clarity === 'low') return 'bg-red-500';
-    return 'bg-gray-300'; // Default if no clarity
-  };
 
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
           <Activity className="h-8 w-8 text-primary" />
-          <BilingualText en="OSO Turbo Tracker" hi="OSO टर्बो ट्रैकर" />
+          <BilingualText en="My Course Dashboard" hi="मेरा कोर्स डैशबोर्ड" />
         </h1>
         <p className="text-muted-foreground">
-          <BilingualText en="Your smart learning activity dashboard." hi="आपका स्मार्ट लर्निंग एक्टिविटी डैशबोर्ड।" />
+          <BilingualText en="Track your progress and stay on top of your courses." hi="अपनी प्रगति को ट्रैक करें और अपने पाठ्यक्रमों में शीर्ष पर रहें।" />
         </p>
       </header>
-
-      <Card className="bg-card/70 backdrop-blur-sm border-primary/20">
+      
+       <Card className="bg-card/70 backdrop-blur-sm border-primary/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><ListChecks className="text-primary"/> <BilingualText en="Overall Progress" hi="समग्र प्रगति" /></CardTitle>
         </CardHeader>
@@ -155,8 +150,8 @@ export default function StudyDashboardPage() {
           </div>
           <p className="text-xs text-muted-foreground">
             <BilingualText 
-                en={`${chapters.reduce((sum, chapter) => sum + chapter.topics.filter(t => t.completed).length, 0)} of ${chapters.reduce((sum, chapter) => sum + chapter.topics.length, 0)} topics completed.`} 
-                hi={`${chapters.reduce((sum, chapter) => sum + chapter.topics.length, 0)} में से ${chapters.reduce((sum, chapter) => sum + chapter.topics.filter(t => t.completed).length, 0)} विषय पूरे हुए।`}
+                en={`${chapters.reduce((sum, chapter) => sum + chapter.lessons.filter(t => t.completed).length, 0)} of ${chapters.reduce((sum, chapter) => sum + chapter.lessons.length, 0)} lessons completed.`} 
+                hi={`${chapters.reduce((sum, chapter) => sum + chapter.lessons.length, 0)} में से ${chapters.reduce((sum, chapter) => sum + chapter.lessons.filter(t => t.completed).length, 0)} पाठ पूरे हुए।`}
             />
           </p>
         </CardContent>
@@ -166,36 +161,39 @@ export default function StudyDashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><BookOpen className="text-accent"/> <BilingualText en={`Current: ${currentChapterForDisplay.titleEn}`} hi={`वर्तमान: ${currentChapterForDisplay.titleHi}`} /></CardTitle>
-            <CardDescription><BilingualText en="Track your progress through the topics." hi="विषयों के माध्यम से अपनी प्रगति को ट्रैक करें।" /></CardDescription>
+            <CardDescription><BilingualText en="Track your progress through the lessons." hi="पाठों के माध्यम से अपनी प्रगति को ट्रैक करें।" /></CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {currentChapterForDisplay.topics.map(topic => (
-              <div key={topic.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+            {currentChapterForDisplay.lessons.map(lesson => (
+              <div key={lesson.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
                 <div className="flex items-center gap-3">
                   <Checkbox
-                    id={`topic-${topic.id}`}
-                    checked={topic.completed}
-                    onCheckedChange={(checked) => handleTopicCompletion(currentChapterForDisplay.id, topic.id, !!checked)}
+                    id={`lesson-${lesson.id}`}
+                    checked={lesson.completed}
+                    onCheckedChange={(checked) => handleLessonCompletion(currentChapterForDisplay.id, lesson.id, !!checked)}
                     className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                   />
-                  <Label htmlFor={`topic-${topic.id}`} className={cn("text-sm cursor-pointer", topic.completed && "line-through text-muted-foreground")}>
-                    <BilingualText en={topic.titleEn} hi={topic.titleHi} />
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    {getLessonIcon(lesson.type)}
+                    <Label htmlFor={`lesson-${lesson.id}`} className={cn("text-sm cursor-pointer", lesson.completed && "line-through text-muted-foreground")}>
+                      <BilingualText en={lesson.titleEn} hi={lesson.titleHi} />
+                    </Label>
+                  </div>
                 </div>
-                <div title={topic.clarity ? `Clarity: ${topic.clarity}` : 'Clarity not assessed'} className={cn("w-3 h-3 rounded-full", getClarityMeterColor(topic.clarity))}></div>
+                {lesson.type === 'video' && lesson.max_replays && (
+                  <div className={cn("text-xs font-medium", (lesson.replays_played || 0) >= lesson.max_replays ? 'text-destructive' : 'text-muted-foreground')}>
+                     {(lesson.replays_played || 0) >= lesson.max_replays && <AlertTriangle className="inline h-3 w-3 mr-1"/>}
+                     <BilingualText en={`Played ${lesson.replays_played}/${lesson.max_replays}`} hi={`देखा गया ${lesson.replays_played}/${lesson.max_replays}`} />
+                  </div>
+                )}
               </div>
             ))}
-          </CardContent>
-          <CardFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => toast({title: "Quick Quiz (Simulated)", description:"Generating quiz for " + currentChapterForDisplay.titleEn})}>
-                <Target className="mr-2"/> <BilingualText en="Quick Chapter Quiz" hi="त्वरित अध्याय प्रश्नोत्तरी"/>
-            </Button>
-            <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-                <Link href="/study/my-notes/new">
-                    <Lightbulb className="mr-2"/> <BilingualText en="Add Notes" hi="नोट्स जोड़ें"/>
+             <Button asChild variant="link" className="w-full mt-2">
+                <Link href="/subscribe">
+                    <BilingualText en="Replays over? Unlock Unlimited with Premium" hi="रिप्ले खत्म? प्रीमियम के साथ अनलिमिटेड अनलॉक करें"/>
                 </Link>
             </Button>
-          </CardFooter>
+          </CardContent>
         </Card>
       )}
 
@@ -255,7 +253,7 @@ export default function StudyDashboardPage() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="py-2 px-4 text-xs text-muted-foreground">
-                                <BilingualText en={`${chapter.topics.filter(t=>t.completed).length} / ${chapter.topics.length} topics completed`} hi={`${chapter.topics.length} में से ${chapter.topics.filter(t=>t.completed).length} विषय पूर्ण`}/>
+                                <BilingualText en={`${chapter.lessons.filter(t=>t.completed).length} / ${chapter.lessons.length} lessons completed`} hi={`${chapter.lessons.length} में से ${chapter.lessons.filter(t=>t.completed).length} पाठ पूर्ण`}/>
                             </CardContent>
                         </Card>
                     ))}
@@ -294,5 +292,3 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
-
-    
