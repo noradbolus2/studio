@@ -10,12 +10,14 @@ import {
   FlaskConical, Package as PackageIcon, Smile, Target, ChevronRight, ChevronLeft, Hand, Star, Users, Briefcase, Bike, FileText, Award, CalendarDays, ClipboardList, Home as HomeIconLucide, Truck, Settings, User as UserIcon, Sparkles, MessageCircleHeart, Youtube, Library, Cookie, PackageSearch, LocateFixed, Mic, Lightbulb, Music2, GraduationCap, Video,
   RadioTower,
   Timer,    
-  PlaySquare 
+  PlaySquare,
+  Gem, // Added for premium card
+  ArrowRight // Added for premium card button
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -464,6 +466,34 @@ export default function ModernHomePage() {
       </section>
 
       <section>
+        <Card className="bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 border-primary/30 shadow-lg hover:shadow-primary/20 transition-all">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle className="text-xl font-headline text-primary">
+                        <BilingualText en="Unlock OSO Premium" hi="OSO प्रीमियम अनलॉक करें" />
+                    </CardTitle>
+                    <CardDescription className="text-primary-foreground/80">
+                        <BilingualText en="Get unlimited access to all features." hi="सभी सुविधाओं तक असीमित पहुंच प्राप्त करें।" />
+                    </CardDescription>
+                </div>
+                <Gem className="h-10 w-10 text-primary opacity-80" />
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                    <BilingualText en="Upgrade for unlimited AI Guruji chats, advanced analytics, exclusive courses, and more!" hi="असीमित एआई गुरुजी चैट, उन्नत विश्लेषण, विशेष पाठ्यक्रम और बहुत कुछ के लिए अपग्रेड करें!" />
+                </p>
+            </CardContent>
+            <CardFooter>
+                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Link href="/subscribe">
+                        <BilingualText en="View Premium Plans" hi="प्रीमियम योजनाएं देखें" /> <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                </Button>
+            </CardFooter>
+        </Card>
+    </section>
+
+      <section>
         <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Today's Recommendations" hi="आज की सिफारिशें" lang={currentLang}/></h2>
         {/* Developer Note: Personalization of these recommendations would ideally come from a dynamic backend based on user profile and activity. 
             The current implementation shows a static or very simply filtered list from mock data.
@@ -584,7 +614,7 @@ export default function ModernHomePage() {
                     <BilingualText en="No locations found for your search." hi="आपकी खोज के लिए कोई स्थान नहीं मिला।" lang={currentLang}/>
                   </p>
                 )}
-                <ScrollBar orientation="vertical" />
+                <ScrollBar orientation="horizontal" />
               </ScrollArea>
             </RadioGroup>
           </div>
