@@ -1,4 +1,3 @@
-
 "use client";
 
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -16,7 +15,7 @@ const plans = [
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
-      { textEn: "Limited Live Class Access", textHi: "सीमित लाइव क्लास एक्सेस", included: false },
+      { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: false },
       { textEn: "Limited Recorded Video Access", textHi: "सीमित रिकॉर्डेड वीडियो एक्सेस", included: false },
       { textEn: "Notes & Assignments", textHi: "नोट्स और असाइनमेंट", included: false },
       { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: false },
@@ -37,7 +36,7 @@ const plans = [
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
-      { textEn: "Full Live Class Access", textHi: "पूर्ण लाइव क्लास एक्सेस", included: true },
+      { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: false },
       { textEn: "Unlimited Video Replays", textHi: "असीमित वीडियो रिप्ले", included: true },
       { textEn: "Full Notes & Assignments", textHi: "पूर्ण नोट्स और असाइनमेंट", included: true },
       { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: true },
