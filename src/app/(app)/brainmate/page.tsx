@@ -118,13 +118,13 @@ export default function BrainmatePage() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
       <header className="p-4 border-b text-center bg-card rounded-t-lg">
-        <div className="flex items-center justify-center space-x-3 relative">
+        <div className="flex items-center justify-center space-x-2 relative">
             <Button variant="ghost" size="icon" className="absolute left-2" onClick={() => router.back()}>
                 <ChevronLeft className="h-5 w-5"/>
             </Button>
+            <Brain className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-xl font-bold font-headline text-primary flex items-center justify-center gap-2">
-              <Brain className="h-6 w-6" />
+            <h1 className="text-xl font-bold font-headline text-primary">
               <BilingualText en="OSO Brainmate™" hi="OSO ब्रेनमेट™" />
             </h1>
             <p className="text-xs text-muted-foreground">
