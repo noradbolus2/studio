@@ -2,7 +2,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback, useRef, type FormEvent } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,13 +19,15 @@ interface AnswerSheet {
   [questionIndex: number]: number; // selectedOptionIndex
 }
 
-interface QuestionResult {
+interface Result {
   questionText: string;
-  selectedOption: string;
-  correctOption: string;
-  isCorrect: boolean;
+  isCorrect?: boolean;
+  selectedOption?: string;
+  correctOption?: string;
+  modelAnswer?: string; // For subjective
   explanation?: string;
   diagramDataUri?: string;
+  questionType: 'mcq' | 'subjective';
 }
 
 type Question = GenerateExamTestOutput['questions'][0];
@@ -34,7 +36,7 @@ const getSecondsPerQuestion = (examType: string): number => {
     const lowerExamType = examType.toLowerCase();
     if (lowerExamType.includes("neet ug")) return 60; // 200 Qs / 200 mins
     if (lowerExamType.includes("jee main")) return 120; // 90 Qs / 180 mins
-    if (lowerExamType.includes("jee advanced")) return 180; // ~54 Qs per paper / 180 mins per paper => ~3.33 mins/Q. Rounded to 3 mins.
+    if (lowerExamType.includes("jee advanced")) return 180; // ~54 Qs per paper / 180 mins => ~3.33 mins/Q. Rounded to 3 mins.
     if (lowerExamType.includes("upsc cse prelims gs paper 1")) return 72; // 100 Qs / 120 mins
     if (lowerExamType.includes("cat varc")) return 100; // 24 Qs / 40 mins ~ 1.67 mins/Q
     if (lowerExamType.includes("cat dilr")) return 120; // 20 Qs / 40 mins = 2 mins/Q
@@ -63,7 +65,7 @@ export default function AttemptTestPage() {
   const [answerSheet, setAnswerSheet] = useState<AnswerSheet>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
-  const [results, setResults] = useState<QuestionResult[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
 
   const [timeLeft, setTimeLeft] = useState<number | null>(null); // in seconds
   const timerIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -84,25 +86,33 @@ export default function AttemptTestPage() {
 
     setIsSubmitted(true);
     let correctAnswers = 0;
-    const detailedResults: QuestionResult[] = testData.questions.map((q, index) => {
-      if (q.questionType !== 'mcq') return null; // Handle non-mcq questions if they appear
-      const selectedOptionIndex = answerSheet[index];
-      const isCorrect = selectedOptionIndex === q.correctAnswerIndex;
-      if (isCorrect) {
-        correctAnswers++;
+    const detailedResults: Result[] = testData.questions.map((q, index) => {
+      if (q.questionType === 'mcq') {
+        const selectedOptionIndex = answerSheet[index];
+        const isCorrect = selectedOptionIndex === q.correctAnswerIndex;
+        if (isCorrect) {
+          correctAnswers++;
+        }
+        return {
+          questionType: 'mcq',
+          questionText: q.questionText,
+          selectedOption: selectedOptionIndex !== undefined ? q.options![selectedOptionIndex] : "Not Answered",
+          correctOption: q.options![q.correctAnswerIndex!],
+          isCorrect: isCorrect,
+          explanation: q.explanation,
+          diagramDataUri: q.diagramDataUri,
+        };
+      } else { // Subjective
+        return {
+          questionType: 'subjective',
+          questionText: q.questionText,
+          modelAnswer: q.modelAnswer,
+          explanation: q.explanation,
+          diagramDataUri: q.diagramDataUri,
+        };
       }
-      return {
-        questionText: q.questionText,
-        selectedOption: selectedOptionIndex !== undefined ? q.options![selectedOptionIndex] : "Not Answered",
-        correctOption: q.options![q.correctAnswerIndex!],
-        isCorrect: isCorrect,
-        explanation: q.explanation,
-        diagramDataUri: q.diagramDataUri,
-      };
-    }).filter(Boolean) as QuestionResult[];
+    });
     
-    // Only count MCQs for score
-    const mcqQuestions = testData.questions.filter(q => q.questionType === 'mcq');
     setScore(correctAnswers);
     setResults(detailedResults);
     
@@ -262,7 +272,7 @@ export default function AttemptTestPage() {
         </Card>
 
         {results.map((result, index) => (
-          <Card key={index} className={result.isCorrect ? "border-green-500 bg-green-500/5" : "border-red-500 bg-red-500/5"}>
+          <Card key={index} className={result.isCorrect ? "border-green-500 bg-green-500/5" : (result.questionType === 'subjective' ? "border-blue-500 bg-blue-500/5" : "border-red-500 bg-red-500/5")}>
             <CardHeader>
               <CardTitle className="text-md">
                 <span className="text-sm font-normal text-muted-foreground">Q{index + 1}. </span>
@@ -282,8 +292,17 @@ export default function AttemptTestPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm space-y-2">
-              <p><strong><BilingualText en="Your Answer:" hi="आपका उत्तर:" /></strong> {result.selectedOption} {result.isCorrect ? <CheckCircle className="inline h-4 w-4 text-green-500 ml-1" /> : <XCircle className="inline h-4 w-4 text-red-500 ml-1" />}</p>
-              {!result.isCorrect && <p><strong><BilingualText en="Correct Answer:" hi="सही उत्तर:" /></strong> {result.correctOption}</p>}
+              {result.questionType === 'mcq' && (
+                  <>
+                    <p><strong><BilingualText en="Your Answer:" hi="आपका उत्तर:" /></strong> {result.selectedOption} {result.isCorrect ? <CheckCircle className="inline h-4 w-4 text-green-500 ml-1" /> : <XCircle className="inline h-4 w-4 text-red-500 ml-1" />}</p>
+                    {!result.isCorrect && <p><strong><BilingualText en="Correct Answer:" hi="सही उत्तर:" /></strong> {result.correctOption}</p>}
+                  </>
+              )}
+               {result.questionType === 'subjective' && result.modelAnswer && (
+                 <div className="mt-2 p-2 bg-blue-500/10 rounded-md border border-blue-500/30">
+                  <p className="flex items-start gap-1.5"><BookOpen size={14} className="text-blue-500 mt-0.5 shrink-0"/> <strong><BilingualText en="Model Answer:" hi="मॉडल उत्तर:" /></strong> {result.modelAnswer}</p>
+                </div>
+               )}
               {result.explanation && (
                 <div className="mt-2 p-2 bg-muted/50 rounded-md">
                   <p className="flex items-start gap-1.5"><Lightbulb size={14} className="text-yellow-500 mt-0.5 shrink-0"/> <strong><BilingualText en="Explanation:" hi="स्पष्टीकरण:" /></strong> {result.explanation}</p>
@@ -382,5 +401,3 @@ export default function AttemptTestPage() {
     </div>
   );
 }
-
-

@@ -83,7 +83,7 @@ const generateTextQuestionsPrompt = ai.definePrompt({
   output: {
     schema: GenerateExamTestOutputSchema
       .extend({ questions: z.array(QuestionSchema.omit({ diagramDataUri: true })) })
-      .partial({ testTitle: true }) // Makes testTitle optional for this specific prompt's output validation
+      .required({ testTitle: true }) // Makes testTitle mandatory for this prompt's output validation
   },
   prompt: `You are an expert AI Test Generator for Indian students, tasked with creating exam-style mock tests.
 Your output MUST be a JSON object perfectly matching the provided schema.
@@ -101,7 +101,7 @@ These are not suggestions; they are strict requirements for the test generation.
         *   Generating variations of PYQ-style questions where data, values, or specific scenarios are changed, but the core concept and difficulty remain identical to PYQs.
         *   Including some questions that are structurally and conceptually extremely similar to those found in PYQs.
 
-3.  **Specialized and Super-Specialty Exams (CRITICAL FOR ACCURACY & COMPLEXITY):**
+3.  **Super-Specialized and Super-Specialty Exams (CRITICAL FOR ACCURACY & COMPLEXITY):**
     *   If \`examNameOrType\` indicates a highly specialized postgraduate or super-specialty exam (e.g., "NEET SS Cardiology", "NEET SS Oncology", "UPSC CSE Mains Optional Paper - History", "GATE Computer Science - Advanced Algorithms"), the generated questions MUST be of an **EXPERT, SUPER-SPECIALIST DIFFICULTY LEVEL.**
     *   **VERY IMPORTANT:** These questions should be **LENGTHY and TOUGH.** They often involve **long clinical vignettes**, detailed case scenarios, and may require interpretation of multiple data points (e.g., lab values, imaging findings described in text, ECG interpretations described in text). The cognitive demand should be high, requiring **analytical skills, differential diagnosis, and application of advanced clinical knowledge**, not just factual recall.
     *   **AVOID GENERAL KNOWLEDGE OR FOUNDATIONAL QUESTIONS.** For example:
@@ -223,26 +223,7 @@ const generateExamTestFlow = ai.defineFlow(
     console.log(`[Genkit Flow - generateExamTestFlow] Starting test generation for: ${input.examNameOrType}, Subject: ${input.subject || 'N/A'}, Requested Qs: ${input.numQuestions}`);
     
     // Step 1: Generate textual content of questions, including diagram prompts
-    const {output: rawTextOutput} = await generateTextQuestionsPrompt(input);
-
-    let textOutput = rawTextOutput;
-
-    // Fallback for missing testTitle - this ensures testTitle is present before further processing
-    if (textOutput && Array.isArray(textOutput.questions) && !textOutput.testTitle) {
-        console.warn("[Genkit Flow - generateExamTestFlow] AI output was missing 'testTitle'. Generating a default title.");
-        let defaultTitle = `${input.examNameOrType}`;
-        if (input.subject) {
-            defaultTitle += ` - ${input.subject}`;
-        }
-        defaultTitle += " Mock Test (AI Generated)";
-        
-        // Create a new object that definitely includes testTitle
-        textOutput = {
-            testTitle: defaultTitle,
-            questions: textOutput.questions, // Preserve the questions from raw output
-        };
-    }
-
+    const {output: textOutput} = await generateTextQuestionsPrompt(input);
 
     if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions)) {
         console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure (text part). Output was null or malformed:", textOutput);
