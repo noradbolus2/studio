@@ -31,8 +31,8 @@ const plans = [
     disabled: true,
   },
   {
-    nameEn: "Premium",
-    nameHi: "प्रीमियम",
+    nameEn: "Premium Monthly",
+    nameHi: "प्रीमियम मासिक",
     priceEn: "₹149",
     priceHi: "₹१४९",
     priceDescriptionEn: "per month",
@@ -40,16 +40,38 @@ const plans = [
     features: [
       { textEn: "Advanced AI Guruji Access", textHi: "उन्नत एआई गुरुजी एक्सेस", included: true },
       { textEn: "Mind Diary Access", textHi: "माइंड डायरी एक्सेस", included: true },
-      { textEn: "Purchase Courses Individually", textHi: "व्यक्तिगत रूप से पाठ्यक्रम खरीदें", included: true },
       { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: true },
       { textEn: "Unlimited Video Replays", textHi: "असीमित वीडियो रिप्ले", included: true },
+      { textEn: "Full Notes & Assignments", textHi: "पूर्ण नोट्स और असाइनमेंट", included: true },
       { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: true },
       { textEn: "Smart Progress Tracker", textHi: "स्मार्ट प्रगति ट्रैकर", included: true },
       { textEn: "Bonus Doubt Sessions", textHi: "बोनस शंका समाधान सत्र", included: true },
     ],
     isPopular: true,
-    ctaEn: "Upgrade to Premium",
-    ctaHi: "प्रीमियम में अपग्रेड करें",
+    ctaEn: "Choose Monthly",
+    ctaHi: "मासिक चुनें",
+    disabled: false,
+  },
+  {
+    nameEn: "Premium Yearly",
+    nameHi: "प्रीमियम वार्षिक",
+    priceEn: "₹999",
+    priceHi: "₹९९९",
+    priceDescriptionEn: "per year",
+    priceDescriptionHi: "प्रति वर्ष",
+    features: [
+      { textEn: "Advanced AI Guruji Access", textHi: "उन्नत एआई गुरुजी एक्सेस", included: true },
+      { textEn: "Mind Diary Access", textHi: "माइंड डायरी एक्सेस", included: true },
+      { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: true },
+      { textEn: "Unlimited Video Replays", textHi: "असीमित वीडियो रिप्ले", included: true },
+      { textEn: "Full Notes & Assignments", textHi: "पूर्ण नोट्स और असाइनमेंट", included: true },
+      { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: true },
+      { textEn: "Smart Progress Tracker", textHi: "स्मार्ट प्रगति ट्रैकर", included: true },
+      { textEn: "Bonus Doubt Sessions", textHi: "बोनस शंका समाधान सत्र", included: true },
+    ],
+    isPopular: false,
+    ctaEn: "Choose Yearly & Save",
+    ctaHi: "वार्षिक चुनें और बचाएं",
     disabled: false,
   },
 ];
@@ -67,9 +89,9 @@ export default function SubscribePage() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {plans.map((plan, index) => (
-          <Card key={index} className={cn("flex flex-col", plan.isPopular ? "border-primary shadow-lg shadow-primary/20" : "")}>
+          <Card key={index} className={cn("flex flex-col h-full", plan.isPopular ? "border-primary shadow-lg shadow-primary/20" : "")}>
             {plan.isPopular && <div className="bg-primary text-primary-foreground text-xs font-bold text-center py-1 rounded-t-lg"><BilingualText en="Most Popular" hi="सबसे लोकप्रिय" /></div>}
             <CardHeader>
               <CardTitle className="text-2xl font-headline"><BilingualText en={plan.nameEn} hi={plan.nameHi} /></CardTitle>

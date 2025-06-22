@@ -480,7 +480,7 @@ export default function ModernHomePage() {
             </CardHeader>
             <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                    <BilingualText en="Upgrade for unlimited AI Guruji chats, advanced analytics, exclusive courses, and more!" hi="असीमित एआई गुरुजी चैट, उन्नत विश्लेषण, विशेष पाठ्यक्रम और बहुत कुछ के लिए अपग्रेड करें!" />
+                    <BilingualText en="Upgrade for unlimited AI Guruji chats, advanced analytics, and more! Plans start at ₹149/month or save with our yearly plan at ₹999." hi="असीमित एआई गुरुजी चैट, उन्नत विश्लेषण, और बहुत कुछ के लिए अपग्रेड करें! योजनाएं ₹149/माह से शुरू होती हैं या ₹999 की हमारी वार्षिक योजना के साथ बचत करें।" />
                 </p>
             </CardContent>
             <CardFooter>
