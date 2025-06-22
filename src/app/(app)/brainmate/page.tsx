@@ -122,12 +122,9 @@ export default function BrainmatePage() {
             <Button variant="ghost" size="icon" className="absolute left-2" onClick={() => router.back()}>
                 <ChevronLeft className="h-5 w-5"/>
             </Button>
-           <Avatar className="h-10 w-10">
-            <AvatarImage src="https://placehold.co/100x100.png" alt="Brainmate Avatar" data-ai-hint="friendly robot teacher" />
-            <AvatarFallback>BM</AvatarFallback>
-          </Avatar>
           <div>
-            <h1 className="text-xl font-bold font-headline text-primary">
+            <h1 className="text-xl font-bold font-headline text-primary flex items-center justify-center gap-2">
+              <Brain className="h-6 w-6" />
               <BilingualText en="OSO Brainmate™" hi="OSO ब्रेनमेट™" />
             </h1>
             <p className="text-xs text-muted-foreground">
