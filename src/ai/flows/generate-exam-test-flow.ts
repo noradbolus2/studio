@@ -267,7 +267,7 @@ const generateExamTestFlow = ai.defineFlow(
           console.log(`[Genkit Flow - generateExamTestFlow] Diagram prompt found for question: "${question.questionText.substring(0,30)}...". Prompt: "${question.diagramPrompt}"`);
           try {
             const {media} = await ai.generate({
-              model: 'googleai/gemini-2.0-flash-exp',
+              model: 'googleai/gemini-2.0-flash-preview-image-generation',
               prompt: `Generate a clear, simple diagram suitable for a multiple-choice question based on this description: ${question.diagramPrompt}. The diagram should visually represent the key elements needed to understand the question. Avoid text in the diagram unless absolutely necessary for labels.`,
               config: {
                 responseModalities: ['TEXT', 'IMAGE'], 
@@ -297,6 +297,3 @@ const generateExamTestFlow = ai.defineFlow(
     return finalOutput;
   }
 );
-
-// Add a new dev entry for this flow
-// import '@/ai/flows/generate-exam-test-flow.ts'; // This is already in dev.ts

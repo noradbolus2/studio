@@ -85,6 +85,7 @@ export default function AttemptTestPage() {
     setIsSubmitted(true);
     let correctAnswers = 0;
     const detailedResults: QuestionResult[] = testData.questions.map((q, index) => {
+      if (q.questionType !== 'mcq') return null; // Handle non-mcq questions if they appear
       const selectedOptionIndex = answerSheet[index];
       const isCorrect = selectedOptionIndex === q.correctAnswerIndex;
       if (isCorrect) {
@@ -92,15 +93,19 @@ export default function AttemptTestPage() {
       }
       return {
         questionText: q.questionText,
-        selectedOption: selectedOptionIndex !== undefined ? q.options[selectedOptionIndex] : "Not Answered",
-        correctOption: q.options[q.correctAnswerIndex],
+        selectedOption: selectedOptionIndex !== undefined ? q.options![selectedOptionIndex] : "Not Answered",
+        correctOption: q.options![q.correctAnswerIndex!],
         isCorrect: isCorrect,
         explanation: q.explanation,
         diagramDataUri: q.diagramDataUri,
       };
-    });
+    }).filter(Boolean) as QuestionResult[];
+    
+    // Only count MCQs for score
+    const mcqQuestions = testData.questions.filter(q => q.questionType === 'mcq');
     setScore(correctAnswers);
     setResults(detailedResults);
+    
   }, [testData, answerSheet, isSubmitted]); 
 
   useEffect(() => {
@@ -238,6 +243,7 @@ export default function AttemptTestPage() {
   const currentQuestion = testData.questions[currentQuestionIndex];
 
   if (isSubmitted) {
+    const mcqQuestionsCount = testData.questions.filter(q => q.questionType === 'mcq').length;
     return (
       <div className="space-y-6">
         <Card className="shadow-lg">
@@ -248,9 +254,9 @@ export default function AttemptTestPage() {
             <CardDescription>{testData.testTitle}</CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-4xl font-bold text-primary">{score} / {testData.questions.length}</p>
+            <p className="text-4xl font-bold text-primary">{score} / {mcqQuestionsCount}</p>
             <p className="text-lg text-muted-foreground">
-              <BilingualText en="Correct Answers" hi="सही उत्तर" />
+              <BilingualText en="Correct Answers (MCQ)" hi="सही उत्तर (MCQ)" />
             </p>
           </CardContent>
         </Card>
@@ -330,19 +336,29 @@ export default function AttemptTestPage() {
             </div>
           )}
           <p className="text-md font-semibold">{currentQuestion.questionText}</p>
-          <RadioGroup
-            key={`q-group-${currentQuestionIndex}`}
-            value={answerSheet[currentQuestionIndex]?.toString()}
-            onValueChange={(value) => handleOptionChange(currentQuestionIndex, parseInt(value))}
-            className="space-y-2"
-          >
-            {currentQuestion.options.map((option, index) => (
-              <Label key={index} htmlFor={`q${currentQuestionIndex}-opt${index}`} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted/50 cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                <RadioGroupItem value={index.toString()} id={`q${currentQuestionIndex}-opt${index}`} />
-                <span>{option}</span>
-              </Label>
-            ))}
-          </RadioGroup>
+          {currentQuestion.questionType === 'mcq' && currentQuestion.options && (
+            <RadioGroup
+              key={`q-group-${currentQuestionIndex}`}
+              value={answerSheet[currentQuestionIndex]?.toString()}
+              onValueChange={(value) => handleOptionChange(currentQuestionIndex, parseInt(value))}
+              className="space-y-2"
+            >
+              {currentQuestion.options.map((option, index) => (
+                <Label key={index} htmlFor={`q${currentQuestionIndex}-opt${index}`} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted/50 cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                  <RadioGroupItem value={index.toString()} id={`q${currentQuestionIndex}-opt${index}`} />
+                  <span>{option}</span>
+                </Label>
+              ))}
+            </RadioGroup>
+          )}
+          {currentQuestion.questionType === 'subjective' && (
+             <Alert>
+                <AlertTitle>Subjective Question</AlertTitle>
+                <AlertDescription>
+                    This is a subjective question. The model answer will be shown in the results after you submit the test.
+                </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button
@@ -366,4 +382,5 @@ export default function AttemptTestPage() {
     </div>
   );
 }
+
 
