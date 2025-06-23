@@ -32,9 +32,9 @@ interface BrainmateMessage {
 }
 
 const promptMap = [
-    // --- Most Specific First (Super Speciality) ---
+    // --- Most Specific First (Super Speciality & PG) ---
     { keywords: ['neet ss'], prompts: ["Explain the management of acute STEMI.", "What are the latest advancements in cardiothoracic surgery?", "Describe the pathophysiology of Alzheimer's disease.", "What are the treatment options for metastatic lung cancer?"] },
-    { keywords: ['neet pg', 'ini cet'], prompts: ["Differentiate between Crohn's disease and Ulcerative Colitis.", "What is the mechanism of action of Metformin?", "Describe the management of a patient with diabetic ketoacidosis.", "What are the key features on an ECG for a patient with Wolff-Parkinson-White syndrome?"] },
+    { keywords: ['neet pg', 'ini cet', 'fmge', 'aiapget'], prompts: ["Differentiate between Crohn's disease and Ulcerative Colitis.", "What is the mechanism of action of Metformin?", "Describe the management of a patient with diabetic ketoacidosis.", "What are the key features on an ECG for a patient with Wolff-Parkinson-White syndrome?"] },
     { keywords: ['jee advanced'], prompts: ["Explain the concept of hybridization in organic chemistry.", "Derive the formula for the moment of inertia of a solid sphere.", "What is a p-n junction diode and how does it work?", "Solve a complex number problem involving De Moivre's theorem."] },
 
     // --- Specific High-Level Exam Categories ---
@@ -46,7 +46,7 @@ const promptMap = [
     { keywords: ['law', 'clat', 'ailet', 'judicial', 'slat', 'lsat'], prompts: [ "What is the difference between a civil and a criminal case?", "Explain the concept of 'habeas corpus'.", "What are fundamental rights in the Indian Constitution?", "Describe the hierarchy of courts in India." ] },
 
     // --- General Streams ---
-    { keywords: ['neet', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc', 'fmge', 'aiapget'], prompts: ["Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?"] },
+    { keywords: ['neet ug', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc'], prompts: ["Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?"] },
     { keywords: ['jee main', 'jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'], prompts: [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ] },
     { keywords: ['design', 'nid', 'nift', 'uceed', 'b.arch', 'nata'], prompts: [ "What are the principles of good design?", "Explain the difference between UX and UI.", "What is 'kerning' in typography?", "Describe the concept of a color wheel." ] },
     { keywords: ['commerce', 'ca', 'cs', 'cma', 'accounts'], prompts: [ "What are Golden Rules of Accounting?", "Explain the concept of 'double-entry' bookkeeping.", "What is a balance sheet?", "Differentiate between equity and debt." ] },
