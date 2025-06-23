@@ -25,87 +25,58 @@ interface BrainmateMessage {
 }
 
 const getPromptsForTopic = (topic: string): string[] => {
+    if (!topic) {
+        return [ "What is photosynthesis?", "Explain Newton's laws of motion.", "Why is the sky blue?", "How does an electric motor work?" ];
+    }
     const lowerTopic = topic.toLowerCase();
 
-    if (lowerTopic.includes('jee') || lowerTopic.includes('engineering') || lowerTopic.includes('physics') || lowerTopic.includes('chemistry') || lowerTopic.includes('maths')) {
-        return [
-            "Explain Ohm's Law with an analogy.",
-            "What is the difference between series and parallel circuits?",
-            "How does a 4-stroke engine work?",
-            "Explain the concept of chemical equilibrium."
-        ];
+    // Engineering & Core Science
+    if (['jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'].some(k => lowerTopic.includes(k))) {
+        return [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ];
     }
-    if (lowerTopic.includes('neet') || lowerTopic.includes('medical') || lowerTopic.includes('b.v.sc') || lowerTopic.includes('bds') || lowerTopic.includes('mbbs') || lowerTopic.includes('nursing') || lowerTopic.includes('biology')) {
-        return [
-            "Describe the process of DNA replication.",
-            "What is the function of the mitochondria?",
-            "Explain the human digestive system.",
-            "What are the key differences between mitosis and meiosis?"
-        ];
+    // Medical
+    if (['neet', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc', 'ini cet', 'fmge', 'aiapget'].some(k => lowerTopic.includes(k))) {
+        return [ "Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?" ];
     }
-    if (lowerTopic.includes('upsc') || lowerTopic.includes('cse') || lowerTopic.includes('ias') || lowerTopic.includes('history') || lowerTopic.includes('polity') || lowerTopic.includes('psc')) {
-        return [
-            "What were the main features of the Indus Valley Civilization?",
-            "Explain the basic structure doctrine of the Indian Constitution.",
-            "What is the role of the RBI in the Indian economy?",
-            "Describe the process of the Indian monsoon."
-        ];
+    // Civil Services / Govt
+    if (['upsc', 'cse', 'ias', 'psc', 'history', 'polity', 'geography', 'economy', 'ssc', 'ibps', 'sbi', 'rbi', 'rrb', 'nda', 'cds', 'afcat'].some(k => lowerTopic.includes(k))) {
+        return [ "What were the main features of the Indus Valley Civilization?", "Explain the basic structure doctrine of the Indian Constitution.", "What is the role of the RBI in the Indian economy?", "Describe the process of the Indian monsoon." ];
     }
-    if (lowerTopic.includes('cat') || lowerTopic.includes('management') || lowerTopic.includes('mba')) {
-        return [
-            "What is Porter's Five Forces model?",
-            "Explain the difference between marketing and sales.",
-            "What is a balance sheet?",
-            "Explain the concept of supply and demand."
-        ];
+    // Management
+    if (['cat', 'management', 'mba', 'xat', 'snap', 'nmat', 'cmat', 'mat', 'iift'].some(k => lowerTopic.includes(k))) {
+        return [ "What is Porter's Five Forces model?", "Explain the difference between marketing and sales.", "What is a balance sheet?", "Explain the concept of supply and demand." ];
     }
-     if (lowerTopic.includes('law') || lowerTopic.includes('clat') || lowerTopic.includes('ailet')) {
-        return [
-            "What is the difference between a civil and a criminal case?",
-            "Explain the concept of 'habeas corpus'.",
-            "What are fundamental rights in the Indian Constitution?",
-            "Describe the hierarchy of courts in India."
-        ];
+    // Law
+    if (['law', 'clat', 'ailet', 'judicial', 'slat', 'lsat'].some(k => lowerTopic.includes(k))) {
+        return [ "What is the difference between a civil and a criminal case?", "Explain the concept of 'habeas corpus'.", "What are fundamental rights in the Indian Constitution?", "Describe the hierarchy of courts in India." ];
     }
-    if (lowerTopic.includes('design') || lowerTopic.includes('nid') || lowerTopic.includes('nift') || lowerTopic.includes('uceed')) {
-        return [
-            "What are the principles of good design?",
-            "Explain the difference between UX and UI.",
-            "What is 'kerning' in typography?",
-            "Describe the concept of a color wheel."
-        ];
+    // Design
+    if (['design', 'nid', 'nift', 'uceed', 'b.arch', 'nata'].some(k => lowerTopic.includes(k))) {
+        return [ "What are the principles of good design?", "Explain the difference between UX and UI.", "What is 'kerning' in typography?", "Describe the concept of a color wheel." ];
     }
-    if (lowerTopic.includes('commerce') || lowerTopic.includes('ca') || lowerTopic.includes('cs') || lowerTopic.includes('cma')) {
-        return [
-            "What are Golden Rules of Accounting?",
-            "Explain the concept of 'double-entry' bookkeeping.",
-            "What is a balance sheet?",
-            "Differentiate between equity and debt."
-        ];
+    // Commerce
+    if (['commerce', 'ca', 'cs', 'cma', 'accounts'].some(k => lowerTopic.includes(k))) {
+        return [ "What are Golden Rules of Accounting?", "Explain the concept of 'double-entry' bookkeeping.", "What is a balance sheet?", "Differentiate between equity and debt." ];
     }
-     if (lowerTopic.includes('class 10') || lowerTopic.includes('10th')) {
-        return [
-            "Explain the significance of the Dandi March.",
-            "What is the difference between metals and non-metals?",
-            "Explain Pythagoras' theorem with an example.",
-            "How does democratic decentralization work in India?"
-        ];
+    // Class-specific
+    if (lowerTopic.includes('class 12') || lowerTopic.includes('12th')) {
+        return [ "Explain Gauss's Law in electrostatics.", "What is a 'p-n junction' and how does it work?", "Explain the structure of DNA.", "What are the main functions of the Reserve Bank of India (RBI)?" ];
     }
-     if (lowerTopic.includes('class 12') || lowerTopic.includes('12th')) {
-        return [
-            "Explain Gauss's Law in electrostatics.",
-            "What is a 'p-n junction' and how does it work?",
-            "Explain the structure of DNA.",
-            "What are the main functions of the Reserve Bank of India (RBI)?"
-        ];
+    if (lowerTopic.includes('class 11') || lowerTopic.includes('11th')) {
+        return [ "Explain projectile motion with an example.", "What is the significance of Avogadro's number?", "Describe the functions of different parts of a flower.", "What is a 'ledger' in accounting?" ];
     }
-    // Default prompts for general science and curiosity
-    return [
-      "What is photosynthesis?",
-      "Explain Newton's laws of motion.",
-      "Why is the sky blue?",
-      "How does an electric motor work?",
-    ];
+    if (lowerTopic.includes('class 10') || lowerTopic.includes('10th')) {
+        return [ "Explain the significance of the Dandi March.", "What is the difference between metals and non-metals?", "Explain Pythagoras' theorem with an example.", "How does democratic decentralization work in India?" ];
+    }
+     if (lowerTopic.includes('class 9') || lowerTopic.includes('9th')) {
+        return [ "Why is the cell called the structural and functional unit of life?", "What is the law of conservation of mass?", "Describe the different types of tissues in animals.", "Explain the difference between speed and velocity." ];
+    }
+    if (['class 8', 'class 7', 'class 6'].some(k => lowerTopic.includes(k))) {
+        return [ "What is a food chain? Give an example.", "Explain how to find the area of a rectangle.", "What are the different states of matter?", "Why do we need a Parliament?" ];
+    }
+
+    // Default if no other match
+    return [ "What is photosynthesis?", "Explain Newton's laws of motion.", "Why is the sky blue?", "How does an electric motor work?" ];
 };
 
 
@@ -349,4 +320,5 @@ export default function BrainmatePage() {
     </div>
   );
 }
+
 
