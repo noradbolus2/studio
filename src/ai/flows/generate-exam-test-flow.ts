@@ -91,131 +91,40 @@ const generateTextQuestionsPrompt = ai.definePrompt({
       questions: z.array(BaseQuestionSchema.omit({ diagramDataUri: true })).describe('An array of generated questions without diagram data URI.'),
     }).required({ testTitle: true })
   },
-  prompt: `You are an expert AI Test Generator for Indian students, tasked with creating exam-style mock tests.
-Your output MUST be a JSON object perfectly matching the provided schema.
+  prompt: `You are an expert AI Test Generator for Indian competitive and school exams. Your output must be a JSON object that strictly adheres to the provided output schema.
 
-CRITICAL INSTRUCTIONS FOR QUESTION QUALITY & EXAM PATTERN (100% ACCURACY REQUIRED - NON-NEGOTIABLE):
-These are not suggestions; they are strict requirements for the test generation. Failure to adhere will result in an unusable test.
+**Key Generation Directives:**
 
-1.  **Syllabus, Pattern, and Difficulty Adherence:**
-    *   The questions, their types, distribution, and overall difficulty level MUST be **100% based on the typical syllabus and pattern** of the specified \`examNameOrType\`.
-    *   You MUST reflect the **LATEST known patterns** for the exam. If specifics are not known, use the most recent common patterns.
+1.  **Exam Fidelity:**
+    *   **Question Count:** For major exams, you MUST generate the standard number of questions for a full test unless a smaller \`numQuestions\` is specified.
+        *   **NEET UG:** 200 questions (50 each for Physics, Chem, Botany, Zoology).
+        *   **JEE Main:** 90 questions (30 each for Physics, Chem, Maths).
+        *   **UPSC CSE Prelims GS-1:** 100 questions.
+        *   **NEET SS (e.g., Cardiology):** 100 questions for a full mock.
+        *   **CAT Sections:** VARC (24), DILR (20), QA (22).
+    *   **Pattern & Style:** Questions MUST mirror the latest known pattern, difficulty, and style of Previous Year Questions (PYQs) for the given \`examNameOrType\`.
 
-2.  **Previous Year Questions (PYQs) Style Replication:**
-    *   Model questions **VERY CLOSELY** on the style, difficulty, cognitive demand, and topics covered in Previous Year Questions (PYQs) for the specified exam.
-    *   This includes:
-        *   Generating variations of PYQ-style questions where data, values, or specific scenarios are changed, but the core concept and difficulty remain identical to PYQs.
-        *   Including some questions that are structurally and conceptually extremely similar to those found in PYQs.
+2.  **Super-Specialty Exam Accuracy (Critical):**
+    *   For postgraduate or super-specialty exams (e.g., "NEET SS Cardiology", "UPSC CSE Mains Optional"), questions must be of **EXPERT, SUPER-SPECIALIST DIFFICULTY**.
+    *   These should be **lengthy, tough questions** often involving clinical vignettes, case scenarios, or deep analytical skills, mirroring the cognitive demand of the actual exam.
+    *   **DO NOT ask foundational questions.** A "NEET SS Cardiology" question must challenge a practicing cardiologist, not an MBBS student.
 
-3.  **Super-Specialized and Super-Specialty Exams (CRITICAL FOR ACCURACY & COMPLEXITY):**
-    *   If \`examNameOrType\` indicates a highly specialized postgraduate or super-specialty exam (e.g., "NEET SS Cardiology", "NEET SS Oncology", "UPSC CSE Mains Optional Paper - History", "GATE Computer Science - Advanced Algorithms"), the generated questions MUST be of an **EXPERT, SUPER-SPECIALIST DIFFICULTY LEVEL.**
-    *   **VERY IMPORTANT:** These questions should be **LENGTHY and TOUGH.** They often involve **long clinical vignettes**, detailed case scenarios, and may require interpretation of multiple data points (e.g., lab values, imaging findings described in text, ECG interpretations described in text). The cognitive demand should be high, requiring **analytical skills, differential diagnosis, and application of advanced clinical knowledge**, not just factual recall.
-    *   **AVOID GENERAL KNOWLEDGE OR FOUNDATIONAL QUESTIONS.** For example:
-        *   If "NEET SS Cardiology", questions must be on advanced cardiology topics (e.g., complex interventional procedures, rare cardiomyopathies, advanced electrophysiology, interpretation of complex echocardiograms, latest trial data in cardiology, management of complex arrhythmias, advanced heart failure therapies). DO NOT ask general medicine, MBBS-level physiology, or basic ECG interpretation questions that a general physician might answer. The questions should challenge a *practicing cardiologist or someone completing their DM/MCh in Cardiology*. A typical question would present a detailed patient case with multiple clinical parameters and ask for the most appropriate next step in management or a complex diagnostic conclusion.
-        *   If "UPSC CSE Mains Optional - History", questions must require deep analytical and historical interpretation skills on niche topics within the optional syllabus, not just factual recall suitable for GS Paper 1.
-    *   The question style, cognitive demand, and specific topics must mirror those found in *actual Previous Year Questions (PYQs)* for that specific super-specialty exam.
-    *   The level of detail and nuance expected in the questions and their correct answers should be appropriate for an expert in that specific field.
+3.  **Content & Formatting:**
+    *   **Question Types:** If \`includeSubjective\` is true, generate a mix of MCQs and subjective questions as specified. Otherwise, all questions must be MCQs. MCQs require 4 options and a \`correctAnswerIndex\`. Subjective questions require a \`modelAnswer\`.
+    *   **Calculations:** For numerical subjects (Physics, Maths, etc.), include a significant portion of calculation-based problems.
+    *   **Explanations:** You MUST provide a clear, concise 'explanation' for every single question. This is not optional.
+    *   **Diagrams:** For questions requiring a visual, include a \`diagramPrompt\` field with a clear, textual description of the diagram (e.g., "A pulley system with two masses..."). The \`questionText\` should refer to it.
+    *   **Plain Text Only:** All text, including formulas (H2O, CH3-CH2-OH) and symbols (->, AND), must be plain text. No LaTeX or special formatting.
 
-4.  **Question Type Instructions:**
-    {{#if includeSubjective}}
-    You MUST include a mix of Multiple Choice Questions (MCQs) and Subjective (written-answer) questions.
-    - For MCQs, you MUST set \`questionType\` to "mcq" and provide the \`options\` (exactly 4) and \`correctAnswerIndex\` fields.
-    - For Subjective questions, you MUST set \`questionType\` to "subjective" and provide a detailed \`modelAnswer\`. Omit \`options\` and \`correctAnswerIndex\` for subjective questions.
-    {{#if subjectiveQuestionCount}}
-    - Generate exactly {{{subjectiveQuestionCount}}} subjective questions. The remaining questions should be MCQs.
-    {{else}}
-    - Use a reasonable mix of MCQs and subjective questions based on the exam pattern. For board exams (like Class 10/12), a mix of 60% MCQs and 40% subjective questions is often appropriate. For purely MCQ-based competitive exams (like NEET UG), only include subjective questions if the user explicitly asks, and even then, only a few for practice unless the exam itself has them (like JEE Advanced paper).
-    {{/if}}
-    {{else}}
-    All questions generated MUST be Multiple Choice Questions (MCQs). \`questionType\` must be set to "mcq" for all questions, and you must provide the \`options\` and \`correctAnswerIndex\` fields.
-    {{/if}}
+4.  **Final Output:**
+    *   The root of the JSON output must contain two properties: \`testTitle\` (a descriptive title for the test) and \`questions\` (an array of question objects).
 
-5.  **Calculation-Based (Numerical) Questions:**
-    *   For subjects and exams where numerical problems are common (e.g., Physics, Mathematics, Physical Chemistry, Quantitative Aptitude sections), you MUST include a significant proportion of calculation-based questions.
-    *   These questions should require students to apply formulas, perform calculations, and arrive at a numerical answer (which will be one of the options).
-    *   Ensure the numerical values and options are realistic and test understanding of concepts, not just rote memorization of formulas.
-    *   For advanced medical exams, numerical questions might involve calculations based on interpreting lab values, physiological parameters, or drug dosage calculations.
+**Request Details:**
+*   **Exam:** {{{examNameOrType}}}
+*   **Subject:** {{#if subject}}{{{subject}}}{{else}}All subjects{{/if}}
+*   **Requested Questions:** {{{numQuestions}}} (Adhere to standard exam counts for full mocks)
 
-6.  **Exam-Specific Question Counts & Subject Distribution (MANDATORY OVERRIDE of \`numQuestions\` for Full Mocks):**
-    *   If \`examNameOrType\` indicates a major standardized exam, you MUST generate the **standard number of questions for a full test** of that exam/section, and maintain the correct subject distribution (if applicable and no specific subject is requested for a sub-part). This takes precedence over \`numQuestions\` unless \`numQuestions\` is very small (e.g., < 10, indicating a mini-sample for a very short test).
-        *   **NEET UG**: Exactly 200 questions total (students attempt 180). You must generate all 200. The structure is Physics: 50 Qs (35+15), Chemistry: 50 Qs (35+15), Botany: 50 Qs (35+15), Zoology: 50 Qs (35+15). If 'subject' is specified (e.g., "NEET UG Physics"), generate 50 questions for that subject.
-        *   **JEE Main**: Exactly 90 questions (Physics: 30, Chemistry: 30, Maths: 30). If 'subject' is specified (e.g., "JEE Main Chemistry"), generate 30 questions for that subject.
-        *   **JEE Advanced**: Typically two papers, each with around 54-60 questions (e.g., 18 Physics, 18 Chemistry, 18 Maths per paper). If "JEE Advanced" is specified without a paper, generate for one paper (e.g., 54 questions total, distributed).
-        *   **UPSC CSE Prelims GS Paper 1**: Exactly 100 questions.
-        *   **NEET SS (e.g., "NEET SS Cardiology", "NEET SS Neurology")**: Typically 100-150 questions. Aim for 100 questions if not otherwise specified by \`numQuestions\` for a full mock. If \`numQuestions\` is specified and is reasonably large (e.g., >50), adhere to it, otherwise aim for 100 for a full mock.
-        *   **CAT VARC Section**: Exactly 24 questions. **CAT DILR Section**: Exactly 20 questions. **CAT QA Section**: Exactly 22 questions.
-    *   If \`numQuestions\` is provided for these major exams and is *higher* than the standard for a specific part (e.g., requesting 60 physics questions for NEET UG), you can generate up to the requested 'numQuestions' if it makes sense for a practice test, but maintain the exam's difficulty and style.
-    *   For other exams or general requests (e.g., "Class 10 Science Prelim", "Physics Practice Test"), or if \`numQuestions\` is for a non-standardized test, adhere to \`numQuestions\` (up to a maximum of 200 questions).
-
-7.  **Answer Options:** For MCQs, ensure each question has exactly four distinct multiple-choice options.
-8.  **Explanations are Mandatory:** You MUST provide a value for the 'explanation' field for every single question (both MCQ and Subjective). This field should explain the 'why' behind the correct answer or provide additional context. This is not optional.
-9.  **Test Title Generation (MANDATORY):** The 'testTitle' field in the output JSON MUST be accurately generated to reflect the exam name/type, subject (if any), and whether it's a full mock or a sample. E.g., "NEET UG Full Syllabus Mock Test - Set 1", "JEE Main Physics Practice Test (30 Questions)", "NEET SS Cardiology Full Mock Test". This field is a direct property of the root JSON object, at the same level as 'questions'.
-10. **Diagrams (Text Prompt for Diagram):**
-    *   For questions that critically require a diagram for understanding (e.g., circuit diagrams, geometric figures, biological structures, physics setups, complex data interpretation), you MUST include a \\\`diagramPrompt\\\` field in the question's JSON object.
-    *   This \\\`diagramPrompt\\\` should be a clear, concise textual description of what the diagram should visually represent (e.g., "A pulley system with two masses, M1 and M2, connected by a string over a frictionless pulley. M1 is on an inclined plane at 30 degrees, M2 hangs vertically.").
-    *   The \`questionText\` should then refer to this diagram (e.g., "Based on the diagram provided...").
-    *   If no diagram is needed for a question, omit the \\\`diagramPrompt\\\` field.
-    *   DO NOT attempt to generate image data or use ASCII art in the \\\`diagramPrompt\\\` or \`questionText\`.
-
-CONTENT FORMATTING:
-- For any chemical formulas, reactions, or logical symbols (like ->, <->, AND, OR, NOT, ~), use only plain text characters. For example, represent 'CH3CH2OH' as is, use '->' for reaction arrows, and 'p AND q' for logical 'p and q'.
-- DO NOT use LaTeX, MathML, or any special math/chemical formatting (e.g., avoid '$...$', '\\\\xrightarrow', '\\\\frac', superscripts/subscripts that are not standard characters like ² or ₃ if possible. Prefer linear formulas like H2O, CO2).
-- All question text and options must be plain text strings suitable for direct display in HTML.
-- Each answer option in the 'options' array MUST be a distinct, separate string. Ensure there are exactly four options.
-
-REQUEST DETAILS:
-Exam Name/Type: {{{examNameOrType}}}
-{{#if subject}}Subject: {{{subject}}}{{/if}}
-Requested Number of Questions (Consider this alongside exam patterns): {{{numQuestions}}}
-{{#if includeSubjective}}Include Subjective Questions: Yes{{/if}}
-{{#if subjectiveQuestionCount}}Number of Subjective Questions to Generate: {{{subjectiveQuestionCount}}}{{/if}}
-
-Your output MUST be a JSON object.
-The root of this JSON object MUST contain exactly two properties:
-1.  \`testTitle\`: A string representing the title of the test, generated according to instruction #9.
-2.  \`questions\`: An array of question objects, where each question object adheres to the schema defined for questions (including \`questionType\`, \`questionText\`, and conditional fields like \`options\`/\`correctAnswerIndex\` for MCQs and \`modelAnswer\` for subjective questions).
-
-Strictly adhere to ALL instructions, especially regarding difficulty, pattern, and question counts for the specified exam.
-
-EXAMPLE FULL OUTPUT FORMAT (Illustrative - content will vary based on request):
-{
-  "testTitle": "Mixed Practice Test (Class 10 Science)",
-  "questions": [
-    {
-      "questionType": "mcq",
-      "questionText": "Which of the following is a balanced chemical equation?",
-      "options": [
-        "H2 + O2 -> H2O",
-        "2H2 + O2 -> 2H2O",
-        "H2 + O -> H2O",
-        "H2 + 2O -> H2O2"
-      ],
-      "correctAnswerIndex": 1,
-      "explanation": "In 2H2 + O2 -> 2H2O, the number of atoms of each element is the same on both sides of the equation (4 H atoms, 2 O atoms)."
-    },
-    {
-      "questionType": "subjective",
-      "questionText": "Explain the process of neutralization with an example.",
-      "modelAnswer": "Neutralization is a chemical reaction in which an acid and a base react quantitatively with each other to form a salt and water. The pH of the resulting solution becomes neutral (close to 7). For example, when hydrochloric acid (HCl), a strong acid, reacts with sodium hydroxide (NaOH), a strong base, it forms sodium chloride (NaCl), a salt, and water (H2O). The reaction is: HCl + NaOH -> NaCl + H2O.",
-      "explanation": "This reaction is highly exothermic, meaning it releases heat."
-    },
-    {
-        "questionType": "mcq",
-        "questionText": "A block of mass M is placed on a rough inclined plane as shown in the diagram. If the coefficient of static friction is μ, what is the maximum angle θ for which the block remains at rest?",
-        "diagramPrompt": "A block of mass M on an inclined plane at an angle θ to the horizontal. Forces like normal force, gravitational force, and frictional force should be implicitly considered.",
-        "options": [
-            "tan⁻¹(μ)",
-            "sin⁻¹(μ)",
-            "cos⁻¹(μ)",
-            "cot⁻¹(μ)"
-        ],
-        "correctAnswerIndex": 0,
-        "explanation": "The maximum angle for which the block remains at rest is given by θ = tan⁻¹(μ), where μ is the coefficient of static friction."
-    }
-    // ... more questions
-  ]
-}
-Generate the test now.
+Generate the JSON test data now.
 `,
 });
 
