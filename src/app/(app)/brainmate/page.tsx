@@ -24,59 +24,57 @@ interface BrainmateMessage {
   timestamp: Date;
 }
 
+const promptMap = [
+    // --- Most Specific First ---
+    // Super Speciality Medical
+    { keywords: ['neet ss'], prompts: ["Explain the management of acute STEMI.", "What are the latest advancements in cardiothoracic surgery?", "Describe the pathophysiology of Alzheimer's disease.", "What are the treatment options for metastatic lung cancer?"] },
+    // PG Medical
+    { keywords: ['neet pg', 'ini cet'], prompts: ["Differentiate between Crohn's disease and Ulcerative Colitis.", "What is the mechanism of action of Metformin?", "Describe the management of a patient with diabetic ketoacidosis.", "What are the key features on an ECG for a patient with Wolff-Parkinson-White syndrome?"] },
+    // JEE Advanced
+    { keywords: ['jee advanced'], prompts: ["Explain the concept of hybridization in organic chemistry.", "Derive the formula for the moment of inertia of a solid sphere.", "What is a p-n junction diode and how does it work?", "Solve a complex number problem involving De Moivre's theorem."] },
+
+    // --- General High-Level Exams ---
+    // UG Medical (General)
+    { keywords: ['neet', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc', 'fmge', 'aiapget'], prompts: ["Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?"] },
+    // Engineering (General)
+    { keywords: ['jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'], prompts: [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ] },
+     // Civil Services / Govt
+    { keywords: ['upsc', 'cse', 'ias', 'psc', 'history', 'polity', 'geography', 'economy', 'ssc', 'ibps', 'sbi', 'rbi', 'rrb', 'nda', 'cds', 'afcat'], prompts: [ "What were the main features of the Indus Valley Civilization?", "Explain the basic structure doctrine of the Indian Constitution.", "What is the role of the RBI in the Indian economy?", "Describe the process of the Indian monsoon." ] },
+    // Management
+    { keywords: ['cat', 'management', 'mba', 'xat', 'snap', 'nmat', 'cmat', 'mat', 'iift'], prompts: [ "What is Porter's Five Forces model?", "Explain the difference between marketing and sales.", "What is a balance sheet?", "Explain the concept of supply and demand." ] },
+    // Law
+    { keywords: ['law', 'clat', 'ailet', 'judicial', 'slat', 'lsat'], prompts: [ "What is the difference between a civil and a criminal case?", "Explain the concept of 'habeas corpus'.", "What are fundamental rights in the Indian Constitution?", "Describe the hierarchy of courts in India." ] },
+    // Design
+    { keywords: ['design', 'nid', 'nift', 'uceed', 'b.arch', 'nata'], prompts: [ "What are the principles of good design?", "Explain the difference between UX and UI.", "What is 'kerning' in typography?", "Describe the concept of a color wheel." ] },
+    // Commerce
+    { keywords: ['commerce', 'ca', 'cs', 'cma', 'accounts'], prompts: [ "What are Golden Rules of Accounting?", "Explain the concept of 'double-entry' bookkeeping.", "What is a balance sheet?", "Differentiate between equity and debt." ] },
+    
+    // --- School Level ---
+    // Class-specific
+    { keywords: ['class 12', '12th'], prompts: [ "Explain Gauss's Law in electrostatics.", "What is a 'p-n junction' and how does it work?", "Explain the structure of DNA.", "What are the main functions of the Reserve Bank of India (RBI)?" ] },
+    { keywords: ['class 11', '11th'], prompts: [ "Explain projectile motion with an example.", "What is the significance of Avogadro's number?", "Describe the functions of different parts of a flower.", "What is a 'ledger' in accounting?" ] },
+    { keywords: ['class 10', '10th'], prompts: [ "Explain the significance of the Dandi March.", "What is the difference between metals and non-metals?", "Explain Pythagoras' theorem with an example.", "How does democratic decentralization work in India?" ] },
+    { keywords: ['class 9', '9th'], prompts: [ "Why is the cell called the structural and functional unit of life?", "What is the law of conservation of mass?", "Describe the different types of tissues in animals.", "Explain the difference between speed and velocity." ] },
+    { keywords: ['class 8', 'class 7', 'class 6'], prompts: [ "What is a food chain? Give an example.", "Explain how to find the area of a rectangle.", "What are the different states of matter?", "Why do we need a Parliament?" ] },
+    { keywords: ['class 1', 'class 2', 'class 3', 'class 4', 'class 5', 'primary school'], prompts: [ "What is the water cycle?", "Explain the difference between living and non-living things.", "How do plants make their food?", "What is a noun?" ] },
+    { keywords: ['nursery', 'lkg', 'ukg'], prompts: [ "What sound does the letter 'A' make?", "Count the number of apples in the picture.", "What color is the sun?", "What is your name?" ] },
+];
+
 const getPromptsForTopic = (topic: string): string[] => {
+    const defaultPrompts = [ "What is photosynthesis?", "Explain Newton's laws of motion.", "Why is the sky blue?", "How does an electric motor work?" ];
     if (!topic) {
-        return [ "What is photosynthesis?", "Explain Newton's laws of motion.", "Why is the sky blue?", "How does an electric motor work?" ];
+        return defaultPrompts;
     }
     const lowerTopic = topic.toLowerCase();
 
-    // Engineering & Core Science
-    if (['jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'].some(k => lowerTopic.includes(k))) {
-        return [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ];
+    for (const entry of promptMap) {
+        if (entry.keywords.some(k => lowerTopic.includes(k))) {
+            return entry.prompts;
+        }
     }
-    // Medical
-    if (['neet', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc', 'ini cet', 'fmge', 'aiapget'].some(k => lowerTopic.includes(k))) {
-        return [ "Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?" ];
-    }
-    // Civil Services / Govt
-    if (['upsc', 'cse', 'ias', 'psc', 'history', 'polity', 'geography', 'economy', 'ssc', 'ibps', 'sbi', 'rbi', 'rrb', 'nda', 'cds', 'afcat'].some(k => lowerTopic.includes(k))) {
-        return [ "What were the main features of the Indus Valley Civilization?", "Explain the basic structure doctrine of the Indian Constitution.", "What is the role of the RBI in the Indian economy?", "Describe the process of the Indian monsoon." ];
-    }
-    // Management
-    if (['cat', 'management', 'mba', 'xat', 'snap', 'nmat', 'cmat', 'mat', 'iift'].some(k => lowerTopic.includes(k))) {
-        return [ "What is Porter's Five Forces model?", "Explain the difference between marketing and sales.", "What is a balance sheet?", "Explain the concept of supply and demand." ];
-    }
-    // Law
-    if (['law', 'clat', 'ailet', 'judicial', 'slat', 'lsat'].some(k => lowerTopic.includes(k))) {
-        return [ "What is the difference between a civil and a criminal case?", "Explain the concept of 'habeas corpus'.", "What are fundamental rights in the Indian Constitution?", "Describe the hierarchy of courts in India." ];
-    }
-    // Design
-    if (['design', 'nid', 'nift', 'uceed', 'b.arch', 'nata'].some(k => lowerTopic.includes(k))) {
-        return [ "What are the principles of good design?", "Explain the difference between UX and UI.", "What is 'kerning' in typography?", "Describe the concept of a color wheel." ];
-    }
-    // Commerce
-    if (['commerce', 'ca', 'cs', 'cma', 'accounts'].some(k => lowerTopic.includes(k))) {
-        return [ "What are Golden Rules of Accounting?", "Explain the concept of 'double-entry' bookkeeping.", "What is a balance sheet?", "Differentiate between equity and debt." ];
-    }
-    // Class-specific
-    if (lowerTopic.includes('class 12') || lowerTopic.includes('12th')) {
-        return [ "Explain Gauss's Law in electrostatics.", "What is a 'p-n junction' and how does it work?", "Explain the structure of DNA.", "What are the main functions of the Reserve Bank of India (RBI)?" ];
-    }
-    if (lowerTopic.includes('class 11') || lowerTopic.includes('11th')) {
-        return [ "Explain projectile motion with an example.", "What is the significance of Avogadro's number?", "Describe the functions of different parts of a flower.", "What is a 'ledger' in accounting?" ];
-    }
-    if (lowerTopic.includes('class 10') || lowerTopic.includes('10th')) {
-        return [ "Explain the significance of the Dandi March.", "What is the difference between metals and non-metals?", "Explain Pythagoras' theorem with an example.", "How does democratic decentralization work in India?" ];
-    }
-     if (lowerTopic.includes('class 9') || lowerTopic.includes('9th')) {
-        return [ "Why is the cell called the structural and functional unit of life?", "What is the law of conservation of mass?", "Describe the different types of tissues in animals.", "Explain the difference between speed and velocity." ];
-    }
-    if (['class 8', 'class 7', 'class 6'].some(k => lowerTopic.includes(k))) {
-        return [ "What is a food chain? Give an example.", "Explain how to find the area of a rectangle.", "What are the different states of matter?", "Why do we need a Parliament?" ];
-    }
-
-    // Default if no other match
-    return [ "What is photosynthesis?", "Explain Newton's laws of motion.", "Why is the sky blue?", "How does an electric motor work?" ];
+    
+    // Fallback if no specific match is found
+    return defaultPrompts;
 };
 
 
@@ -320,5 +318,6 @@ export default function BrainmatePage() {
     </div>
   );
 }
+
 
 
