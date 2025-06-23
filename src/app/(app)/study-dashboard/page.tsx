@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { ProfileFormData } from '../edit-profile/page';
+import { Label } from "@/components/ui/label";
 
 interface LessonItem {
   id: string;
