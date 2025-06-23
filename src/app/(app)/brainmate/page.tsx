@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import type { ProfileFormData } from '../edit-profile/page';
 import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface BrainmateMessage {
   id: string;
@@ -29,6 +29,28 @@ const examplePrompts = [
   "Explain Newton's laws of motion.",
   "Why is the sky blue?",
   "How does an electric motor work?",
+];
+
+const schoolClasses = [
+    { name: "Class 6" }, { name: "Class 7" }, { name: "Class 8" }, { name: "Class 9" }, { name: "Class 10" }, { name: "Class 11" }, { name: "Class 12" },
+];
+
+const examCategories = [
+  { name: 'JEE Main' }, { name: 'JEE Advanced' }, { name: 'BITSAT' }, { name: 'VITEEE' }, { name: 'SRMJEEE' }, { name: 'MET (Manipal)' }, { name: 'COMEDK UGET' }, { name: 'KIITEE' }, { name: 'WBJEE' }, { name: 'MHT CET (Engineering)' }, { name: 'GUJCET' }, { name: 'AP EAMCET (Engineering)' }, { name: 'TS EAMCET (Engineering)' }, { name: 'KCET (Engineering)' }, { name: 'GATE (for PG/PSU)' },
+  { name: 'NEET UG (MBBS, BDS, AYUSH, B.V.Sc)' }, { name: 'NEET PG (MD, MS, PG Diploma)' }, { name: 'INI CET (AIIMS, JIPMER, PGIMER, NIMHANS)' }, { name: 'NEET SS (DM, MCh)' }, { name: 'FMGE' }, { name: 'AIIMS Nursing' }, { name: 'Indian Army B.Sc Nursing / MNS' }, { name: 'AIAPGET (PG AYUSH)' },
+  { name: 'CAT' }, { name: 'XAT' }, { name: 'CMAT' }, { name: 'SNAP' }, { name: 'NMAT by GMAC' }, { name: 'MAT' }, { name: 'ATMA' }, { name: 'IIFT' }, { name: 'TISSNET (check latest)' }, { name: 'IBSAT' }, { name: 'MICAT' }, { name: 'GMAT (for Indian B-schools)' },
+  { name: 'CLAT (UG & PG)' }, { name: 'AILET (UG & PG)' }, { name: 'LSAT India' }, { name: 'SLAT' }, { name: 'MH CET Law' }, { name: 'AP LAWCET' }, { name: 'TS LAWCET' }, { name: 'Kerala KLEE' }, { name: 'State Judicial Services (PCS-J)' },
+  { name: 'UPSC CSE (IAS, IPS, etc.)' }, { name: 'UPSC IFoS' }, { name: 'UPSC ESE/IES' }, { name: 'UPSC Combined Geo-Scientist' }, { name: 'UPSC CMS' }, { name: 'UPSC CAPF' }, { name: 'SSC CGL' }, { name: 'SSC CHSL' }, { name: 'SSC JE' }, { name: 'SSC Stenographer' }, { name: 'SSC MTS' }, { name: 'SSC GD Constable' }, { name: 'SSC CPO' }, { name: 'IBPS PO' }, { name: 'IBPS Clerk' }, { name: 'IBPS SO' }, { name: 'IBPS RRB' }, { name: 'SBI PO' }, { name: 'SBI Clerk' }, { name: 'SBI SO' }, { name: 'RBI Grade B' }, { name: 'RBI Assistant' }, { name: 'NABARD Grade A & B' }, { name: 'LIC AAO / ADO' }, { name: 'UIIC/NIACL/Other Insurance' }, { name: 'ESIC / FCI' }, { name: 'RRB NTPC' }, { name: 'RRB JE' }, { name: 'RRB ALP' }, { name: 'RRB Group D' }, { name: 'State PSCs (General)' }, { name: 'State Level Police Recruitment' }, { name: 'High Court Exams' },
+  { name: 'NDA & NA' }, { name: 'CDS' }, { name: 'AFCAT' }, { name: 'INET' }, { name: 'Indian Army TES' }, { name: 'Indian Navy Sailors (SSR, AA, MR)' }, { name: 'Indian Air Force Airmen (Group X & Y)' }, { name: 'Indian Coast Guard (Navik, Yantrik)' }, { name: 'Territorial Army' },
+  { name: 'CUET UG' }, { name: 'CUET PG' }, { name: 'JMI Entrance' }, { name: 'AMU Entrance' },
+  { name: 'NID DAT' }, { name: 'UCEED / CEED' }, { name: 'NIFT Entrance' }, { name: 'NATA' }, { name: 'JEE Main Paper 2 (B.Arch/B.Plan)' }, { name: 'AIEED' },
+  { name: 'NCHM JEE' }, { name: 'State IHM Entrances' },
+  { name: 'ICAR AIEEA (UG, PG, PhD)' }, { name: 'State Agriculture University Entrances' },
+  { name: 'CTET' }, { name: 'State TETs' }, { name: 'UGC NET' }, { name: 'CSIR UGC NET' }, { name: 'SET / SLET' }, { name: 'KVS / NVS / DSSSB' }, { name: 'B.Ed. Entrances' },
+  { name: 'GPAT' }, { name: 'State CETs for B.Pharm' }, { name: 'NIPER JEE' },
+  { name: 'Research Fellowships & PhD Entrance' },
+  { name: 'CA (Foundation, Inter, Final)' }, { name: 'CS (CSEET, Executive, Professional)' }, { name: 'CMA (Foundation, Inter, Final)' },
+  { name: 'NTSE' }, { name: 'KVPY (check status)' }, { name: 'SOF Olympiads (NSO, IMO, IEO, etc.)' }, { name: 'Homi Bhabha Balvaidnyanik Spardha' },
 ];
 
 
@@ -79,7 +101,7 @@ export default function BrainmatePage() {
 
     if (!trimmedInput || isLoading) return;
     if (!currentTopic.trim()) {
-        toast({ title: "Topic Missing", description: "Please enter the subject or topic you're studying.", variant: "destructive" });
+        toast({ title: "Topic Missing", description: "Please select your subject or topic first.", variant: "destructive" });
         return;
     }
 
@@ -161,12 +183,23 @@ export default function BrainmatePage() {
             </p>
           </div>
         </div>
-        <Input
-            value={currentTopic}
-            onChange={(e) => setCurrentTopic(e.target.value)}
-            placeholder="What's your current subject/topic? (e.g., Class 8 Electricity)"
-            className="mt-3 text-center h-9"
-        />
+        <Select value={currentTopic} onValueChange={setCurrentTopic}>
+            <SelectTrigger className="mt-3 h-9">
+                <SelectValue placeholder="What's your current subject/topic?" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectGroup>
+                    <SelectLabel>School Classes</SelectLabel>
+                    {schoolClasses.map(c => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
+                </SelectGroup>
+                <SelectGroup>
+                    <SelectLabel>Competitive Exams</SelectLabel>
+                    {examCategories.map(exam => (
+                        <SelectItem key={exam.name} value={exam.name}>{exam.name}</SelectItem>
+                    ))}
+                </SelectGroup>
+            </SelectContent>
+        </Select>
       </header>
 
       <ScrollArea ref={scrollAreaRef} className="flex-grow overflow-y-auto p-4 space-y-4 bg-muted/20">
