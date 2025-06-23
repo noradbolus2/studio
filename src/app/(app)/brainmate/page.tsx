@@ -25,32 +25,26 @@ interface BrainmateMessage {
 }
 
 const promptMap = [
-    // --- Most Specific First ---
-    // Super Speciality Medical
+    // --- Most Specific First (Super Speciality) ---
     { keywords: ['neet ss'], prompts: ["Explain the management of acute STEMI.", "What are the latest advancements in cardiothoracic surgery?", "Describe the pathophysiology of Alzheimer's disease.", "What are the treatment options for metastatic lung cancer?"] },
-    // PG Medical
     { keywords: ['neet pg', 'ini cet'], prompts: ["Differentiate between Crohn's disease and Ulcerative Colitis.", "What is the mechanism of action of Metformin?", "Describe the management of a patient with diabetic ketoacidosis.", "What are the key features on an ECG for a patient with Wolff-Parkinson-White syndrome?"] },
-    // JEE Advanced
     { keywords: ['jee advanced'], prompts: ["Explain the concept of hybridization in organic chemistry.", "Derive the formula for the moment of inertia of a solid sphere.", "What is a p-n junction diode and how does it work?", "Solve a complex number problem involving De Moivre's theorem."] },
 
-    // --- General High-Level Exams ---
-    // UG Medical (General)
-    { keywords: ['neet', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc', 'fmge', 'aiapget'], prompts: ["Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?"] },
-    // Engineering (General)
-    { keywords: ['jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'], prompts: [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ] },
-     // Civil Services / Govt
-    { keywords: ['upsc', 'cse', 'ias', 'psc', 'history', 'polity', 'geography', 'economy', 'ssc', 'ibps', 'sbi', 'rbi', 'rrb', 'nda', 'cds', 'afcat'], prompts: [ "What were the main features of the Indus Valley Civilization?", "Explain the basic structure doctrine of the Indian Constitution.", "What is the role of the RBI in the Indian economy?", "Describe the process of the Indian monsoon." ] },
-    // Management
+    // --- Specific High-Level Exam Categories ---
+    { keywords: ['ibps', 'sbi', 'rbi', 'banking', 'bank po', 'bank clerk'], prompts: ["Explain the concept of Compound Interest.", "How do you solve a circular seating arrangement puzzle?", "What is the difference between CRR and SLR in banking?", "Explain the concept of 'para jumbles' in English sections."] },
+    { keywords: ['ssc', 'cgl', 'chsl'], prompts: ["What are the different types of Writs in the Indian Constitution?", "How do you solve Time and Work problems efficiently?", "Explain the difference between Active and Passive voice with examples.", "Who was the first Governor-General of Bengal?"] },
+    { keywords: ['nda', 'cds', 'afcat', 'defence'], prompts: ["What is the difference between a cruise missile and a ballistic missile?", "Explain the principle of RADAR.", "Describe the significance of the Battle of Plassey.", "What are the major mountain ranges in India?"] },
+    { keywords: ['upsc', 'cse', 'ias', 'psc', 'history', 'polity', 'geography', 'economy', 'civil services'], prompts: [ "What were the main features of the Indus Valley Civilization?", "Explain the basic structure doctrine of the Indian Constitution.", "What is the role of the RBI in the Indian economy?", "Describe the process of the Indian monsoon." ] },
     { keywords: ['cat', 'management', 'mba', 'xat', 'snap', 'nmat', 'cmat', 'mat', 'iift'], prompts: [ "What is Porter's Five Forces model?", "Explain the difference between marketing and sales.", "What is a balance sheet?", "Explain the concept of supply and demand." ] },
-    // Law
     { keywords: ['law', 'clat', 'ailet', 'judicial', 'slat', 'lsat'], prompts: [ "What is the difference between a civil and a criminal case?", "Explain the concept of 'habeas corpus'.", "What are fundamental rights in the Indian Constitution?", "Describe the hierarchy of courts in India." ] },
-    // Design
+
+    // --- General Streams ---
+    { keywords: ['neet', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc', 'fmge', 'aiapget'], prompts: ["Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?"] },
+    { keywords: ['jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'], prompts: [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ] },
     { keywords: ['design', 'nid', 'nift', 'uceed', 'b.arch', 'nata'], prompts: [ "What are the principles of good design?", "Explain the difference between UX and UI.", "What is 'kerning' in typography?", "Describe the concept of a color wheel." ] },
-    // Commerce
     { keywords: ['commerce', 'ca', 'cs', 'cma', 'accounts'], prompts: [ "What are Golden Rules of Accounting?", "Explain the concept of 'double-entry' bookkeeping.", "What is a balance sheet?", "Differentiate between equity and debt." ] },
     
     // --- School Level ---
-    // Class-specific
     { keywords: ['class 12', '12th'], prompts: [ "Explain Gauss's Law in electrostatics.", "What is a 'p-n junction' and how does it work?", "Explain the structure of DNA.", "What are the main functions of the Reserve Bank of India (RBI)?" ] },
     { keywords: ['class 11', '11th'], prompts: [ "Explain projectile motion with an example.", "What is the significance of Avogadro's number?", "Describe the functions of different parts of a flower.", "What is a 'ledger' in accounting?" ] },
     { keywords: ['class 10', '10th'], prompts: [ "Explain the significance of the Dandi March.", "What is the difference between metals and non-metals?", "Explain Pythagoras' theorem with an example.", "How does democratic decentralization work in India?" ] },
@@ -318,6 +312,7 @@ export default function BrainmatePage() {
     </div>
   );
 }
+
 
 
 
