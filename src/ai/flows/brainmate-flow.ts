@@ -22,6 +22,12 @@ export type BrainmateInput = z.infer<typeof BrainmateInputSchema>;
 const BrainmateOutputSchema = z.object({
   explanation: z.string().describe("A simple, clear explanation of the concept in Hinglish, using analogies and examples."),
   followUpQuestion: z.string().describe("An engaging follow-up question to check the student's understanding."),
+  recommendedTest: z.object({
+      title: z.string().describe("A short, descriptive title for the recommended test. E.g., 'Quick Quiz on Photosynthesis' or 'Practice Test: Newton's Laws'."),
+      examType: z.string().describe("The exam type or topic to pass to the test generation flow. Should be based on the student's query and context. E.g., 'Class 10 Science', 'JEE Physics'."),
+      subject: z.string().optional().describe("The specific subject, if applicable. E.g., 'Physics', 'Biology'."),
+      numQuestions: z.number().min(3).max(10).describe("A suitable number of questions for a quick practice test, typically 5 or 10.")
+  }).optional().describe("An optional recommended test to check the student's understanding of the explained concept. This should only be provided if the student's query is about a specific academic topic suitable for a quiz.")
 });
 export type BrainmateOutput = z.infer<typeof BrainmateOutputSchema>;
 
@@ -55,21 +61,28 @@ Before responding, you MUST analyze the student's context to tailor your explana
     c. Explain the concept step-by-step using the analogy. Use \`**bold**\` for key terms.
     d. Keep sentences short and clear.
 4.  **Craft Follow-up:** Formulate a single, insightful follow-up question that tests the student's understanding of the *concept*, not just their memory of the explanation. It should make them think.
-5.  **Final Output:** Format the response as a JSON object matching the \`BrainmateOutput\` schema.
+5.  **Recommend Test (Optional):** After explaining, decide if a short quiz would be helpful. If the student asked about a specific academic concept (like 'photosynthesis' or 'Ohm's law'), recommend a short 5-question quiz. For a 'JEE' topic, maybe 5-7 questions. For conversational queries (like 'who are you?'), do NOT recommend a test. If you recommend a test, populate the 'recommendedTest' object in the output JSON. The 'examType' for the test should match the student's context.
 
 **//-- EXAMPLE INTERACTION --//**
 *   **Student Context:** \`class: "10"\`, \`currentTopic: "Physics"\`
 *   **Student's Question:** "Why does a bulb glow when current passes through it?"
 *   **Your Internal Thought Process:**
     1.  **Query:** Why bulb glows with current. Core concept is **resistance** and **heating effect of current**.
-    2.  **Analogy:** A crowded street or 'galli' is a good analogy for resistance. Lots of people (electrons) trying to pass through a narrow space causes friction and heat.
-    3.  **Explanation Structure:** Greet -> Introduce narrow street analogy -> Explain filament as the narrow street -> Explain electrons as people -> Explain 'traffic jam' as resistance -> This jam creates heat and light.
-    4.  **Follow-up:** Ask what would happen if the street (filament) was wider (thicker wire). This tests the concept of resistance.
+    2.  **Analogy:** A crowded street or 'galli' is a good analogy for resistance.
+    3.  **Explanation:** Greet -> Introduce narrow street analogy -> Explain filament as the narrow street...
+    4.  **Follow-up:** Ask what would happen if the filament was wider.
+    5.  **Recommend Test:** Yes, this is a core physics concept. A short quiz is perfect. I'll create a `recommendedTest` object.
 *   **Your Final JSON Output:**
     \`\`\`json
     {
       "explanation": "Arre वाह! Bahut hi smart question pucha hai! Socho, jo **current** hai, woh laakhon chote-chote particles (electrons) ki ek nadi jaisa hai. Ab, bulb ke andar ek special, patla sa wire hota hai, jise **'filament'** kehte hain. Yeh filament ek bohot hi *tang galli* (narrow street) jaisa hai. Jab saare electrons is tang galli se nikalne ki koshish karte hain, toh ek 'traffic jam' lag jaata hai. Is rukawat ko hum science mein **'resistance'** bolte hain. Is 'traffic jam' aur dhakka-mukki ki vajah se, filament itna garam ho jaata hai ki woh aag ki tarah **chamkne (glow)** lagta hai aur hamein roshni milti hai! Jaise sardi mein haath ragadne se garmi paida hoti hai, bilkul waisa hi.",
-      "followUpQuestion": "Toh ab tum batao, agar hum us patle filament ki jagah ek mota sa copper ka wire laga dein, to kya woh bhi itna hi glow karega? Aur kyun?"
+      "followUpQuestion": "Toh ab tum batao, agar hum us patle filament ki jagah ek mota sa copper ka wire laga dein, to kya woh bhi itna hi glow karega? Aur kyun?",
+      "recommendedTest": {
+          "title": "Heating Effect of Current",
+          "examType": "Class 10 Physics",
+          "subject": "Physics",
+          "numQuestions": 5
+      }
     }
     \`\`\`
 

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Mic, Send, Loader2, Brain, Sparkles, ChevronLeft } from "lucide-react";
+import { Mic, Send, Loader2, Brain, Sparkles, ChevronLeft, Target } from "lucide-react";
 import { askBrainmate, type BrainmateInput, type BrainmateOutput } from '@/ai/flows/brainmate-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { ProfileFormData } from '../edit-profile/page';
 import { useRouter } from 'next/navigation';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Link from 'next/link';
 
 interface BrainmateMessage {
   id: string;
@@ -22,6 +23,12 @@ interface BrainmateMessage {
   text: string;
   isFollowUp?: boolean;
   timestamp: Date;
+  recommendation?: {
+    title: string;
+    examType: string;
+    subject?: string;
+    numQuestions: number;
+  } | null;
 }
 
 const promptMap = [
@@ -31,8 +38,8 @@ const promptMap = [
     { keywords: ['jee advanced'], prompts: ["Explain the concept of hybridization in organic chemistry.", "Derive the formula for the moment of inertia of a solid sphere.", "What is a p-n junction diode and how does it work?", "Solve a complex number problem involving De Moivre's theorem."] },
 
     // --- Specific High-Level Exam Categories ---
-    { keywords: ['ibps', 'sbi', 'rbi', 'banking', 'bank po', 'bank clerk'], prompts: ["Explain the concept of Compound Interest.", "How do you solve a circular seating arrangement puzzle?", "What is the difference between CRR and SLR in banking?", "Explain the concept of 'para jumbles' in English sections."] },
-    { keywords: ['ssc', 'cgl', 'chsl'], prompts: ["What are the different types of Writs in the Indian Constitution?", "How do you solve Time and Work problems efficiently?", "Explain the difference between Active and Passive voice with examples.", "Who was the first Governor-General of Bengal?"] },
+    { keywords: ['ibps po', 'sbi po', 'ibps clerk', 'sbi clerk', 'rbi grade b', 'rbi assistant', 'banking', 'bank po', 'bank clerk'], prompts: ["Explain the concept of Compound Interest.", "How do you solve a circular seating arrangement puzzle?", "What is the difference between CRR and SLR in banking?", "Explain the concept of 'para jumbles' in English sections."] },
+    { keywords: ['ssc cgl', 'ssc chsl', 'ssc je', 'ssc mts', 'ssc cpo'], prompts: ["What are the different types of Writs in the Indian Constitution?", "How do you solve Time and Work problems efficiently?", "Explain the difference between Active and Passive voice with examples.", "Who was the first Governor-General of Bengal?"] },
     { keywords: ['nda', 'cds', 'afcat', 'defence'], prompts: ["What is the difference between a cruise missile and a ballistic missile?", "Explain the principle of RADAR.", "Describe the significance of the Battle of Plassey.", "What are the major mountain ranges in India?"] },
     { keywords: ['upsc', 'cse', 'ias', 'psc', 'history', 'polity', 'geography', 'economy', 'civil services'], prompts: [ "What were the main features of the Indus Valley Civilization?", "Explain the basic structure doctrine of the Indian Constitution.", "What is the role of the RBI in the Indian economy?", "Describe the process of the Indian monsoon." ] },
     { keywords: ['cat', 'management', 'mba', 'xat', 'snap', 'nmat', 'cmat', 'mat', 'iift'], prompts: [ "What is Porter's Five Forces model?", "Explain the difference between marketing and sales.", "What is a balance sheet?", "Explain the concept of supply and demand." ] },
@@ -40,7 +47,7 @@ const promptMap = [
 
     // --- General Streams ---
     { keywords: ['neet', 'medical', 'bds', 'mbbs', 'nursing', 'biology', 'b.v.sc', 'fmge', 'aiapget'], prompts: ["Describe the process of DNA replication.", "What is the function of the mitochondria?", "Explain the human digestive system.", "What are the key differences between mitosis and meiosis?"] },
-    { keywords: ['jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'], prompts: [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ] },
+    { keywords: ['jee main', 'jee', 'engineering', 'b.tech', 'physics', 'chemistry', 'maths', 'bitsat', 'viteee', 'srmjee', 'met', 'comedk', 'kiitee', 'wbjee', 'mht cet', 'gujcet', 'eamcet', 'kcet', 'gate'], prompts: [ "Explain Ohm's Law with an analogy.", "What is the difference between series and parallel circuits?", "How does a 4-stroke engine work?", "Explain the concept of chemical equilibrium." ] },
     { keywords: ['design', 'nid', 'nift', 'uceed', 'b.arch', 'nata'], prompts: [ "What are the principles of good design?", "Explain the difference between UX and UI.", "What is 'kerning' in typography?", "Describe the concept of a color wheel." ] },
     { keywords: ['commerce', 'ca', 'cs', 'cma', 'accounts'], prompts: [ "What are Golden Rules of Accounting?", "Explain the concept of 'double-entry' bookkeeping.", "What is a balance sheet?", "Differentiate between equity and debt." ] },
     
@@ -177,6 +184,7 @@ export default function BrainmatePage() {
         role: 'brainmate',
         text: response.explanation,
         timestamp: new Date(),
+        recommendation: response.recommendedTest || null,
       };
       const followUpMessage: BrainmateMessage = {
         id: `brainmate-fol-${Date.now()}`,
@@ -255,8 +263,18 @@ export default function BrainmatePage() {
                 msg.isFollowUp && "bg-accent/10 border-accent/30"
               )}
             >
-             {msg.isFollowUp && <p className="text-xs font-semibold mb-1 text-accent flex items-center gap-1.5"><Sparkles size={14}/> Follow-up Question:</p>}
+              {msg.isFollowUp && <p className="text-xs font-semibold mb-1 text-accent flex items-center gap-1.5"><Sparkles size={14}/> Follow-up Question:</p>}
               <p className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+              {msg.recommendation && (
+                <div className="mt-3 pt-3 border-t border-primary/20">
+                    <h4 className="text-sm font-semibold mb-2 flex items-center gap-1.5"><Target size={16} /> Test Your Understanding!</h4>
+                    <Button asChild size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                        <Link href={`/attempt-test?examType=${encodeURIComponent(msg.recommendation.examType)}&subject=${encodeURIComponent(msg.recommendation.subject || '')}&numQuestions=${msg.recommendation.numQuestions}&title=${encodeURIComponent(msg.recommendation.title)}`}>
+                            Take a {msg.recommendation.numQuestions}-question quiz
+                        </Link>
+                    </Button>
+                </div>
+              )}
             </Card>
           </div>
         ))}
@@ -312,7 +330,3 @@ export default function BrainmatePage() {
     </div>
   );
 }
-
-
-
-
