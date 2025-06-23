@@ -148,7 +148,7 @@ These are not suggestions; they are strict requirements for the test generation.
     *   For other exams or general requests (e.g., "Class 10 Science Prelim", "Physics Practice Test"), or if \`numQuestions\` is for a non-standardized test, adhere to \`numQuestions\` (up to a maximum of 200 questions).
 
 7.  **Answer Options:** For MCQs, ensure each question has exactly four distinct multiple-choice options.
-8.  **Explanation/Model Answer:** For MCQs, provide a brief, accurate explanation. For subjective questions, provide a detailed model answer.
+8.  **Explanations are Mandatory:** You MUST provide a value for the 'explanation' field for every single question (both MCQ and Subjective). This field should explain the 'why' behind the correct answer or provide additional context. This is not optional.
 9.  **Test Title Generation (MANDATORY):** The 'testTitle' field in the output JSON MUST be accurately generated to reflect the exam name/type, subject (if any), and whether it's a full mock or a sample. E.g., "NEET UG Full Syllabus Mock Test - Set 1", "JEE Main Physics Practice Test (30 Questions)", "NEET SS Cardiology Full Mock Test". This field is a direct property of the root JSON object, at the same level as 'questions'.
 10. **Diagrams (Text Prompt for Diagram):**
     *   For questions that critically require a diagram for understanding (e.g., circuit diagrams, geometric figures, biological structures, physics setups, complex data interpretation), you MUST include a \\\`diagramPrompt\\\` field in the question's JSON object.

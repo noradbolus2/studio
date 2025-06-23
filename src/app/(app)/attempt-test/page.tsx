@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target, Image as ImageIcon, Timer } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Lightbulb, BookOpen, Target, Image as ImageIcon, Timer, HelpCircle } from 'lucide-react';
 import { generateExamTest, type GenerateExamTestInput, type GenerateExamTestOutput } from '@/ai/flows/generate-exam-test-flow';
 import { useToast } from '@/hooks/use-toast';
 
@@ -47,6 +47,15 @@ const getSecondsPerQuestion = (examType: string): number => {
     return 90; // Default 1.5 minutes per question
 };
 
+const getMarkingScheme = (examType: string): { correct: number; incorrect: number } => {
+    const lowerExamType = examType.toLowerCase();
+    if (lowerExamType.includes("neet")) return { correct: 4, incorrect: -1 };
+    if (lowerExamType.includes("jee main")) return { correct: 4, incorrect: -1 };
+    if (lowerExamType.includes("jee advanced")) return { correct: 3, incorrect: -1 }; // Varies, but using a common pattern
+    // Default for most others
+    return { correct: 1, incorrect: 0 };
+};
+
 
 export default function AttemptTestPage() {
   const searchParams = useSearchParams();
@@ -65,6 +74,10 @@ export default function AttemptTestPage() {
   const [answerSheet, setAnswerSheet] = useState<AnswerSheet>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [maxMarks, setMaxMarks] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
+  const [unattemptedCount, setUnattemptedCount] = useState(0);
   const [results, setResults] = useState<Result[]>([]);
 
   const [timeLeft, setTimeLeft] = useState<number | null>(null); // in seconds
@@ -85,23 +98,47 @@ export default function AttemptTestPage() {
     if (!testData || isSubmitted) return;
 
     setIsSubmitted(true);
-    let correctAnswers = 0;
+    const markingScheme = getMarkingScheme(examTypeFromQuery);
+    let calculatedScore = 0;
+    let numCorrect = 0;
+    let numIncorrect = 0;
+    
+    const mcqQuestions = testData.questions.filter(q => q.questionType === 'mcq');
+    const calculatedMaxMarks = mcqQuestions.length * markingScheme.correct;
+    setMaxMarks(calculatedMaxMarks);
+
     const detailedResults: Result[] = testData.questions.map((q, index) => {
       if (q.questionType === 'mcq') {
         const selectedOptionIndex = answerSheet[index];
-        const isCorrect = selectedOptionIndex === q.correctAnswerIndex;
-        if (isCorrect) {
-          correctAnswers++;
+        if (selectedOptionIndex !== undefined) { // Attempted
+            const isCorrect = selectedOptionIndex === q.correctAnswerIndex;
+            if (isCorrect) {
+              calculatedScore += markingScheme.correct;
+              numCorrect++;
+            } else {
+              calculatedScore += markingScheme.incorrect;
+              numIncorrect++;
+            }
+             return {
+                questionType: 'mcq',
+                questionText: q.questionText,
+                selectedOption: selectedOptionIndex !== undefined ? q.options![selectedOptionIndex] : "Not Answered",
+                correctOption: q.options![q.correctAnswerIndex!],
+                isCorrect: isCorrect,
+                explanation: q.explanation,
+                diagramDataUri: q.diagramDataUri,
+            };
+        } else { // Not attempted
+             return {
+                questionType: 'mcq',
+                questionText: q.questionText,
+                selectedOption: "Not Answered",
+                correctOption: q.options![q.correctAnswerIndex!],
+                isCorrect: undefined, // Neither correct nor incorrect
+                explanation: q.explanation,
+                diagramDataUri: q.diagramDataUri,
+            };
         }
-        return {
-          questionType: 'mcq',
-          questionText: q.questionText,
-          selectedOption: selectedOptionIndex !== undefined ? q.options![selectedOptionIndex] : "Not Answered",
-          correctOption: q.options![q.correctAnswerIndex!],
-          isCorrect: isCorrect,
-          explanation: q.explanation,
-          diagramDataUri: q.diagramDataUri,
-        };
       } else { // Subjective
         return {
           questionType: 'subjective',
@@ -113,10 +150,13 @@ export default function AttemptTestPage() {
       }
     });
     
-    setScore(correctAnswers);
+    setScore(calculatedScore);
+    setCorrectCount(numCorrect);
+    setIncorrectCount(numIncorrect);
+    setUnattemptedCount(mcqQuestions.length - numCorrect - numIncorrect);
     setResults(detailedResults);
     
-  }, [testData, answerSheet, isSubmitted]); 
+  }, [testData, answerSheet, isSubmitted, examTypeFromQuery]); 
 
   useEffect(() => {
     const loadTest = async () => {
@@ -253,7 +293,6 @@ export default function AttemptTestPage() {
   const currentQuestion = testData.questions[currentQuestionIndex];
 
   if (isSubmitted) {
-    const mcqQuestionsCount = testData.questions.filter(q => q.questionType === 'mcq').length;
     return (
       <div className="space-y-6">
         <Card className="shadow-lg">
@@ -264,15 +303,20 @@ export default function AttemptTestPage() {
             <CardDescription>{testData.testTitle}</CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-4xl font-bold text-primary">{score} / {mcqQuestionsCount}</p>
+            <p className="text-4xl font-bold text-primary">{score} / {maxMarks}</p>
             <p className="text-lg text-muted-foreground">
-              <BilingualText en="Correct Answers (MCQ)" hi="सही उत्तर (MCQ)" />
+              <BilingualText en="Total Score" hi="कुल स्कोर" />
             </p>
+            <div className="flex justify-center flex-wrap gap-x-4 gap-y-1 mt-4 text-sm">
+                <p><CheckCircle className="inline h-4 w-4 text-green-500 mr-1"/>Correct: {correctCount}</p>
+                <p><XCircle className="inline h-4 w-4 text-red-500 mr-1"/>Incorrect: {incorrectCount}</p>
+                <p><HelpCircle className="inline h-4 w-4 text-gray-500 mr-1"/>Unattempted: {unattemptedCount}</p>
+            </div>
           </CardContent>
         </Card>
 
         {results.map((result, index) => (
-          <Card key={index} className={result.isCorrect ? "border-green-500 bg-green-500/5" : (result.questionType === 'subjective' ? "border-blue-500 bg-blue-500/5" : "border-red-500 bg-red-500/5")}>
+          <Card key={index} className={result.isCorrect ? "border-green-500 bg-green-500/5" : (result.questionType === 'subjective' ? "border-blue-500 bg-blue-500/5" : (result.isCorrect === false ? "border-red-500 bg-red-500/5" : "border-gray-500 bg-gray-500/5"))}>
             <CardHeader>
               <CardTitle className="text-md">
                 <span className="text-sm font-normal text-muted-foreground">Q{index + 1}. </span>
@@ -294,8 +338,8 @@ export default function AttemptTestPage() {
             <CardContent className="text-sm space-y-2">
               {result.questionType === 'mcq' && (
                   <>
-                    <p><strong><BilingualText en="Your Answer:" hi="आपका उत्तर:" /></strong> {result.selectedOption} {result.isCorrect ? <CheckCircle className="inline h-4 w-4 text-green-500 ml-1" /> : <XCircle className="inline h-4 w-4 text-red-500 ml-1" />}</p>
-                    {!result.isCorrect && <p><strong><BilingualText en="Correct Answer:" hi="सही उत्तर:" /></strong> {result.correctOption}</p>}
+                    <p><strong><BilingualText en="Your Answer:" hi="आपका उत्तर:" /></strong> {result.selectedOption} {result.isCorrect === true ? <CheckCircle className="inline h-4 w-4 text-green-500 ml-1" /> : (result.isCorrect === false ? <XCircle className="inline h-4 w-4 text-red-500 ml-1" /> : <HelpCircle className="inline h-4 w-4 text-gray-500 ml-1" />)}</p>
+                    {result.isCorrect !== true && <p><strong><BilingualText en="Correct Answer:" hi="सही उत्तर:" /></strong> {result.correctOption}</p>}
                   </>
               )}
                {result.questionType === 'subjective' && result.modelAnswer && (
