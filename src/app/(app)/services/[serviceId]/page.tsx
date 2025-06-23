@@ -56,10 +56,6 @@ interface ServiceChatMessage {
   timestamp: Date;
 }
 
-type ServicePageParams = {
-  serviceId: string;
-};
-
 // --- New Types for Interactive Assignment/Project Help ---
 interface ProjectMaterial {
   name: string;
@@ -119,7 +115,8 @@ function getNumericClassFromStringForProjects(classNameString?: string): string 
 
 
 export default function ServicePage() {
-  const { serviceId } = useParams<ServicePageParams>(); 
+  const params = useParams();
+  const serviceId = params.serviceId as string;
   const router = useRouter();
   const { toast } = useToast();
 
@@ -996,5 +993,3 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
-
-    

@@ -31,7 +31,8 @@ interface MapMarkerConfig {
 
 export default function TrackOrderPage() {
   const router = useRouter();
-  const { orderId } = useParams<{ orderId: string }>(); // Changed here
+  const params = useParams();
+  const orderId = params.orderId as string;
 
   const [isLoading, setIsLoading] = useState(true);
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);
