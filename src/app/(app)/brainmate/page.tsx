@@ -24,6 +24,14 @@ interface BrainmateMessage {
   timestamp: Date;
 }
 
+const examplePrompts = [
+  "What is photosynthesis?",
+  "Explain Newton's laws of motion.",
+  "Why is the sky blue?",
+  "How does an electric motor work?",
+];
+
+
 export default function BrainmatePage() {
   const router = useRouter();
   const [inputValue, setInputValue] = useState('');
@@ -38,7 +46,14 @@ export default function BrainmatePage() {
     if (typeof window !== "undefined") {
       const storedProfile = localStorage.getItem('userProfileData');
       if (storedProfile) {
-        setProfileData(JSON.parse(storedProfile));
+        const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+        setProfileData(parsedProfile);
+        // Pre-fill topic if available from profile
+        if(parsedProfile.examTarget) {
+            setCurrentTopic(parsedProfile.examTarget);
+        } else if (parsedProfile.className) {
+            setCurrentTopic(`Class ${parsedProfile.className}`);
+        }
       }
     }
     setMessages([
@@ -57,9 +72,11 @@ export default function BrainmatePage() {
     }
   }, [messages]);
 
-  const handleSubmit = async (e?: FormEvent) => {
+  const handleSubmit = async (e?: FormEvent, queryOverride?: string) => {
     if (e) e.preventDefault();
-    const trimmedInput = inputValue.trim();
+    const finalQuery = queryOverride || inputValue;
+    const trimmedInput = finalQuery.trim();
+
     if (!trimmedInput || isLoading) return;
     if (!currentTopic.trim()) {
         toast({ title: "Topic Missing", description: "Please enter the subject or topic you're studying.", variant: "destructive" });
@@ -73,7 +90,11 @@ export default function BrainmatePage() {
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
+    
+    if(!queryOverride) {
+        setInputValue('');
+    }
+    
     setIsLoading(true);
 
     const brainmateInput: BrainmateInput = {
@@ -113,6 +134,14 @@ export default function BrainmatePage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePromptClick = (prompt: string) => {
+    if (!currentTopic.trim()) {
+        toast({ title: "Topic Missing", description: "Please enter the subject or topic you're studying first.", variant: "destructive" });
+        return;
+    }
+    handleSubmit(undefined, prompt);
   };
 
   return (
@@ -155,6 +184,23 @@ export default function BrainmatePage() {
             </Card>
           </div>
         ))}
+         {messages.length <= 1 && !isLoading && (
+            <div className="p-4 pt-0 space-y-3">
+                <p className="text-sm text-center text-muted-foreground">Or try one of these examples:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {examplePrompts.map((prompt) => (
+                        <Button
+                            key={prompt}
+                            variant="outline"
+                            className="h-auto whitespace-normal text-left justify-start p-3"
+                            onClick={() => handlePromptClick(prompt)}
+                        >
+                            {prompt}
+                        </Button>
+                    ))}
+                </div>
+            </div>
+        )}
          {isLoading && (
           <div className="flex justify-start">
             <Card className="bg-card text-card-foreground self-start mr-auto p-3 rounded-lg shadow-sm inline-flex items-center space-x-2 border">
@@ -166,7 +212,7 @@ export default function BrainmatePage() {
       </ScrollArea>
 
       <footer className="p-3 border-t bg-card rounded-b-lg">
-        <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+        <form onSubmit={(e) => handleSubmit(e)} className="flex items-center space-x-2">
           <Textarea
             placeholder="Ask to explain a concept... e.g., 'What is photosynthesis?'"
             className="flex-grow resize-none min-h-[40px] max-h-[120px] text-sm"
