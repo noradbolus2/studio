@@ -37,9 +37,13 @@ const promptMap = [
     { keywords: ['neet pg', 'ini cet', 'fmge', 'aiapget'], prompts: ["Differentiate between Crohn's disease and Ulcerative Colitis.", "What is the mechanism of action of Metformin?", "Describe the management of a patient with diabetic ketoacidosis.", "What are the key features on an ECG for a patient with Wolff-Parkinson-White syndrome?"] },
     { keywords: ['jee advanced'], prompts: ["Explain the concept of hybridization in organic chemistry.", "Derive the formula for the moment of inertia of a solid sphere.", "What is a p-n junction diode and how does it work?", "Solve a complex number problem involving De Moivre's theorem."] },
 
-    // --- Specific High-Level Exam Categories ---
+    // --- Banking ---
     { keywords: ['ibps po', 'sbi po', 'ibps clerk', 'sbi clerk', 'rbi grade b', 'rbi assistant', 'banking', 'bank po', 'bank clerk'], prompts: ["Explain the concept of Compound Interest.", "How do you solve a circular seating arrangement puzzle?", "What is the difference between CRR and SLR in banking?", "Explain the concept of 'para jumbles' in English sections."] },
+    
+    // --- SSC ---
     { keywords: ['ssc cgl', 'ssc chsl', 'ssc je', 'ssc mts', 'ssc cpo'], prompts: ["What are the different types of Writs in the Indian Constitution?", "How do you solve Time and Work problems efficiently?", "Explain the difference between Active and Passive voice with examples.", "Who was the first Governor-General of Bengal?"] },
+
+    // --- Broad High-Level Exam Categories ---
     { keywords: ['nda', 'cds', 'afcat', 'defence'], prompts: ["What is the difference between a cruise missile and a ballistic missile?", "Explain the principle of RADAR.", "Describe the significance of the Battle of Plassey.", "What are the major mountain ranges in India?"] },
     { keywords: ['upsc', 'cse', 'ias', 'psc', 'history', 'polity', 'geography', 'economy', 'civil services'], prompts: [ "What were the main features of the Indus Valley Civilization?", "Explain the basic structure doctrine of the Indian Constitution.", "What is the role of the RBI in the Indian economy?", "Describe the process of the Indian monsoon." ] },
     { keywords: ['cat', 'management', 'mba', 'xat', 'snap', 'nmat', 'cmat', 'mat', 'iift'], prompts: [ "What is Porter's Five Forces model?", "Explain the difference between marketing and sales.", "What is a balance sheet?", "Explain the concept of supply and demand." ] },
@@ -51,7 +55,11 @@ const promptMap = [
     { keywords: ['design', 'nid', 'nift', 'uceed', 'b.arch', 'nata'], prompts: [ "What are the principles of good design?", "Explain the difference between UX and UI.", "What is 'kerning' in typography?", "Describe the concept of a color wheel." ] },
     { keywords: ['commerce', 'ca', 'cs', 'cma', 'accounts'], prompts: [ "What are Golden Rules of Accounting?", "Explain the concept of 'double-entry' bookkeeping.", "What is a balance sheet?", "Differentiate between equity and debt." ] },
     
-    // --- School Level ---
+    // --- School Level (Olympiads, Entrances, Classes) ---
+    // Specific school entrances/olympiads first
+    { keywords: ['sainik school', 'aissee', 'jnvst'], prompts: ["What is 15% of 300?", "If a train travels at 60 km/h, how far does it travel in 2.5 hours?", "Find the synonym for 'brave'.", "What is the capital of France?"] },
+    { keywords: ['ntse', 'kvpy', 'sof olympiad', 'homi bhabha'], prompts: [ "Explain Archimedes' principle.", "Solve this riddle: I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?", "What is the difference between an acid and a base?", "Describe the parts of a plant cell." ] },
+    // General classes
     { keywords: ['class 12', '12th'], prompts: [ "Explain Gauss's Law in electrostatics.", "What is a 'p-n junction' and how does it work?", "Explain the structure of DNA.", "What are the main functions of the Reserve Bank of India (RBI)?" ] },
     { keywords: ['class 11', '11th'], prompts: [ "Explain projectile motion with an example.", "What is the significance of Avogadro's number?", "Describe the functions of different parts of a flower.", "What is a 'ledger' in accounting?" ] },
     { keywords: ['class 10', '10th'], prompts: [ "Explain the significance of the Dandi March.", "What is the difference between metals and non-metals?", "Explain Pythagoras' theorem with an example.", "How does democratic decentralization work in India?" ] },
@@ -98,7 +106,7 @@ const examCategories = [
   { name: 'GPAT' }, { name: 'State CETs for B.Pharm' }, { name: 'NIPER JEE' },
   { name: 'Research Fellowships & PhD Entrance' },
   { name: 'CA (Foundation, Inter, Final)' }, { name: 'CS (CSEET, Executive, Professional)' }, { name: 'CMA (Foundation, Inter, Final)' },
-  { name: 'NTSE' }, { name: 'KVPY (check status)' }, { name: 'SOF Olympiads (NSO, IMO, IEO, etc.)' }, { name: 'Homi Bhabha Balvaidnyanik Spardha' },
+  { name: 'Sainik School (AISSEE)' }, { name: 'JNVST (Class 6 & 9)' }, { name: 'NTSE' }, { name: 'KVPY (check status)' }, { name: 'SOF Olympiads (NSO, IMO, IEO, etc.)' }, { name: 'Homi Bhabha Balvaidnyanik Spardha' },
 ];
 
 
@@ -244,7 +252,7 @@ export default function BrainmatePage() {
                     {schoolClasses.map(c => <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>)}
                 </SelectGroup>
                 <SelectGroup>
-                    <SelectLabel>Competitive Exams</SelectLabel>
+                    <SelectLabel>Competitive Exams & Olympiads</SelectLabel>
                     {examCategories.map(exam => (
                         <SelectItem key={exam.name} value={exam.name}>{exam.name}</SelectItem>
                     ))}
