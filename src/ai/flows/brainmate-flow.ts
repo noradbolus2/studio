@@ -96,10 +96,16 @@ const brainmateFlow = ai.defineFlow(
     outputSchema: BrainmateOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error("OSO Brainmate couldn't come up with an explanation right now. Please try again!");
+    try {
+      const {output} = await prompt(input);
+      if (!output) {
+        throw new Error("OSO Brainmate couldn't come up with an explanation right now. Please try again!");
+      }
+      return output;
+    } catch (error) {
+        console.error('[Genkit Flow - brainmateFlow] Error during prompt execution:', error);
+        // This user-friendly message will be shown in the UI.
+        throw new Error("Beta, abhi thoda overload ho raha hai. Please try asking again in a few moments.");
     }
-    return output;
   }
 );
