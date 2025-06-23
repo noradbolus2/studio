@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect, type FormEvent } from 'react';
+import { useState, useRef, useEffect, type FormEvent, useMemo } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,12 +24,58 @@ interface BrainmateMessage {
   timestamp: Date;
 }
 
-const examplePrompts = [
-  "What is photosynthesis?",
-  "Explain Newton's laws of motion.",
-  "Why is the sky blue?",
-  "How does an electric motor work?",
-];
+const getPromptsForTopic = (topic: string): string[] => {
+    const lowerTopic = topic.toLowerCase();
+
+    if (lowerTopic.includes('jee') || lowerTopic.includes('engineering') || lowerTopic.includes('physics') || lowerTopic.includes('chemistry') || lowerTopic.includes('maths')) {
+        return [
+            "Explain Ohm's Law with an analogy.",
+            "What is the difference between series and parallel circuits?",
+            "How does a 4-stroke engine work?",
+            "Explain the concept of chemical equilibrium."
+        ];
+    }
+    if (lowerTopic.includes('neet') || lowerTopic.includes('medical') || lowerTopic.includes('b.v.sc') || lowerTopic.includes('bds') || lowerTopic.includes('mbbs') || lowerTopic.includes('nursing') || lowerTopic.includes('biology')) {
+        return [
+            "Describe the process of DNA replication.",
+            "What is the function of the mitochondria?",
+            "Explain the human digestive system.",
+            "What are the key differences between mitosis and meiosis?"
+        ];
+    }
+    if (lowerTopic.includes('upsc') || lowerTopic.includes('cse') || lowerTopic.includes('ias') || lowerTopic.includes('history') || lowerTopic.includes('polity') || lowerTopic.includes('psc')) {
+        return [
+            "What were the main features of the Indus Valley Civilization?",
+            "Explain the basic structure doctrine of the Indian Constitution.",
+            "What is the role of the RBI in the Indian economy?",
+            "Describe the process of the Indian monsoon."
+        ];
+    }
+    if (lowerTopic.includes('cat') || lowerTopic.includes('management') || lowerTopic.includes('mba')) {
+        return [
+            "What is Porter's Five Forces model?",
+            "Explain the difference between marketing and sales.",
+            "What is a balance sheet?",
+            "Explain the concept of supply and demand."
+        ];
+    }
+     if (lowerTopic.includes('law') || lowerTopic.includes('clat') || lowerTopic.includes('ailet')) {
+        return [
+            "What is the difference between a civil and a criminal case?",
+            "Explain the concept of 'habeas corpus'.",
+            "What are fundamental rights in the Indian Constitution?",
+            "Describe the hierarchy of courts in India."
+        ];
+    }
+    // Default prompts for general science and curiosity
+    return [
+      "What is photosynthesis?",
+      "Explain Newton's laws of motion.",
+      "Why is the sky blue?",
+      "How does an electric motor work?",
+    ];
+};
+
 
 const schoolClasses = [
     { name: "Class 6" }, { name: "Class 7" }, { name: "Class 8" }, { name: "Class 9" }, { name: "Class 10" }, { name: "Class 11" }, { name: "Class 12" },
@@ -63,6 +109,8 @@ export default function BrainmatePage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
+
+  const examplePrompts = useMemo(() => getPromptsForTopic(currentTopic), [currentTopic]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
