@@ -10,5 +10,7 @@ import '@/ai/flows/test-series-recommendation-flow.ts';
 import '@/ai/flows/mind-diary-reflection-flow.ts';
 import '@/ai/flows/generate-exam-test-flow.ts'; // Added new flow
 import '@/ai/flows/brainmate-flow.ts';
+import '@/ai/tools/exam-info-tool.ts';
+
 
 
