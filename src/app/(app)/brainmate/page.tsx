@@ -67,6 +67,38 @@ const getPromptsForTopic = (topic: string): string[] => {
             "Describe the hierarchy of courts in India."
         ];
     }
+    if (lowerTopic.includes('design') || lowerTopic.includes('nid') || lowerTopic.includes('nift') || lowerTopic.includes('uceed')) {
+        return [
+            "What are the principles of good design?",
+            "Explain the difference between UX and UI.",
+            "What is 'kerning' in typography?",
+            "Describe the concept of a color wheel."
+        ];
+    }
+    if (lowerTopic.includes('commerce') || lowerTopic.includes('ca') || lowerTopic.includes('cs') || lowerTopic.includes('cma')) {
+        return [
+            "What are Golden Rules of Accounting?",
+            "Explain the concept of 'double-entry' bookkeeping.",
+            "What is a balance sheet?",
+            "Differentiate between equity and debt."
+        ];
+    }
+     if (lowerTopic.includes('class 10') || lowerTopic.includes('10th')) {
+        return [
+            "Explain the significance of the Dandi March.",
+            "What is the difference between metals and non-metals?",
+            "Explain Pythagoras' theorem with an example.",
+            "How does democratic decentralization work in India?"
+        ];
+    }
+     if (lowerTopic.includes('class 12') || lowerTopic.includes('12th')) {
+        return [
+            "Explain Gauss's Law in electrostatics.",
+            "What is a 'p-n junction' and how does it work?",
+            "Explain the structure of DNA.",
+            "What are the main functions of the Reserve Bank of India (RBI)?"
+        ];
+    }
     // Default prompts for general science and curiosity
     return [
       "What is photosynthesis?",
@@ -317,3 +349,4 @@ export default function BrainmatePage() {
     </div>
   );
 }
+
