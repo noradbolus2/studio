@@ -138,7 +138,7 @@ These are not suggestions; they are strict requirements for the test generation.
 
 6.  **Exam-Specific Question Counts & Subject Distribution (MANDATORY OVERRIDE of \`numQuestions\` for Full Mocks):**
     *   If \`examNameOrType\` indicates a major standardized exam, you MUST generate the **standard number of questions for a full test** of that exam/section, and maintain the correct subject distribution (if applicable and no specific subject is requested for a sub-part). This takes precedence over \`numQuestions\` unless \`numQuestions\` is very small (e.g., < 10, indicating a mini-sample for a very short test).
-        *   **NEET UG**: Exactly 200 questions (Physics: 50, Chemistry: 50, Botany: 50, Zoology: 50). If 'subject' is specified (e.g., "NEET UG Physics"), generate 50 questions for that subject.
+        *   **NEET UG**: Exactly 200 questions total (students attempt 180). You must generate all 200. The structure is Physics: 50 Qs (35+15), Chemistry: 50 Qs (35+15), Botany: 50 Qs (35+15), Zoology: 50 Qs (35+15). If 'subject' is specified (e.g., "NEET UG Physics"), generate 50 questions for that subject.
         *   **JEE Main**: Exactly 90 questions (Physics: 30, Chemistry: 30, Maths: 30). If 'subject' is specified (e.g., "JEE Main Chemistry"), generate 30 questions for that subject.
         *   **JEE Advanced**: Typically two papers, each with around 54-60 questions (e.g., 18 Physics, 18 Chemistry, 18 Maths per paper). If "JEE Advanced" is specified without a paper, generate for one paper (e.g., 54 questions total, distributed).
         *   **UPSC CSE Prelims GS Paper 1**: Exactly 100 questions.
@@ -231,17 +231,17 @@ const generateExamTestFlow = ai.defineFlow(
     // Step 1: Generate textual content of questions, including diagram prompts
     const {output: textOutput} = await generateTextQuestionsPrompt(input);
 
-    if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions)) {
-        console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure (text part). Output was null or malformed:", textOutput);
+    if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions) || textOutput.questions.length === 0) {
+        console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure (text part). Output was null, malformed, or empty:", textOutput);
         // Return a valid empty structure if the AI completely fails
         return {
           testTitle: `Error Generating Test for ${input.examNameOrType}`,
           questions: [{
             questionType: "mcq",
-            questionText: "Error: AI failed to generate questions for this test. Please try again or adjust parameters.",
+            questionText: "Error: AI failed to generate questions for this test. The model might be overloaded or the request was too complex. Please try generating a smaller test or try again later.",
             options: ["N/A", "N/A", "N/A", "N/A"],
             correctAnswerIndex: 0,
-            explanation: "The AI model could not produce the expected test content."
+            explanation: "The AI model could not produce the expected test content. This often happens with very large test requests (e.g., 200 questions) during peak times."
           }]
         };
     }
