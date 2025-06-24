@@ -14,9 +14,10 @@ import {z} from 'genkit';
 const CollegePredictorInputSchema = z.object({
   percentage12th: z.number().min(0).max(100).describe('Percentage marks obtained in 12th standard/grade.'),
   jeeRank: z.number().min(0).optional().describe('JEE (Joint Entrance Examination) rank, if applicable.'),
+  neetScore: z.number().min(0).max(720).optional().describe('NEET (National Eligibility cum Entrance Test) score, if applicable.'),
   budget: z.number().min(0).describe('Approximate annual budget for college fees in INR.'),
   preferredLocation: z.string().optional().describe('Preferred city or state for college.'),
-  preferredCourses: z.array(z.string()).optional().describe('List of preferred courses (e.g., Computer Science, Mechanical Engineering).')
+  preferredCourses: z.array(z.string()).optional().describe('List of preferred courses (e.g., Computer Science, Mechanical Engineering, MBBS).')
 });
 export type CollegePredictorInput = z.infer<typeof CollegePredictorInputSchema>;
 
@@ -48,13 +49,16 @@ Your goal is to provide realistic and helpful college suggestions based on the s
 
 **CRITICAL ADMISSION LOGIC:**
 1.  **Entrance Exams are Key:** You MUST understand that for most professional courses in India (like Engineering, Medical), admission is primarily based on national or state-level entrance exams, not just 12th percentage.
-2.  **Medical (MBBS/BDS):** If the user's preferred course is "MBBS", "BDS", or medical, admission to Indian colleges is **impossible** without a good NEET score. Since the user hasn't provided a NEET score, you should not suggest Indian medical colleges. Instead, you can suggest colleges abroad (e.g., in Russia, Georgia, Bangladesh) that are popular among Indian students, but you must clearly state in the remarks why you are suggesting foreign universities (e.g., "Suggested as no NEET score was provided, which is mandatory for Indian medical colleges.").
+2.  **Medical (MBBS/BDS):** If the user's preferred course is "MBBS", "BDS", or medical:
+    *   **If \`neetScore\` is provided:** Your suggestions for Indian medical colleges MUST be based on this score. A score below 550 for General category makes government colleges highly unlikely. A score above 650 gives a High chance for good government colleges. Use this logic to set the 'admissionChance'. Your remarks should mention that admission is based on the NEET score.
+    *   **If \`neetScore\` is NOT provided:** Admission to Indian medical colleges is **impossible**. Do not suggest Indian medical colleges. Instead, you can suggest colleges abroad (e.g., in Russia, Georgia, Bangladesh) that are popular among Indian students, but you MUST clearly state in the remarks why you are suggesting foreign universities (e.g., "Suggested as no NEET score was provided, which is mandatory for Indian medical colleges.").
 3.  **Engineering (B.Tech/B.E.):** For engineering courses, a JEE rank is crucial for top colleges (NITs, IIITs). If the \`jeeRank\` is not provided, you should focus on state-level universities or private colleges which may have their own entrance exams (like VITEEE, SRMJEEE) or accept students based on 12th marks. Your remarks for these colleges MUST mention the required entrance exam (e.g., "Admission through state's CET" or "Considers 12th marks for admission").
 4.  **Other Courses:** For courses like B.Com, B.A., etc., admission is often based on 12th marks or university-specific tests like CUET. Factor this into your suggestions.
 
 Student's Profile:
 - 12th Percentage: {{{percentage12th}}}%
 {{#if jeeRank}}- JEE Rank: {{{jeeRank}}}{{/if}}
+{{#if neetScore}}- NEET Score: {{{neetScore}}}{{/if}}
 - Annual Budget: INR {{{budget}}}
 {{#if preferredLocation}}- Preferred Location: {{{preferredLocation}}}{{/if}}
 {{#if preferredCourses}}- Preferred Courses: {{#each preferredCourses}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
@@ -64,7 +68,7 @@ Based on the profile and the critical logic above, provide a list of 3-5 college
 - Location (City, State)
 - Relevant courses offered (matching student's preference if provided, otherwise general good courses)
 - Estimated Annual Fee (as a range, e.g., "INR 1,00,000 - 1,50,000")
-- Admission Chance (High, Medium, Low, Very Low) - Be realistic. For Indian medical colleges, chance is "Very Low" without a NEET score.
+- Admission Chance (High, Medium, Low, Very Low) - Be realistic.
 - Brief remarks (IMPORTANT: Explain the admission criteria, e.g., "Requires NEET score", "Admission via VITEEE", "Considers 12th marks").
 
 IMPORTANT: The final output MUST be a JSON object matching the CollegePredictorOutputSchema.
@@ -91,10 +95,6 @@ const collegePredictorFlow = ai.defineFlow(
     outputSchema: CollegePredictorOutputSchema,
   },
   async (input) => {
-    // Potentially, you could add logic here to fetch real-time data from a database of colleges
-    // to augment or verify the AI's suggestions if you had such a database.
-    // For now, we rely purely on the LLM's knowledge and the provided prompt structure.
-
     const {output} = await prompt(input);
 
     if (!output) {

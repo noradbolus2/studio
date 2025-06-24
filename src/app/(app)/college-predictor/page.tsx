@@ -16,8 +16,9 @@ import { Badge } from '@/components/ui/badge';
 
 export default function CollegePredictorPage() {
   const [formData, setFormData] = useState<Partial<CollegePredictorInput>>({
-    percentage12th: undefined, // Use undefined for easier number input handling
+    percentage12th: undefined,
     jeeRank: undefined,
+    neetScore: undefined, // Added neetScore
     budget: undefined,
     preferredLocation: '',
     preferredCourses: [],
@@ -30,7 +31,7 @@ export default function CollegePredictorPage() {
     const { name, value } = e.target;
     if (name === "preferredCourses") {
         setFormData((prev) => ({ ...prev, [name]: value.split(',').map(course => course.trim()).filter(course => course) }));
-    } else if (name === "percentage12th" || name === "jeeRank" || name === "budget") {
+    } else if (name === "percentage12th" || name === "jeeRank" || name === "budget" || name === "neetScore") { // Added neetScore
         setFormData((prev) => ({ ...prev, [name]: value ? Number(value) : undefined }));
     }
      else {
@@ -52,9 +53,10 @@ export default function CollegePredictorPage() {
         percentage12th: formData.percentage12th,
         budget: formData.budget,
         jeeRank: formData.jeeRank,
+        neetScore: formData.neetScore, // Added neetScore
         preferredLocation: formData.preferredLocation,
         preferredCourses: formData.preferredCourses
-      } as CollegePredictorInput; // Type assertion after validation
+      } as CollegePredictorInput;
 
       const result = await predictColleges(inputForApi);
       setResults(result);
@@ -68,10 +70,10 @@ export default function CollegePredictorPage() {
 
   const getChanceBadgeVariant = (chance: string | undefined) => {
     switch (chance) {
-      case 'High': return 'default'; // bg-primary
-      case 'Medium': return 'secondary'; // bg-secondary
-      case 'Low': return 'outline'; // text-foreground, border
-      case 'Very Low': return 'destructive'; // bg-destructive
+      case 'High': return 'default';
+      case 'Medium': return 'secondary';
+      case 'Low': return 'outline';
+      case 'Very Low': return 'destructive';
       default: return 'outline';
     }
   };
@@ -113,21 +115,27 @@ export default function CollegePredictorPage() {
                     <Input id="percentage12th" name="percentage12th" type="number" step="0.01" min="0" max="100" value={formData.percentage12th || ''} onChange={handleInputChange} placeholder="e.g., 85.5" required />
                 </div>
                 <div>
-                    <Label htmlFor="jeeRank" className="flex items-center gap-1"><GraduationCap size={14}/> <BilingualText en="JEE Rank (Optional)" hi="जेईई रैंक (वैकल्पिक)" /></Label>
+                    <Label htmlFor="budget" className="flex items-center gap-1"><IndianRupee size={14}/> <BilingualText en="Annual Budget (INR)" hi="वार्षिक बजट (INR)" />*</Label>
+                    <Input id="budget" name="budget" type="number" min="0" value={formData.budget || ''} onChange={handleInputChange} placeholder="e.g., 200000 for 2 Lakhs" required/>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <Label htmlFor="jeeRank" className="flex items-center gap-1"><GraduationCap size={14}/> <BilingualText en="JEE Main Rank (Optional)" hi="जेईई मेन रैंक (वैकल्पिक)" /></Label>
                     <Input id="jeeRank" name="jeeRank" type="number" min="0" value={formData.jeeRank || ''} onChange={handleInputChange} placeholder="e.g., 50000" />
+                </div>
+                <div>
+                    <Label htmlFor="neetScore" className="flex items-center gap-1"><GraduationCap size={14}/> <BilingualText en="NEET Score (Optional)" hi="नीट स्कोर (वैकल्पिक)" /></Label>
+                    <Input id="neetScore" name="neetScore" type="number" min="0" max="720" value={formData.neetScore || ''} onChange={handleInputChange} placeholder="e.g., 650" />
                 </div>
             </div>
             <div>
-                <Label htmlFor="budget" className="flex items-center gap-1"><IndianRupee size={14}/> <BilingualText en="Annual Budget (INR)" hi="वार्षिक बजट (INR)" />*</Label>
-                <Input id="budget" name="budget" type="number" min="0" value={formData.budget || ''} onChange={handleInputChange} placeholder="e.g., 200000 for 2 Lakhs" required/>
-            </div>
-            <div>
                 <Label htmlFor="preferredLocation" className="flex items-center gap-1"><MapPin size={14}/> <BilingualText en="Preferred Location (Optional)" hi="पसंदीदा स्थान (वैकल्पिक)" /></Label>
-                <Input id="preferredLocation" name="preferredLocation" value={formData.preferredLocation} onChange={handleInputChange} placeholder="e.g., Pune, Delhi, Tamil Nadu" />
+                <Input id="preferredLocation" name="preferredLocation" value={formData.preferredLocation || ''} onChange={handleInputChange} placeholder="e.g., Pune, Delhi, Tamil Nadu" />
             </div>
             <div>
                 <Label htmlFor="preferredCourses" className="flex items-center gap-1"><BookOpen size={14}/> <BilingualText en="Preferred Courses (Optional, comma-separated)" hi="पसंदीदा पाठ्यक्रम (वैकल्पिक, अल्पविराम से अलग)" /></Label>
-                <Textarea id="preferredCourses" name="preferredCourses" value={formData.preferredCourses?.join(', ') || ''} onChange={handleInputChange} placeholder="e.g., Computer Science, AI & ML, Electronics" />
+                <Textarea id="preferredCourses" name="preferredCourses" value={formData.preferredCourses?.join(', ') || ''} onChange={handleInputChange} placeholder="e.g., Computer Science, AI & ML, Electronics, MBBS" />
             </div>
           </CardContent>
           <CardFooter>
