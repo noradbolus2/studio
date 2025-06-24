@@ -6,27 +6,37 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-// Mock database of exam information
+// Mock database of exam information with updated patterns
 const examDatabase: Record<string, { pattern: string; syllabus_overview: string; eligibility: string }> = {
   'neet ug': {
-    pattern: 'Total 200 MCQs (180 to be attempted). Physics: 50 Qs, Chemistry: 50 Qs, Botany: 50 Qs, Zoology: 50 Qs. Marking: +4 for correct, -1 for incorrect.',
+    pattern: 'Total 200 MCQs (180 to be attempted in 3 hours 20 mins). Subjects: Physics, Chemistry, Botany, Zoology. Each subject has two sections: Section A (35 compulsory Qs) and Section B (15 Qs, attempt any 10). Marking: +4 for correct, -1 for incorrect.',
     syllabus_overview: 'Covers the full syllabus of Physics, Chemistry, and Biology (Botany & Zoology) from Classes 11 and 12 (NCERT focused).',
     eligibility: 'Must have passed 10+2 with Physics, Chemistry, Biology/Biotechnology and English. Minimum 50% aggregate marks for General category.',
   },
   'jee main': {
-    pattern: 'Two papers. Paper 1 (B.E./B.Tech) has MCQs and Numerical Value Questions in Physics, Chemistry, and Maths. Total 90 questions (30 per subject). Marking: +4 for correct, -1 for incorrect MCQs.',
+    pattern: 'Paper 1 (B.E./B.Tech) has 90 questions (30 per subject: Physics, Chemistry, Maths). Each subject has 20 MCQs and 10 Numerical Value Questions (attempt any 5). Marking: +4 for correct, -1 for incorrect. For Numerical questions, +4 for correct and 0 for incorrect.',
     syllabus_overview: 'Based on topics covered in Classes 11 and 12 for Physics, Chemistry, and Mathematics.',
     eligibility: 'Must have passed 10+2 with Physics and Mathematics as compulsory subjects along with Chemistry/Biotechnology/Biology.',
   },
   'upsc cse': {
-    pattern: 'Three stages: Prelims (2 objective papers - GS & CSAT), Mains (9 descriptive papers), and Interview. Prelims GS Paper 1 has 100 questions for 200 marks.',
-    syllabus_overview: 'Vast syllabus covering History, Geography, Polity, Economy, Science & Tech, Environment, and Current Affairs for Prelims GS. CSAT is a qualifying paper.',
+    pattern: 'Prelims: 2 objective papers. Paper I (GS - 100 Qs, 200 marks, 1/3 negative marking). Paper II (CSAT - 80 Qs, 200 marks, qualifying with 33%, 1/3 negative marking). Mains: 9 descriptive papers. Followed by Interview.',
+    syllabus_overview: 'Vast syllabus covering History, Geography, Polity, Economy, Science & Tech, Environment, and Current Affairs for Prelims GS. CSAT tests comprehension, reasoning, and basic numeracy.',
     eligibility: 'Must hold a degree from any recognized university. Age limit and number of attempts vary based on category.',
   },
   'cat': {
-    pattern: 'Computer-based test with three sections: Verbal Ability and Reading Comprehension (VARC), Data Interpretation and Logical Reasoning (DILR), and Quantitative Ability (QA). Total 66 questions.',
-    syllabus_overview: 'No defined syllabus, but tests general aptitude, verbal skills, logical reasoning, and mathematical ability up to the Class 10 level.',
+    pattern: 'Computer-based test with 66 questions in three sections (40 mins each): VARC (24 Qs), DILR (20 Qs), and QA (22 Qs). Marking: +3 for correct, -1 for incorrect for MCQs. No negative marking for TITA (Type In The Answer) questions.',
+    syllabus_overview: 'No defined syllabus, but tests general aptitude, verbal skills, logical reasoning, and mathematical ability up to the Class 10-12 level.',
     eligibility: 'Must hold a Bachelor\'s Degree with at least 50% marks or equivalent CGPA.',
+  },
+  'clat': {
+    pattern: 'Offline, comprehension-based exam. 120 questions, 120 marks, 2 hours duration. Marking: +1 for correct, -0.25 for incorrect. Sections: English Language, Current Affairs including GK, Legal Reasoning, Logical Reasoning, and Quantitative Techniques.',
+    syllabus_overview: 'Focuses on reading comprehension, critical reasoning, and analytical skills rather than prior knowledge.',
+    eligibility: 'Must have passed 10+2 or equivalent with at least 45% marks for General category.',
+  },
+  'ssc cgl': {
+    pattern: 'Tier-I (Qualifying): Online exam with 100 questions (200 marks) in 60 mins. Four sections: General Intelligence & Reasoning, General Awareness, Quantitative Aptitude, English Comprehension. Negative marking of 0.50. Tier-II has multiple papers based on the post.',
+    syllabus_overview: 'Broad syllabus covering reasoning, general knowledge, current affairs, quantitative aptitude (up to Class 10), and English language skills.',
+    eligibility: 'Must hold a Bachelor\'s degree from a recognized university for most posts.',
   }
 };
 
