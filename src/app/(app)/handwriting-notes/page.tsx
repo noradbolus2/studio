@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, type ChangeEvent, useRef } from 'react';
@@ -75,7 +76,7 @@ export default function HandwritingNotesPage() {
     try {
         const canvas = await html2canvas(notesRef.current, {
             scale: 2, 
-            backgroundColor: '#ffffff',
+            backgroundColor: '#fdfdfa', // Match paper color
         });
         const imgData = canvas.toDataURL('image/png');
         
@@ -196,7 +197,7 @@ export default function HandwritingNotesPage() {
             <CardDescription>This is a simulation using an advanced handwriting font. The final AI version will match your style even more closely.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div ref={notesRef} className="lined-paper py-4 px-2 bg-white text-gray-800 font-handwriting text-xl whitespace-pre-wrap shadow-inner overflow-hidden">
+            <div ref={notesRef} className="lined-paper p-4 font-handwriting text-xl text-gray-800 whitespace-pre-wrap shadow-inner overflow-y-auto max-h-96">
               {generatedText}
             </div>
           </CardContent>
