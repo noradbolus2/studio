@@ -45,7 +45,12 @@ const prompt = ai.definePrompt({
   output: {schema: CollegePredictorOutputSchema},
   prompt: `You are an expert AI college admission counselor for students in India.
 Your goal is to provide realistic and helpful college suggestions based on the student's academic profile, budget, and preferences.
-Consider factors like 12th percentage, JEE rank (if provided), budget, preferred location, and courses.
+
+**CRITICAL ADMISSION LOGIC:**
+1.  **Entrance Exams are Key:** You MUST understand that for most professional courses in India (like Engineering, Medical), admission is primarily based on national or state-level entrance exams, not just 12th percentage.
+2.  **Medical (MBBS/BDS):** If the user's preferred course is "MBBS", "BDS", or medical, admission to Indian colleges is **impossible** without a good NEET score. Since the user hasn't provided a NEET score, you should not suggest Indian medical colleges. Instead, you can suggest colleges abroad (e.g., in Russia, Georgia, Bangladesh) that are popular among Indian students, but you must clearly state in the remarks why you are suggesting foreign universities (e.g., "Suggested as no NEET score was provided, which is mandatory for Indian medical colleges.").
+3.  **Engineering (B.Tech/B.E.):** For engineering courses, a JEE rank is crucial for top colleges (NITs, IIITs). If the \`jeeRank\` is not provided, you should focus on state-level universities or private colleges which may have their own entrance exams (like VITEEE, SRMJEEE) or accept students based on 12th marks. Your remarks for these colleges MUST mention the required entrance exam (e.g., "Admission through state's CET" or "Considers 12th marks for admission").
+4.  **Other Courses:** For courses like B.Com, B.A., etc., admission is often based on 12th marks or university-specific tests like CUET. Factor this into your suggestions.
 
 Student's Profile:
 - 12th Percentage: {{{percentage12th}}}%
@@ -54,25 +59,25 @@ Student's Profile:
 {{#if preferredLocation}}- Preferred Location: {{{preferredLocation}}}{{/if}}
 {{#if preferredCourses}}- Preferred Courses: {{#each preferredCourses}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
 
-Provide a list of 3-5 college suggestions. For each college, include:
+Based on the profile and the critical logic above, provide a list of 3-5 college suggestions. For each college, include:
 - Name
 - Location (City, State)
 - Relevant courses offered (matching student's preference if provided, otherwise general good courses)
 - Estimated Annual Fee (as a range, e.g., "INR 1,00,000 - 1,50,000")
-- Admission Chance (High, Medium, Low, Very Low) - Be realistic based on the inputs.
-- Brief remarks (optional, e.g., "Good for CSE", "Emerging institute").
+- Admission Chance (High, Medium, Low, Very Low) - Be realistic. For Indian medical colleges, chance is "Very Low" without a NEET score.
+- Brief remarks (IMPORTANT: Explain the admission criteria, e.g., "Requires NEET score", "Admission via VITEEE", "Considers 12th marks").
 
 IMPORTANT: The final output MUST be a JSON object matching the CollegePredictorOutputSchema.
 Include a disclaimer: "These suggestions are AI-generated and for informational purposes only. Please verify all details with official college sources."
 
 Example of a single college object in the suggestions array:
 {
-  "name": "Example Engineering College",
-  "location": "Pune, Maharashtra",
-  "coursesOffered": ["Computer Science", "Electronics Engineering"],
-  "estimatedAnnualFee": "INR 1,20,000 - 1,80,000",
+  "name": "Vellore Institute of Technology (VIT)",
+  "location": "Vellore, Tamil Nadu",
+  "coursesOffered": ["Computer Science", "Electronics Engineering", "Mechanical Engineering"],
+  "estimatedAnnualFee": "INR 2,00,000 - 4,00,000",
   "admissionChance": "Medium",
-  "remarks": "Known for good placements in IT."
+  "remarks": "Admission is through the VITEEE entrance exam, 12th percentage is mainly for eligibility."
 }
 
 Generate the suggestions now.
@@ -106,4 +111,3 @@ const collegePredictorFlow = ai.defineFlow(
     return output;
   }
 );
-
