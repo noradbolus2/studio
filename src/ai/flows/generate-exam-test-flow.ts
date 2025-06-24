@@ -194,8 +194,18 @@ const generateExamTestFlow = ai.defineFlow(
       return finalOutput;
     } catch (error: any) {
       console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred during test generation for "${input.examNameOrType}":`, error);
-      // This will be caught by the front-end and displayed to the user.
-      throw new Error("The AI model is currently overloaded. This can happen with large or complex test requests. Please try again in a moment, or generate a smaller test.");
+      // Instead of throwing, return a structured error object that the UI can display.
+      // This provides a better user experience than a generic error toast.
+      return {
+        testTitle: `Error Generating Test for ${input.examNameOrType}`,
+        questions: [{
+          questionType: "mcq",
+          questionText: "The AI model is currently overloaded or failed to generate a response. This can happen with very large or complex test requests. Please try again in a moment.",
+          options: ["Please try again in a moment.", "Try generating a smaller test.", "Refresh the page.", "Contact support if the issue persists."],
+          correctAnswerIndex: 0,
+          explanation: `An unexpected error occurred and the test could not be generated. Details: ${error?.message || 'Unknown error'}`
+        }]
+      };
     }
   }
 );
