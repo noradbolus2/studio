@@ -22,6 +22,7 @@ export default {
         body: ['Poppins', 'Inter', 'sans-serif'],
         headline: ['Poppins', 'Inter', 'sans-serif'], 
         code: ['monospace', 'monospace'],
+        handwriting: ['Kalam', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",
