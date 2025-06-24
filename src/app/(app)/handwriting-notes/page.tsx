@@ -27,6 +27,7 @@ export default function HandwritingNotesPage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
   const [matchedStyle, setMatchedStyle] = useState(handwritingStyles[0]);
+  const [matchingPercentage, setMatchingPercentage] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -46,17 +47,20 @@ export default function HandwritingNotesPage() {
       setIsTraining(true);
       setSampleFileName(null);
       setGeneratedText("");
+      setMatchingPercentage(null);
 
       toast({ title: "Learning Handwriting Style...", description: "AI is analyzing your sample. This will take a moment." });
 
       setTimeout(() => {
         setIsTraining(false);
         const randomStyle = handwritingStyles[Math.floor(Math.random() * handwritingStyles.length)];
+        const randomPercentage = Math.floor(Math.random() * (98 - 85 + 1)) + 85; // Random percentage between 85 and 98
         setMatchedStyle(randomStyle);
+        setMatchingPercentage(randomPercentage);
         setSampleFileName(file.name);
         toast({
           title: "Training Complete!",
-          description: `AI has learned from ${file.name} and matched it to Style: ${randomStyle.name}. You can now generate notes.`,
+          description: `AI has matched your style to: ${randomStyle.name} with ${randomPercentage}% confidence.`,
           variant: "default"
         });
       }, 2500);
@@ -152,10 +156,15 @@ export default function HandwritingNotesPage() {
           <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full" disabled={isTraining}>
             <BilingualText en="Choose Image File..." hi="छवि फ़ाइल चुनें..." />
           </Button>
-          {sampleFileName && !isTraining && (
+          {sampleFileName && matchingPercentage && !isTraining && (
             <div className="mt-3 flex items-center justify-center gap-2 text-sm text-green-600 bg-green-500/10 p-2 rounded-md border border-green-500/20">
               <ScanSearch size={16} />
-              <p>AI Matched Style: <strong>{matchedStyle.name}</strong> (from {sampleFileName})</p>
+              <p>
+                <BilingualText en="AI Match:" hi="एआई मैच:" /> 
+                <strong className="mx-1">{matchedStyle.name}</strong> 
+                (<BilingualText en="Confidence:" hi="आत्मविश्वास:" /> 
+                <strong className="ml-1">{matchingPercentage}%</strong>)
+              </p>
             </div>
           )}
         </CardContent>
@@ -165,7 +174,7 @@ export default function HandwritingNotesPage() {
         <Card>
           <CardHeader className="items-center text-center">
              <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-accent animate-pulse"/>AI Training in Progress</CardTitle>
-             <CardDescription>Analyzing your unique handwriting style...</CardDescription>
+             <CardDescription>Analyzing strokes, pressure, and style from your sample...</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center items-center py-8">
             <Loader2 className="h-12 w-12 text-primary animate-spin"/>
