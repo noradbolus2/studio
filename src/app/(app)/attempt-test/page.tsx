@@ -335,20 +335,20 @@ export default function AttemptTestPage() {
                 {result.questionText}
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm space-y-2">
+            <CardContent className="text-sm space-y-3">
               {result.questionType === 'mcq' && (
-                  <>
-                    <p><strong><BilingualText en="Your Answer:" hi="आपका उत्तर:" /></strong> {result.selectedOption} {result.isCorrect === true ? <CheckCircle className="inline h-4 w-4 text-green-500 ml-1" /> : (result.isCorrect === false ? <XCircle className="inline h-4 w-4 text-red-500 ml-1" /> : <HelpCircle className="inline h-4 w-4 text-gray-500 ml-1" />)}</p>
-                    {result.isCorrect !== true && <p><strong><BilingualText en="Correct Answer:" hi="सही उत्तर:" /></strong> {result.correctOption}</p>}
-                  </>
+                  <div className="space-y-2">
+                      <p><strong><BilingualText en="Your Answer:" hi="आपका उत्तर:" /></strong> {result.selectedOption} {result.isCorrect === true ? <CheckCircle className="inline h-4 w-4 text-green-500 ml-1" /> : (result.isCorrect === false ? <XCircle className="inline h-4 w-4 text-red-500 ml-1" /> : <HelpCircle className="inline h-4 w-4 text-gray-500 ml-1" />)}</p>
+                      {result.isCorrect !== true && <div className="p-2 bg-green-500/10 rounded-md border border-green-500/30"><p><strong><BilingualText en="Correct Answer:" hi="सही उत्तर:" /></strong> {result.correctOption}</p></div>}
+                  </div>
               )}
                {result.questionType === 'subjective' && result.modelAnswer && (
-                 <div className="mt-2 p-2 bg-blue-500/10 rounded-md border border-blue-500/30">
+                 <div className="p-2 bg-blue-500/10 rounded-md border border-blue-500/30">
                   <p className="flex items-start gap-1.5"><BookOpen size={14} className="text-blue-500 mt-0.5 shrink-0"/> <strong><BilingualText en="Model Answer:" hi="मॉडल उत्तर:" /></strong> {result.modelAnswer}</p>
                 </div>
                )}
               {result.explanation && (
-                <div className="mt-2 p-2 bg-muted/50 rounded-md">
+                <div className="p-2 bg-yellow-500/10 rounded-md border border-yellow-500/30">
                   <p className="flex items-start gap-1.5"><Lightbulb size={14} className="text-yellow-500 mt-0.5 shrink-0"/> <strong><BilingualText en="Explanation:" hi="स्पष्टीकरण:" /></strong> {result.explanation}</p>
                 </div>
               )}
