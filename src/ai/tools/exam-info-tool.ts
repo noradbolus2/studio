@@ -9,12 +9,12 @@ import { z } from 'genkit';
 // Mock database of exam information with updated patterns for 2025
 const examDatabase: Record<string, { pattern: string; syllabus_overview: string; eligibility: string }> = {
   'neet ug': {
-    pattern: 'As of the latest notifications for 2025, the pattern is: Total 200 MCQs (180 to be attempted in 3 hours 20 mins). Subjects: Physics, Chemistry, Botany, Zoology. Each subject has two sections: Section A (35 compulsory Qs) and Section B (15 Qs, attempt any 10). Marking: +4 for correct, -1 for incorrect. It\'s a single-session offline pen-and-paper exam.',
+    pattern: 'Based on the latest 2025 guidelines, the NEET UG exam consists of 180 questions to be attempted out of a total of 200 questions provided. This structure gives students internal choices. The total time is 3 hours 20 minutes. The breakdown is: Physics, Chemistry, Botany, and Zoology each have two sections. Section A has 35 compulsory questions. Section B has 15 questions, of which students must attempt any 10. This makes for 45 attempted questions per subject. The marking scheme is +4 for a correct answer and -1 for an incorrect answer.',
     syllabus_overview: 'Covers the full syllabus of Physics, Chemistry, and Biology (Botany & Zoology) from Classes 11 and 12 (NCERT focused).',
     eligibility: 'Must have passed 10+2 with Physics, Chemistry, Biology/Biotechnology and English. Minimum 50% aggregate marks for General category.',
   },
   'jee main': {
-    pattern: 'The 2025 pattern for Paper 1 (B.E./B.Tech) consists of 90 questions (30 each for Physics, Chemistry, Maths), held online in multiple sessions (typically Jan & April). Each subject has 20 MCQs and 10 Numerical Value Questions (attempt any 5). Marking: +4 for correct, -1 for incorrect (for both MCQs and Numerical questions with single correct answers). Total Marks: 300.',
+    pattern: 'The 2025 pattern for Paper 1 (B.E./B.Tech) consists of 90 questions (30 each for Physics, Chemistry, Maths), held online in multiple sessions (typically Jan & April). Each subject has 20 MCQs and 10 Numerical Value Questions (attempt any 5). Marking: +4 for correct, -1 for incorrect (for both MCQs and answered Numerical questions). Total Marks: 300.',
     syllabus_overview: 'Based on topics covered in Classes 11 and 12 for Physics, Chemistry, and Mathematics.',
     eligibility: 'Must have passed 10+2 with Physics and Mathematics as compulsory subjects along with Chemistry/Biotechnology/Biology.',
   },
