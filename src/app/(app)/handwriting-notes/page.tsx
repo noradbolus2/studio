@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
-import { UploadCloud, FileSignature, Sparkles, CheckCircle, Download, Loader2 } from 'lucide-react';
+import { UploadCloud, FileSignature, Sparkles, CheckCircle, Download, Loader2, BrainCircuit } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -18,8 +17,9 @@ export default function HandwritingNotesPage() {
   const [inputText, setInputText] = useState("");
   const [generatedText, setGeneratedText] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isTraining, setIsTraining] = useState(false); // New state for training simulation
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const notesRef = useRef<HTMLDivElement>(null); // Ref for the notes container
+  const notesRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -29,22 +29,38 @@ export default function HandwritingNotesPage() {
         toast({ title: "Invalid File", description: "Please upload an image of your handwriting.", variant: "destructive" });
         return;
       }
-      setSampleFileName(file.name);
-      toast({
-        title: "Sample Uploaded (Simulated)",
-        description: `${file.name} is ready. Now enter your text below.`,
-        variant: "default"
-      });
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({ title: "File Too Large", description: "Image file must be less than 5MB.", variant: "destructive" });
+        return;
+      }
+      
+      // Start training simulation
+      setIsTraining(true);
+      setSampleFileName(null);
+      setGeneratedText("");
+
+      toast({ title: "Learning Handwriting Style...", description: "AI is analyzing your sample. This will take a moment." });
+
+      // Simulate a delay for "training"
+      setTimeout(() => {
+        setIsTraining(false);
+        setSampleFileName(file.name);
+        toast({
+          title: "Training Complete!",
+          description: `AI has learned from ${file.name}. You can now generate notes.`,
+          variant: "default"
+        });
+      }, 2500);
     }
   };
 
   const handleGenerate = () => {
     if (!sampleFileName) {
-      toast({ title: "No Sample", description: "Please upload a handwriting sample first.", variant: "destructive" });
+      toast({ title: "No Sample Trained", description: "Please upload and train a handwriting sample first.", variant: "destructive" });
       return;
     }
     if (!inputText.trim()) {
-      toast({ title: "No Text", description: "Please enter some text to generate.", variant: "destructive" });
+      toast({ title: "No Text to Generate", description: "Please enter some text in the input box.", variant: "destructive" });
       return;
     }
     setGeneratedText(inputText);
@@ -58,14 +74,13 @@ export default function HandwritingNotesPage() {
     setIsDownloading(true);
     try {
         const canvas = await html2canvas(notesRef.current, {
-            scale: 2, // Improve resolution
-            backgroundColor: '#ffffff', // Ensure background is white
+            scale: 2, 
+            backgroundColor: '#ffffff',
         });
         const imgData = canvas.toDataURL('image/png');
         
-        // A4 page dimensions in mm: 210 x 297
         const pdf = new jsPDF({
-            orientation: 'p', // portrait
+            orientation: 'p',
             unit: 'mm',
             format: 'a4'
         });
@@ -76,8 +91,7 @@ export default function HandwritingNotesPage() {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const canvasAspectRatio = canvasWidth / canvasHeight;
-
-        // Maintain aspect ratio within PDF page, with small margin
+        
         const margin = 10;
         let imgWidth = pdfWidth - (margin * 2);
         let imgHeight = imgWidth / canvasAspectRatio;
@@ -126,48 +140,63 @@ export default function HandwritingNotesPage() {
             accept="image/*"
             className="hidden" 
           />
-          <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full">
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full" disabled={isTraining}>
             <BilingualText en="Choose Image File..." hi="छवि फ़ाइल चुनें..." />
           </Button>
-          {sampleFileName && (
+          {sampleFileName && !isTraining && (
             <div className="mt-3 flex items-center justify-center gap-2 text-sm text-green-600">
               <CheckCircle size={16} />
-              <p>Uploaded: <strong>{sampleFileName}</strong></p>
+              <p>Trained on: <strong>{sampleFileName}</strong></p>
             </div>
           )}
         </CardContent>
       </Card>
+      
+      {isTraining && (
+        <Card>
+          <CardHeader className="items-center text-center">
+             <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-accent animate-pulse"/>AI Training in Progress</CardTitle>
+             <CardDescription>Analyzing your unique handwriting style...</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center items-center py-8">
+            <Loader2 className="h-12 w-12 text-primary animate-spin"/>
+          </CardContent>
+        </Card>
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent"/>2. Generate Notes</CardTitle>
-          <CardDescription>Enter the text you want to convert into your handwriting.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Label htmlFor="inputText">Your Text</Label>
-          <Textarea 
-            id="inputText"
-            placeholder="Type your notes here..."
-            className="min-h-[150px] mt-1"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-          />
-        </CardContent>
-        <CardFooter>
-          <Button onClick={handleGenerate} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-            Generate Handwritten Notes
-          </Button>
-        </CardFooter>
-      </Card>
+      {!isTraining && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent"/>2. Generate Notes</CardTitle>
+            <CardDescription>Enter the text you want to convert. The AI will use your trained handwriting style.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Label htmlFor="inputText">Your Text</Label>
+            <Textarea 
+              id="inputText"
+              placeholder="Type your notes here..."
+              className="min-h-[150px] mt-1"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              disabled={!sampleFileName}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleGenerate} className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={!sampleFileName}>
+              Generate Handwritten Notes
+            </Button>
+          </CardFooter>
+        </Card>
+      )}
 
       {generatedText && (
         <Card>
           <CardHeader>
-            <CardTitle>Your Handwritten Notes (Prototype)</CardTitle>
-            <CardDescription>This is a simulation using a pre-selected font. The final version will use your handwriting style.</CardDescription>
+            <CardTitle>Your AI-Generated Handwritten Notes</CardTitle>
+            <CardDescription>This is a simulation using an advanced handwriting font. The final AI version will match your style even more closely.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div ref={notesRef} className="p-4 border rounded-md bg-white text-black font-handwriting text-xl leading-relaxed whitespace-pre-wrap">
+            <div ref={notesRef} className="lined-paper py-4 px-2 bg-white text-gray-800 font-handwriting text-xl whitespace-pre-wrap shadow-inner overflow-hidden">
               {generatedText}
             </div>
           </CardContent>

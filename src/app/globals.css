@@ -269,4 +269,13 @@
   .animate-yellow-pulse {
     animation: yellow-pulse 2s infinite ease-in-out;
   }
+
+  .lined-paper {
+    background-color: #fdfdfa; /* A slightly off-white, paper-like color */
+    background-image:
+      linear-gradient(#dce1e5 1px, transparent 1px);
+    background-size: 100% 2.1rem; /* Adjust line spacing */
+    line-height: 2.1rem;
+    border-left: 3px solid hsla(var(--accent), 0.6); /* Use accent color for the margin line */
+  }
 }
