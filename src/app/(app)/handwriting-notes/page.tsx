@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
-import { UploadCloud, FileSignature, Sparkles, CheckCircle, Download, Loader2, BrainCircuit, ScanSearch } from 'lucide-react';
+import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
