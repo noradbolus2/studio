@@ -84,8 +84,8 @@ export default function CollegePredictorPage() {
           <GraduationCap className="h-8 w-8" />
           <BilingualText en="AI College Predictor" hi="एआई कॉलेज भविष्यवक्ता" />
         </h1>
-        <p className="text-muted-foreground">
-          <BilingualText en="Get personalized college suggestions based on your profile." hi="अपनी प्रोफ़ाइल के आधार पर व्यक्तिगत कॉलेज सुझाव प्राप्त करें।" />
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          <BilingualText en="Enter your details for AI-powered suggestions. Remember, for many professional courses, entrance exam scores are more important than 12th marks." hi="एआई-संचालित सुझावों के लिए अपना विवरण दर्ज करें। याद रखें, कई व्यावसायिक पाठ्यक्रमों के लिए, 12वीं के अंकों की तुलना में प्रवेश परीक्षा स्कोर अधिक महत्वपूर्ण हैं।" />
         </p>
       </header>
 
@@ -97,7 +97,7 @@ export default function CollegePredictorPage() {
                 <BilingualText en="Enter Your Details" hi="अपना विवरण दर्ज करें" />
             </CardTitle>
             <CardDescription>
-                <BilingualText en="The more details you provide, the better the suggestions." hi="आप जितना अधिक विवरण प्रदान करेंगे, सुझाव उतने ही बेहतर होंगे।" />
+                <BilingualText en="Provide your 12th marks for eligibility and entrance exam ranks for accurate predictions." hi="पात्रता के लिए अपने 12वीं के अंक और सटीक भविष्यवाणियों के लिए प्रवेश परीक्षा रैंक प्रदान करें।" />
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -181,4 +181,3 @@ export default function CollegePredictorPage() {
     </div>
   );
 }
-
