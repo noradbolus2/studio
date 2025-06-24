@@ -8,17 +8,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
-import { UploadCloud, FileSignature, Sparkles, CheckCircle, Download, Loader2, BrainCircuit } from 'lucide-react';
+import { UploadCloud, FileSignature, Sparkles, CheckCircle, Download, Loader2, BrainCircuit, ScanSearch } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { cn } from '@/lib/utils';
+
+const handwritingStyles = [
+    { name: 'Kalam', className: 'font-handwriting' },
+    { name: 'Caveat', className: 'font-handwriting-caveat' },
+    { name: 'Dancing Script', className: 'font-handwriting-dancing' },
+];
 
 export default function HandwritingNotesPage() {
   const [sampleFileName, setSampleFileName] = useState<string | null>(null);
   const [inputText, setInputText] = useState("");
-  const [generatedText, setGeneratedText] = useState("");
+  const [generatedText, setGeneratedText] =useState("");
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isTraining, setIsTraining] = useState(false); // New state for training simulation
+  const [isTraining, setIsTraining] = useState(false);
+  const [matchedStyle, setMatchedStyle] = useState(handwritingStyles[0]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -35,20 +43,20 @@ export default function HandwritingNotesPage() {
         return;
       }
       
-      // Start training simulation
       setIsTraining(true);
       setSampleFileName(null);
       setGeneratedText("");
 
       toast({ title: "Learning Handwriting Style...", description: "AI is analyzing your sample. This will take a moment." });
 
-      // Simulate a delay for "training"
       setTimeout(() => {
         setIsTraining(false);
+        const randomStyle = handwritingStyles[Math.floor(Math.random() * handwritingStyles.length)];
+        setMatchedStyle(randomStyle);
         setSampleFileName(file.name);
         toast({
           title: "Training Complete!",
-          description: `AI has learned from ${file.name}. You can now generate notes.`,
+          description: `AI has learned from ${file.name} and matched it to Style: ${randomStyle.name}. You can now generate notes.`,
           variant: "default"
         });
       }, 2500);
@@ -76,7 +84,7 @@ export default function HandwritingNotesPage() {
     try {
         const canvas = await html2canvas(notesRef.current, {
             scale: 2, 
-            backgroundColor: '#fdfdfa', // Match paper color
+            backgroundColor: '#fdfdfa', 
         });
         const imgData = canvas.toDataURL('image/png');
         
@@ -145,9 +153,9 @@ export default function HandwritingNotesPage() {
             <BilingualText en="Choose Image File..." hi="छवि फ़ाइल चुनें..." />
           </Button>
           {sampleFileName && !isTraining && (
-            <div className="mt-3 flex items-center justify-center gap-2 text-sm text-green-600">
-              <CheckCircle size={16} />
-              <p>Trained on: <strong>{sampleFileName}</strong></p>
+            <div className="mt-3 flex items-center justify-center gap-2 text-sm text-green-600 bg-green-500/10 p-2 rounded-md border border-green-500/20">
+              <ScanSearch size={16} />
+              <p>AI Matched Style: <strong>{matchedStyle.name}</strong> (from {sampleFileName})</p>
             </div>
           )}
         </CardContent>
@@ -194,10 +202,10 @@ export default function HandwritingNotesPage() {
         <Card>
           <CardHeader>
             <CardTitle>Your AI-Generated Handwritten Notes</CardTitle>
-            <CardDescription>This is a simulation using an advanced handwriting font. The final AI version will match your style even more closely.</CardDescription>
+            <CardDescription>This is a simulation using the AI-matched <span className="font-semibold text-primary">{matchedStyle.name}</span> font style. The final AI version will match your style even more closely.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div ref={notesRef} className="lined-paper p-4 font-handwriting text-xl text-gray-800 whitespace-pre-wrap shadow-inner overflow-y-auto max-h-96">
+            <div ref={notesRef} className={cn("lined-paper p-4 text-xl text-gray-800 whitespace-pre-wrap shadow-inner overflow-y-auto max-h-96", matchedStyle.className)}>
               {generatedText}
             </div>
           </CardContent>

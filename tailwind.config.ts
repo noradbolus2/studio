@@ -23,6 +23,8 @@ export default {
         headline: ['Poppins', 'Inter', 'sans-serif'], 
         code: ['monospace', 'monospace'],
         handwriting: ['Kalam', 'cursive'],
+        'handwriting-caveat': ['Caveat', 'cursive'],
+        'handwriting-dancing': ['Dancing Script', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",
