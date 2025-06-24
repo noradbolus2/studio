@@ -132,64 +132,70 @@ const generateExamTestFlow = ai.defineFlow(
   {
     name: 'generateExamTestFlow',
     inputSchema: GenerateExamTestInputSchema,
-    outputSchema: GenerateExamTestOutputSchema, // Final output schema includes diagramDataUri and REQUIRES testTitle
+    outputSchema: GenerateExamTestOutputSchema,
   },
   async (input) => {
-    console.log(`[Genkit Flow - generateExamTestFlow] Starting test generation for: ${input.examNameOrType}, Subject: ${input.subject || 'N/A'}, Requested Qs: ${input.numQuestions}`);
-    
-    // Step 1: Generate textual content of questions, including diagram prompts
-    const {output: textOutput} = await generateTextQuestionsPrompt(input);
+    try {
+      console.log(`[Genkit Flow - generateExamTestFlow] Starting test generation for: ${input.examNameOrType}, Subject: ${input.subject || 'N/A'}, Requested Qs: ${input.numQuestions}`);
+      
+      // Step 1: Generate textual content of questions, including diagram prompts
+      const {output: textOutput} = await generateTextQuestionsPrompt(input);
 
-    if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions) || textOutput.questions.length === 0) {
-        console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure (text part). Output was null, malformed, or empty:", textOutput);
-        // Return a valid empty structure if the AI completely fails
-        return {
-          testTitle: `Error Generating Test for ${input.examNameOrType}`,
-          questions: [{
-            questionType: "mcq",
-            questionText: "Error: AI failed to generate questions for this test. The model might be overloaded or the request was too complex. Please try generating a smaller test or try again later.",
-            options: ["N/A", "N/A", "N/A", "N/A"],
-            correctAnswerIndex: 0,
-            explanation: "The AI model could not produce the expected test content. This often happens with very large test requests (e.g., 200 questions) during peak times."
-          }]
-        };
-    }
-    console.log(`[Genkit Flow - generateExamTestFlow] Text part generated. Title: "${textOutput.testTitle}". Number of text questions: ${textOutput.questions.length}`);
+      if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions) || textOutput.questions.length === 0) {
+          console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure (text part). Output was null, malformed, or empty:", textOutput);
+          // Return a valid empty structure if the AI completely fails
+          return {
+            testTitle: `Error Generating Test for ${input.examNameOrType}`,
+            questions: [{
+              questionType: "mcq",
+              questionText: "Error: AI failed to generate questions for this test. The model might be overloaded or the request was too complex. Please try generating a smaller test or try again later.",
+              options: ["N/A", "N/A", "N/A", "N/A"],
+              correctAnswerIndex: 0,
+              explanation: "The AI model could not produce the expected test content. This often happens with very large test requests (e.g., 200 questions) during peak times."
+            }]
+          };
+      }
+      console.log(`[Genkit Flow - generateExamTestFlow] Text part generated. Title: "${textOutput.testTitle}". Number of text questions: ${textOutput.questions.length}`);
 
-    // Step 2: Iterate through questions and generate diagrams if diagramPrompt is present
-    const questionsWithDiagrams = await Promise.all(
-      textOutput.questions.map(async (question: any) => { 
-        if (question.diagramPrompt && typeof question.diagramPrompt === 'string' && question.diagramPrompt.trim() !== "") {
-          console.log(`[Genkit Flow - generateExamTestFlow] Diagram prompt found for question: "${question.questionText.substring(0,30)}...". Prompt: "${question.diagramPrompt}"`);
-          try {
-            const {media} = await ai.generate({
-              model: 'googleai/gemini-2.0-flash-preview-image-generation',
-              prompt: `Generate a clear, simple diagram suitable for a multiple-choice question based on this description: ${question.diagramPrompt}. The diagram should visually represent the key elements needed to understand the question. Avoid text in the diagram unless absolutely necessary for labels.`,
-              config: {
-                responseModalities: ['TEXT', 'IMAGE'], 
-              },
-            });
-            console.log(`[Genkit Flow - generateExamTestFlow] Diagram generated for: "${question.diagramPrompt.substring(0,30)}...". Media URL available.`);
-            return { 
-              ...question, 
-              diagramDataUri: media?.url,
-              diagramPrompt: undefined 
-            } as z.infer<typeof QuestionSchema>;
-          } catch (imgError) {
-            console.error(`[Genkit Flow - generateExamTestFlow] Failed to generate diagram for question "${question.questionText.substring(0,30)}...":`, imgError);
-            return { ...question, diagramPrompt: undefined, diagramDataUri: undefined } as z.infer<typeof QuestionSchema>; 
+      // Step 2: Iterate through questions and generate diagrams if diagramPrompt is present
+      const questionsWithDiagrams = await Promise.all(
+        textOutput.questions.map(async (question: any) => { 
+          if (question.diagramPrompt && typeof question.diagramPrompt === 'string' && question.diagramPrompt.trim() !== "") {
+            console.log(`[Genkit Flow - generateExamTestFlow] Diagram prompt found for question: "${question.questionText.substring(0,30)}...". Prompt: "${question.diagramPrompt}"`);
+            try {
+              const {media} = await ai.generate({
+                model: 'googleai/gemini-2.0-flash-preview-image-generation',
+                prompt: `Generate a clear, simple diagram suitable for a multiple-choice question based on this description: ${question.diagramPrompt}. The diagram should visually represent the key elements needed to understand the question. Avoid text in the diagram unless absolutely necessary for labels.`,
+                config: {
+                  responseModalities: ['TEXT', 'IMAGE'], 
+                },
+              });
+              console.log(`[Genkit Flow - generateExamTestFlow] Diagram generated for: "${question.diagramPrompt.substring(0,30)}...". Media URL available.`);
+              return { 
+                ...question, 
+                diagramDataUri: media?.url,
+                diagramPrompt: undefined 
+              } as z.infer<typeof QuestionSchema>;
+            } catch (imgError) {
+              console.error(`[Genkit Flow - generateExamTestFlow] Failed to generate diagram for question "${question.questionText.substring(0,30)}...":`, imgError);
+              return { ...question, diagramPrompt: undefined, diagramDataUri: undefined } as z.infer<typeof QuestionSchema>; 
+            }
           }
-        }
-        return { ...question, diagramPrompt: undefined, diagramDataUri: undefined } as z.infer<typeof QuestionSchema>;
-      })
-    );
-    
-    const finalOutput: GenerateExamTestOutput = {
-      testTitle: textOutput.testTitle, // Ensured by fallback
-      questions: questionsWithDiagrams,
-    };
+          return { ...question, diagramPrompt: undefined, diagramDataUri: undefined } as z.infer<typeof QuestionSchema>;
+        })
+      );
+      
+      const finalOutput: GenerateExamTestOutput = {
+        testTitle: textOutput.testTitle, // Ensured by fallback
+        questions: questionsWithDiagrams,
+      };
 
-    console.log(`[Genkit Flow - generateExamTestFlow] Test Generation Complete. Title: "${finalOutput.testTitle}". Total questions processed: ${finalOutput.questions.length}. Questions with diagrams generated (attempted): ${finalOutput.questions.filter(q => q.diagramDataUri).length}`);
-    return finalOutput;
+      console.log(`[Genkit Flow - generateExamTestFlow] Test Generation Complete. Title: "${finalOutput.testTitle}". Total questions processed: ${finalOutput.questions.length}. Questions with diagrams generated (attempted): ${finalOutput.questions.filter(q => q.diagramDataUri).length}`);
+      return finalOutput;
+    } catch (error: any) {
+      console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred during test generation for "${input.examNameOrType}":`, error);
+      // This will be caught by the front-end and displayed to the user.
+      throw new Error("The AI model is currently overloaded. This can happen with large or complex test requests. Please try again in a moment, or generate a smaller test.");
+    }
   }
 );
