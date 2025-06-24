@@ -9,32 +9,32 @@ import { z } from 'genkit';
 // Mock database of exam information with updated patterns for 2025
 const examDatabase: Record<string, { pattern: string; syllabus_overview: string; eligibility: string }> = {
   'neet ug': {
-    pattern: 'Based on the latest 2025 guidelines, the NEET UG exam consists of 180 questions to be attempted out of a total of 200 questions provided. This structure gives students internal choices. The total time is 3 hours 20 minutes. The breakdown is: Physics, Chemistry, Botany, and Zoology each have two sections. Section A has 35 compulsory questions. Section B has 15 questions, of which students must attempt any 10. This makes for 45 attempted questions per subject. The marking scheme is +4 for a correct answer and -1 for an incorrect answer.',
+    pattern: 'The NEET UG 2025 exam consists of 200 multiple-choice questions, out of which students must attempt 180. This gives internal choices within each subject. The exam duration is 3 hours and 20 minutes. Each of the four subjects (Physics, Chemistry, Botany, Zoology) has two sections: Section A with 35 compulsory questions and Section B with 15 questions, where students must attempt any 10. The marking scheme is +4 for a correct answer and -1 for an incorrect one.',
     syllabus_overview: 'Covers the full syllabus of Physics, Chemistry, and Biology (Botany & Zoology) from Classes 11 and 12 (NCERT focused).',
     eligibility: 'Must have passed 10+2 with Physics, Chemistry, Biology/Biotechnology and English. Minimum 50% aggregate marks for General category.',
   },
   'jee main': {
-    pattern: 'The 2025 pattern for Paper 1 (B.E./B.Tech) consists of 90 questions (30 each for Physics, Chemistry, Maths), held online in multiple sessions (typically Jan & April). Each subject has 20 MCQs and 10 Numerical Value Questions (attempt any 5). Marking: +4 for correct, -1 for incorrect (for both MCQs and answered Numerical questions). Total Marks: 300.',
+    pattern: 'For 2025, the JEE Main Paper 1 (B.E./B.Tech) pattern remains consistent, held online across multiple sessions. It includes 90 questions in total (30 each for Physics, Chemistry, and Mathematics). Each subject is divided into 20 Multiple-Choice Questions (MCQs) and 10 Numerical Value Questions, out of which any 5 must be attempted. Marking scheme: +4 for correct answers, -1 for incorrect answers for both MCQs and the attempted numerical questions. The total marks are 300.',
     syllabus_overview: 'Based on topics covered in Classes 11 and 12 for Physics, Chemistry, and Mathematics.',
     eligibility: 'Must have passed 10+2 with Physics and Mathematics as compulsory subjects along with Chemistry/Biotechnology/Biology.',
   },
   'upsc cse': {
-    pattern: 'The 2025 Prelims pattern has 2 objective papers. Paper I (General Studies) has 100 questions for 200 marks (negative marking of 1/3rd). Paper II (CSAT) has 80 questions for 200 marks and is qualifying with 33% marks (negative marking of 1/3rd). This is followed by 9 descriptive papers in Mains and a final Interview/Personality Test.',
+    pattern: 'The UPSC CSE Prelims 2025 pattern continues with two objective papers. Paper I (General Studies) contains 100 questions for a total of 200 marks, with a negative marking of one-third for wrong answers. Paper II (CSAT) is a qualifying paper with 80 questions for 200 marks (also with 1/3rd negative marking), requiring a minimum of 33% to pass. This is followed by the extensive Mains examination and the final Personality Test.',
     syllabus_overview: 'Vast syllabus covering History, Geography, Polity, Economy, Science & Tech, Environment, and Current Affairs for Prelims GS. CSAT tests comprehension, reasoning, and basic numeracy.',
     eligibility: 'Must hold a degree from any recognized university. Age limit and number of attempts vary based on category.',
   },
   'cat': {
-    pattern: 'The recent pattern for CAT 2024/2025 is a computer-based test with 66 questions over 120 minutes, split into three 40-minute sections: VARC (24 Qs), DILR (20 Qs), and QA (22 Qs). Marking is +3 for correct answers and -1 for incorrect MCQs. No negative marking for TITA (Type In The Answer) questions. The exact pattern can have minor yearly variations, but this structure is stable.',
+    pattern: 'The CAT 2024/2025 pattern is expected to continue as a 2-hour (120 minutes) computer-based test. It comprises 66 questions divided into three 40-minute sections: VARC (Verbal Ability and Reading Comprehension) with 24 questions, DILR (Data Interpretation & Logical Reasoning) with 20 questions, and QA (Quantitative Ability) with 22 questions. The marking scheme is +3 for correct answers and -1 for incorrect MCQs. There is no negative marking for TITA (Type In The Answer) questions.',
     syllabus_overview: 'No defined syllabus, but tests general aptitude, verbal skills, logical reasoning, and mathematical ability up to the Class 10-12 level.',
     eligibility: 'Must hold a Bachelor\'s Degree with at least 50% marks or equivalent CGPA.',
   },
   'clat': {
-    pattern: 'The updated 2025 UG pattern is an offline, comprehension-based test with 120 questions for 120 marks over 2 hours. Marking: +1 for correct, -0.25 for incorrect. The five sections are: English Language, Current Affairs (including General Knowledge), Legal Reasoning, Logical Reasoning, and Quantitative Techniques.',
+    pattern: 'The CLAT UG 2025 pattern, as per the recent update, is an offline, comprehension-based test featuring 120 questions to be answered in 2 hours (120 minutes). The marking scheme is +1 for a correct answer and a penalty of -0.25 for an incorrect answer. The five sections are: English Language, Current Affairs (including General Knowledge), Legal Reasoning, Logical Reasoning, and Quantitative Techniques, all focusing on passage-based questions.',
     syllabus_overview: 'Focuses on reading comprehension, critical reasoning, and analytical skills rather than prior knowledge.',
     eligibility: 'Must have passed 10+2 or equivalent with at least 45% marks for General category.',
   },
   'ssc cgl': {
-    pattern: 'The 2025 Tier-I is a qualifying online exam with 100 questions (200 marks total) in 60 minutes. It has four sections: General Intelligence & Reasoning, General Awareness, Quantitative Aptitude, English Comprehension. A negative marking of 0.50 marks applies. Tier-II pattern was revised and now has multiple papers with different sections and computer knowledge tests, varying by post.',
+    pattern: 'The SSC CGL 2025 Tier-I exam is a qualifying, computer-based test lasting 60 minutes. It includes 100 questions for 200 marks, divided into four sections: General Intelligence & Reasoning, General Awareness, Quantitative Aptitude, and English Comprehension. A negative marking of 0.50 marks is applied for each wrong answer. The Tier-II pattern has been revised and now involves multiple papers with different sections, including computer knowledge tests, depending on the specific post.',
     syllabus_overview: 'Broad syllabus covering reasoning, general knowledge, current affairs, quantitative aptitude (up to Class 10), and English language skills.',
     eligibility: 'Must hold a Bachelor\'s degree from a recognized university for most posts.',
   }
