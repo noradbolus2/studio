@@ -11,7 +11,6 @@ const studySections = [
   { titleEn: "Courses", titleHi: "पाठ्यक्रम", descriptionEn: "AI, Coding, NCERT & more", descriptionHi: "एआई, कोडिंग, एनसीईआरटी और अधिक", icon: BookMarked, ctaEn: "Explore Courses", ctaHi: "पाठ्यक्रम देखें", href: "/study/courses" },
   { titleEn: "My Notes", titleHi: "मेरे नोट्स", descriptionEn: "Access your saved notes", descriptionHi: "अपने सहेजे गए नोट्स तक पहुंचें", icon: Edit, ctaEn: "View Notes", ctaHi: "नोट्स देखें", href: "/study/my-notes" },
   { titleEn: "Brainmate™", titleHi: "ब्रेनमेट™", descriptionEn: "Concept Explanations", descriptionHi: "अवधारणा स्पष्टीकरण", icon: Brain, ctaEn: "Ask Brainmate", ctaHi: "ब्रेनमेट से पूछें", href: "/brainmate" },
-  { titleEn: "Handwriting Notes", titleHi: "हस्तलेखन नोट्स", descriptionEn: "AI converts text to your handwriting", descriptionHi: "एआई पाठ को आपकी लिखावट में बदलता है", icon: Edit3, ctaEn: "Create Notes", ctaHi: "नोट्स बनाएं", href: "/handwriting-notes" },
   { titleEn: "AI Tools", titleHi: "एआई उपकरण", descriptionEn: "Smart learning assistants", descriptionHi: "स्मार्ट शिक्षण सहायक", icon: Bot, ctaEn: "Use AI Tools", ctaHi: "एआई उपकरण का प्रयोग करें", href: "/ai-guruji" },
   { titleEn: "Live Doubt Solving", titleHi: "लाइव शंका समाधान", descriptionEn: "Get expert help instantly", descriptionHi: "तुरंत विशेषज्ञ सहायता प्राप्त करें", icon: MessageCircleQuestion, ctaEn: "Join Session", ctaHi: "सत्र में शामिल हों", href: "/live-classes/all" },
 ];

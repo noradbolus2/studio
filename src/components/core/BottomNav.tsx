@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Truck, Bot, User, Sparkles, Brain, GraduationCap } from 'lucide-react'; 
+import { Home, BookOpen, Bot, User, Sparkles, Brain, GraduationCap, FileSignature } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react'; 
 
@@ -11,7 +11,7 @@ const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/study', label: 'Study', icon: BookOpen },
   { href: '/creator-marketplace', label: 'Projects', icon: Sparkles }, 
-  { href: '/coaching-panel', label: 'Teach', icon: GraduationCap }, // Updated href
+  { href: '/handwriting-notes', label: 'Writing', icon: FileSignature },
   { href: '/ai-guruji', label: 'AI', icon: Bot },
   { href: '/profile', label: 'Me', icon: User },
 ];
@@ -36,7 +36,7 @@ export function BottomNav() {
                        (item.href === "/ai-guruji" && pathname.startsWith("/ai-guruji")) ||
                        (item.href === "/study" && pathname.startsWith("/study")) ||
                        (item.href === "/creator-marketplace" && pathname.startsWith("/creator-marketplace")) ||
-                       (item.href === "/coaching-panel" && pathname.startsWith("/coaching-panel")) || // Updated check
+                       (item.href === "/handwriting-notes" && pathname.startsWith("/handwriting-notes")) ||
                        (item.href === "/brain-scan-report" && pathname.startsWith("/brain-scan-report"));
         }
         
