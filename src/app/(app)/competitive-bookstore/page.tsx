@@ -398,4 +398,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-
