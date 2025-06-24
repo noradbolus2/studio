@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye } from "lucide-react";
+import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -18,6 +18,7 @@ const platformStats = [
 ];
 
 const adminActions = [
+  { id: "codemate_agent", labelEn: "CodeMate AI Agent", labelHi: "कोडमेट एआई एजेंट", icon: Bot, href: "/codemate" },
   { id: "manage_users", labelEn: "User Management", labelHi: "उपयोगकर्ता प्रबंधन", icon: Users, href: "/platform-admin/users" },
   { id: "content_moderation", labelEn: "Content Moderation", labelHi: "सामग्री मॉडरेशन", icon: FileCog, href: "/platform-admin/content-moderation" },
   { id: "platform_analytics", labelEn: "Platform Analytics", labelHi: "प्लेटफ़ॉर्म एनालिटिक्स", icon: BarChart3, href: "/platform-admin/analytics" },
@@ -30,10 +31,12 @@ export default function PlatformAdminDashboardPage() {
   const router = useRouter();
 
   const handleActionClick = (href: string) => {
-    // For now, just log or show a toast as pages might not exist
-    console.log(`Navigating to ${href}`);
-    // router.push(href); // Uncomment when pages are ready
-    alert(`Placeholder: Would navigate to ${href}`);
+    if (href === "/codemate") {
+        router.push(href);
+    } else {
+        console.log(`Navigating to ${href}`);
+        alert(`Placeholder: Would navigate to ${href}`);
+    }
   };
 
   return (
@@ -67,7 +70,7 @@ export default function PlatformAdminDashboardPage() {
             <CardTitle className="font-headline"><BilingualText en="Administrative Actions" hi="प्रशासनिक कार्रवाइयां"/></CardTitle>
             <CardDescription><BilingualText en="Access key platform management modules." hi="प्रमुख प्लेटफ़ॉर्म प्रबंधन मॉड्यूल तक पहुंचें।" /></CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {adminActions.map(action => (
                 <Button
                     key={action.id}
