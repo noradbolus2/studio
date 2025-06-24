@@ -9,7 +9,7 @@ import { z } from 'genkit';
 // Mock database of exam information with updated patterns for 2025
 const examDatabase: Record<string, { pattern: string; syllabus_overview: string; eligibility: string }> = {
   'neet ug': {
-    pattern: 'The NEET UG 2025 exam consists of 200 multiple-choice questions, out of which students must attempt 180. This gives internal choices within each subject. The exam duration is 3 hours and 20 minutes. Each of the four subjects (Physics, Chemistry, Botany, Zoology) has two sections: Section A with 35 compulsory questions and Section B with 15 questions, where students must attempt any 10. The marking scheme is +4 for a correct answer and -1 for an incorrect one.',
+    pattern: 'For NEET UG 2025, students must attempt 180 questions in total. The paper will contain 200 multiple-choice questions, providing internal choices. The structure is: 4 subjects (Physics, Chemistry, Botany, Zoology), each with two sections. Section A has 35 compulsory questions. Section B has 15 questions, out of which students must attempt any 10. The exam duration is 3 hours and 20 minutes. Marking scheme: +4 for a correct answer, -1 for an incorrect one.',
     syllabus_overview: 'Covers the full syllabus of Physics, Chemistry, and Biology (Botany & Zoology) from Classes 11 and 12 (NCERT focused).',
     eligibility: 'Must have passed 10+2 with Physics, Chemistry, Biology/Biotechnology and English. Minimum 50% aggregate marks for General category.',
   },
