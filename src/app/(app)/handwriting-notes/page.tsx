@@ -15,9 +15,12 @@ import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 
 const handwritingStyles = [
-    { name: 'Kalam', className: 'font-handwriting' },
-    { name: 'Caveat', className: 'font-handwriting-caveat' },
-    { name: 'Dancing Script', className: 'font-handwriting-dancing' },
+    { name: 'Kalam (Regular)', className: 'font-handwriting' },
+    { name: 'Caveat (Cursive)', className: 'font-handwriting-caveat' },
+    { name: 'Dancing Script (Flowy)', className: 'font-handwriting-dancing' },
+    { name: 'Patrick Hand (Clean)', className: 'font-handwriting-patrick' },
+    { name: 'Gochi Hand (Casual)', className: 'font-handwriting-gochi' },
+    { name: 'Indie Flower (Bubbly)', className: 'font-handwriting-indie' },
 ];
 
 export default function HandwritingNotesPage() {

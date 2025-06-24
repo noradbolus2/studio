@@ -25,6 +25,9 @@ export default {
         handwriting: ['Kalam', 'cursive'],
         'handwriting-caveat': ['Caveat', 'cursive'],
         'handwriting-dancing': ['Dancing Script', 'cursive'],
+        'handwriting-patrick': ['Patrick Hand', 'cursive'],
+        'handwriting-gochi': ['Gochi Hand', 'cursive'],
+        'handwriting-indie': ['Indie Flower', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",
