@@ -12,7 +12,8 @@ import {
   Timer,    
   PlaySquare,
   Gem, // Added for premium card
-  ArrowRight // Added for premium card button
+  ArrowRight, // Added for premium card button
+  FileSignature
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,7 @@ const baseQuickCategories = [
   { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
   { id: 'brainmate', labelEn: 'Brainmate', labelHi: 'ब्रेनमेट', icon: BrainCircuit, href: '/brainmate', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brainmate", "concept", "explain", "ai"] },
   { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["mind", "mood", "diary", "stress"] },
+  { id: 'handwriting_notes', labelEn: 'Handwriting', labelHi: 'हस्तलेखन', icon: FileSignature, href: '/handwriting-notes', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["handwriting", "notes", "writing", "script"] },
   { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["test", "mock", "exam", "neet", "jee", "upsc", "cat", "competitive"] },
   { id: 'brain_scan', labelEn: 'Aura Map', labelHi: 'ऑरा मैप', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress", "attention", "aura"] },
   { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["peer", "circle", "connect", "group"] },
@@ -636,7 +638,3 @@ export default function ModernHomePage() {
     </div>
   );
 }
-
-    
-
-    

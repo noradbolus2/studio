@@ -11,7 +11,6 @@ const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/study', label: 'Study', icon: BookOpen },
   { href: '/creator-marketplace', label: 'Projects', icon: Sparkles }, 
-  { href: '/handwriting-notes', label: 'Writing', icon: FileSignature },
   { href: '/ai-guruji', label: 'AI', icon: Bot },
   { href: '/profile', label: 'Me', icon: User },
 ];
