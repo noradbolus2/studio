@@ -4,9 +4,11 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+
 
 const platformStats = [
   { id: "total_users", labelEn: "Total Users", labelHi: "कुल उपयोगकर्ता", value: "10,250+", icon: Users, color: "text-blue-500" },
@@ -27,17 +29,35 @@ const adminActions = [
   { id: "manage_roles", labelEn: "Role Management", labelHi: "भूमिका प्रबंधन", icon: ShieldCheck, href: "/platform-admin/roles"},
 ];
 
+const linkedApps = [
+  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "#" },
+  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "#" },
+  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "#" },
+  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "#" },
+];
+
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleActionClick = (href: string) => {
+    // For now, only CodeMate has a real page. Others are placeholders.
     if (href === "/codemate") {
         router.push(href);
     } else {
-        console.log(`Navigating to ${href}`);
-        alert(`Placeholder: Would navigate to ${href}`);
+        toast({
+            title: "Module In Development",
+            description: `The page for ${href.split('/').pop()} is currently under construction.`,
+        });
     }
   };
+
+  const handleLinkedAppClick = (appName: string) => {
+     toast({
+        title: "Navigating to External App (Simulated)",
+        description: `This would open the ${appName} platform. This is a conceptual link.`,
+    });
+  }
 
   return (
     <div className="space-y-8">
@@ -85,6 +105,31 @@ export default function PlatformAdminDashboardPage() {
                     <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
                 </Button>
             ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline flex items-center gap-2">
+            <LinkIcon className="h-6 w-6 text-primary"/>
+            <BilingualText en="Linked OSO Applications" hi="लिंक्ड OSO एप्लिकेशन" />
+          </CardTitle>
+          <CardDescription>
+            <BilingualText en="Navigate to other platforms in the OSO ecosystem." hi="OSO पारिस्थितिकी तंत्र में अन्य प्लेटफार्मों पर नेविगेट करें।" />
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {linkedApps.map(app => (
+            <Button
+              key={app.id}
+              variant="outline"
+              className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
+              onClick={() => handleLinkedAppClick(app.labelEn)}
+            >
+              <app.icon className="h-7 w-7 text-primary mb-1"/>
+              <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
+            </Button>
+          ))}
         </CardContent>
       </Card>
     </div>
