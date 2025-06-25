@@ -3,182 +3,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-  OSO App Theme System:
-  - Default: Student Pink Glow (applied via :root)
-  - Partner Theme: Add class="theme-partner" to <html> or <body>
-  - School Staff Theme: Add class="theme-school" to <html> or <body>
-  Theme switching is typically handled in a layout component using JavaScript.
-*/
-
 @layer base {
   :root {
-    /* Default Theme: Student - Youth Pink Glow Mode */
-    --background: 270 100% 9%; /* #17002F - Deep royal purple */
-    --foreground: 0 0% 100%; /* #FFFFFF - White (Primary Text) */
-
-    --card: 0 0% 100% / 0.06; /* rgba(255,255,255,0.06) - Glass Card BG */
-    --card-foreground: 0 0% 100%; /* White */
-
-    --popover: 270 80% 12%; /* Slightly lighter than background for popovers */
-    --popover-foreground: 0 0% 100%; /* White */
-
-    --primary: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) - For AI widgets, highlights */
-    --primary-foreground: 270 100% 7%; /* Darker purple for contrast on Glow Blue */
-
-    --secondary: 270 80% 15%; /* Darker shade of background purple */
-    --secondary-foreground: 0 0% 100%; /* White */
-
-    --muted: 0 0% 100% / 0.1; /* Subtle white for muted elements on dark bg */
-    --muted-foreground: 330 100% 92%; /* #FFD6E8 - Light Pink (Secondary Text) */
-
-    --accent: 345 100% 59%; /* #FF2E63 - Accent Pink (Youth) - For CTAs, icons */
-    --accent-foreground: 0 0% 100%; /* White */
-
-    --destructive: 0 63% 30%; /* Darker Red #B32424 for general destructive, not yellow */
-    --destructive-foreground: 0 0% 100%; /* White for contrast */
-    
-    --warning: 42 100% 50%; /* #FFB300 - Warning/Alert Yellow */
-    --warning-foreground: 270 100% 9%; /* Dark Purple for contrast on Yellow */
-    
-    --success: 156 100% 50%; /* #00FF94 - Success/Positive Green */
-    --success-foreground: 270 100% 9%; /* Dark Purple for contrast on Green */
-
-    --border: 0 0% 100% / 0.1; /* Subtle white border for glass effect */
-    --input: 0 0% 100% / 0.08; /* Glassy input background */
-    --ring: 167 100% 55%; /* Lighter Glow Blue for focus rings (AI) */
-
+    --background: 0 0% 98%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 225 84% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 49 100% 50%;
+    --accent-foreground: 224 71.4% 4.1%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 225 84% 48%;
     --radius: 0.75rem;
-
-    /* Chart variables (using the new palette) */
-    --chart-1: hsl(var(--success));   /* Green */
-    --chart-2: hsl(var(--accent));   /* Pink */
-    --chart-3: hsl(var(--primary));   /* Blue (AI) */
-    --chart-4: hsl(var(--warning));    /* Yellow for warnings */
-    --chart-5: 270 70% 60%;   /* A general purple from the theme */
-    
-    /* Sidebar variables (will adapt as they use the root variables) */
-    --sidebar-background: 270 90% 12%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: hsl(var(--primary));
-    --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: hsl(var(--accent));
-    --sidebar-accent-foreground: hsl(var(--accent-foreground));
-    --sidebar-border: 0 0% 100% / 0.08;
-    --sidebar-ring: hsl(var(--ring));
   }
 
   .dark {
-    /* The base :root is already the dark "Student Pink Glow" theme */
-    /* This .dark class ensures shadcn components behave as expected if they specifically look for .dark */
-    --background: 270 100% 9%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 100% / 0.06;
-    --card-foreground: 0 0% 100%;
-    --popover: 270 80% 12%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 167 100% 45%;
-    --primary-foreground: 270 100% 7%;
-    --secondary: 270 80% 15%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 100% / 0.1;
-    --muted-foreground: 330 100% 92%;
-    --accent: 345 100% 59%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 63% 30%;
-    --destructive-foreground: 0 0% 100%;
-    --warning: 42 100% 50%;
-    --warning-foreground: 270 100% 9%;
-    --success: 156 100% 50%;
-    --success-foreground: 270 100% 9%;
-    --border: 0 0% 100% / 0.1;
-    --input: 0 0% 100% / 0.08;
-    --ring: 167 100% 55%;
-    --chart-1: hsl(var(--success));
-    --chart-2: hsl(var(--accent));
-    --chart-3: hsl(var(--primary));
-    --chart-4: hsl(var(--warning));
-    --chart-5: 270 70% 60%;
-    --sidebar-background: 270 90% 12%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: hsl(var(--primary));
-    --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: hsl(var(--accent));
-    --sidebar-accent-foreground: hsl(var(--accent-foreground));
-    --sidebar-border: 0 0% 100% / 0.08;
-    --sidebar-ring: hsl(var(--ring));
-  }
-
-  /* Partner Theme: More aqua/blue + minimal dark background */
-  .theme-partner {
-    --background: 270 50% 7%; /* #0F031B - Very dark, less saturated purple/blue */
-    --foreground: 0 0% 100%; /* White */
-
-    --card: 0 0% 100% / 0.04; /* Even more subtle glass */
-    --card-foreground: 0 0% 100%;
-
-    --popover: 270 50% 10%; 
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) - Main interactive color */
-    --primary-foreground: 270 100% 7%; /* Darker purple for contrast on Glow Blue */
-
-    --secondary: 270 50% 12%; 
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 0 0% 100% / 0.08;
-    --muted-foreground: 180 70% 85%; /* #B8F5F5 - Light Aqua secondary text */
-
-    --accent: 345 100% 59%; /* #FF2E63 - Accent Pink - Secondary interactive */
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 63% 30%; 
-    --destructive-foreground: 0 0% 100%;
-    --warning: 42 100% 50%;
-    --warning-foreground: 270 50% 7%; 
-
-    --success: 156 100% 50%; /* #00FF94 - Success/Positive Green */
-    --success-foreground: 270 50% 7%; /* Darker for contrast on Green */
-
-    --border: 167 100% 45% / 0.15; /* Subtle blue border */
-    --input: 0 0% 100% / 0.06; 
-    --ring: 167 100% 55%; /* Lighter Glow Blue for focus rings */
-  }
-
-  /* School Staff Theme: Flat indigo + green success glow */
-  .theme-school {
-    --background: 255 60% 20%; /* #20156B - Flat Indigo */
-    --foreground: 0 0% 100%; /* White */
-
-    --card: 255 60% 15% / 0.2; /* More solid, indigo-tinted glass: hsla(255, 60%, 15%, 0.2) */
-    --card-foreground: 0 0% 100%;
-
-    --popover: 255 60% 22%; 
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 156 100% 50%; /* #00FF94 - Success Green - Main interactive color */
-    --primary-foreground: 255 60% 10%; /* Dark Indigo for contrast on Green */
-
-    --secondary: 255 60% 25%; 
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 0 0% 100% / 0.15;
-    --muted-foreground: 156 50% 85%; /* #BFF2D8 - Light Green/Grey secondary text */
-
-    --accent: 167 100% 45%; /* #00E6B0 - Glow Blue (AI) - Secondary highlight */
-    --accent-foreground: 255 60% 10%; /* Dark Indigo for contrast on Glow Blue */
-
-    --destructive: 0 63% 30%;
-    --destructive-foreground: 0 0% 100%;
-    --warning: 42 100% 50%;
-    --warning-foreground: 255 60% 10%; 
-    
-    --success: hsl(var(--primary)); /* Use the main green as success for this theme */
-    --success-foreground: hsl(var(--primary-foreground));
-
-    --border: 156 100% 50% / 0.2; /* Subtle green border */
-    --input: 255 60% 25% / 0.3; 
-    --ring: 156 100% 60%; /* Lighter Green for focus rings */
+    --background: 224 71.4% 4.1%;
+    --foreground: 0 0% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 0 0% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 225 84% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215.4 16.3% 18%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 215.4 16.3% 18%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 49 100% 50%;
+    --accent-foreground: 224 71.4% 4.1%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215.4 16.3% 18%;
+    --input: 215.4 16.3% 18%;
+    --ring: 225 84% 48%;
   }
 }
 
@@ -187,121 +55,6 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground font-body antialiased;
-    background-image: linear-gradient(to bottom, hsl(302 100% 19%), hsl(var(--background))); /* #62005F -> var(--background) */
-    min-height: 100vh;
-    /* Apply blur to frosted glass cards */
-    @apply [--card-blur:--tw-blur]; /* Default to no blur, overridden by specific card styles if needed */
-  }
-  
-  /* Specific background for Partner theme */
-  .theme-partner body, body.theme-partner {
-    background-image: linear-gradient(to bottom, hsl(270, 50%, 10%), hsl(var(--background)));
-  }
-
-  /* Specific background for School theme */
-  .theme-school body, body.theme-school {
-    background-image: linear-gradient(to bottom, hsl(255, 60%, 22%), hsl(var(--background)));
-  }
-
-  /* Custom scrollbar for a more modern feel */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: hsl(var(--background) / 0.5);
-    border-radius: 10px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.7);
-    border-radius: 10px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary));
-  }
-
-  /* Ensure cards with glass effect have backdrop blur if desired */
-  .glass-card {
-    @apply bg-card backdrop-blur-md; /* Adjust blur amount as needed, e.g., backdrop-blur-sm, backdrop-blur-lg */
-    /* Ensure the card background color has alpha transparency defined in :root for this to work */
-  }
-}
-
-/* Custom text shadow utility */
-.text-shadow {
-  text-shadow: 1px 1px 2px var(--tw-shadow-color, rgba(0,0,0,0.25));
-}
-.text-shadow-sm {
-  text-shadow: 0px 1px 1px var(--tw-shadow-color, rgba(0,0,0,0.15));
-}
-
-/* Added Animations for Aura Map */
-@layer utilities {
-  @keyframes red-flicker {
-    0%, 100% { opacity: 1; box-shadow: 0 0 15px 3px hsla(var(--destructive), 0.6); }
-    50% { opacity: 0.7; box-shadow: 0 0 10px 1px hsla(var(--destructive), 0.4); }
-  }
-  .animate-red-flicker {
-    animation: red-flicker 1.5s infinite ease-in-out;
-  }
-
-  @keyframes blue-pulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 12px 2px hsla(var(--primary), 0.5); }
-    50% { transform: scale(1.03); box-shadow: 0 0 18px 4px hsla(var(--primary), 0.65); }
-  }
-  .animate-blue-pulse {
-    animation: blue-pulse 2.5s infinite ease-in-out;
-  }
-
-  @keyframes green-pulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 10px 2px hsla(var(--success), 0.5); }
-    50% { transform: scale(1.02); box-shadow: 0 0 15px 3px hsla(var(--success), 0.65); }
-  }
-  .animate-green-pulse {
-    animation: green-pulse 3s infinite ease-in-out;
-  }
-
-  @keyframes yellow-pulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 12px 2px hsla(var(--warning), 0.4); }
-    50% { transform: scale(1.02); opacity: 0.6; box-shadow: 0 0 18px 4px hsla(var(--warning), 0.5); }
-  }
-  .animate-yellow-pulse {
-    animation: yellow-pulse 2s infinite ease-in-out;
-  }
-
-  .lined-paper {
-    background-color: #fdfdfa; /* A slightly off-white, paper-like color */
-    background-image:
-      linear-gradient(#dce1e5 1px, transparent 1px);
-    background-size: 100% 2.1rem; /* Adjust line spacing */
-    line-height: 2.1rem;
-    border-left: 3px solid hsla(var(--accent), 0.6); /* Use accent color for the margin line */
-  }
-
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-  .transform-style-3d {
-    transform-style: preserve-3d;
-  }
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
-  
-  @keyframes float-in {
-    from {
-      opacity: 0;
-      transform: translateY(25px) rotateX(-20deg);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) rotateX(0deg);
-    }
-  }
-
-  .animate-float-in {
-    animation: float-in 0.7s ease-out forwards;
-    opacity: 0;
+    @apply bg-background text-foreground;
   }
 }

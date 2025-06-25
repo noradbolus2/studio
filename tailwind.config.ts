@@ -18,9 +18,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'Inter', 'sans-serif'],
-        body: ['Poppins', 'Inter', 'sans-serif'],
-        headline: ['Poppins', 'Inter', 'sans-serif'], 
+        sans: ['"PT Sans"', 'sans-serif'],
+        body: ['"PT Sans"', 'sans-serif'],
+        headline: ['"PT Sans"', 'sans-serif'], 
         code: ['monospace', 'monospace'],
         handwriting: ['Kalam', 'cursive'],
         'handwriting-caveat': ['Caveat', 'cursive'],
@@ -47,7 +47,7 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        success: { // Added success color definition
+        success: {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
@@ -64,7 +64,7 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))", // Will use the HSL with alpha
+          DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
         chart: {
@@ -84,19 +84,6 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        // Removed old login page specific colors as they are now covered by the theme
-      },
-      boxShadow: {
-        // Updated glow effects based on new palette
-        'glow-accent-pink': '0 0 12px 2px hsla(var(--accent), 0.55), 0 0 20px 5px hsla(var(--accent), 0.35)', // #FF2E63 (Accent Pink)
-        'glow-ai-blue': '0 0 12px 2px hsla(var(--primary), 0.55), 0 0 20px 5px hsla(var(--primary), 0.35)', // #00E6B0 (Glow Blue AI / Primary)
-        'logo-glow': '0 0 20px 5px hsla(var(--primary), 0.3)', // Using new primary for logo glow
-        'glow-success-green': '0 0 12px 2px hsla(var(--success), 0.55), 0 0 20px 5px hsla(var(--success), 0.35)', // #00FF94
-        'glow-warning-yellow': '0 0 12px 2px hsla(var(--destructive), 0.55), 0 0 20px 5px hsla(var(--destructive), 0.35)', // #FFB300
-         // Glows for Parent Dashboard (Partner Theme which uses Glow Blue as Primary)
-        'glow-aqua-soft': '0 0 15px 2px hsla(var(--primary), 0.3)', // Glow Blue from Partner Theme
-        'glow-yellow-soft': '0 0 15px 2px hsla(var(--destructive), 0.3)', // Warning Yellow
-        'glow-purple-soft': '0 0 15px 2px hsla(270, 70%, 60%, 0.3)', // A generic purple
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -112,20 +99,10 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "pulse-subtle": { 
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: ".7" },
-        },
-        "brain-heatmap-pulse": { // Can be adapted to use --primary or --accent for its glow
-          "0%, 100%": { boxShadow: "0 0 10px 2px hsla(var(--primary),0.4), inset 0 0 10px 0px hsla(var(--primary),0.3)" },
-          "50%": { boxShadow: "0 0 20px 5px hsla(var(--primary),0.5), inset 0 0 15px 2px hsla(var(--primary),0.4)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-subtle": "pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "brain-heatmap-pulse": "brain-heatmap-pulse 3s ease-in-out infinite",
       },
     },
   },
