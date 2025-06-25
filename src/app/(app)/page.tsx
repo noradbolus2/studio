@@ -74,17 +74,16 @@ const recommendationsMock = [
   { id: 'rec_book_class10_math', typeEn: 'Book', typeHi: 'किताब', titleEn: 'NCERT Maths Class 10 Exemplar', titleHi: 'एनसीईआरटी गणित कक्षा 10 उदाहरण', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "class 10 maths book", href: '/class-6-12-books', priceEn: 'INR 150', priceHi: 'INR 150', relevance: ['class 10', 'maths', 'cbse', 'ncert'] },
 ];
 
-
 const deliveryDeals = [
-  { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, bgColor: "bg-accent/80", textColor: "text-accent-foreground", dataAiHint:"charts diagram", href: "/delivery" },
-  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, bgColor: "bg-primary/80", textColor: "text-primary-foreground", dataAiHint:"school supplies kit", href: "/delivery" },
-  { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, bgColor: "bg-destructive/80", textColor: "text-destructive-foreground", dataAiHint:"project materials box", href: "/delivery" },
+  { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, iconColor: "text-accent", dataAiHint:"charts diagram", href: "/delivery" },
+  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, iconColor: "text-primary", dataAiHint:"school supplies kit", href: "/delivery" },
+  { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, iconColor: "text-destructive", dataAiHint:"project materials box", href: "/delivery" },
 ];
 
 const studyBoosters = [
-  { id: 'sb1', titleEn: "Guruji Doubt Solver", titleHi: "गुरुजी शंका समाधान", descriptionEn: "Clear concepts 24/7", descriptionHi: "अवधारणाएँ 24/7 स्पष्ट करें", icon: Lightbulb, bgColor: "bg-primary/80", textColor: "text-primary-foreground", dataAiHint:"ai learning lightbulb", href: "/ai-guruji" },
-  { id: 'sb2', titleEn: "Quick Revision Notes", titleHi: "त्वरित रिवीजन नोट्स", descriptionEn: "Key topics summarized", descriptionHi: "मुख्य विषय सारांशित", icon: ClipboardList, bgColor: "bg-success/80", textColor: "text-success-foreground", dataAiHint:"notes study checklist", href: "/study/my-notes" },
-  { id: 'sb3', titleEn: "Focus Zone Music", titleHi: "फोकस ज़ोन संगीत", descriptionEn: "Beats for deep study", descriptionHi: "गहन अध्ययन के लिए बीट्स", icon: Music2, bgColor: "bg-secondary/80", textColor: "text-secondary-foreground", dataAiHint:"headphones music study", href: "/study/focus-music" },
+  { id: 'sb1', titleEn: "Guruji Doubt Solver", titleHi: "गुरुजी शंका समाधान", descriptionEn: "Clear concepts 24/7", descriptionHi: "अवधारणाएँ 24/7 स्पष्ट करें", icon: Lightbulb, iconColor: "text-primary", dataAiHint:"ai learning lightbulb", href: "/ai-guruji" },
+  { id: 'sb2', titleEn: "Quick Revision Notes", titleHi: "त्वरित रिवीजन नोट्स", descriptionEn: "Key topics summarized", descriptionHi: "मुख्य विषय सारांशित", icon: ClipboardList, iconColor: "text-success", dataAiHint:"notes study checklist", href: "/study/my-notes" },
+  { id: 'sb3', titleEn: "Focus Zone Music", titleHi: "फोकस ज़ोन संगीत", descriptionEn: "Beats for deep study", descriptionHi: "गहन अध्ययन के लिए बीट्स", icon: Music2, iconColor: "text-secondary-foreground", dataAiHint:"headphones music study", href: "/study/focus-music" },
 ];
 
 const searchIcons = [
@@ -547,11 +546,11 @@ export default function ModernHomePage() {
             <div className="flex space-x-3">
                 {deliveryDeals.map((deal) => (
                 <Link href={deal.href} key={deal.id} className="block min-w-[200px] max-w-[240px] hover:opacity-90 transition-opacity">
-                    <Card className={cn("p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card", deal.bgColor, deal.textColor)} data-ai-hint={deal.dataAiHint}>
-                        <deal.icon className="h-8 w-8 shrink-0" />
+                    <Card className="p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card" data-ai-hint={deal.dataAiHint}>
+                        <deal.icon className={cn("h-8 w-8 shrink-0", deal.iconColor)} />
                         <div>
-                        <h3 className="text-sm font-bold"><BilingualText en={deal.titleEn} hi={deal.titleHi} lang={currentLang}/></h3>
-                        <p className="text-xs opacity-90"><BilingualText en={deal.descriptionEn} hi={deal.descriptionHi} lang={currentLang}/></p>
+                        <h3 className="text-sm font-bold text-foreground"><BilingualText en={deal.titleEn} hi={deal.titleHi} lang={currentLang}/></h3>
+                        <p className="text-xs text-muted-foreground"><BilingualText en={deal.descriptionEn} hi={deal.descriptionHi} lang={currentLang}/></p>
                         </div>
                     </Card>
                 </Link>
@@ -571,11 +570,11 @@ export default function ModernHomePage() {
               const CardWrapper = booster.href ? Link : 'div';
               return (
                 <CardWrapper href={booster.href || '#'} key={booster.id} className={cn("block min-w-[200px] max-w-[240px]", booster.href ? "hover:opacity-90 transition-opacity" : "")}>
-                  <Card className={cn("p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card", booster.bgColor, booster.textColor)} data-ai-hint={booster.dataAiHint}>
-                    <booster.icon className="h-8 w-8 shrink-0" />
+                  <Card className="p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card" data-ai-hint={booster.dataAiHint}>
+                    <booster.icon className={cn("h-8 w-8 shrink-0", booster.iconColor)} />
                     <div>
-                      <h3 className="text-sm font-bold"><BilingualText en={booster.titleEn} hi={booster.titleHi} lang={currentLang}/></h3>
-                      <p className="text-xs opacity-90"><BilingualText en={booster.descriptionEn} hi={booster.descriptionHi} lang={currentLang}/></p>
+                      <h3 className="text-sm font-bold text-foreground"><BilingualText en={booster.titleEn} hi={booster.titleHi} lang={currentLang}/></h3>
+                      <p className="text-xs text-muted-foreground"><BilingualText en={booster.descriptionEn} hi={booster.descriptionHi} lang={currentLang}/></p>
                     </div>
                   </Card>
                 </CardWrapper>
