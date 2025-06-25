@@ -239,22 +239,22 @@
 /* Added Animations for Aura Map */
 @layer utilities {
   @keyframes red-flicker {
-    0%, 100% { opacity: 1; box-shadow: 0 0 15px 3px hsla(var(--destructive), 0.6); } /* Use destructive for red */
+    0%, 100% { opacity: 1; box-shadow: 0 0 15px 3px hsla(var(--destructive), 0.6); }
     50% { opacity: 0.7; box-shadow: 0 0 10px 1px hsla(var(--destructive), 0.4); }
   }
   .animate-red-flicker {
     animation: red-flicker 1.5s infinite ease-in-out;
   }
 
-  @keyframes blue-pulse { /* High Clarity */
-    0%, 100% { transform: scale(1); box-shadow: 0 0 12px 2px hsla(var(--primary), 0.5); } /* primary is blue */
+  @keyframes blue-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 12px 2px hsla(var(--primary), 0.5); }
     50% { transform: scale(1.03); box-shadow: 0 0 18px 4px hsla(var(--primary), 0.65); }
   }
   .animate-blue-pulse {
     animation: blue-pulse 2.5s infinite ease-in-out;
   }
 
-  @keyframes green-pulse { /* Balance */
+  @keyframes green-pulse {
     0%, 100% { transform: scale(1); box-shadow: 0 0 10px 2px hsla(var(--success), 0.5); }
     50% { transform: scale(1.02); box-shadow: 0 0 15px 3px hsla(var(--success), 0.65); }
   }
@@ -262,8 +262,8 @@
     animation: green-pulse 3s infinite ease-in-out;
   }
 
-  @keyframes yellow-pulse { /* Low Attention */
-    0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 12px 2px hsla(var(--warning), 0.4); } /* Use warning for yellow */
+  @keyframes yellow-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 12px 2px hsla(var(--warning), 0.4); }
     50% { transform: scale(1.02); opacity: 0.6; box-shadow: 0 0 18px 4px hsla(var(--warning), 0.5); }
   }
   .animate-yellow-pulse {
