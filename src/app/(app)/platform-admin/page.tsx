@@ -42,7 +42,7 @@ const linkedApps = [
   { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, url: "https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev" },
   { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, url: "https://9000-firebase-studio-1750860571220.cluster-73qgvk7hjjadkrjeyexca5ivva.cloudworkstations.dev" },
   { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, url: "https://9000-firebase-studio-1750860970812.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev" },
-  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, url: "https://6000-studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, url: "https://9000-firebase-studio-1750861524292.cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev" },
 ];
 
 export default function PlatformAdminDashboardPage() {
@@ -55,9 +55,11 @@ export default function PlatformAdminDashboardPage() {
   const [pairedApps, setPairedApps] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const storedPairedApps = localStorage.getItem("pairedApps");
-    if (storedPairedApps) {
-      setPairedApps(JSON.parse(storedPairedApps));
+    if (typeof window !== "undefined") {
+        const storedPairedApps = localStorage.getItem("pairedApps");
+        if (storedPairedApps) {
+            setPairedApps(JSON.parse(storedPairedApps));
+        }
     }
   }, []);
 
@@ -75,7 +77,9 @@ export default function PlatformAdminDashboardPage() {
 
     const updatedPairedApps = { ...pairedApps, [pairingApp.id]: true };
     setPairedApps(updatedPairedApps);
-    localStorage.setItem("pairedApps", JSON.stringify(updatedPairedApps));
+    if(typeof window !== "undefined") {
+      localStorage.setItem("pairedApps", JSON.stringify(updatedPairedApps));
+    }
 
     toast({
       title: "Pairing Successful",
