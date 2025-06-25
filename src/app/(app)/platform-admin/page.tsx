@@ -30,10 +30,10 @@ const adminActions = [
 ];
 
 const linkedApps = [
-  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "https://6000-studio-8881667168.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "https://6000-studio-6108164853.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "https://6000-studio-6479543659.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "https://6000-studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "https://6000-studio-8881667168.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/login" },
+  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "https://6000-studio-6108164853.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/login" },
+  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "https://6000-studio-6479543659.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/login" },
+  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "https://6000-studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/login" },
 ];
 
 export default function PlatformAdminDashboardPage() {
@@ -41,7 +41,6 @@ export default function PlatformAdminDashboardPage() {
   const { toast } = useToast();
 
   const handleActionClick = (href: string) => {
-    // For now, only CodeMate has a real page. Others are placeholders.
     if (href === "/codemate") {
         router.push(href);
     } else {
