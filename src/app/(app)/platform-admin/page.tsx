@@ -70,11 +70,22 @@ export default function PlatformAdminDashboardPage() {
   };
 
   const handlePairApp = () => {
-    if (!pairingApp || !pin.trim() || pin.trim().length < 6) {
-      toast({ title: "Error", description: "Please enter a valid 6-digit PIN.", variant: "destructive" });
+    if (!pairingApp) return;
+
+    // Define a hardcoded "correct" PIN for the simulation
+    const correctPin = "123456";
+
+    if (pin.trim() !== correctPin) {
+      toast({
+        title: "Pairing Failed",
+        description: "The PIN you entered is incorrect. Please try again.",
+        variant: "destructive",
+      });
+      setPin(""); // Clear the incorrect PIN
       return;
     }
 
+    // If PIN is correct, proceed with pairing
     const updatedPairedApps = { ...pairedApps, [pairingApp.id]: true };
     setPairedApps(updatedPairedApps);
     if(typeof window !== "undefined") {
