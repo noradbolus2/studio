@@ -54,8 +54,8 @@ export default function PlatformAdminDashboardPage() {
 
   const handleLinkedAppClick = (appName: string) => {
      toast({
-        title: "Navigating to External App (Simulated)",
-        description: `This would open the ${appName} platform. This is a conceptual link.`,
+        title: `Opening ${appName} (Simulated)`,
+        description: `This would navigate to the external ${appName} platform. This is a conceptual link.`,
     });
   }
 
