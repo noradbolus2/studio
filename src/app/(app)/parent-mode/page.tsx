@@ -178,7 +178,7 @@ export default function ParentDashboardPage() {
 
       {/* OSO Brain Scan Widget */}
       <Card 
-        className="glass-card border-primary/20 shadow-lg shadow-primary/10 overflow-hidden transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in" 
+        className="glass-card border-primary/20 shadow-lg shadow-primary/10 overflow-hidden transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in" 
         style={{ animationDelay: '100ms' }}
       >
         <CardHeader>
@@ -228,7 +228,7 @@ export default function ParentDashboardPage() {
       
       {/* Parent Alerts Widget */}
       <Card 
-        className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+        className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
         style={{ animationDelay: '200ms' }}
       >
         <CardHeader>
@@ -250,7 +250,7 @@ export default function ParentDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* OSO Mind Diary Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '300ms' }}
         >
           <CardHeader>
@@ -273,7 +273,7 @@ export default function ParentDashboardPage() {
         
         {/* OSO Orders Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '400ms' }}
         >
           <CardHeader>
@@ -306,7 +306,7 @@ export default function ParentDashboardPage() {
        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Study Summary Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '500ms' }}
         >
           <CardHeader>
@@ -323,7 +323,7 @@ export default function ParentDashboardPage() {
         
         {/* Test Performance Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '600ms' }}
         >
           <CardHeader>
@@ -342,7 +342,7 @@ export default function ParentDashboardPage() {
        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Goals + Motivation Tracker Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '700ms' }}
         >
           <CardHeader>
@@ -363,7 +363,7 @@ export default function ParentDashboardPage() {
         
         {/* Downloads + Documents Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '800ms' }}
         >
           <CardHeader>
@@ -388,7 +388,7 @@ export default function ParentDashboardPage() {
       </div>
 
       <Card 
-        className="glass-card border-border transform-style-3d backface-hidden transition-all duration-300 hover:-translate-y-1.5 hover:rotate-x-[5deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
+        className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
         style={{ animationDelay: '900ms' }}
       >
         <CardHeader>
