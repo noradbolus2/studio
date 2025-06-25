@@ -278,4 +278,30 @@
     line-height: 2.1rem;
     border-left: 3px solid hsla(var(--accent), 0.6); /* Use accent color for the margin line */
   }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  @keyframes float-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px) rotateX(-10deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) rotateX(0deg);
+    }
+  }
+
+  .animate-float-in {
+    animation: float-in 0.6s ease-out forwards;
+    opacity: 0;
+  }
 }
