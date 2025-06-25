@@ -38,7 +38,7 @@ const adminActions = [
 
 
 const linkedApps = [
-  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, url: "https://6000-studio-8881667168.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, url: "https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev" },
   { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, url: "https://6000-studio-6108164853.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
   { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, url: "https://6000-studio-6479543659.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
   { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, url: "https://6000-studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
@@ -84,21 +84,7 @@ export default function PlatformAdminDashboardPage() {
     setIsPairingDialogOpen(false);
     setPairingApp(null);
   };
-
-  const handleAppClick = (app: typeof linkedApps[0]) => {
-    const isPaired = pairedApps[app.id];
-    if (isPaired) {
-      window.open(app.url, '_blank');
-      toast({
-        title: `Launching ${app.labelEn}`,
-        description: "Opening application in a new tab.",
-      });
-    } else {
-      handleOpenPairingDialog(app);
-    }
-  };
-
-
+  
   return (
     <div className="space-y-8">
       <header className="text-center relative">
@@ -165,23 +151,39 @@ export default function PlatformAdminDashboardPage() {
         <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {linkedApps.map(app => {
             const isPaired = pairedApps[app.id];
-            return (
+            
+            const AppButtonContent = () => (
+              <div>
+                <app.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
+                <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
+                 {isPaired && (
+                  <div className="flex items-center justify-center gap-1 mt-1 text-green-600">
+                      <CheckCircle size={12}/>
+                      <span className="text-xs font-semibold">Paired</span>
+                  </div>
+                )}
+              </div>
+            );
+
+            return isPaired ? (
               <Button
                 key={app.id}
                 variant="outline"
                 className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-                onClick={() => handleAppClick(app)}
+                asChild
               >
-                <div>
-                  <app.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
-                  <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
-                   {isPaired && (
-                    <div className="flex items-center justify-center gap-1 mt-1 text-green-600">
-                        <CheckCircle size={12}/>
-                        <span className="text-xs font-semibold">Paired</span>
-                    </div>
-                  )}
-                </div>
+                <Link href={app.url} target="_blank" rel="noopener noreferrer">
+                  <AppButtonContent />
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                key={app.id}
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
+                onClick={() => handleOpenPairingDialog(app)}
+              >
+                <AppButtonContent />
               </Button>
             );
           })}
