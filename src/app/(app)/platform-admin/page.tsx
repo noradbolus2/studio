@@ -3,12 +3,10 @@
 
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
-
 
 const platformStats = [
   { id: "total_users", labelEn: "Total Users", labelHi: "कुल उपयोगकर्ता", value: "10,250+", icon: Users, color: "text-blue-500" },
@@ -30,26 +28,14 @@ const adminActions = [
 ];
 
 const linkedApps = [
-  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "https://6000-studio-8881667168.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "https://6000-studio-6108164853.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "https://6000-studio-6479543659.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "https://6000-studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "https://studio-8881667168.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "https://studio-6108164853.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "https://studio-6479543659.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "https://studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
 ];
 
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
-  const { toast } = useToast();
-
-  const handleActionClick = (href: string) => {
-    if (href === "/codemate") {
-        router.push(href);
-    } else {
-        toast({
-            title: "Module In Development",
-            description: `The page for ${href.split('/').pop()} is currently under construction.`,
-        });
-    }
-  };
 
   return (
     <div className="space-y-8">
@@ -91,10 +77,14 @@ export default function PlatformAdminDashboardPage() {
                     key={action.id}
                     variant="outline"
                     className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-                    onClick={() => handleActionClick(action.href)}
+                    asChild
                 >
-                    <action.icon className="h-7 w-7 text-primary mb-1"/>
-                    <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                    <Link href={action.href}>
+                        <div>
+                            <action.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
+                            <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                        </div>
+                    </Link>
                 </Button>
             ))}
         </CardContent>
