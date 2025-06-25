@@ -1,10 +1,19 @@
 
 "use client";
 
+import { useState, useEffect } from "react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { 
+    ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
+    CheckCircle,
+    KeyRound
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -28,14 +37,53 @@ const adminActions = [
 ];
 
 const linkedApps = [
-  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "https://studio-8881667168.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "https://studio-6108164853.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "https://studio-6479543659.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
-  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "https://studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School },
+  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase },
+  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike },
+  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark },
 ];
 
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
+  const { toast } = useToast();
+
+  const [pairingApp, setPairingApp] = useState<{ id: string; labelEn: string; labelHi: string; } | null>(null);
+  const [isPairingDialogOpen, setIsPairingDialogOpen] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pairedApps, setPairedApps] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const storedPairedApps = localStorage.getItem("pairedApps");
+    if (storedPairedApps) {
+      setPairedApps(JSON.parse(storedPairedApps));
+    }
+  }, []);
+
+  const handleOpenPairingDialog = (app: typeof linkedApps[0]) => {
+    setPairingApp(app);
+    setPin("");
+    setIsPairingDialogOpen(true);
+  };
+
+  const handlePairApp = () => {
+    if (!pairingApp || !pin.trim() || pin.trim().length < 6) {
+      toast({ title: "Error", description: "Please enter a valid 6-digit PIN.", variant: "destructive" });
+      return;
+    }
+
+    const updatedPairedApps = { ...pairedApps, [pairingApp.id]: true };
+    setPairedApps(updatedPairedApps);
+    localStorage.setItem("pairedApps", JSON.stringify(updatedPairedApps));
+
+    toast({
+      title: "Pairing Successful",
+      description: `Successfully paired with ${pairingApp.labelEn}.`,
+    });
+
+    setIsPairingDialogOpen(false);
+    setPairingApp(null);
+  };
+
 
   return (
     <div className="space-y-8">
@@ -94,30 +142,70 @@ export default function PlatformAdminDashboardPage() {
         <CardHeader>
           <CardTitle className="font-headline flex items-center gap-2">
             <LinkIcon className="h-6 w-6 text-primary"/>
-            <BilingualText en="Linked OSO Applications" hi="लिंक्ड OSO एप्लिकेशन" />
+            <BilingualText en="Paired OSO Applications" hi="युग्मित OSO एप्लिकेशन" />
           </CardTitle>
           <CardDescription>
-            <BilingualText en="Navigate to other platforms in the OSO ecosystem." hi="OSO पारिस्थितिकी तंत्र में अन्य प्लेटफार्मों पर नेविगेट करें।" />
+            <BilingualText en="Pair and connect to other platforms in the OSO ecosystem using a PIN." hi="पिन का उपयोग करके OSO पारिस्थितिकी तंत्र में अन्य प्लेटफार्मों से युग्मित करें और कनेक्ट करें।" />
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {linkedApps.map(app => (
-            <Button
-              key={app.id}
-              variant="outline"
-              className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-              asChild
-            >
-              <Link href={app.href} target="_blank" rel="noopener noreferrer">
+          {linkedApps.map(app => {
+            const isPaired = pairedApps[app.id];
+            return (
+              <Button
+                key={app.id}
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary disabled:opacity-70 disabled:cursor-not-allowed"
+                onClick={() => !isPaired && handleOpenPairingDialog(app)}
+                disabled={isPaired}
+              >
                 <div>
                   <app.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
                   <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
+                   {isPaired && (
+                    <div className="flex items-center justify-center gap-1 mt-1 text-green-600">
+                        <CheckCircle size={12}/>
+                        <span className="text-xs font-semibold">Paired</span>
+                    </div>
+                  )}
                 </div>
-              </Link>
-            </Button>
-          ))}
+              </Button>
+            );
+          })}
         </CardContent>
       </Card>
+
+      <Dialog open={isPairingDialogOpen} onOpenChange={setIsPairingDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+                <BilingualText en={`Pair with ${pairingApp?.labelEn || 'Application'}`} hi={`${pairingApp?.labelHi || 'एप्लिकेशन'} के साथ युग्मित करें`} />
+            </DialogTitle>
+            <DialogDescription>
+                <BilingualText en={`Enter the 6-digit PIN from the ${pairingApp?.labelEn} application to establish a secure connection.`} hi={`${pairingApp?.labelHi} एप्लिकेशन से 6-अंकीय पिन दर्ज करें ताकि एक सुरक्षित कनेक्शन स्थापित हो सके।`} />
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="pin" className="flex items-center mb-2">
+                <KeyRound className="mr-2 h-4 w-4 text-muted-foreground"/>
+                Pairing PIN
+            </Label>
+            <Input
+                id="pin"
+                type="text"
+                maxLength={6}
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                placeholder="Enter 6-digit PIN"
+                className="text-center text-lg tracking-widest font-mono"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPairingDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handlePairApp}>Pair</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
