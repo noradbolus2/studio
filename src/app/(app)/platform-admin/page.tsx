@@ -30,10 +30,10 @@ const adminActions = [
 ];
 
 const linkedApps = [
-  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "#" },
-  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "#" },
-  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "#" },
-  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "#" },
+  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, href: "https://studio.google.com/project/studio-8881667168" },
+  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, href: "https://studio.google.com/project/studio-6108164853" },
+  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, href: "https://studio.google.com/project/studio-6479543659" },
+  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, href: "https://studio.google.com/project/studio-9604609955" },
 ];
 
 export default function PlatformAdminDashboardPage() {
@@ -52,11 +52,12 @@ export default function PlatformAdminDashboardPage() {
     }
   };
 
-  const handleLinkedAppClick = (appName: string) => {
+  const handleLinkedAppClick = (appName: string, href: string) => {
      toast({
-        title: `Opening ${appName} (Simulated)`,
-        description: `This would navigate to the external ${appName} platform. This is a conceptual link.`,
+        title: `Opening ${appName}`,
+        description: `Opening link in a new tab...`,
     });
+    window.open(href, '_blank', 'noopener,noreferrer');
   }
 
   return (
@@ -124,7 +125,7 @@ export default function PlatformAdminDashboardPage() {
               key={app.id}
               variant="outline"
               className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-              onClick={() => handleLinkedAppClick(app.labelEn)}
+              onClick={() => handleLinkedAppClick(app.labelEn, app.href)}
             >
               <app.icon className="h-7 w-7 text-primary mb-1"/>
               <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
