@@ -1,12 +1,17 @@
 
+"use client";
+
 // src/app/(app)/rider-dashboard/page.tsx
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Bike, ListChecks, CheckCircle, XCircle, MapPin, Wallet } from "lucide-react";
+import { Bike, ListChecks, CheckCircle, XCircle, MapPin, Wallet, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RiderDashboardPage() {
+  const router = useRouter();
+
   const activeDeliveries = [
     { id: "ORD123", items: 3, address: "123 Main St, Anytown", status: "Pending Pickup" },
     { id: "ORD456", items: 1, address: "456 Oak Ave, Anytown", status: "Out for Delivery" },
@@ -14,7 +19,10 @@ export default function RiderDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <header className="text-center">
+      <header className="text-center relative">
+        <Button variant="outline" size="icon" className="absolute left-0 top-0" onClick={() => router.push('/')}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <Bike className="h-12 w-12 text-orange-600 mx-auto mb-2" />
         <h1 className="text-3xl font-bold font-headline text-orange-600">
           <BilingualText en="Rider Dashboard" hi="राइडर डैशबोर्ड" />
@@ -94,4 +102,3 @@ export default function RiderDashboardPage() {
     </div>
   );
 }
-

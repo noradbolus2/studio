@@ -484,7 +484,10 @@ export default function ServicePage() {
       case 'chat_interface':
         return (
           <div className="flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
-            <header className="p-4 border-b text-center bg-card rounded-t-lg">
+            <header className="p-4 border-b text-center bg-card rounded-t-lg relative">
+              <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2" onClick={() => router.back()}>
+                  <ChevronLeft className="h-5 w-5"/>
+              </Button>
               <div className="flex items-center justify-center space-x-3">
                 <Avatar className="h-10 w-10 border-2 border-primary">
                   <AvatarImage 
@@ -558,19 +561,24 @@ export default function ServicePage() {
         return (
             <Card className="w-full">
                 <CardHeader>
-                    <div className="flex items-center gap-3">
-                         <Avatar className="h-12 w-12 border-2 border-primary">
-                            <AvatarImage 
-                                src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
-                                alt={serviceData.name} 
-                                data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
-                            />
-                            <AvatarFallback>{serviceData.name.substring(0,1)}G</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <CardTitle className="text-xl font-headline text-primary">Test Advisor</CardTitle>
-                            <CardDescription>Get smart test recommendations from Guruji.</CardDescription>
+                    <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                            <Avatar className="h-12 w-12 border-2 border-primary">
+                                <AvatarImage 
+                                    src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
+                                    alt={serviceData.name} 
+                                    data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
+                                />
+                                <AvatarFallback>{serviceData.name.substring(0,1)}G</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <CardTitle className="text-xl font-headline text-primary">Test Advisor</CardTitle>
+                                <CardDescription>Get smart test recommendations from Guruji.</CardDescription>
+                            </div>
                         </div>
+                        <Button variant="outline" size="sm" onClick={() => router.back()}>
+                            <ChevronLeft className="mr-1 h-4 w-4"/> Back
+                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -656,23 +664,28 @@ export default function ServicePage() {
            <Tabs value={activeTab} onValueChange={(value) => {setActiveTab(value as ProjectCategory); setSelectedProject(null);}} className="w-full">
                 <Card className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-2 shadow-sm -mx-4 px-4 rounded-none border-x-0 border-t-0">
                     <CardHeader className="pb-3 pt-2 px-0">
-                        <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10 border-2 border-primary">
-                                <AvatarImage 
-                                    src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
-                                    alt={serviceData.name} 
-                                    data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
-                                />
-                                <AvatarFallback>{serviceData.name.substring(0,1).toUpperCase()}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <CardTitle className="text-lg font-headline text-primary">
-                                    {serviceData.name}
-                                </CardTitle>
-                                <CardDescription className="text-xs">
-                                    {serviceData.description || "Let Guruji help you plan and execute!"}
-                                </CardDescription>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10 border-2 border-primary">
+                                    <AvatarImage 
+                                        src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
+                                        alt={serviceData.name} 
+                                        data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
+                                    />
+                                    <AvatarFallback>{serviceData.name.substring(0,1).toUpperCase()}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <CardTitle className="text-lg font-headline text-primary">
+                                        {serviceData.name}
+                                    </CardTitle>
+                                    <CardDescription className="text-xs">
+                                        {serviceData.description || "Let Guruji help you plan and execute!"}
+                                    </CardDescription>
+                                </div>
                             </div>
+                             <Button variant="outline" size="sm" onClick={() => router.back()}>
+                                <ChevronLeft className="mr-1 h-4 w-4"/> Back
+                            </Button>
                         </div>
                     </CardHeader>
                     <CardContent className="pb-3 px-0">
@@ -872,7 +885,10 @@ export default function ServicePage() {
 
         return (
             <Card className="shadow-xl bg-gradient-to-br from-primary/10 via-background to-accent/10 border-primary/20">
-                <CardHeader className="items-center text-center border-b pb-4">
+                <CardHeader className="items-center text-center border-b pb-4 relative">
+                    <Button variant="ghost" size="icon" className="absolute left-2 top-2" onClick={() => router.back()}>
+                      <ChevronLeft className="h-5 w-5"/>
+                    </Button>
                     <LightbulbIcon className="h-16 w-16 text-accent mb-3 animate-pulse" style={{ animationDuration: '2.5s' }} />
                     <CardTitle className="font-headline text-2xl text-primary">
                         {serviceData.name}
@@ -931,48 +947,11 @@ export default function ServicePage() {
     }
   };
 
-  const hideMainElements = serviceData?.type === 'chat_interface' 
-    || serviceData?.type === 'test_recommendation_interface' 
-    || serviceData?.type === 'interactive_assignment_project_help'
-    || !!serviceData?.data?.redirectTo;
-
   return (
-    <div className="space-y-0_override"> 
-      {!hideMainElements && serviceData?.type !== 'info_page' && (
-        <header className="py-4 px-1">
-          <h1 className="text-3xl font-bold font-headline text-primary">
-            {serviceData?.name || "Service"}
-          </h1>
-          {serviceData?.description && (
-            <p className="text-muted-foreground">
-              {serviceData.description}
-            </p>
-          )}
-        </header>
-      )}
-
+    <div className="space-y-4"> 
       { (serviceData?.type === 'chat_interface' || serviceData?.type === 'test_recommendation_interface' || serviceData?.type === 'interactive_assignment_project_help' || serviceData?.type === 'info_page' || !serviceData?.data?.redirectTo) ? (
-        (serviceData?.type !== 'chat_interface' && serviceData?.type !== 'test_recommendation_interface' && serviceData?.type !== 'interactive_assignment_project_help' && !hideMainElements && serviceData?.type !== 'info_page') ? ( 
-          <Card>
-            <CardContent className="pt-6">
-              {renderServiceContent()}
-            </CardContent>
-          </Card>
-        ) : ( 
-          renderServiceContent()
-        )
+        renderServiceContent()
       ) : null }
-
-
-      {!hideMainElements && serviceData?.type !== 'info_page' &&(
-        <div className="text-center mt-8 px-1">
-              <Button asChild variant="outline">
-                  <Link href="/">
-                      Back to Home
-                  </Link>
-              </Button>
-          </div>
-      )}
     </div>
   );
 }

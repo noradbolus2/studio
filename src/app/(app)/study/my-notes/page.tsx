@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; 
-import { Edit, PlusCircle, Search, Trash2 } from "lucide-react";
+import { Edit, PlusCircle, Search, Trash2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Added useRouter
 import { useState, useEffect } from "react";
@@ -75,30 +75,38 @@ export default function MyNotesPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-            <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
-                <Edit className="h-8 w-8 text-primary" />
-                <BilingualText en="My Notes" hi="मेरे नोट्स" />
-            </h1>
-            <p className="text-muted-foreground">
-                <BilingualText en="Organize and access your study notes efficiently." hi="अपने अध्ययन नोट्स को कुशलतापूर्वक व्यवस्थित करें और एक्सेस करें।" />
-            </p>
-        </div>
-        <Button asChild>
-            <Link href="/study/my-notes/new">
-                <PlusCircle className="mr-2 h-5 w-5" />
-                <BilingualText en="Create New Note" hi="नया नोट बनाएं" />
-            </Link>
+      <div className="flex items-center justify-between">
+        <header className="space-y-1">
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+            <Edit className="h-8 w-8 text-primary" />
+            <BilingualText en="My Notes" hi="मेरे नोट्स" />
+          </h1>
+          <p className="text-muted-foreground">
+            <BilingualText en="Organize and access your study notes efficiently." hi="अपने अध्ययन नोट्स को कुशलतापूर्वक व्यवस्थित करें और एक्सेस करें।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
         </Button>
-      </header>
+      </div>
 
       <Card>
         <CardHeader>
-            <CardTitle><BilingualText en="All Your Notes" hi="आपके सभी नोट्स" /></CardTitle>
-            <CardDescription>
-                <BilingualText en="Search, view, or edit your saved notes." hi="अपने सहेजे गए नोट्स खोजें, देखें या संपादित करें।" />
-            </CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle><BilingualText en="All Your Notes" hi="आपके सभी नोट्स" /></CardTitle>
+                <CardDescription>
+                    <BilingualText en="Search, view, or edit your saved notes." hi="अपने सहेजे गए नोट्स खोजें, देखें या संपादित करें।" />
+                </CardDescription>
+              </div>
+              <Button asChild size="sm">
+                <Link href="/study/my-notes/new">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    <BilingualText en="New Note" hi="नया नोट" />
+                </Link>
+              </Button>
+            </div>
         </CardHeader>
         <CardContent>
             <div className="relative mb-4">

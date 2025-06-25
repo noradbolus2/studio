@@ -4,9 +4,10 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Headphones, Music2, PlayCircle, Waves, Leaf, Brain } from "lucide-react";
+import { Headphones, Music2, PlayCircle, Waves, Leaf, Brain, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface FocusTrack {
   id: string;
@@ -68,6 +69,7 @@ const focusTracks: FocusTrack[] = [
 
 export default function FocusMusicPage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const handlePlayTrack = (trackTitleEn: string) => {
     toast({
@@ -78,7 +80,10 @@ export default function FocusMusicPage() {
 
   return (
     <div className="space-y-6">
-      <header className="text-center">
+      <header className="text-center relative">
+        <Button variant="outline" size="icon" className="absolute left-0 top-0" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-3xl font-bold font-headline text-primary flex items-center justify-center gap-2">
           <Brain className="h-8 w-8" />
           <BilingualText en="Focus Zone Music" hi="फोकस ज़ोन संगीत" />

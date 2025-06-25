@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { CalendarClock, BookOpen, Layers, Tag, Image as ImageIcon, Edit3, UploadCloud, Video } from "lucide-react";
+import { CalendarClock, BookOpen, Layers, Tag, Image as ImageIcon, Edit3, UploadCloud, Video, ArrowLeft } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -101,7 +101,10 @@ export default function ScheduleClassPage() {
 
   return (
     <div className="space-y-6">
-       <header className="text-center">
+       <header className="text-center relative">
+        <Button variant="outline" size="icon" className="absolute left-0 top-0" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-3xl font-bold font-headline text-primary flex items-center justify-center gap-2">
           <Video className="h-8 w-8" />
           <BilingualText en="Schedule New Live Class" hi="नई लाइव कक्षा शेड्यूल करें" />

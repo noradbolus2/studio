@@ -115,7 +115,7 @@ export default function CreatorOrderDetailPage() {
           <ArrowLeft className="mr-2 h-4 w-4" />
           <BilingualText en="Back to Dashboard" hi="डैशबोर्ड पर वापस" />
         </Button>
-      </header>
+      </div>
 
       <Card className="shadow-lg">
         <CardHeader>

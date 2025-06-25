@@ -6,7 +6,7 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Target, BrainCircuit, Rocket, FileText } from "lucide-react"; 
+import { Target, BrainCircuit, Rocket, FileText, ArrowLeft } from "lucide-react"; 
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { ProfileFormData } from '../edit-profile/page'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; 
 import { Label } from "@/components/ui/label";
+import { useRouter } from 'next/navigation';
 
 const testCategories = [
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं', descriptionEn: "Browse all available test series.", descriptionHi: "सभी उपलब्ध टेस्ट सीरीज़ ब्राउज़ करें।" },
@@ -357,6 +358,7 @@ function getCategoryFromExamTarget(examTarget?: string): string {
 
 
 export default function TestSeriesPage() {
+  const router = useRouter();
   const [recommendations, setRecommendations] = useState<TestSeriesRecommendationOutput | null>(null);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
@@ -437,15 +439,21 @@ export default function TestSeriesPage() {
 
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
-            <Target className="h-8 w-8 text-primary"/>
-            <BilingualText en="Test Series" hi="टेस्ट सीरीज़" />
-        </h1>
-        <p className="text-muted-foreground">
-            <BilingualText en="Practice and ace your exams." hi="अभ्यास करें और अपनी परीक्षाओं में उत्कृष्टता प्राप्त करें।" />
-        </p>
-      </header>
+       <div className="flex items-center justify-between">
+        <header>
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+              <Target className="h-8 w-8 text-primary"/>
+              <BilingualText en="Test Series" hi="टेस्ट सीरीज़" />
+          </h1>
+          <p className="text-muted-foreground">
+              <BilingualText en="Practice and ace your exams." hi="अभ्यास करें और अपनी परीक्षाओं में उत्कृष्टता प्राप्त करें।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
+        </Button>
+      </div>
 
       <Card className="bg-primary/5 border-primary/20 hover:shadow-lg transition-shadow">
         <CardHeader>
