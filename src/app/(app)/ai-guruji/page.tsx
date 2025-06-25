@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Mic, Send, Loader2, Paperclip, XCircle, FileText, Image as ImageIcon } from "lucide-react";
+import { Mic, Send, Loader2, Paperclip, XCircle, FileText, Image as ImageIcon, ArrowLeft } from "lucide-react";
 import { askGuruji, type GurujiInput, type GurujiOutput } from '@/ai/flows/ai-guruji-flow'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import type { ProfileFormData } from '../edit-profile/page'; 
+import { useRouter } from 'next/navigation';
 
 interface Message {
   id: string;
@@ -37,6 +38,7 @@ const ALLOWED_FILE_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOC_TYPES];
 
 
 export default function GurujiPage() { 
+  const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -212,7 +214,10 @@ export default function GurujiPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
-      <header className="p-4 border-b text-center bg-card rounded-t-lg">
+      <header className="p-4 border-b text-center bg-card rounded-t-lg relative">
+        <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5"/>
+        </Button>
         <div className="flex items-center justify-center space-x-3">
            <Avatar className="h-10 w-10">
             <AvatarImage src="https://placehold.co/100x100.png" alt="Guru Avatar" data-ai-hint="monk teaching" />

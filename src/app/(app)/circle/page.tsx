@@ -1,19 +1,29 @@
+
 import { PeerMatch } from "@/components/circle/PeerMatch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPinned, MessageSquareHeart } from "lucide-react";
+import { MapPinned, MessageSquareHeart, ArrowLeft } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function CirclePage() {
+    const router = useRouter();
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="text-3xl font-bold font-headline tracking-tight">
-            <BilingualText en="OSO Circle™" hi="OSO सर्कल™" />
-        </h1>
-        <p className="text-muted-foreground">
-            <BilingualText en="Connect, collaborate, and grow with your peers." hi="अपने साथियों के साथ जुड़ें, सहयोग करें और आगे बढ़ें।" />
-        </p>
-      </header>
+      <div className="flex items-center justify-between">
+        <header>
+          <h1 className="text-3xl font-bold font-headline tracking-tight">
+              <BilingualText en="OSO Circle™" hi="OSO सर्कल™" />
+          </h1>
+          <p className="text-muted-foreground">
+              <BilingualText en="Connect, collaborate, and grow with your peers." hi="अपने साथियों के साथ जुड़ें, सहयोग करें और आगे बढ़ें।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
+        </Button>
+      </div>
 
       <PeerMatch />
 

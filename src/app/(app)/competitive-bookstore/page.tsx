@@ -9,9 +9,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, DownloadCloud, Filter, Search, ShoppingCart, ThumbsUp } from "lucide-react";
+import { BookOpen, DownloadCloud, Filter, Search, ShoppingCart, ThumbsUp, ArrowLeft } from "lucide-react";
 import Image from 'next/image';
 import type { ProfileFormData } from '../edit-profile/page'; // Import ProfileFormData
+import { useRouter } from 'next/navigation';
 
 const examCategories = [
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं' },
@@ -244,6 +245,7 @@ function getCategoryFromExamTarget(examTarget?: string): string {
 export default function CompetitiveBookstorePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedExam, setSelectedExam] = useState('all');
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -277,14 +279,20 @@ export default function CompetitiveBookstorePage() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-bold font-headline">
-          <BilingualText en="Competitive Exam Bookstore" hi="प्रतियोगी परीक्षा बुकस्टोर" />
-        </h1>
-        <p className="text-muted-foreground">
-          <BilingualText en="Your success starts here. Best books for all major exams." hi="आपकी सफलता यहीं से शुरू होती है। सभी प्रमुख परीक्षाओं के लिए सर्वश्रेष्ठ पुस्तकें।" />
-        </p>
-      </header>
+      <div className="flex items-center justify-between">
+        <header className="space-y-1">
+          <h1 className="text-3xl font-bold font-headline">
+            <BilingualText en="Competitive Exam Bookstore" hi="प्रतियोगी परीक्षा बुकस्टोर" />
+          </h1>
+          <p className="text-muted-foreground">
+            <BilingualText en="Your success starts here. Best books for all major exams." hi="आपकी सफलता यहीं से शुरू होती है। सभी प्रमुख परीक्षाओं के लिए सर्वश्रेष्ठ पुस्तकें।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
+        </Button>
+      </div>
 
       <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
         <div className="relative">

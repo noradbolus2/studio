@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot } from "lucide-react";
+import { ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -41,7 +41,10 @@ export default function PlatformAdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <header className="text-center">
+      <header className="text-center relative">
+        <Button variant="outline" size="icon" className="absolute left-0 top-0" onClick={() => router.push('/')}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <ShieldCheck className="h-12 w-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold font-headline text-primary">
           <BilingualText en="Platform Administration" hi="प्लेटफ़ॉर्म प्रशासन" />

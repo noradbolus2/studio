@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { UploadCloud, PackagePlus, DollarSign, FileText, Image as ImageIcon, Video, Layers, CalendarClock, BookOpen, Edit3, Tag } from "lucide-react";
+import { UploadCloud, PackagePlus, DollarSign, FileText, Image as ImageIcon, Video, Layers, CalendarClock, BookOpen, Edit3, Tag, ArrowLeft } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -118,13 +118,21 @@ export default function UploadContentPage() {
       <Card className="w-full max-w-2xl mx-auto shadow-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
-              <PackagePlus className="h-7 w-7" />
-              <BilingualText en="Upload Chapter or Course" hi="अध्याय या कोर्स अपलोड करें" />
-            </CardTitle>
-            <CardDescription>
-              <BilingualText en="Fill in the details for your new teaching content." hi="अपनी नई शिक्षण सामग्री के लिए विवरण भरें।" />
-            </CardDescription>
+            <div className="flex justify-between items-start">
+              <div className="flex-grow">
+                <CardTitle className="text-2xl font-headline text-primary flex items-center gap-2">
+                  <PackagePlus className="h-7 w-7" />
+                  <BilingualText en="Upload Chapter or Course" hi="अध्याय या कोर्स अपलोड करें" />
+                </CardTitle>
+                <CardDescription>
+                  <BilingualText en="Fill in the details for your new teaching content." hi="अपनी नई शिक्षण सामग्री के लिए विवरण भरें।" />
+                </CardDescription>
+              </div>
+              <Button variant="outline" onClick={() => router.back()} className="flex-shrink-0">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  <BilingualText en="Back" hi="वापस"/>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-5">
             <div>

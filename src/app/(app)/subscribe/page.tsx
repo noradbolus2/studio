@@ -4,8 +4,9 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Gem, X } from "lucide-react";
+import { Check, Gem, X, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const plans = [
   {
@@ -77,9 +78,14 @@ const plans = [
 ];
 
 export default function SubscribePage() {
+  const router = useRouter();
+
   return (
     <div className="space-y-8">
-      <header className="text-center">
+      <header className="text-center relative">
+        <Button variant="outline" size="icon" className="absolute left-0 top-0" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-3xl font-bold font-headline text-primary flex items-center justify-center gap-2">
           <Gem className="h-8 w-8" />
           <BilingualText en="OSO Premium Plans" hi="OSO प्रीमियम योजनाएं" />

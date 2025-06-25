@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
-import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch } from 'lucide-react';
+import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch, ArrowLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 const handwritingStyles = [
     { name: 'Kalam (Regular)', className: 'font-handwriting' },
@@ -34,6 +35,7 @@ export default function HandwritingNotesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -133,15 +135,21 @@ export default function HandwritingNotesPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
-          <FileSignature className="h-8 w-8 text-primary" />
-          <BilingualText en="Handwriting Notes" hi="हस्तलिखित नोट्स" />
-        </h1>
-        <p className="text-muted-foreground">
-          <BilingualText en="Turn your typed text into your own handwriting." hi="अपने टाइप किए गए टेक्स्ट को अपनी लिखावट में बदलें।" />
-        </p>
-      </header>
+      <div className="flex items-center justify-between">
+        <header>
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+            <FileSignature className="h-8 w-8 text-primary" />
+            <BilingualText en="Handwriting Notes" hi="हस्तलिखित नोट्स" />
+          </h1>
+          <p className="text-muted-foreground">
+            <BilingualText en="Turn your typed text into your own handwriting." hi="अपने टाइप किए गए टेक्स्ट को अपनी लिखावट में बदलें।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
+        </Button>
+      </div>
 
       <Card>
         <CardHeader>

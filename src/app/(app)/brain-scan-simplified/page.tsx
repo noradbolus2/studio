@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Brain, Zap, ShieldAlert } from 'lucide-react'; // Clarity, Focus, Stress icons
+import { Brain, Zap, ShieldAlert, ArrowLeft } from 'lucide-react'; // Clarity, Focus, Stress icons
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
 
 interface BrainScanData {
   clarity: number;
@@ -22,6 +23,7 @@ export default function BrainScanSimplifiedPage() {
   const [stress, setStress] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -58,7 +60,10 @@ export default function BrainScanSimplifiedPage() {
 
   return (
     <div className="space-y-6">
-      <header className="text-center">
+      <header className="text-center relative">
+        <Button variant="outline" size="icon" className="absolute left-0 top-0" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-3xl font-bold font-headline text-primary flex items-center justify-center gap-2">
           <Brain className="h-8 w-8" />
           <BilingualText en="Quick Brain Check" hi="त्वरित ब्रेन चेक" />

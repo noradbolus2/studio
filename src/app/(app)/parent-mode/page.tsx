@@ -11,6 +11,7 @@ import {
   AreaChart, ShieldCheck, Eye, User, Users2, LogOut, ArrowLeftRight, Bell, Languages, Brain, Smile, Meh, Frown, Zap,
   Package, BookOpen, TrendingUp, AlertTriangle, Award, Download, MessageSquare, CalendarCheck2, Printer, FileText, Notebook, PencilLine,
   ExternalLink, RadioTower, Clock, Edit, HeartPulse, Truck, CheckCircle, Target, // Added Truck here
+  ArrowLeft
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -131,6 +132,9 @@ export default function ParentDashboardPage() {
     <div className="min-h-screen bg-deep-space-indigo text-gray-200 font-sans space-y-5 pb-10 -m-4 p-4">
       {/* Top Bar */}
       <header className="flex items-center justify-between py-3 px-1 sticky top-0 z-20 bg-deep-space-indigo/80 backdrop-blur-sm -mx-4 px-4 shadow-sm">
+        <Button variant="ghost" size="icon" className="text-gray-300 hover:text-glow-aqua hover:bg-dark-glass-card h-8 w-8" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8 border-2 border-glow-aqua">
               <AvatarImage src={childData.avatarUrl} alt={childData.name} data-ai-hint={childData.dataAiHint} />
@@ -372,4 +376,3 @@ export default function ParentDashboardPage() {
     </div>
   );
 }
-

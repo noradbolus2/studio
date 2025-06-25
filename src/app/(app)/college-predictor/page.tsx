@@ -10,9 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from '@/components/ui/textarea';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { GraduationCap, IndianRupee, MapPin, BookOpen, ListChecks, Percent, Landmark } from "lucide-react";
+import { GraduationCap, IndianRupee, MapPin, BookOpen, ListChecks, Percent, Landmark, ArrowLeft } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Badge } from '@/components/ui/badge';
+import { useRouter } from 'next/navigation';
 
 export default function CollegePredictorPage() {
   const [formData, setFormData] = useState<Partial<CollegePredictorInput>>({
@@ -26,6 +27,7 @@ export default function CollegePredictorPage() {
   const [results, setResults] = useState<CollegePredictorOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -81,7 +83,10 @@ export default function CollegePredictorPage() {
 
   return (
     <div className="space-y-8">
-      <header className="text-center">
+      <header className="text-center relative">
+        <Button variant="outline" size="icon" className="absolute left-0 top-0" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-3xl font-bold font-headline text-primary flex items-center justify-center gap-2">
           <GraduationCap className="h-8 w-8" />
           <BilingualText en="AI College Predictor" hi="एआई कॉलेज भविष्यवक्ता" />

@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Filter, ShoppingCart, Sparkles, Award, Palette, Code2, FlaskConical, Edit3 } from 'lucide-react';
+import { Users, Search, Filter, ShoppingCart, Sparkles, Award, Palette, Code2, FlaskConical, Edit3, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface CreatorProject {
   id: string;
@@ -111,6 +112,7 @@ export default function CreatorMarketplacePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleGetMade = (project: CreatorProject) => {
     toast({
@@ -126,15 +128,21 @@ export default function CreatorMarketplacePage() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
-          <Users className="h-8 w-8 text-primary" />
-          <BilingualText en="Creator Project Marketplace" hi="क्रिएटर प्रोजेक्ट मार्केटप्लेस" />
-        </h1>
-        <p className="text-muted-foreground">
-          <BilingualText en="Discover unique projects made by talented OSO Creators." hi="प्रतिभाशाली OSO क्रिएटर्स द्वारा बनाए गए अद्वितीय प्रोजेक्ट खोजें।" />
-        </p>
-      </header>
+      <div className="flex items-center justify-between">
+        <header className="space-y-1">
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+            <Users className="h-8 w-8 text-primary" />
+            <BilingualText en="Creator Project Marketplace" hi="क्रिएटर प्रोजेक्ट मार्केटप्लेस" />
+          </h1>
+          <p className="text-muted-foreground">
+            <BilingualText en="Discover unique projects made by talented OSO Creators." hi="प्रतिभाशाली OSO क्रिएटर्स द्वारा बनाए गए अद्वितीय प्रोजेक्ट खोजें।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
+        </Button>
+      </div>
 
       <div className="space-y-4 p-4 bg-muted/50 rounded-lg shadow">
         <div className="relative">
@@ -251,5 +259,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-
-    

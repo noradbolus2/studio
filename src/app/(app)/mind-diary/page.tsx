@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import { Smile, Meh, Frown, Laugh, Angry, Rocket, Lightbulb, Sparkles, Brain } from 'lucide-react'; // Added more icons
+import { Smile, Meh, Frown, Laugh, Angry, Rocket, Lightbulb, Sparkles, Brain, ArrowLeft } from 'lucide-react'; // Added more icons
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { getMindDiaryReflection, type MindDiaryReflectionInput, type MindDiaryReflectionOutput } from '@/ai/flows/mind-diary-reflection-flow';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Label } from "@/components/ui/label";
+import { useRouter } from 'next/navigation';
 
 
 interface MoodEntry {
@@ -40,6 +41,7 @@ export default function MindDiaryPage() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiReflection, setAiReflection] = useState<AiReflection | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
@@ -90,15 +92,21 @@ export default function MindDiaryPage() {
 
   return (
     <div className="space-y-6">
-      <header className="text-center">
-        <h1 className="text-3xl font-bold font-headline text-primary flex items-center justify-center gap-2">
-          <Lightbulb className="h-8 w-8" />
-          <BilingualText en="Mind Diary" hi="माइंड डायरी" />
-        </h1>
-        <p className="text-muted-foreground">
-          <BilingualText en="Reflect on your day and set a positive tone." hi="अपने दिन पर चिंतन करें और सकारात्मक माहौल बनाएं।" />
-        </p>
-      </header>
+      <div className="flex items-center justify-between">
+        <header>
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+            <Lightbulb className="h-8 w-8" />
+            <BilingualText en="Mind Diary" hi="माइंड डायरी" />
+          </h1>
+          <p className="text-muted-foreground">
+            <BilingualText en="Reflect on your day and set a positive tone." hi="अपने दिन पर चिंतन करें और सकारात्मक माहौल बनाएं।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
+        </Button>
+      </div>
 
       <Card className="w-full max-w-lg mx-auto shadow-lg">
         <form onSubmit={handleSubmit}>

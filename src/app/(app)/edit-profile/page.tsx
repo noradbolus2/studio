@@ -19,7 +19,7 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target } from "lucide-react";
+import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target, ArrowLeft } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
@@ -43,7 +43,7 @@ const competitiveExamsIndia = [
   "CTET", "State TETs", "UGC NET", "CSIR UGC NET", "SET/SLET", "KVS Recruitment", "NVS Recruitment", "DSSSB", "B.Ed. Entrances",
   "GPAT", "State CETs for B.Pharm", "NIPER JEE",
   "UGC NET JRF", "CSIR NET JRF", "ICMR JRF", "DBT JRF", "University/Institute PhD Entrances",
-  "CA (Foundation, Intermediate, Final)", "CS (CSEET, Executive, Professional)", "CMA (Foundation, Intermediate, Final)",
+  "CA (Foundation, Intermediate, Final)", "CS (CSEET, Executive, Professional)", "CMA (Foundation, Inter, Final)",
   "NTSE", "KVPY (Status to be checked by student)", "SOF Olympiads (NSO, IMO, IEO, etc.)", "Homi Bhabha Balvaidnyanik Spardha",
   "Other (Not Listed)"
 ];
@@ -801,7 +801,11 @@ export default function EditProfilePage() {
              <div><Label htmlFor="country"><BilingualText en="Country" hi="देश" /></Label><Controller name="country" control={control} render={({ field }) => <Input id="country" {...field} value={field.value ?? ''} />} /></div>
 
           </CardContent>
-          <CardFooter className="flex justify-end">
+          <CardFooter className="flex justify-between items-center">
+            <Button type="button" variant="outline" onClick={() => router.back()}>
+                <ArrowLeft className="mr-2 h-5 w-5" />
+                <BilingualText en="Cancel" hi="रद्द करें" />
+            </Button>
             <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isRhfSubmitting || isSubmittingProfile}>
               {isRhfSubmitting || isSubmittingProfile ? <LoadingSpinner size={20} /> : <Save className="mr-2 h-5 w-5" />}
               <BilingualText en="Save Profile" hi="प्रोफ़ाइल सहेजें" />

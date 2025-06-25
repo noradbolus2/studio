@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookText, Search, Filter, BookOpenCheck, DownloadCloud, ShoppingCart, Info } from 'lucide-react';
+import { BookText, Search, Filter, BookOpenCheck, DownloadCloud, ShoppingCart, Info, ArrowLeft } from 'lucide-react';
 import type { ProfileFormData } from '../edit-profile/page';
 import Link from 'next/link'; // Added Link for navigation
+import { useRouter } from 'next/navigation';
 
 interface NcertBook {
   id: string;
@@ -81,6 +82,7 @@ export default function NcertBooksPage() {
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [selectedBoard, setSelectedBoard] = useState<string>('all');
   const [selectedMedium, setSelectedMedium] = useState<string>('all');
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -113,15 +115,21 @@ export default function NcertBooksPage() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
-          <BookText className="h-8 w-8 text-primary" />
-          <BilingualText en="NCERT & State Board Books (6-12)" hi="एनसीईआरटी और राज्य बोर्ड पुस्तकें (6-12)" />
-        </h1>
-        <p className="text-muted-foreground">
-          <BilingualText en="Find textbooks for Class 6 to 12." hi="कक्षा 6 से 12 के लिए पाठ्यपुस्तकें खोजें।" />
-        </p>
-      </header>
+      <div className="flex items-center justify-between">
+        <header className="space-y-1">
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
+            <BookText className="h-8 w-8 text-primary" />
+            <BilingualText en="NCERT & State Board Books (6-12)" hi="एनसीईआरटी और राज्य बोर्ड पुस्तकें (6-12)" />
+          </h1>
+          <p className="text-muted-foreground">
+            <BilingualText en="Find textbooks for Class 6 to 12." hi="कक्षा 6 से 12 के लिए पाठ्यपुस्तकें खोजें।" />
+          </p>
+        </header>
+        <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <BilingualText en="Back" hi="वापस"/>
+        </Button>
+      </div>
 
       <div className="space-y-4 p-4 bg-muted/50 rounded-lg shadow">
         <div className="relative">
@@ -290,5 +298,3 @@ export default function NcertBooksPage() {
     
 
     
-
-

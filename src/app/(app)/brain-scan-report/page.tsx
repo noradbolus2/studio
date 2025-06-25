@@ -6,9 +6,10 @@ import Image from 'next/image';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Brain, Zap, TrendingUp, TrendingDown, Smile, Sun, Lightbulb, Eye, RefreshCcw, Sparkles } from "lucide-react";
+import { Brain, Zap, TrendingUp, TrendingDown, Smile, Sun, Lightbulb, Eye, RefreshCcw, Sparkles, ArrowLeft } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 // Mock data - replace with actual data fetching or state management
 const initialAuraReportData = {
@@ -40,6 +41,7 @@ export default function AuraMapPage() {
   const [auraData, setAuraData] = useState(initialAuraReportData);
   const [isScanning, setIsScanning] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleScanAgain = () => {
     setIsScanning(true);
@@ -69,7 +71,10 @@ export default function AuraMapPage() {
     <React.Fragment>
       <div className="space-y-6">
         <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Button variant="outline" size="sm" onClick={() => router.back()} className="text-xs h-8">
+              <ArrowLeft size={14} className="mr-1.5"/> <BilingualText en="Back" hi="वापस"/>
+            </Button>
+            <div className="flex-grow flex items-center justify-center gap-1 text-xs text-muted-foreground">
                 <Sparkles size={14} className="text-primary" />
                 <span>Powered by OSO AI</span>
             </div>
