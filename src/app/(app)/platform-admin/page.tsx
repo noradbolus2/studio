@@ -36,11 +36,12 @@ const adminActions = [
   { id: "manage_roles", labelEn: "Role Management", labelHi: "भूमिका प्रबंधन", icon: ShieldCheck, href: "/platform-admin/roles"},
 ];
 
+
 const linkedApps = [
-  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School },
-  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase },
-  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike },
-  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark },
+  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, url: "https://6000-studio-8881667168.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, url: "https://6000-studio-6108164853.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, url: "https://6000-studio-6479543659.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
+  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, url: "https://6000-studio-9604609955.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev/" },
 ];
 
 export default function PlatformAdminDashboardPage() {
@@ -77,11 +78,24 @@ export default function PlatformAdminDashboardPage() {
 
     toast({
       title: "Pairing Successful",
-      description: `Successfully paired with ${pairingApp.labelEn}.`,
+      description: `Successfully paired with ${pairingApp.labelEn}. You can now access its panel.`,
     });
 
     setIsPairingDialogOpen(false);
     setPairingApp(null);
+  };
+
+  const handleAppClick = (app: typeof linkedApps[0]) => {
+    const isPaired = pairedApps[app.id];
+    if (isPaired) {
+      window.open(app.url, '_blank');
+      toast({
+        title: `Launching ${app.labelEn}`,
+        description: "Opening application in a new tab.",
+      });
+    } else {
+      handleOpenPairingDialog(app);
+    }
   };
 
 
@@ -155,9 +169,8 @@ export default function PlatformAdminDashboardPage() {
               <Button
                 key={app.id}
                 variant="outline"
-                className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary disabled:opacity-70 disabled:cursor-not-allowed"
-                onClick={() => !isPaired && handleOpenPairingDialog(app)}
-                disabled={isPaired}
+                className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
+                onClick={() => handleAppClick(app)}
               >
                 <div>
                   <app.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
