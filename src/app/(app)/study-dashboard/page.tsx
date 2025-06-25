@@ -6,16 +6,39 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Activity, AlertTriangle, CheckCircle, BrainCircuit, Lightbulb, Target, Bot, BookOpen, ChevronDown, ChevronUp, ListChecks, Sparkles, MessageSquareQuote, Headphones, Edit, Video, FileText as NoteIcon, HelpCircle as QuizIcon } from "lucide-react"; // Changed MessageSquareQuestion to MessageSquareQuote
+import { 
+    Activity, 
+    AlertTriangle, 
+    CheckCircle, 
+    BrainCircuit, 
+    Lightbulb, 
+    Target, 
+    Bot, 
+    BookOpen, 
+    ChevronDown, 
+    ChevronUp, 
+    ListChecks, 
+    Sparkles, 
+    MessageSquareQuote, 
+    Headphones, 
+    Edit, 
+    Video, 
+    FileText as NoteIcon, 
+    HelpCircle as QuizIcon,
+    PlayCircle, 
+    BookMarked, 
+    Check 
+} from "lucide-react"; 
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { ProfileFormData } from '../edit-profile/page';
 import { Label } from "@/components/ui/label";
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Badge } from '@/components/ui/badge';
 
 interface LessonItem {
   id: string;
@@ -72,12 +95,55 @@ const mockPendingTasks: PendingTask[] = [
   { id: "task2", descriptionEn: "Read Chapter 2 - Acids & Bases", descriptionHi: "अध्याय 2 पढ़ें - अम्ल और क्षारक", type: 'reading' },
 ];
 
-const mockWeakTopics: string[] = ["Balancing Complex Equations"];
+const mockWeakTopics: string[] = ["Balancing Complex Equations", "Thermodynamics concepts"];
+
+function LessonRow({ lesson, chapterId, onLessonClick }: { lesson: LessonItem, chapterId: string, onLessonClick: (chapterId: string, lessonId: string) => void }) {
+    const getLessonIcon = (type: LessonItem['type']) => {
+        switch (type) {
+        case 'video': return <Video className="h-5 w-5 text-pink-500" />;
+        case 'notes': return <NoteIcon className="h-5 w-5 text-blue-500" />;
+        case 'quiz': return <QuizIcon className="h-5 w-5 text-green-500" />;
+        default: return <BookOpen className="h-5 w-5 text-gray-500" />;
+        }
+    };
+    
+    const isReplayLimitReached = lesson.type === 'video' && (lesson.replays_played ?? 0) >= (lesson.max_replays ?? Infinity);
+
+    return (
+        <div key={lesson.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+            <div className="flex items-center gap-3">
+                {lesson.completed ? (
+                    <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
+                ) : (
+                    getLessonIcon(lesson.type)
+                )}
+                <div>
+                    <p className={cn("text-sm font-medium", lesson.completed && "text-muted-foreground")}>
+                      <BilingualText en={lesson.titleEn} hi={lesson.titleHi} />
+                    </p>
+                    {isReplayLimitReached && (
+                         <Badge variant="destructive" className="mt-1 text-xs">Replay Limit Reached</Badge>
+                    )}
+                </div>
+            </div>
+             <Button 
+                size="sm" 
+                variant={lesson.completed ? "ghost" : "default"} 
+                onClick={() => onLessonClick(chapterId, lesson.id)}
+                disabled={isReplayLimitReached}
+                className={cn(isReplayLimitReached && "opacity-50 cursor-not-allowed")}
+            >
+                {lesson.completed ? <BilingualText en="Review" hi="समीक्षा"/> : <BilingualText en="Start" hi="शुरू करें"/>}
+            </Button>
+        </div>
+    );
+}
 
 export default function StudyDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [chapters, setChapters] = useState<Chapter[]>(mockChapters);
+  const [weakTopics, setWeakTopics] = useState<string[]>(mockWeakTopics);
   const [showAiHelp, setShowAiHelp] = useState(false);
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
 
@@ -92,33 +158,54 @@ export default function StudyDashboardPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const hasStrugglingVideo = chapters.some(ch => ch.lessons.some(l => l.type === 'video' && (l.replays_played ?? 0) >= 5));
+    const hasWeakTopics = weakTopics.length > 0;
 
-  const handleLessonCompletion = (chapterId: string, lessonId: string, completed: boolean) => {
-    setChapters(prevChapters =>
-      prevChapters.map(chapter =>
-        chapter.id === chapterId
-          ? {
-              ...chapter,
-              lessons: chapter.lessons.map(lesson =>
-                lesson.id === lessonId ? { ...lesson, completed } : lesson
-              ),
-            }
-          : chapter
-      )
-    );
-    if (completed) {
-      toast({ title: "Lesson Completed!", description: "Great job keeping up!"});
+    if(hasStrugglingVideo || hasWeakTopics) {
+        const timer = setTimeout(() => setShowAiHelp(true), 2000);
+        return () => clearTimeout(timer);
+    } else {
+        setShowAiHelp(false);
     }
+  }, [chapters, weakTopics]);
+
+  const handleLessonClick = (chapterId: string, lessonId: string) => {
+      const chapter = chapters.find(c => c.id === chapterId);
+      const lesson = chapter?.lessons.find(l => l.id === lessonId);
+
+      if(!lesson) return;
+      
+      const isReplayLimitReached = lesson.type === 'video' && (lesson.replays_played ?? 0) >= (lesson.max_replays ?? Infinity);
+      if (isReplayLimitReached) {
+          toast({ title: "Replay Limit Reached", description: "Unlock unlimited replays with OSO Premium.", variant: "destructive"});
+          return;
+      }
+      
+      toast({ title: "Starting Lesson...", description: `Loading "${lesson.titleEn}"`});
+
+      setTimeout(() => {
+         setChapters(prevChapters =>
+            prevChapters.map(ch =>
+                ch.id === chapterId
+                ? {
+                    ...ch,
+                    lessons: ch.lessons.map(l =>
+                        l.id === lessonId 
+                        ? { 
+                            ...l, 
+                            completed: true, 
+                            replays_played: l.type === 'video' ? (l.replays_played ?? 0) + 1 : l.replays_played 
+                          } 
+                        : l
+                    ),
+                    }
+                : ch
+            )
+        );
+         toast({ title: "Lesson Completed!", description: "Great job keeping up!"});
+      }, 1500)
   };
-  
-  const getLessonIcon = (type: LessonItem['type']) => {
-    switch (type) {
-      case 'video': return <Video className="h-4 w-4 text-muted-foreground" />;
-      case 'notes': return <NoteIcon className="h-4 w-4 text-muted-foreground" />;
-      case 'quiz': return <QuizIcon className="h-4 w-4 text-muted-foreground" />;
-      default: return <BookOpen className="h-4 w-4 text-muted-foreground" />;
-    }
-  }
 
   const overallProgress = useMemo(() => {
     const totalLessons = chapters.reduce((sum, chapter) => sum + chapter.lessons.length, 0);
@@ -158,46 +245,6 @@ export default function StudyDashboardPage() {
         </CardContent>
       </Card>
 
-      {currentChapterForDisplay && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BookOpen className="text-accent"/> <BilingualText en={`Current: ${currentChapterForDisplay.titleEn}`} hi={`वर्तमान: ${currentChapterForDisplay.titleHi}`} /></CardTitle>
-            <CardDescription><BilingualText en="Track your progress through the lessons." hi="पाठों के माध्यम से अपनी प्रगति को ट्रैक करें।" /></CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {currentChapterForDisplay.lessons.map(lesson => (
-              <div key={lesson.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    id={`lesson-${lesson.id}`}
-                    checked={lesson.completed}
-                    onCheckedChange={(checked) => handleLessonCompletion(currentChapterForDisplay.id, lesson.id, !!checked)}
-                    className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                  />
-                  <div className="flex items-center gap-2">
-                    {getLessonIcon(lesson.type)}
-                    <Label htmlFor={`lesson-${lesson.id}`} className={cn("text-sm cursor-pointer", lesson.completed && "line-through text-muted-foreground")}>
-                      <BilingualText en={lesson.titleEn} hi={lesson.titleHi} />
-                    </Label>
-                  </div>
-                </div>
-                {lesson.type === 'video' && lesson.max_replays && (
-                  <div className={cn("text-xs font-medium", (lesson.replays_played || 0) >= lesson.max_replays ? 'text-destructive' : 'text-muted-foreground')}>
-                     {(lesson.replays_played || 0) >= lesson.max_replays && <AlertTriangle className="inline h-3 w-3 mr-1"/>}
-                     <BilingualText en={`Played ${lesson.replays_played}/${lesson.max_replays}`} hi={`देखा गया ${lesson.replays_played}/${lesson.max_replays}`} />
-                  </div>
-                )}
-              </div>
-            ))}
-             <Button asChild variant="link" className="w-full mt-2">
-                <Link href="/subscribe">
-                    <BilingualText en="Replays over? Unlock Unlimited with Premium" hi="रिप्ले खत्म? प्रीमियम के साथ अनलिमिटेड अनलॉक करें"/>
-                </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
       {showAiHelp && (
         <Card className="bg-accent/10 border-accent/30 shadow-lg shadow-accent/20">
             <CardHeader>
@@ -210,6 +257,20 @@ export default function StudyDashboardPage() {
                     <MessageSquareQuote className="mr-2"/> <BilingualText en="Chat with Guruji" hi="गुरुजी से चैट करें"/>
                 </Button>
             </CardContent>
+        </Card>
+      )}
+
+      {currentChapterForDisplay && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><BookOpen className="text-accent"/> <BilingualText en={`Current: ${currentChapterForDisplay.titleEn}`} hi={`वर्तमान: ${currentChapterForDisplay.titleHi}`} /></CardTitle>
+            <CardDescription><BilingualText en="Complete your lessons to move forward." hi="आगे बढ़ने के लिए अपने पाठ पूरे करें।" /></CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {currentChapterForDisplay.lessons.map(lesson => (
+              <LessonRow key={lesson.id} lesson={lesson} chapterId={currentChapterForDisplay.id} onLessonClick={handleLessonClick} />
+            ))}
+          </CardContent>
         </Card>
       )}
 
@@ -230,11 +291,14 @@ export default function StudyDashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><AlertTriangle className="text-destructive"/> <BilingualText en="Weak Topic Alerts" hi="कमजोर विषय अलर्ट" /></CardTitle>
+            <CardTitle className="flex items-center gap-2"><AlertTriangle className="text-destructive"/> <BilingualText en="AI-Flagged Weak Topics" hi="एआई-चिह्नित कमजोर विषय" /></CardTitle>
           </CardHeader>
-          <CardContent className="space-y-1">
-            {mockWeakTopics.length > 0 ? mockWeakTopics.map((topic, index) => (
-              <p key={index} className="text-xs p-1.5 bg-destructive/10 text-destructive-foreground rounded-md border border-destructive/30">{topic}</p>
+          <CardContent className="space-y-2">
+            {weakTopics.length > 0 ? weakTopics.map((topic, index) => (
+              <div key={index} className="text-xs flex justify-between items-center p-1.5 bg-destructive/10 text-destructive-foreground rounded-md border border-destructive/30">
+                <span>{topic}</span>
+                <Button variant="link" size="sm" className="p-0 h-auto text-xs text-destructive hover:underline" onClick={() => router.push(`/brainmate?query=${encodeURIComponent('Explain ' + topic)}`)}><BilingualText en="Get Help" hi="मदद लें"/></Button>
+              </div>
             )) : <p className="text-xs text-muted-foreground text-center py-2"><BilingualText en="No specific weak topics flagged. Keep it up!" hi="कोई विशिष्ट कमजोर विषय चिह्नित नहीं किया गया। इसे बनाए रखें!"/></p>}
           </CardContent>
         </Card>
