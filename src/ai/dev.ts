@@ -1,6 +1,4 @@
 
-import { config } from 'dotenv';
-config();
 
 import '@/ai/flows/ai-peer-match.ts';
 import '@/ai/flows/brain-scan-report.ts';
@@ -12,6 +10,7 @@ import '@/ai/flows/generate-exam-test-flow.ts'; // Added new flow
 import '@/ai/flows/brainmate-flow.ts';
 import '@/ai/tools/exam-info-tool.ts';
 import '@/ai/flows/codemate-flow.ts';
+
 
 
 

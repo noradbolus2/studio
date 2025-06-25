@@ -288,10 +288,3 @@ const gurujiChatFlow = ai.defineFlow(
     }
   }
 );
-
-/**
- * @deprecated Use this file (ai-guruji-flow.ts) directly. This alias is for backward compatibility with guruji-flow.ts.
- */
-export const askAiGuruji = askGuruji;
-export type AiGurujiInput = GurujiInput;
-export type AiGurujiOutput = GurujiOutput;
