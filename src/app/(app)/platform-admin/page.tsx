@@ -52,14 +52,6 @@ export default function PlatformAdminDashboardPage() {
     }
   };
 
-  const handleLinkedAppClick = (appName: string, href: string) => {
-     toast({
-        title: `Opening ${appName}`,
-        description: `Opening link in a new tab...`,
-    });
-    window.open(href, '_blank', 'noopener,noreferrer');
-  }
-
   return (
     <div className="space-y-8">
       <header className="text-center relative">
@@ -125,10 +117,14 @@ export default function PlatformAdminDashboardPage() {
               key={app.id}
               variant="outline"
               className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-              onClick={() => handleLinkedAppClick(app.labelEn, app.href)}
+              asChild
             >
-              <app.icon className="h-7 w-7 text-primary mb-1"/>
-              <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
+              <Link href={app.href} target="_blank" rel="noopener noreferrer">
+                <div>
+                  <app.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
+                  <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
+                </div>
+              </Link>
             </Button>
           ))}
         </CardContent>
