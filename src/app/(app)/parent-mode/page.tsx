@@ -88,25 +88,31 @@ const downloadsData = [
   { id: "doc2", nameEn: "Aanya's Term 1 Report Card", nameHi: "आन्या की पहली टर्म की रिपोर्ट कार्ड", type: "PDF", icon: FileText },
 ];
 
-const auraZoneClasses: Record<string, string> = {
-  blue: "border-primary bg-primary/10 animate-blue-pulse", // Clarity
-  green: "border-success bg-success/10 animate-green-pulse", // Focus
-  yellow: "border-warning bg-warning/10 animate-yellow-pulse", // Attention
-  red: "border-destructive bg-destructive/10 animate-red-flicker", // Stress
-};
-
-const colorMap: Record<string, string> = {
+const MetricBar = ({ labelEn, labelHi, value, color, lang }: { labelEn: string, labelHi: string, value: number, color: 'blue' | 'green' | 'yellow' | 'red', lang: 'en' | 'hi' }) => {
+  const colorClasses = {
     blue: 'bg-primary',
     green: 'bg-success',
     yellow: 'bg-warning',
     red: 'bg-destructive',
+  };
+  return (
+    <div>
+      <div className="flex justify-between text-xs mb-1 text-muted-foreground">
+        <span className="font-medium"><BilingualText en={labelEn} hi={labelHi} lang={lang} /></span>
+        <span>{value}%</span>
+      </div>
+      <div className="h-1.5 w-full bg-muted rounded-full">
+        <div className={cn("h-1.5 rounded-full", colorClasses[color])} style={{ width: `${value}%` }} />
+      </div>
+    </div>
+  );
 };
+
 
 export default function ParentDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
-  const auraMetrics = [brainScanData.clarity, brainScanData.focus, brainScanData.attention, brainScanData.stress];
 
   const handleLanguageToggle = () => {
     setCurrentLang(prevLang => (prevLang === 'en' ? 'hi' : 'en'));
@@ -128,13 +134,6 @@ export default function ParentDashboardPage() {
     router.push('/');
   };
   
-  const getStressEmojiIcon = (level: string) => {
-    if (level.toLowerCase() === 'low') return <Smile size={18} className="text-success"/>;
-    if (level.toLowerCase() === 'medium') return <Meh size={18} className="text-warning"/>;
-    if (level.toLowerCase() === 'high') return <Frown size={18} className="text-destructive"/>;
-    return <Meh size={18} className="text-muted-foreground"/>; // Default
-  }
-
   const handleMockAction = (actionName: string, link?: string) => {
     if (link) {
         router.push(link);
@@ -189,32 +188,31 @@ export default function ParentDashboardPage() {
             <BilingualText en="Weekly AI Cognitive Snapshot" hi="साप्ताहिक एआई संज्ञानात्मक स्नैपशॉट" lang={currentLang} />
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center text-center">
-            <div className="relative w-48 h-48 mb-4 flex items-center justify-center">
-              {auraMetrics.map((metric, index) => (
-                <div 
-                  key={metric.labelEn}
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div className="relative w-40 h-40 mx-auto flex items-center justify-center">
+              {[...Array(4)].map((_, index) => (
+                  <div 
+                  key={index}
                   className={cn(
-                    "absolute rounded-full border-2",
-                    auraZoneClasses[metric.color],
+                      "absolute rounded-full border",
+                      index === 0 && "border-primary/50 animate-blue-pulse",
+                      index === 1 && "border-success/50 animate-green-pulse",
+                      index === 2 && "border-warning/50 animate-yellow-pulse",
+                      index === 3 && "border-destructive/50 animate-red-flicker",
                   )}
                   style={{ 
-                    width: `${90 - index * 20}%`, 
-                    height: `${90 - index * 20}%`,
-                    animationDelay: `${index * 0.15}s`
+                      width: `${100 - index * 22}%`, 
+                      height: `${100 - index * 22}%`,
+                      animationDelay: `${index * 0.2}s`
                   }}
-                />
+                  />
               ))}
-              <Brain className="w-16 h-16 text-primary z-10 opacity-90 filter drop-shadow-[0_0_8px_hsl(var(--primary))]"/>
+              <Brain className="w-12 h-12 text-primary z-10 opacity-90 filter drop-shadow-[0_0_8px_hsl(var(--primary))]"/>
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs w-full max-w-xs mb-2 text-left">
-               {auraMetrics.map(metric => (
-                    <div key={metric.labelEn} className="flex items-center gap-2">
-                       <div className={cn("h-2 w-2 rounded-full", colorMap[metric.color])}></div>
-                       <span className="font-medium"><BilingualText en={metric.labelEn} hi={metric.labelHi} lang={currentLang}/>:</span>
-                       <span className="text-foreground/90">{metric.value}%</span>
-                    </div>
-                ))}
+            <div className="space-y-3">
+              {[brainScanData.clarity, brainScanData.focus, brainScanData.attention, brainScanData.stress].map(metric => (
+                <MetricBar key={metric.labelEn} {...metric} lang={currentLang} />
+              ))}
             </div>
         </CardContent>
         <CardFooter className="p-3 bg-muted/30 border-t">
@@ -271,34 +269,24 @@ export default function ParentDashboardPage() {
           </CardContent>
         </Card>
         
-        {/* OSO Orders Widget */}
+         {/* Goals + Motivation Tracker Widget */}
         <Card 
           className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '400ms' }}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
-              <Truck className="h-6 w-6 text-accent" /> OSO Orders
+              <Award className="h-6 w-6 text-yellow-400" /> <BilingualText en="Goals & Motivation" hi="लक्ष्य और प्रेरणा" lang={currentLang}/>
             </CardTitle>
-             <CardDescription className="text-xs">Delivery Tracker</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {orderData.map(order => (
-              <div key={order.id} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <order.icon className="h-5 w-5 text-muted-foreground"/>
-                  <div>
-                      <p className="font-medium"><BilingualText en={order.itemEn} hi={order.itemHi} lang={currentLang}/></p>
-                      <p className="text-muted-foreground/80"><BilingualText en={order.statusEn} hi={order.statusHi} lang={currentLang}/> - {order.date}</p>
-                  </div>
-                </div>
-                <Button asChild variant="link" size="sm" className="p-0 h-auto text-accent hover:underline">
-                   <Link href={`/track-order/${order.id}`}>
-                      <BilingualText en="Track" hi="ट्रैक" lang={currentLang}/>
-                   </Link>
-                </Button>
-              </div>
-            ))}
+          <CardContent className="space-y-3 text-sm">
+            <p><CalendarCheck2 size={14} className="inline mr-1 text-yellow-400"/> {goalsData.studyStreak} <BilingualText en="days study streak" hi="दिनों की अध्ययन लकीर" lang={currentLang}/> 🔥</p>
+            <div>
+              <Label className="text-xs text-muted-foreground flex items-center"><Target size={12} className="mr-1"/> <BilingualText en="Current Goal" hi="वर्तमान लक्ष्य" lang={currentLang}/></Label>
+              <p className="font-medium">{goalsData.currentGoal}</p>
+              <Progress value={goalsData.progress} className="h-2 mt-1 [&>div]:bg-gradient-to-r [&>div]:from-yellow-400 [&>div]:to-orange-500" />
+            </div>
+            <p><ShieldCheck size={14} className="inline mr-1 text-success"/> <BilingualText en="Badge Unlocked:" hi="बैज अनलॉक किया गया:" lang={currentLang}/> <span className="font-semibold text-yellow-400">{goalsData.badgeUnlocked}</span></p>
           </CardContent>
         </Card>
       </div>
@@ -338,26 +326,36 @@ export default function ParentDashboardPage() {
           </CardContent>
         </Card>
        </div>
-       
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Goals + Motivation Tracker Widget */}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* OSO Orders Widget */}
         <Card 
           className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
           style={{ animationDelay: '700ms' }}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
-              <Award className="h-6 w-6 text-yellow-400" /> <BilingualText en="Goals & Motivation" hi="लक्ष्य और प्रेरणा" lang={currentLang}/>
+              <Truck className="h-6 w-6 text-accent" /> OSO Orders
             </CardTitle>
+             <CardDescription className="text-xs">Delivery Tracker</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <p><CalendarCheck2 size={14} className="inline mr-1 text-yellow-400"/> {goalsData.studyStreak} <BilingualText en="days study streak" hi="दिनों की अध्ययन लकीर" lang={currentLang}/> 🔥</p>
-            <div>
-              <Label className="text-xs text-muted-foreground flex items-center"><Target size={12} className="mr-1"/> <BilingualText en="Current Goal" hi="वर्तमान लक्ष्य" lang={currentLang}/></Label>
-              <p className="font-medium">{goalsData.currentGoal}</p>
-              <Progress value={goalsData.progress} className="h-2 mt-1 [&>div]:bg-gradient-to-r [&>div]:from-yellow-400 [&>div]:to-orange-500" />
-            </div>
-            <p><ShieldCheck size={14} className="inline mr-1 text-success"/> <BilingualText en="Badge Unlocked:" hi="बैज अनलॉक किया गया:" lang={currentLang}/> <span className="font-semibold text-yellow-400">{goalsData.badgeUnlocked}</span></p>
+          <CardContent className="space-y-3">
+            {orderData.map(order => (
+              <div key={order.id} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <order.icon className="h-5 w-5 text-muted-foreground"/>
+                  <div>
+                      <p className="font-medium"><BilingualText en={order.itemEn} hi={order.itemHi} lang={currentLang}/></p>
+                      <p className="text-muted-foreground/80"><BilingualText en={order.statusEn} hi={order.statusHi} lang={currentLang}/> - {order.date}</p>
+                  </div>
+                </div>
+                <Button asChild variant="link" size="sm" className="p-0 h-auto text-accent hover:underline">
+                   <Link href={`/track-order/${order.id}`}>
+                      <BilingualText en="Track" hi="ट्रैक" lang={currentLang}/>
+                   </Link>
+                </Button>
+              </div>
+            ))}
           </CardContent>
         </Card>
         
