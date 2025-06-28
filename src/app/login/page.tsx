@@ -24,7 +24,7 @@ export default function RoleSelectionPage() {
   const roles = [
     { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User, href: null },
     { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck, href: null },
-    { role: 'school', labelEn: 'School Partner', labelHi: 'स्कूल पार्टनर', icon: School, href: 'https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev' },
+    { role: 'school', labelEn: 'OSO School Partner', labelHi: 'OSO स्कूल पार्टनर', icon: School, href: 'https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev' },
     { role: 'rider', labelEn: 'OSO Rider App', labelHi: 'OSO राइडर ऐप', icon: Bike, href: 'https://9000-firebase-studio-1750860970812.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev' },
     { role: 'vendor', labelEn: 'KopyKart Vendor', labelHi: 'कॉपीकार्ट विक्रेता', icon: Briefcase, href: 'https://9000-firebase-studio-1750860571220.cluster-73qgvk7hjjadkrjeyexca5ivva.cloudworkstations.dev' },
     { role: 'unipanel', labelEn: 'OSO UniPanel', labelHi: 'OSO यूनिपैनल', icon: Landmark, href: 'https://9000-firebase-studio-1750861524292.cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev' },
@@ -43,14 +43,9 @@ export default function RoleSelectionPage() {
 
       <div className="w-full max-w-md text-center">
         <div className="mb-6">
-          <Image
-            src="/oso_logo_final.png"
-            alt="OSO App Logo"
-            width={80}
-            height={80}
-            className="mx-auto mb-2 rounded-full border-2 border-primary p-0.5 shadow-xl"
-            data-ai-hint="app logo"
-          />
+          <div className="mx-auto mb-2 flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary bg-primary text-4xl font-bold text-primary-foreground shadow-xl">
+            OSO
+          </div>
            <p className="text-2xl font-bold text-primary mb-0.5">
             <BilingualText en="OSO App" hi="ओसो ऐप" lang={currentLang} />
           </p>
@@ -120,4 +115,3 @@ export default function RoleSelectionPage() {
     </div>
   );
 }
-
