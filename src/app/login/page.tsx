@@ -25,7 +25,7 @@ export default function RoleSelectionPage() {
     { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck, href: null },
     { role: 'school', labelEn: 'School Partner', labelHi: 'स्कूल पार्टनर', icon: School, href: 'https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev' },
     { role: 'teacher', labelEn: 'Teacher', labelHi: 'शिक्षक', icon: GraduationCap, href: null },
-    { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase, href: null },
+    { role: 'vendor', labelEn: 'KopyKart Vendor', labelHi: 'कॉपीकार्ट विक्रेता', icon: Briefcase, href: 'https://9000-firebase-studio-1750860571220.cluster-73qgvk7hjjadkrjeyexca5ivva.cloudworkstations.dev' },
     { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon, href: null },
   ];
 
