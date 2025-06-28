@@ -34,7 +34,7 @@ import { Badge } from '@/components/ui/badge';
 
 function BrainCircuit(props: React.SVGProps<SVGSVGElement>): JSX.Element {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a10 10 0 0 0-6.8 17.2c.4.2.7.4.9.7.4.4.8.8 1.3 1.1A10 10 0 0 0 12 22a10 10 0 0 0 7.6-3.9c.4-.4.9-.7 1.3-1.1.2-.3.5-.5.9-.7A10 10 0 0 0 12 2Z"/><path d="M12 12a2.5 2.5 0 0 0-2.5 2.5V17a2.5 2.5 0 0 0 5 0v-2.5A2.5 2.5 0 0 0 12 12Z"/><path d="M20 8.5c.5-.5.5-1 0-1.5A7.48 7.48 0 0 0 12 4a7.48 7.48 0 0 0-8 4.5c-.5.5-.5 1 0 1.5"/><path d="M4.5 12A7.48 7.48 0 0 0 12 20a7.48 7.48 0 0 0 7.5-8"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a10 10 0 0 0-6.8 17.2c.4.2.7.4.9.7.4.4.8.8 1.3 1.1A10 10 0 0 0 12 22a10 10 0 0 0 7.6-3.9c.4-.4.9-.7 1.3-1.1.2-.3.5-.5.9-.7A10 10 0 0 0 12 2Z"/><path d="M12 12a2.5 2.5 0 0 0-2.5 2.5V17a2.5 2.5 0 0 0 5 0v-2.5A2.5 2.5 0 0 0 12 12Z"/><path d="M20 8.5c.5-.5.5-1 0-1.5A7.48 7.48 0 0 0 12 4a7.48 7.48 0 0 0-8 4.5c-.5.5-.5 1 0 1.5"/><path d="M4.5 12A7.48 7.48 0 0 0 12 20a7.48 7.48 0 0 0 7.5-8"/></svg>
   );
 }
 
@@ -72,7 +72,7 @@ const recommendationsMock = [
   { id: 'rec_book_neet', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Objective Biology for NEET', titleHi: 'नीट के लिए वस्तुनिष्ठ जीवविज्ञान', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "neet biology book", href: '/competitive-bookstore', priceEn: 'INR 799', priceHi: 'INR 799', relevance: ['neet', 'medical'] },
   { id: 'rec_project_volcano', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: 'INR 299', priceHi: 'INR 299', relevance: ['science', 'class 6', 'class 7', 'class 8'] },
   { id: 'rec_guruji_jee', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: JEE Physics Doubts', titleHi: 'गुरुजी से पूछें: JEE भौतिकी शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क', relevance: ['jee', 'physics', 'engineering'] },
-  { id: 'rec_test_jee', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test Series', titleHi: 'JEE मुख्य मॉक टेस्ट सीरीज़', descriptionEn: 'Full Syllabus Coverage', descriptionHi: 'पूर्ण पाठ्यक्रम कवरेज', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 199', priceHi: 'INR 199', relevance: ['jee', 'engineering', 'mock test'] },
+  { id: 'rec_test_jee', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test Series', titleHi: 'JEE मुख्य मॉक टेस्ट सीरीज़', descriptionEn: 'Full Syllabus Coverage', descriptionHi: 'पूर्ण पाठ्यक्रम कवरेज', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 199', priceHi: 'INR 199', relevance: ['jee', 'engineering'] },
   { id: 'rec_book_class10_math', typeEn: 'Book', typeHi: 'किताब', titleEn: 'NCERT Maths Class 10 Exemplar', titleHi: 'एनसीईआरटी गणित कक्षा 10 उदाहरण', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "class 10 maths book", href: '/class-6-12-books', priceEn: 'INR 150', priceHi: 'INR 150', relevance: ['class 10', 'maths', 'cbse', 'ncert'] },
 ];
 
@@ -489,7 +489,7 @@ export default function ModernHomePage() {
             </CardHeader>
             <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                    <BilingualText en="Upgrade for unlimited AI Guruji chats, advanced analytics, and more! Plans start at ₹149/month or save with our yearly plan at ₹999." hi="असीमित एआई गुरुजी चैट, उन्नत विश्लेषण, और बहुत कुछ के लिए अपग्रेड करें! योजनाएं ₹149/माह से शुरू होती हैं या ₹999 की हमारी वार्षिक योजना के साथ बचत करें।" />
+                    <BilingualText en="Upgrade for unlimited AI Guruji chats, advanced analytics, and more! Plans start at INR 149/month or save with our yearly plan at INR 999." hi="असीमित एआई गुरुजी चैट, उन्नत विश्लेषण, और बहुत कुछ के लिए अपग्रेड करें! योजनाएं INR 149/माह से शुरू होती हैं या INR 999 की हमारी वार्षिक योजना के साथ बचत करें।" />
                 </p>
             </CardContent>
             <CardFooter>
