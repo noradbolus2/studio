@@ -21,7 +21,7 @@ const plans = [
       { textEn: "Mind Diary Access", textHi: "माइंड डायरी एक्सेस", included: true },
       { textEn: "Purchase Courses Individually", textHi: "व्यक्तिगत रूप से पाठ्यक्रम खरीदें", included: true },
       { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: true },
-      { textEn: "AI Handwriting Notes", textHi: "एआई हैंडराइटिंग नोट्स", included: false },
+      { textEn: "Kalam AI™ Handwriting", textHi: "कलम AI™ हस्तलेखन", included: false },
       { textEn: "Limited Recorded Video Access", textHi: "सीमित रिकॉर्डेड वीडियो एक्सेस", included: false },
       { textEn: "Download for Offline", textHi: "ऑफ़लाइन के लिए डाउनलोड करें", included: false },
       { textEn: "Smart Progress Tracker", textHi: "स्मार्ट प्रगति ट्रैकर", included: false },
@@ -42,7 +42,7 @@ const plans = [
     features: [
       { textEn: "Advanced AI Guruji Access", textHi: "उन्नत एआई गुरुजी एक्सेस", included: true },
       { textEn: "Advanced Brainmate Access", textHi: "उन्नत ब्रेनमेट एक्सेस", included: true },
-      { textEn: "AI Handwriting Notes", textHi: "एआई हैंडराइटिंग नोट्स", included: true },
+      { textEn: "Kalam AI™ Handwriting", textHi: "कलम AI™ हस्तलेखन", included: true },
       { textEn: "Mind Diary Access", textHi: "माइंड डायरी एक्सेस", included: true },
       { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: true },
       { textEn: "Unlimited Video Replays", textHi: "असीमित वीडियो रिप्ले", included: true },
@@ -66,7 +66,7 @@ const plans = [
     features: [
       { textEn: "Advanced AI Guruji Access", textHi: "उन्नत एआई गुरुजी एक्सेस", included: true },
       { textEn: "Advanced Brainmate Access", textHi: "उन्नत ब्रेनमेट एक्सेस", included: true },
-      { textEn: "AI Handwriting Notes", textHi: "एआई हैंडराइटिंग नोट्स", included: true },
+      { textEn: "Kalam AI™ Handwriting", textHi: "कलम AI™ हस्तलेखन", included: true },
       { textEn: "Mind Diary Access", textHi: "माइंड डायरी एक्सेस", included: true },
       { textEn: "Live Classes (Separate Purchase)", textHi: "लाइव कक्षाएं (अलग से खरीदें)", included: true },
       { textEn: "Unlimited Video Replays", textHi: "असीमित वीडियो रिप्ले", included: true },

@@ -139,7 +139,7 @@ export default function HandwritingNotesPage() {
         <header>
           <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
             <FileSignature className="h-8 w-8 text-primary" />
-            <BilingualText en="Handwriting Notes" hi="हस्तलिखित नोट्स" />
+            <BilingualText en="Kalam AI™ Handwriting" hi="कलम AI™ हस्तलेखन" />
           </h1>
           <p className="text-muted-foreground">
             <BilingualText en="Turn your typed text into your own handwriting." hi="अपने टाइप किए गए टेक्स्ट को अपनी लिखावट में बदलें।" />
