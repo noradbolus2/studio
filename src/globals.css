@@ -1,0 +1,175 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 210 20% 98%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 210 20% 98%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 13% 91%;
+    --secondary-foreground: 220 14% 10%;
+    --muted: 220 13% 91%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 142.1 76.2% 10%;
+    --warning: 47.9 95.8% 53.1%;
+    --warning-foreground: 47.9 95.8% 10%;
+    --border: 220 13% 89%;
+    --input: 220 13% 89%;
+    --ring: 262.1 83.3% 57.8%;
+    --radius: 0.75rem;
+
+    --chart-1: 262.1 83.3% 57.8%;
+    --chart-2: 38 92% 50%;
+    --chart-3: 0 70% 50%;
+    --chart-4: 140 70% 50%;
+    --chart-5: 320 70% 50%;
+    
+    --sidebar-background: 220 13% 9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 220 13% 9%;
+    --sidebar-accent: 210 40% 98%;
+    --sidebar-accent-foreground: 220 13% 9%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 217.2 32.6% 17.5%;
+
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 0 0% 98%;
+    --card: 224 71% 4%;
+    --card-foreground: 0 0% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 262.1 83.3% 67.8%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 215.4 16.3% 18%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 215.4 16.3% 18%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 45 92% 55%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 142.1 76.2% 10%;
+    --warning: 47.9 95.8% 53.1%;
+    --warning-foreground: 47.9 95.8% 10%;
+    --border: 215.4 16.3% 18%;
+    --input: 215.4 16.3% 18%;
+    --ring: 262.1 83.3% 67.8%;
+    
+    --chart-1: 262.1 83.3% 67.8%;
+    --chart-2: 45 92% 55%;
+    --chart-3: 0 70% 60%;
+    --chart-4: 140 70% 60%;
+    --chart-5: 320 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* For Handwriting Notes Feature */
+.lined-paper {
+  background-image:
+    linear-gradient(to bottom, transparent 0, transparent 24px, hsl(var(--primary) / 0.4) 24px, hsl(var(--primary) / 0.4) 25px, transparent 25px),
+    linear-gradient(to right, hsl(var(--destructive) / 0.5) 0, hsl(var(--destructive) / 0.5) 1px, transparent 1px);
+  background-size: 100% 25px, 100% 100%;
+  line-height: 25px;
+  background-color: #fdfdfa; /* A slightly off-white paper color */
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+}
+
+/* For Glassmorphism Effect */
+.glass-card {
+  background: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(8px);
+  border-width: 1px;
+  border-color: hsl(var(--card) / 0.1);
+  box-shadow: 0 4px 30px hsl(var(--foreground) / 0.1);
+}
+
+/* For Animated Gradient Border */
+@keyframes animated-gradient {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.gradient-border {
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box,
+    linear-gradient(60deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--destructive)), hsl(var(--primary))) border-box;
+  background-size: 200% 100%;
+  animation: animated-gradient 5s ease-in-out infinite;
+}
+
+/* 3D Transform Styles for Parent Dashboard */
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.perspective-1000 {
+    perspective: 1000px;
+}
+.backface-hidden {
+    backface-visibility: hidden;
+}
+
+/* Keyframe animations for cards */
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotateX(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+.animate-float-in {
+    animation: float-in 0.6s ease-out forwards;
+}
+
+/* Pulse animations for Brain Scan */
+@keyframes pulse-blue {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.7); }
+    50% { box-shadow: 0 0 0 10px hsl(var(--primary) / 0); }
+}
+@keyframes pulse-green {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.7); }
+    50% { box-shadow: 0 0 0 10px hsl(var(--success) / 0); }
+}
+@keyframes pulse-yellow {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--warning) / 0.7); }
+    50% { box-shadow: 0 0 0 10px hsl(var(--warning) / 0); }
+}
+@keyframes flicker-red {
+    0%, 100% { opacity: 1; box-shadow: 0 0 5px 1px hsl(var(--destructive) / 0.5); }
+    50% { opacity: 0.7; box-shadow: 0 0 10px 3px hsl(var(--destructive) / 0.7); }
+}
+.animate-blue-pulse { animation: pulse-blue 2.5s infinite; }
+.animate-green-pulse { animation: pulse-green 2.5s infinite; }
+.animate-yellow-pulse { animation: pulse-yellow 2.5s infinite; }
+.animate-red-flicker { animation: flicker-red 1.5s infinite; }

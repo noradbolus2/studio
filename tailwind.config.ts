@@ -1,5 +1,6 @@
 
 import type {Config} from 'tailwindcss';
+const { fontFamily } = require("tailwindcss/defaultTheme")
 
 export default {
   darkMode: ['class'],
@@ -18,7 +19,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"PT Sans"', 'sans-serif'],
+        sans: ["var(--font-pt-sans)", ...fontFamily.sans],
         code: ['monospace', 'monospace'],
         handwriting: ['Kalam', 'cursive'],
         'handwriting-caveat': ['Caveat', 'cursive'],
@@ -26,6 +27,7 @@ export default {
         'handwriting-patrick': ['Patrick Hand', 'cursive'],
         'handwriting-gochi': ['Gochi Hand', 'cursive'],
         'handwriting-indie': ['Indie Flower', 'cursive'],
+        headline: ["var(--font-pt-sans)", ...fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -48,6 +50,10 @@ export default {
         success: {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -97,11 +103,20 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: ".7" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-subtle": "pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
+       dropShadow: {
+        'lg': '0 2px 4px rgba(0, 0, 0, 0.5)',
+        'md': '0 1px 2px rgba(0, 0, 0, 0.5)',
+      }
     },
   },
   plugins: [require('tailwindcss-animate')],

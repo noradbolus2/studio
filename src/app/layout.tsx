@@ -1,6 +1,14 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { PT_Sans } from 'next/font/google';
+
+const ptSans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-pt-sans',
+});
 
 export const metadata: Metadata = {
   title: 'OSO App: Learn & Deliver',
@@ -19,7 +27,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Caveat&family=Dancing+Script&family=Gochi+Hand&family=Indie+Flower&family=Kalam&family=Patrick+Hand&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-sans antialiased">
+      <body className={`${ptSans.variable} font-sans antialiased`}>
         {children}
         <Toaster />
       </body>

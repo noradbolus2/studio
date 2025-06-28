@@ -31,12 +31,12 @@ export function BottomNav() {
       {itemsToDisplay.map((item) => {
         let itemIsActive = false;
         if (isClient) {
-          itemIsActive = (pathname === item.href) ||
-                       (item.href === "/ai-guruji" && pathname.startsWith("/ai-guruji")) ||
-                       (item.href === "/study" && pathname.startsWith("/study")) ||
-                       (item.href === "/creator-marketplace" && pathname.startsWith("/creator-marketplace")) ||
-                       (item.href === "/handwriting-notes" && pathname.startsWith("/handwriting-notes")) ||
-                       (item.href === "/brain-scan-report" && pathname.startsWith("/brain-scan-report"));
+            // More robust active check
+            if (item.href === '/') {
+                itemIsActive = pathname === '/';
+            } else {
+                itemIsActive = pathname.startsWith(item.href);
+            }
         }
         
         return (
@@ -47,7 +47,7 @@ export function BottomNav() {
                 itemIsActive ? 'text-accent scale-105' : 'text-muted-foreground hover:text-accent/80'
               )}
             >
-              <item.icon size={24} strokeWidth={itemIsActive ? 2.5 : 2} className={cn("mb-0.5 transition-all duration-200 ease-in-out", itemIsActive ? "filter drop-shadow-[0_0_3px_hsl(var(--accent))]" : "")} />
+              <item.icon size={24} strokeWidth={itemIsActive ? 2.5 : 2} className={cn("mb-0.5 transition-all duration-200 ease-in-out", itemIsActive ? "drop-shadow-[0_0_3px_hsl(var(--accent))]" : "")} />
               <span className={cn(
                   "text-[0.65rem] leading-tight font-medium transition-colors duration-200 ease-in-out", 
                   itemIsActive ? "text-accent" : "text-muted-foreground"

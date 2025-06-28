@@ -378,9 +378,9 @@ export default function ModernHomePage() {
             />
             <Link href={slide.href} className="relative z-10 flex flex-col items-center justify-center h-full w-full bg-gradient-to-t from-black/50 via-transparent to-black/10 p-4">
               <div>
-                <h2 className="text-2xl font-bold mb-1 text-shadow shadow-black/70"><BilingualText en={slide.titleEn} hi={slide.titleHi} lang={currentLang} /></h2>
-                <p className="text-sm text-shadow-sm shadow-black/70"><BilingualText en={slide.descriptionEn} hi={slide.descriptionHi} lang={currentLang} /></p>
-                 <Button variant="default" size="sm" className="mt-3 bg-amber-500 text-amber-foreground hover:bg-amber-600 shadow-md shadow-glow-amber-500/30">
+                <h2 className="text-2xl font-bold mb-1 drop-shadow-lg"><BilingualText en={slide.titleEn} hi={slide.titleHi} lang={currentLang} /></h2>
+                <p className="text-sm drop-shadow-md"><BilingualText en={slide.descriptionEn} hi={slide.descriptionHi} lang={currentLang} /></p>
+                 <Button variant="default" size="sm" className="mt-3 bg-amber-500 text-amber-foreground hover:bg-amber-600 shadow-md">
                    <BilingualText en="Learn More" hi="और जानें" lang={currentLang} />
                  </Button>
               </div>
