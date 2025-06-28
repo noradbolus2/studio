@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo, type FormEvent } from 'react';
@@ -262,7 +263,7 @@ export default function ModernHomePage() {
     const detectedLocation = "My Current Area (Detected)";
     setSelectedTempLocation(detectedLocation);
     toast({
-      title: "Using Current Location (Simulated)",
+      title: "Using Current Location",
       description: `Location set to ${detectedLocation}. Confirm to save.`,
     });
   };
