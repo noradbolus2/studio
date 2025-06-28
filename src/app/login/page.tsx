@@ -73,7 +73,7 @@ export default function RoleSelectionPage() {
 
               if (item.href) {
                 return (
-                  <Button key={item.role} variant="outline" className="w-full justify-start text-base font-medium py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent" asChild>
+                  <Button key={item.role} variant="outline" className="w-full justify-start text-base font-medium py-3 h-14" asChild>
                     <Link href={item.href} target="_blank" rel="noopener noreferrer">
                       {buttonContent}
                     </Link>
@@ -85,7 +85,7 @@ export default function RoleSelectionPage() {
                 <Button
                   key={item.role}
                   variant="outline"
-                  className="w-full justify-start text-base font-medium py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent"
+                  className="w-full justify-start text-base font-medium py-3 h-14"
                   onClick={() => handleRoleSelection(item.role)}
                 >
                   {buttonContent}
