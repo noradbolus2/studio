@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -92,7 +91,7 @@ export default function SubscribePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start max-w-4xl mx-auto">
         {/* Free Plan Card */}
-        <Card className="flex flex-col h-full">
+        <Card className="flex flex-col h-full hover:-translate-y-1 transition-transform duration-300">
             <CardHeader>
               <CardTitle className="text-2xl font-headline"><BilingualText en={freePlan.nameEn} hi={freePlan.nameHi} /></CardTitle>
               <CardDescription>
@@ -122,36 +121,38 @@ export default function SubscribePage() {
         </Card>
 
         {/* Premium Plan Card */}
-        <Card className={cn("flex flex-col h-full border-primary shadow-lg shadow-primary/20")}>
+        <Card className={cn("flex flex-col h-full shadow-lg shadow-primary/20 hover:-translate-y-1 transition-transform duration-300", premiumPlan.isPopular && "border-2 border-primary")}>
             {premiumPlan.isPopular && <div className="bg-primary text-primary-foreground text-xs font-bold text-center py-1 rounded-t-lg"><BilingualText en="Most Popular" hi="सबसे लोकप्रिय" /></div>}
             <CardHeader className="items-center">
               <CardTitle className="text-2xl font-headline"><BilingualText en={premiumPlan.nameEn} hi={premiumPlan.nameHi} /></CardTitle>
-              <div className="inline-flex items-center justify-center rounded-md bg-muted p-1 text-muted-foreground my-3">
-                <Button
-                    onClick={() => setBillingCycle('monthly')}
-                    variant="ghost"
-                    className={cn(
-                        "px-6 py-1 h-auto text-sm transition-all",
-                        billingCycle === 'monthly' 
-                            ? 'bg-background text-foreground shadow-sm' 
-                            : 'bg-transparent text-muted-foreground hover:bg-background/50'
-                    )}
-                >
-                    <BilingualText en="Monthly" hi="मासिक" />
-                </Button>
-                <Button
-                    onClick={() => setBillingCycle('yearly')}
-                    variant="ghost"
-                    className={cn(
-                        "px-6 py-1 h-auto text-sm transition-all",
-                        billingCycle === 'yearly' 
-                            ? 'bg-background text-foreground shadow-sm' 
-                            : 'bg-transparent text-muted-foreground hover:bg-background/50'
-                    )}
-                >
-                    <BilingualText en="Yearly" hi="वार्षिक" />
-                </Button>
+              
+              <div className="relative mx-auto w-64 rounded-full bg-muted p-1 my-3 flex">
+                  <div
+                      className={cn(
+                          "absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-background shadow-sm transition-transform duration-300 ease-in-out",
+                          billingCycle === 'yearly' ? 'translate-x-[calc(100%+8px)]' : 'translate-x-0'
+                      )}
+                  />
+                  <Button
+                      onClick={() => setBillingCycle('monthly')}
+                      variant="ghost"
+                      className="relative z-10 w-1/2 h-auto py-1.5"
+                  >
+                      <span className={cn('text-sm transition-colors', billingCycle === 'monthly' ? 'text-primary font-semibold' : 'text-muted-foreground')}>
+                          <BilingualText en="Monthly" hi="मासिक" />
+                      </span>
+                  </Button>
+                  <Button
+                      onClick={() => setBillingCycle('yearly')}
+                      variant="ghost"
+                      className="relative z-10 w-1/2 h-auto py-1.5"
+                  >
+                      <span className={cn('text-sm transition-colors', billingCycle === 'yearly' ? 'text-primary font-semibold' : 'text-muted-foreground')}>
+                          <BilingualText en="Yearly" hi="वार्षिक" />
+                      </span>
+                  </Button>
               </div>
+
               <CardDescription>
                 <span className="text-4xl font-bold text-foreground">
                     <BilingualText 
@@ -194,4 +195,3 @@ export default function SubscribePage() {
     </div>
   );
 }
-
