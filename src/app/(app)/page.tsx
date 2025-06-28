@@ -13,7 +13,8 @@ import {
   PlaySquare,
   Gem, // Added for premium card
   ArrowRight, // Added for premium card button
-  FileSignature
+  FileSignature,
+  History
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,7 @@ const baseQuickCategories = [
   { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["project", "model", "assignment", "homework"] },
   { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
   { id: 'brainmate', labelEn: 'Brainmate', labelHi: 'ब्रेनमेट', icon: BrainCircuit, href: '/brainmate', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brainmate", "concept", "explain", "ai"] },
+  { id: 'revision_vault', labelEn: 'Revision Vault', labelHi: 'रिवीजन वॉल्ट', icon: History, href: '/study/revision-vault', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["revision", "vault", "doubts", "marked", "history"] },
   { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["mind", "mood", "diary", "stress"] },
   { id: 'handwriting_notes', labelEn: 'Handwriting', labelHi: 'हस्तलेखन', icon: FileSignature, href: '/handwriting-notes', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["handwriting", "notes", "writing", "script"] },
   { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent', bgColor: 'bg-accent/10 hover:bg-accent/20', keywords: ["test", "mock", "exam", "neet", "jee", "upsc", "cat", "competitive"] },
