@@ -5,11 +5,105 @@ import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, PlusCircle, Edit, Video, MessageCircleQuestion, BookOpen, BarChart3, ArrowLeft } from "lucide-react";
+import { 
+    GraduationCap, Edit, Video, ArrowLeft, BarChart3, MessageCircleQuestion, Users, BookOpen, AlertCircle, Watch, PlayCircle, Send, CheckCircle, RefreshCw
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ProfileFormData } from '../edit-profile/page';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useToast } from '@/hooks/use-toast';
+import type { DoubtInboxItem } from '@/types/doubt-inbox';
+import { formatDistanceToNow } from 'date-fns';
+
+const DOUBT_INBOX_KEY = "doubtInbox_mock";
+
+// Mock data for widgets
+const mostConfusedTopics = [
+    { subject: "Maths", topic: "Trigonometry - tan(A) Derivation", doubts: 36, revisions: 74 },
+    { subject: "Biology", topic: "Photosynthesis - Light Reaction", doubts: 25, revisions: 61 },
+    { subject: "Physics", topic: "Motion - Newton’s 2nd Law", doubts: 20, revisions: 49 },
+];
+
+const topicDrilldownData = [
+    { subject: "Maths", chapter: "Trigonometry", subtopic: "tan(A) Derivation", marked: 74, doubts: 36 },
+    { subject: "Science", chapter: "Biology - Ch 3", subtopic: "Light Reaction", marked: 61, doubts: 25 },
+    { subject: "Physics", chapter: "Motion Ch 1", subtopic: "Newton’s 2nd Law", marked: 49, doubts: 20 },
+    { subject: "Chemistry", chapter: "Acids & Bases", subtopic: "pH Scale", marked: 35, doubts: 15 },
+];
+
+
+function LiveDoubtQueue() {
+    const { toast } = useToast();
+    const [doubts, setDoubts] = useState<DoubtInboxItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const loadDoubts = () => {
+        setIsLoading(true);
+        if (typeof window !== "undefined") {
+            const storedDoubts = localStorage.getItem(DOUBT_INBOX_KEY);
+            if (storedDoubts) {
+                setDoubts(JSON.parse(storedDoubts).filter((d: DoubtInboxItem) => d.status === 'pending'));
+            }
+        }
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        loadDoubts();
+    }, []);
+
+    const handleAnswerDoubt = (doubtId: string) => {
+        // In a real app, this would open a reply modal. For proto, we just resolve it.
+        const updatedInbox = JSON.parse(localStorage.getItem(DOUBT_INBOX_KEY) || '[]').map((d: DoubtInboxItem) => 
+            d.id === doubtId ? { ...d, status: 'answered' } : d
+        );
+        localStorage.setItem(DOUBT_INBOX_KEY, JSON.stringify(updatedInbox));
+        loadDoubts(); // Refresh the list
+        toast({ title: "Doubt Answered (Simulated)", description: `Doubt ${doubtId} has been marked as answered.` });
+    };
+
+    return (
+        <Card className="col-span-1 md:col-span-2">
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <CardTitle className="font-headline flex items-center gap-2">
+                        <MessageCircleQuestion className="h-6 w-6 text-primary"/>
+                        <BilingualText en="Live Doubt Queue" hi="लाइव शंका कतार"/>
+                    </CardTitle>
+                    <Button variant="ghost" size="icon" onClick={loadDoubts} className="h-7 w-7">
+                        <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}/>
+                    </Button>
+                </div>
+                <CardDescription>
+                    <BilingualText en="Doubts submitted by students from the Revision Vault." hi="रिवीजन वॉल्ट से छात्रों द्वारा प्रस्तुत शंकाएं।"/>
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 max-h-96 overflow-y-auto">
+                {isLoading ? <LoadingSpinner /> : doubts.length > 0 ? doubts.map(doubt => (
+                    <Card key={doubt.id} className="bg-muted/50 p-3">
+                        <p className="text-xs text-muted-foreground">{doubt.subject} - {doubt.lectureTitle}</p>
+                        <p className="text-xs text-muted-foreground">Marked at <span className="font-mono">{doubt.timestamp}</span> by <span className="font-semibold">{doubt.studentName}</span></p>
+                        <p className="text-sm italic my-1">"{doubt.note}"</p>
+                        <div className="flex items-center justify-between mt-2">
+                             <p className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(new Date(doubt.doubtAskedAt), { addSuffix: true })}
+                            </p>
+                            <div className="flex gap-2">
+                                <Button size="xs" variant="outline"><PlayCircle className="mr-1 h-3 w-3"/> Watch Clip</Button>
+                                <Button size="xs" onClick={() => handleAnswerDoubt(doubt.id)}><CheckCircle className="mr-1 h-3 w-3"/> Mark Answered</Button>
+                            </div>
+                        </div>
+                    </Card>
+                )) : (
+                    <p className="text-center text-sm text-muted-foreground py-6">The doubt queue is empty. Great job!</p>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 
 export default function CoachingPanelPage() {
   const router = useRouter();
@@ -22,12 +116,10 @@ export default function CoachingPanelPage() {
       if (storedProfileString) {
         try {
           const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData;
-          if (parsedProfile.role === 'teacher' || parsedProfile.creatorName) { // Allow creatorName as proxy for teacher name
+          if (parsedProfile.role === 'teacher' || parsedProfile.creatorName) {
             setTeacherProfile(parsedProfile);
           }
-        } catch (e) {
-          console.error("Failed to parse teacher profile from localStorage", e);
-        }
+        } catch (e) { console.error("Failed to parse teacher profile", e); }
       }
     }
     setLoadingProfile(false);
@@ -65,6 +157,61 @@ export default function CoachingPanelPage() {
             </Link>
         </Button>
       </header>
+      
+      {/* Revision & Doubt Intelligence Panel */}
+      <Card className="border-primary/30">
+        <CardHeader>
+            <CardTitle className="font-headline text-primary"><BilingualText en="Revision & Doubt Intelligence" hi="रिवीजन और शंका इंटेलिजेंस"/></CardTitle>
+            <CardDescription><BilingualText en="Insights based on student revision marks and doubt submissions." hi="छात्र संशोधन चिह्नों और शंका प्रस्तुतियों पर आधारित अंतर्दृष्टि।" /></CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg font-headline flex items-center gap-2"><AlertCircle className="h-5 w-5 text-destructive"/>Most Confused Topics</CardTitle>
+                    <CardDescription className="text-xs">Last 7 days</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    {mostConfusedTopics.map(topic => (
+                        <div key={topic.topic} className="text-sm p-2 bg-muted/50 rounded-md">
+                            <p className="font-semibold">{topic.topic}</p>
+                            <p className="text-xs text-muted-foreground">{topic.subject} | {topic.doubts} doubts, {topic.revisions} revisions</p>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+            
+            <LiveDoubtQueue />
+            
+            <Card className="col-span-1 md:col-span-2">
+                 <CardHeader>
+                    <CardTitle className="text-lg font-headline flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary"/>Topic Drilldown</CardTitle>
+                 </CardHeader>
+                 <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Subject</TableHead>
+                                <TableHead>Topic</TableHead>
+                                <TableHead className="text-center"># Revisions</TableHead>
+                                <TableHead className="text-center"># Doubts</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {topicDrilldownData.map(row => (
+                                <TableRow key={row.subtopic}>
+                                    <TableCell className="text-xs">{row.subject}</TableCell>
+                                    <TableCell className="font-medium text-xs">{row.subtopic}</TableCell>
+                                    <TableCell className="text-center">{row.marked}</TableCell>
+                                    <TableCell className="text-center font-semibold text-destructive">{row.doubts}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                 </CardContent>
+            </Card>
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>
@@ -77,71 +224,27 @@ export default function CoachingPanelPage() {
               <span className="text-xs font-medium"><BilingualText en="Schedule Live Class" hi="लाइव क्लास शेड्यूल करें" /></span>
             </Link>
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5">
-            <PlusCircle className="h-7 w-7 text-primary mb-1" />
-            <span className="text-xs font-medium"><BilingualText en="Create Course Content" hi="कोर्स सामग्री बनाएं" /></span>
+          <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5" asChild>
+            <Link href="/creator-dashboard/upload-project">
+                <BookOpen className="h-7 w-7 text-primary mb-1" />
+                <span className="text-xs font-medium"><BilingualText en="Create Course Content" hi="कोर्स सामग्री बनाएं" /></span>
+            </Link>
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5">
-            <BookOpen className="h-7 w-7 text-primary mb-1" />
-            <span className="text-xs font-medium"><BilingualText en="My Courses & Classes" hi="मेरे पाठ्यक्रम और कक्षाएं" /></span>
+          <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5" asChild>
+            <Link href="/creator-dashboard/my-projects">
+                <Users className="h-7 w-7 text-primary mb-1" />
+                <span className="text-xs font-medium"><BilingualText en="My Courses & Classes" hi="मेरे पाठ्यक्रम और कक्षाएं" /></span>
+            </Link>
           </Button>
         </CardContent>
       </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline flex items-center justify-between">
-            <span><BilingualText en="Active Exam Dashboard" hi="सक्रिय परीक्षा डैशबोर्ड" />: <span className="text-primary">{activeExam}</span></span>
-            <Button variant="outline" size="sm" className="text-xs"><BilingualText en="Switch Exam" hi="परीक्षा बदलें" /></Button>
-          </CardTitle>
-          <CardDescription><BilingualText en="Exam-specific resources and student data." hi="परीक्षा-विशिष्ट संसाधन और छात्र डेटा।" /></CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">Syllabus, News, Top Books for <span className="font-semibold">{activeExam}</span> will appear here.</p>
-            {/* Placeholder for exam resources */}
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline"><BilingualText en="Upcoming Live Classes" hi="आगामी लाइव कक्षाएं" /></CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm"><BilingualText en="No upcoming classes scheduled yet." hi="अभी तक कोई आगामी कक्षाएं निर्धारित नहीं हैं।" /></p>
-            {/* Placeholder for list of upcoming classes */}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline"><BilingualText en="Student Doubts" hi="छात्र शंकाएँ" /></CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm"><BilingualText en="No pending doubts from students." hi="छात्रों से कोई लंबित शंकाएँ नहीं हैं।" /></p>
-            {/* Placeholder for doubt box */}
-          </CardContent>
-           <CardFooter>
-                <Button variant="outline" className="w-full">
-                    <MessageCircleQuestion className="mr-2 h-4 w-4"/> <BilingualText en="Open Doubt Portal" hi="शंका समाधान पोर्टल खोलें"/>
-                </Button>
-           </CardFooter>
-        </Card>
-      </div>
-       <Card>
-            <CardHeader>
-                <CardTitle className="font-headline"><BilingualText en="Performance & Earnings" hi="प्रदर्शन और कमाई" /></CardTitle>
-                 <CardDescription><BilingualText en="Track your course engagement and revenue." hi="अपने पाठ्यक्रम की व्यस्तता और राजस्व को ट्रैक करें।" /></CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground text-sm">Analytics and earnings summary coming soon.</p>
-            </CardContent>
-             <CardFooter>
-                <Button variant="outline" className="w-full">
-                    <BarChart3 className="mr-2 h-4 w-4"/> <BilingualText en="View Detailed Analytics" hi="विस्तृत एनालिटिक्स देखें"/>
-                </Button>
-           </CardFooter>
-        </Card>
     </div>
   );
+}
+
+// Added size="xs" to button variants for smaller buttons in doubt queue
+declare module "@/components/ui/button" {
+    interface ButtonProps {
+        size?: 'default' | 'sm' | 'lg' | 'icon' | 'xs';
+    }
 }
