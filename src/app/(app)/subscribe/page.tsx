@@ -1,4 +1,3 @@
-
 "use client";
 
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -12,8 +11,8 @@ const plans = [
   {
     nameEn: "Free Plan",
     nameHi: "मुफ्त योजना",
-    priceEn: "₹0",
-    priceHi: "₹0",
+    priceEn: "INR 0",
+    priceHi: "INR 0",
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
@@ -34,8 +33,8 @@ const plans = [
   {
     nameEn: "Premium Monthly",
     nameHi: "प्रीमियम मासिक",
-    priceEn: "₹149",
-    priceHi: "₹१४९",
+    priceEn: "INR 149",
+    priceHi: "INR १४९",
     priceDescriptionEn: "per month",
     priceDescriptionHi: "प्रति माह",
     features: [
@@ -56,8 +55,8 @@ const plans = [
   {
     nameEn: "Premium Yearly",
     nameHi: "प्रीमियम वार्षिक",
-    priceEn: "₹999",
-    priceHi: "₹९९९",
+    priceEn: "INR 999",
+    priceHi: "INR ९९९",
     priceDescriptionEn: "per year",
     priceDescriptionHi: "प्रति वर्ष",
     features: [
