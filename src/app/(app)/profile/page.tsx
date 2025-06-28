@@ -443,7 +443,7 @@ export default function ProfilePage() {
             <Button asChild variant="outline" className="w-full justify-start gap-2">
                 <Link href="/platform-admin">
                     <ShieldCheck className="h-5 w-5 text-destructive" />
-                    <BilingualText en="Platform Admin (Prototype)" hi="प्लेटफ़ॉर्म एडमिन (प्रोटोटाइप)" />
+                    <BilingualText en="Platform Admin" hi="प्लेटफ़ॉर्म एडमिन" />
                 </Link>
             </Button>
         </CardContent>
