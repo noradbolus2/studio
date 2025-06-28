@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
       },
        {
         category: 'HARM_CATEGORY_HARASSMENT',
-        threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+        threshold: 'BLOCK_NONE',
       },
     ],
   },
@@ -68,7 +68,7 @@ If '{{{studentQuery}}}' is about a specific exam (NEET, JEE, UPSC, etc.), activa
 3.  **Generate Output Fields:**
     *   'explanation': The formatted text as described above.
     *   'followUpQuestion': Ask an engaging follow-up, like "Would you like a syllabus breakdown for a specific subject, or want to try a mock test?"
-    *   'recommendedTest': Suggest a full mock test for that exam (e.g., for "NEET UG", title should be "NEET UG Full Mock Test", examType "NEET UG", numQuestions 200).
+    *   'recommendedTest': Suggest a full mock test for that exam (e.g., for "NEET UG", title should be "NEET UG Full Mock Test", examType "NEET UG", numQuestions 200). **If a mock test is not applicable, completely omit the 'recommendedTest' field from the JSON.**
 
 **MODE 2: CONCEPT EXPLAINER**
 If the query is to explain a concept (e.g., "What is photosynthesis?"), activate this mode.
@@ -76,7 +76,7 @@ If the query is to explain a concept (e.g., "What is photosynthesis?"), activate
 2.  **Generate Output Fields:**
     *   'explanation': Start with a friendly Hinglish greeting (e.g., "Hello Future Engineer!"), then provide the analogy-based explanation. Use markdown for **bold** key terms.
     *   'followUpQuestion': Ask one insightful follow-up question to check understanding.
-    *   'recommendedTest': Optionally, recommend a short quiz (5-10 questions) on the topic.
+    *   'recommendedTest': If a quiz is relevant, recommend one with 5-10 questions. **If not relevant, completely omit the 'recommendedTest' field from the JSON.**
 
 **//-- STUDENT CONTEXT --//**
 - **Class:** {{#if studentClass}}{{studentClass}}{{else}}an appropriate school level{{/if}}
@@ -98,18 +98,20 @@ const brainmateFlow = ai.defineFlow(
     try {
       const {output} = await prompt(input);
       if (!output) {
-        // This case is when the model returns nothing, which is rare but possible.
-        throw new Error("The AI model returned an empty response. Please try rephrasing your question.");
+        // Return a structured error response instead of throwing
+        return {
+            explanation: "I'm sorry, the AI model returned an empty response. Please try rephrasing your question.",
+            followUpQuestion: "Maybe try asking in a simpler way?",
+        };
       }
       return output;
     } catch (error: any) {
         console.error('[Genkit Flow - brainmateFlow] Error during prompt execution:', error);
-        // This user-friendly message will be shown in the UI.
-        // It's generic to cover both model timeouts and schema validation errors.
-        const userMessage = error.message.includes("empty response") 
-            ? error.message 
-            : "Beta, abhi thoda overload ho raha hai. Please try asking again in a few moments.";
-        throw new Error(userMessage);
+        // Construct a user-friendly error response that fits the schema instead of throwing
+        return {
+            explanation: "Beta, abhi thoda overload ho raha hai. Please try asking again in a few moments. (My circuits are a bit busy!)",
+            followUpQuestion: "You can try rephrasing your question or asking about a different topic.",
+        };
     }
   }
 );
