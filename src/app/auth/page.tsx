@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, type FormEvent, useEffect } from "react";
 import Image from "next/image";
@@ -203,14 +202,9 @@ export default function AuthPage() {
 
       <div className="w-full max-w-md text-center">
         <div className="mb-8">
-          <Image
-            src="/oso_logo_final.png"
-            alt="OSO App Logo"
-            width={80}
-            height={80}
-            className="mx-auto mb-3 rounded-full border-2 border-primary p-1 shadow-lg"
-            data-ai-hint="oso logo orange"
-          />
+           <div className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary bg-primary text-4xl font-bold text-primary-foreground shadow-xl">
+            OSO
+          </div>
         </div>
 
         <Card className="shadow-xl border-border bg-card/90 backdrop-blur-sm">
