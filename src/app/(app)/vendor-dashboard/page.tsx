@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge"; // Added this import
 const vendorStats = [
   { id: "pending_orders", labelEn: "Pending Orders", labelHi: "लंबित आदेश", value: "12", icon: ListChecks, color: "text-orange-500" },
   { id: "active_listings", labelEn: "Active Listings", labelHi: "सक्रिय लिस्टिंग", value: "150+", icon: PackageCheck, color: "text-blue-500" },
-  { id: "total_revenue", labelEn: "Monthly Revenue", labelHi: "मासिक राजस्व", value: "₹25,600", icon: IndianRupee, color: "text-green-500" },
+  { id: "total_revenue", labelEn: "Monthly Revenue", labelHi: "मासिक राजस्व", value: "INR 25,600", icon: IndianRupee, color: "text-green-500" },
 ];
 
 const vendorActions = [
@@ -137,7 +137,7 @@ export default function VendorDashboardPage() {
                 <Card key={order.id} className="p-3 bg-muted/30 flex justify-between items-center">
                     <div>
                         <p className="text-sm font-medium text-foreground">Order #{order.id}</p>
-                        <p className="text-xs text-muted-foreground">{order.items} items - ₹{order.amount.toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">{order.items} items - INR {order.amount.toFixed(2)}</p>
                     </div>
                     <Badge variant={order.status === "Shipped" ? "default" : order.status === "Processing" ? "secondary" : "outline"}
                            className={order.status === "Shipped" ? "bg-green-500 text-white" : order.status === "Processing" ? "bg-blue-500 text-white" : ""}>
@@ -159,4 +159,3 @@ export default function VendorDashboardPage() {
     </div>
   );
 }
-

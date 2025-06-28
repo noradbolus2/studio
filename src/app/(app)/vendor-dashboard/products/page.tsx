@@ -90,7 +90,7 @@ export default function VendorProductsPage() {
                   <TableRow key={product.id}>
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell>{product.category}</TableCell>
-                    <TableCell>₹{product.price.toFixed(2)}</TableCell>
+                    <TableCell>INR {product.price.toFixed(2)}</TableCell>
                     <TableCell>{product.stock}</TableCell>
                     <TableCell>
                         <Badge variant={product.status === "Active" ? "default" : "outline"} className={product.status === "Active" ? "bg-green-500/20 text-green-700 border-green-400" : "bg-red-500/10 text-red-700 border-red-400"}>

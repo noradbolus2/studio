@@ -109,7 +109,7 @@ export default function VendorOrdersPage() {
                     <TableCell className="font-medium">{order.id}</TableCell>
                     <TableCell>{order.customerName}</TableCell>
                     <TableCell>{order.date}</TableCell>
-                    <TableCell>₹{order.totalAmount.toFixed(2)}</TableCell>
+                    <TableCell>INR {order.totalAmount.toFixed(2)}</TableCell>
                     <TableCell>{getStatusBadge(order.status)}</TableCell>
                     <TableCell className="text-right space-x-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7"><Printer className="h-4 w-4" /></Button>
