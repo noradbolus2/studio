@@ -1,12 +1,12 @@
-
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, GraduationCap } from "lucide-react"; // Added GraduationCap
+import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from 'next/link';
 
 export default function RoleSelectionPage() {
   const [currentLang, setCurrentLang] = useState<'en' | 'hi'>('en');
@@ -21,12 +21,12 @@ export default function RoleSelectionPage() {
   };
 
   const roles = [
-    { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User },
-    { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck },
-    { role: 'school', labelEn: 'School', labelHi: 'स्कूल', icon: School },
-    { role: 'teacher', labelEn: 'Teacher', labelHi: 'शिक्षक', icon: GraduationCap }, // Added Teacher role
-    { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase },
-    { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon },
+    { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User, href: null },
+    { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck, href: null },
+    { role: 'school', labelEn: 'School Partner', labelHi: 'स्कूल पार्टनर', icon: School, href: 'https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev' },
+    { role: 'teacher', labelEn: 'Teacher', labelHi: 'शिक्षक', icon: GraduationCap, href: null },
+    { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase, href: null },
+    { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon, href: null },
   ];
 
   return (
@@ -68,17 +68,35 @@ export default function RoleSelectionPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {roles.map(item => (
-              <Button
-                key={item.role}
-                variant="outline"
-                className="w-full justify-start text-base py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent"
-                onClick={() => handleRoleSelection(item.role)}
-              >
-                <item.icon className="h-6 w-6 mr-4 text-primary" />
-                <BilingualText en={item.labelEn} hi={item.labelHi} lang={currentLang} />
-              </Button>
-            ))}
+            {roles.map(item => {
+              const buttonContent = (
+                <>
+                  <item.icon className="h-6 w-6 mr-4 text-primary" />
+                  <BilingualText en={item.labelEn} hi={item.labelHi} lang={currentLang} />
+                </>
+              );
+
+              if (item.href) {
+                return (
+                  <Button key={item.role} variant="outline" className="w-full justify-start text-base py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent" asChild>
+                    <Link href={item.href} target="_blank" rel="noopener noreferrer">
+                      {buttonContent}
+                    </Link>
+                  </Button>
+                );
+              }
+
+              return (
+                <Button
+                  key={item.role}
+                  variant="outline"
+                  className="w-full justify-start text-base py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent"
+                  onClick={() => handleRoleSelection(item.role)}
+                >
+                  {buttonContent}
+                </Button>
+              );
+            })}
           </CardContent>
           <CardContent className="border-t border-border/30 pt-4 mt-2">
              <Button
@@ -101,4 +119,3 @@ export default function RoleSelectionPage() {
     </div>
   );
 }
-
