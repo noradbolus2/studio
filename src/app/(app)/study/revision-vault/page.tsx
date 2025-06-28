@@ -8,7 +8,7 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, ClipboardList, PlayCircle, MessageCircleQuestion, CheckCircle, HelpCircle } from "lucide-react";
+import { ArrowLeft, History, PlayCircle, MessageCircleQuestion, CheckCircle, HelpCircle } from "lucide-react";
 import type { RevisionVaultItem } from '@/types/revision-vault';
 import type { DoubtInboxItem } from '@/types/doubt-inbox';
 import { Badge } from '@/components/ui/badge';
@@ -102,7 +102,7 @@ export default function RevisionVaultPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold font-headline flex items-center gap-2">
-          <ClipboardList className="h-7 w-7 text-primary" />
+          <History className="h-7 w-7 text-primary" />
           <BilingualText en="My Revision Vault" hi="मेरा रिवीजन वॉल्ट" />
         </h1>
         <Button variant="outline" onClick={() => router.back()}>
