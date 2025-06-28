@@ -141,9 +141,9 @@ export default function MyContentPage() {
                         <span><BilingualText en="Orders" hi="ऑर्डर"/>: {item.orders}</span>
                         <span><BilingualText en="Views" hi="विचार"/>: {item.views}</span>
                     </div>
-                    {item.priceDigital !== undefined && <p className="text-xs font-medium text-primary"><BilingualText en="Digital Template" hi="डिजिटल टेम्पलेट"/>: ₹{item.priceDigital}</p>}
-                    {item.pricePhysicalKit !== undefined && <p className="text-xs font-medium text-primary"><BilingualText en="Physical Kit" hi="भौतिक किट"/>: ₹{item.pricePhysicalKit}</p>}
-                    {item.priceCourse !== undefined && <p className="text-xs font-medium text-primary"><BilingualText en="Course/Guide" hi="कोर्स/गाइड"/>: ₹{item.priceCourse}</p>}
+                    {item.priceDigital !== undefined && <p className="text-xs font-medium text-primary"><BilingualText en="Digital Template" hi="डिजिटल टेम्पलेट"/>: INR {item.priceDigital}</p>}
+                    {item.pricePhysicalKit !== undefined && <p className="text-xs font-medium text-primary"><BilingualText en="Physical Kit" hi="भौतिक किट"/>: INR {item.pricePhysicalKit}</p>}
+                    {item.priceCourse !== undefined && <p className="text-xs font-medium text-primary"><BilingualText en="Course/Guide" hi="कोर्स/गाइड"/>: INR {item.priceCourse}</p>}
                   </CardContent>
                   <CardFooter className="p-2 flex gap-1.5 justify-end bg-muted/30 border-t">
                     <Button variant="ghost" size="icon" className="h-7 w-7" title="View Stats (Coming Soon)">
