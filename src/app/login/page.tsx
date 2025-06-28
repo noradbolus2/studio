@@ -74,7 +74,7 @@ export default function RoleSelectionPage() {
 
               if (item.href) {
                 return (
-                  <Button key={item.role} variant="outline" className="w-full justify-start text-base font-bold py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent" asChild>
+                  <Button key={item.role} variant="outline" className="w-full justify-start text-base font-medium py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent" asChild>
                     <Link href={item.href} target="_blank" rel="noopener noreferrer">
                       {buttonContent}
                     </Link>
@@ -86,7 +86,7 @@ export default function RoleSelectionPage() {
                 <Button
                   key={item.role}
                   variant="outline"
-                  className="w-full justify-start text-base font-bold py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent"
+                  className="w-full justify-start text-base font-medium py-3 h-14 border-border/50 hover:bg-accent/20 hover:border-accent"
                   onClick={() => handleRoleSelection(item.role)}
                 >
                   {buttonContent}
@@ -97,7 +97,7 @@ export default function RoleSelectionPage() {
           <CardContent className="border-t border-border/30 pt-4 mt-2">
              <Button
                 variant="default"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-base font-bold h-12"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-base font-medium h-12"
                 onClick={() => router.push('/auth')}
               >
                 <LogIn className="mr-2 h-5 w-5" />
