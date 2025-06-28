@@ -45,17 +45,17 @@ export default function RoleSelectionPage() {
           <div className="mx-auto mb-2 flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary bg-primary text-4xl font-bold text-primary-foreground shadow-xl">
             OSO
           </div>
-           <p className="text-2xl font-bold text-primary mb-0.5">
+           <p className="text-2xl font-medium text-primary mb-0.5">
             <BilingualText en="OSO App" hi="ओसो ऐप" lang={currentLang} />
           </p>
-          <p className="text-md text-muted-foreground">
+          <p className="text-md font-medium text-muted-foreground">
             <BilingualText en="Learn & Deliver" hi="सीखें और वितरित करें" lang={currentLang} />
           </p>
         </div>
 
         <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-2xl">
           <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-headline text-primary">
+            <CardTitle className="text-xl font-medium text-primary">
               <BilingualText en="Welcome to OSO!" hi="OSO में आपका स्वागत है!" lang={currentLang} />
             </CardTitle>
             <CardDescription className="text-sm">
@@ -73,7 +73,7 @@ export default function RoleSelectionPage() {
 
               if (item.href) {
                 return (
-                  <Button key={item.role} variant="outline" className="w-full justify-start text-base font-medium py-3 h-14" asChild>
+                  <Button key={item.role} variant="secondary" className="w-full justify-start text-base font-medium py-3 h-14" asChild>
                     <Link href={item.href} target="_blank" rel="noopener noreferrer">
                       {buttonContent}
                     </Link>
@@ -84,7 +84,7 @@ export default function RoleSelectionPage() {
               return (
                 <Button
                   key={item.role}
-                  variant="outline"
+                  variant="secondary"
                   className="w-full justify-start text-base font-medium py-3 h-14"
                   onClick={() => handleRoleSelection(item.role)}
                 >
