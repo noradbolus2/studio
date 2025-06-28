@@ -105,8 +105,9 @@ const brainmateFlow = ai.defineFlow(
         };
       }
       return output;
-    } catch (error: any) {
-        console.error('[Genkit Flow - brainmateFlow] Error during prompt execution:', error);
+    } catch (error) {
+        // Log a simple message instead of the whole error object to prevent potential crashes from circular references.
+        console.error('[Genkit Flow - brainmateFlow] An error occurred during prompt execution. Returning a fallback response.');
         // Construct a user-friendly error response that fits the schema instead of throwing
         return {
             explanation: "Beta, abhi thoda overload ho raha hai. Please try asking again in a few moments. (My circuits are a bit busy!)",
