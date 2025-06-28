@@ -124,6 +124,13 @@ export default function GurujiPage() {
       attachmentPreview: attachmentPreview, 
       timestamp: new Date(),
     };
+    
+    // Prepare history BEFORE adding the new message
+    const historyForPrompt = messages.slice(-10).map(msg => ({
+        role: msg.role === 'guru' ? 'model' : 'user',
+        text: msg.text,
+    }));
+
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     
@@ -149,6 +156,7 @@ export default function GurujiPage() {
 
     const gurujiInput: GurujiInput = { 
       userInput: trimmedInput,
+      history: historyForPrompt,
       studentClass: profileContext.className,
       studentBoard: profileContext.board,
       studentStream: profileContext.stream,
@@ -164,13 +172,6 @@ export default function GurujiPage() {
       // Only include dataUri if it's an image and exists
       if (attachmentPreview.isImage && attachmentPreview.dataUri) {
         gurujiInput.attachmentDataUri = attachmentPreview.dataUri;
-      } else if (!attachmentPreview.isImage) {
-        // For non-image files, if we want to send content, we'd read it differently (e.g. as text)
-        // For now, we are only sending dataUri for images.
-        // If we were to send text file content, it would be:
-        // const textContent = await file.text(); // This needs to be handled during file select
-        // gurujiInput.attachmentTextContent = textContent; 
-        // And the flow schema would need an 'attachmentTextContent' field.
       }
     }
     
