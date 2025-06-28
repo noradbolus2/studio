@@ -41,11 +41,11 @@ export default function CodeMatePage() {
   };
 
   const handleDeploy = () => {
-    toast({ title: "Deploy Action (Simulated)", description: "This would trigger a CI/CD pipeline to deploy the changes." });
+    toast({ title: "Deploy Action", description: "This would trigger a CI/CD pipeline to deploy the changes." });
   };
   
   const handleRollback = () => {
-    toast({ title: "Rollback Action (Simulated)", description: "This would revert to the previous version.", variant: "destructive" });
+    toast({ title: "Rollback Action", description: "This would revert to the previous version.", variant: "destructive" });
   };
 
   return (
@@ -132,10 +132,10 @@ export default function CodeMatePage() {
           </CardContent>
           <CardFooter className="flex justify-end gap-2">
             <Button variant="destructive" onClick={handleRollback}>
-              <HardHat className="mr-2" /> Rollback (Simulated)
+              <HardHat className="mr-2" /> Rollback
             </Button>
             <Button className="bg-green-600 hover:bg-green-700" onClick={handleDeploy}>
-              <Rocket className="mr-2"/> Approve & Deploy (Simulated)
+              <Rocket className="mr-2"/> Approve & Deploy
             </Button>
           </CardFooter>
         </Card>

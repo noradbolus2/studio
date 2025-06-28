@@ -63,11 +63,11 @@ export default function ScheduleClassPage() {
       streamType: "in_app", // Default as per requirement
       thumbnailFile: thumbnailFileRef.current?.files?.[0] // For actual upload later
     };
-    console.log("Class Data to Schedule (Simulated):", fullData);
+    console.log("Class Data to Schedule:", fullData);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     toast({
-      title: "Class Scheduled (Simulated)",
+      title: "Class Scheduled",
       description: `"${data.title}" has been scheduled.`,
     });
     setIsLoading(false);

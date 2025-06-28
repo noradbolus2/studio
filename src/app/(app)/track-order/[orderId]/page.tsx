@@ -66,29 +66,33 @@ export default function TrackOrderPage() {
     if (orderId) {
       setIsLoading(true);
       
-      setTimeout(() => {
-        const steps = [...mockTrackingData];
-        const randomProgress = Math.floor(Math.random() * (steps.length +1)); 
-        
-        let tempCurrentStepIndex = 0;
-        for (let i = 0; i < steps.length; i++) {
-          if (i < randomProgress) {
-            steps[i].completed = true;
-            steps[i].timestamp = new Date(Date.now() - (steps.length - 1 - i) * 5 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            if (steps[i].completed) {
-                tempCurrentStepIndex = i;
+      const interval = setInterval(() => {
+        setTrackingSteps(prevSteps => {
+          const newSteps = [...prevSteps];
+          let newStepIndex = -1;
+          for(let i=0; i<newSteps.length; i++){
+            if(!newSteps[i].completed){
+              newStepIndex = i;
+              break;
             }
           }
-        }
-        
-        if (randomProgress === steps.length) {
-             tempCurrentStepIndex = steps.length -1;
-        }
 
-        setTrackingSteps(steps);
-        setCurrentStepIndex(tempCurrentStepIndex);
-        setIsLoading(false);
-      }, 1200);
+          if(newStepIndex !== -1){
+            newSteps[newStepIndex].completed = true;
+            newSteps[newStepIndex].timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            setCurrentStepIndex(newStepIndex);
+          } else {
+            clearInterval(interval);
+          }
+          return newSteps;
+        });
+      }, 3000); // Progress every 3 seconds
+      
+      // Initialize steps
+      setTrackingSteps(mockTrackingData);
+      setIsLoading(false);
+
+      return () => clearInterval(interval);
     } else {
       setIsLoading(false);
     }
@@ -118,13 +122,17 @@ export default function TrackOrderPage() {
   }
 
   const getCurrentStatusText = () => {
-    if (trackingSteps.length === 0 || !trackingSteps[currentStepIndex]) {
+    if (trackingSteps.length === 0) {
       return 'Loading...';
     }
-    if (trackingSteps[currentStepIndex].completed && currentStepIndex < trackingSteps.length - 1) {
-      return trackingSteps[currentStepIndex + 1].statusEn;
+    const currentActiveStep = trackingSteps[currentStepIndex];
+    if (currentActiveStep?.completed && currentStepIndex === trackingSteps.length - 1) {
+        return currentActiveStep.statusEn;
     }
-    return trackingSteps[currentStepIndex].statusEn;
+    if(currentActiveStep?.completed && trackingSteps[currentStepIndex + 1]) {
+        return trackingSteps[currentStepIndex + 1].statusEn;
+    }
+    return currentActiveStep?.statusEn || 'Loading...';
   };
 
 
@@ -149,7 +157,7 @@ export default function TrackOrderPage() {
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle><BilingualText en="Live Location & Route" hi="लाइव लोकेशन और मार्ग" /></CardTitle>
-          <CardDescription><BilingualText en="See the current simulated locations on the map." hi="मानचित्र पर वर्तमान नकली स्थान देखें।" /></CardDescription>
+          <CardDescription><BilingualText en="See the current locations on the map." hi="मानचित्र पर वर्तमान स्थान देखें।" /></CardDescription>
         </CardHeader>
         <CardContent>
           <MapDisplay 

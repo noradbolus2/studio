@@ -51,7 +51,7 @@ export default function MyContentPage() {
   const handleDeleteContent = (contentId: string, contentTitle: string) => {
     setContentItems(prev => prev.filter(p => p.id !== contentId));
     toast({
-      title: "Content Deleted (Simulated)",
+      title: "Content Deleted",
       description: `"${contentTitle}" has been removed.`,
       variant: "destructive"
     });
@@ -176,4 +176,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-

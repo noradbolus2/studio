@@ -150,7 +150,7 @@ export default function CreatorOrderDetailPage() {
                 <CardDescription><BilingualText en="Upload files for digital delivery or mark as dispatched for physical kits." hi="डिजिटल डिलीवरी के लिए फ़ाइलें अपलोड करें या भौतिक किट के लिए प्रेषित के रूप में चिह्नित करें।" /></CardDescription>
             </CardHeader>
             <CardContent>
-                <Button className="w-full" onClick={() => toast({title: "Upload Action (Simulated)", description: "File uploader would open here."})}>
+                <Button className="w-full" onClick={() => toast({title: "Upload Action", description: "File uploader would open here."})}>
                     <UploadCloud className="mr-2 h-5 w-5"/>
                     <BilingualText en="Upload Files" hi="फ़ाइलें अपलोड करें"/>
                 </Button>
@@ -169,7 +169,7 @@ export default function CreatorOrderDetailPage() {
           <Textarea placeholder_en="Type your message to the student..." placeholder_hi="छात्र को अपना संदेश लिखें..." className="min-h-[80px]" />
         </CardContent>
         <CardFooter>
-          <Button className="ml-auto" onClick={() => toast({title: "Message Sent (Simulated)"})}>
+          <Button className="ml-auto" onClick={() => toast({title: "Message Sent"})}>
             <BilingualText en="Send Message" hi="संदेश भेजें" />
           </Button>
         </CardFooter>

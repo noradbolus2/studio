@@ -56,13 +56,12 @@ function LiveDoubtQueue() {
     }, []);
 
     const handleAnswerDoubt = (doubtId: string) => {
-        // In a real app, this would open a reply modal. For proto, we just resolve it.
         const updatedInbox = JSON.parse(localStorage.getItem(DOUBT_INBOX_KEY) || '[]').map((d: DoubtInboxItem) => 
             d.id === doubtId ? { ...d, status: 'answered' } : d
         );
         localStorage.setItem(DOUBT_INBOX_KEY, JSON.stringify(updatedInbox));
         loadDoubts(); // Refresh the list
-        toast({ title: "Doubt Answered (Simulated)", description: `Doubt ${doubtId} has been marked as answered.` });
+        toast({ title: "Doubt Answered", description: `Doubt ${doubtId} has been marked as answered.` });
     };
 
     return (

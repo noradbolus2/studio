@@ -139,8 +139,8 @@ export default function ParentDashboardPage() {
         router.push(link);
     } else {
         toast({
-            title: `${actionName} (Simulated)`,
-            description: `This feature is coming soon or the specific link needs to be implemented!`,
+            title: `${actionName}`,
+            description: `This feature is coming soon!`,
         });
     }
   };

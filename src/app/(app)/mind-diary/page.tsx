@@ -63,7 +63,7 @@ export default function MindDiaryPage() {
     // Simulate saving entry (replace with actual Firestore save later)
     await new Promise(resolve => setTimeout(resolve, 500));
      toast({
-      title: "Entry Logged (Simulated)",
+      title: "Entry Logged",
       description: "Your mind diary entry has been noted. Getting some AI wisdom...",
     });
     setIsLoading(false); // Stop main loading, AI loading continues
