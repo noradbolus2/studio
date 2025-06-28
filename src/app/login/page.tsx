@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, GraduationCap } from "lucide-react";
+import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, Bike } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,7 @@ export default function RoleSelectionPage() {
     { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User, href: null },
     { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck, href: null },
     { role: 'school', labelEn: 'School Partner', labelHi: 'स्कूल पार्टनर', icon: School, href: 'https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev' },
-    { role: 'teacher', labelEn: 'Teacher', labelHi: 'शिक्षक', icon: GraduationCap, href: null },
+    { role: 'rider', labelEn: 'OSO Rider App', labelHi: 'OSO राइडर ऐप', icon: Bike, href: 'https://9000-firebase-studio-1750860970812.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev' },
     { role: 'vendor', labelEn: 'KopyKart Vendor', labelHi: 'कॉपीकार्ट विक्रेता', icon: Briefcase, href: 'https://9000-firebase-studio-1750860571220.cluster-73qgvk7hjjadkrjeyexca5ivva.cloudworkstations.dev' },
     { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon, href: null },
   ];
