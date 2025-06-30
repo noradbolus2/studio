@@ -47,7 +47,7 @@ const initialRoles: Role[] = [
   { id: "vendor", name: "Vendor", icon: Briefcase, permissions: ["content.view"] },
   { id: "creator", name: "Creator", icon: Sparkles, permissions: ["content.view"] },
   { id: "platform_moderator", name: "Platform Moderator", icon: ShieldCheck, permissions: ["users.view", "content.moderate", "content.delete"]},
-  { id: "platform_admin", name: "Platform Admin", icon: ShieldCheck, permissions: allPermissions.map(p => p.id) },
+  { id: "platform_admin", name: "CEO", icon: ShieldCheck, permissions: allPermissions.map(p => p.id) },
 ];
 
 

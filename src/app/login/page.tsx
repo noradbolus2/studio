@@ -27,7 +27,7 @@ export default function RoleSelectionPage() {
     { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon },
     { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase },
     { role: 'rider', labelEn: 'Rider', labelHi: 'राइडर', icon: Bike },
-    { role: 'platform-admin', labelEn: 'Platform Admin', labelHi: 'प्लेटफ़ॉर्म एडमिन', icon: ShieldCheck },
+    { role: 'platform-admin', labelEn: 'CEO', labelHi: 'सीईओ', icon: ShieldCheck },
   ];
 
   return (

@@ -23,7 +23,7 @@ interface TeamMember {
 }
 
 const mockTeam: TeamMember[] = [
-  { id: "TM001", name: "Abhishek verma (CEO)", email: "abhishek.ceo@oso.com", role: "Platform Admin", status: "Active", joinDate: "2022-01-01" },
+  { id: "TM001", name: "Abhishek verma (CEO)", email: "abhishek.ceo@oso.com", role: "CEO", status: "Active", joinDate: "2022-01-01" },
   { id: "TM002", name: "Rohini (CTO)", email: "rohini.cto@oso.com", role: "Head of Engineering", status: "Active", joinDate: "2022-03-15" },
   { id: "TM003", name: "Aakash (COO)", email: "aakash.coo@oso.com", role: "Head of Operations", status: "Active", joinDate: "2022-05-20" },
   { id: "TM004", name: "Priya (Product Head)", email: "priya.product@oso.com", role: "Head of Product", status: "Active", joinDate: "2022-11-01" },
@@ -32,7 +32,7 @@ const mockTeam: TeamMember[] = [
 ];
 
 
-const teamRoles = ['Platform Admin', 'Head of Engineering', 'Head of Operations', 'Head of Product', 'Head of Support', 'Head of Finance'];
+const teamRoles = ['CEO', 'Head of Engineering', 'Head of Operations', 'Head of Product', 'Head of Support', 'Head of Finance'];
 
 export default function TeamManagementPage() {
   const router = useRouter();
