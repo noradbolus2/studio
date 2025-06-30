@@ -2,104 +2,38 @@
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { 
-    ShieldCheck, Users, School, Briefcase, Sparkles, Package, RadioTower, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
-    CheckCircle,
-    KeyRound
+    ShieldCheck, Users, School, Briefcase, Sparkles, Package, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
+    CheckCircle, KeyRound, Download, Mail, TrendingUp, IndianRupee, Server, AlertTriangle, HeartPulse, Newspaper, Video, ThumbsUp, Lock, Power, ClipboardList,
+    GitMerge, MapPin, Activity
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
 
-const platformStats = [
-  { id: "total_users", labelEn: "Total Users", labelHi: "कुल उपयोगकर्ता", value: "10,250+", icon: Users, color: "text-blue-500" },
-  { id: "schools", labelEn: "Registered Schools", labelHi: "पंजीकृत स्कूल", value: "52", icon: School, color: "text-green-500" },
-  { id: "vendors", labelEn: "Active Vendors", labelHi: "सक्रिय विक्रेता", value: "180+", icon: Briefcase, color: "text-purple-500" },
-  { id: "creators", labelEn: "Content Creators", labelHi: "सामग्री निर्माता", value: "115", icon: Sparkles, color: "text-pink-500" },
-  { id: "live_classes", labelEn: "Active Live Classes", labelHi: "सक्रिय लाइव कक्षाएं", value: "23", icon: RadioTower, color: "text-orange-500" },
-  { id: "content_items", labelEn: "Total Content Items", labelHi: "कुल सामग्री आइटम", value: "5000+", icon: Package, color: "text-teal-500" },
-];
+const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string }) => (
+    <Card className="glass-card hover:-translate-y-1 transition-transform">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium"><BilingualText en={titleEn} hi={titleHi}/></CardTitle>
+            <Icon className={`h-5 w-5 ${color}`} />
+        </CardHeader>
+        <CardContent>
+            <div className="text-2xl font-bold">{value}</div>
+            {note && <p className="text-xs text-muted-foreground">{note}</p>}
+        </CardContent>
+    </Card>
+);
 
-const adminActions = [
-  { id: "codemate_agent", labelEn: "CodeMate AI Agent", labelHi: "कोडमेट एआई एजेंट", icon: Bot, href: "/codemate" },
-  { id: "manage_users", labelEn: "User Management", labelHi: "उपयोगकर्ता प्रबंधन", icon: Users, href: "/platform-admin/users" },
-  { id: "content_moderation", labelEn: "Content Moderation", labelHi: "सामग्री मॉडरेशन", icon: FileCog, href: "/platform-admin/content-moderation" },
-  { id: "platform_analytics", labelEn: "Platform Analytics", labelHi: "प्लेटफ़ॉर्म एनालिटिक्स", icon: BarChart3, href: "/platform-admin/analytics" },
-  { id: "system_settings", labelEn: "System Settings", labelHi: "सिस्टम सेटिंग्स", icon: Settings, href: "/platform-admin/settings" },
-  { id: "view_logs", labelEn: "System Logs", labelHi: "सिस्टम लॉग", icon: Eye, href: "/platform-admin/logs" },
-  { id: "manage_roles", labelEn: "Role Management", labelHi: "भूमिका प्रबंधन", icon: ShieldCheck, href: "/platform-admin/roles"},
-];
-
-
-const linkedApps = [
-  { id: "school_partner", labelEn: "OSO School Partner", labelHi: "OSO स्कूल पार्टनर", icon: School, url: "https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev" },
-  { id: "vendor_app", labelEn: "KopyKart Vendor", labelHi: "कॉपीकार्ट विक्रेता", icon: Briefcase, url: "https://9000-firebase-studio-1750860571220.cluster-73qgvk7hjjadkrjeyexca5ivva.cloudworkstations.dev" },
-  { id: "rider_app", labelEn: "OSO Rider App", labelHi: "OSO राइडर ऐप", icon: Bike, url: "https://9000-firebase-studio-1750860970812.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev" },
-  { id: "unipanel", labelEn: "OSO UniPanel", labelHi: "OSO यूनिपैनल", icon: Landmark, url: "https://9000-firebase-studio-1750861524292.cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev" },
-];
 
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
-  const { toast } = useToast();
-
-  const [pairingApp, setPairingApp] = useState<{ id: string; labelEn: string; labelHi: string; } | null>(null);
-  const [isPairingDialogOpen, setIsPairingDialogOpen] = useState(false);
-  const [pin, setPin] = useState("");
-  const [pairedApps, setPairedApps] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-        const storedPairedApps = localStorage.getItem("pairedApps");
-        if (storedPairedApps) {
-            setPairedApps(JSON.parse(storedPairedApps));
-        }
-    }
-  }, []);
-
-  const handleOpenPairingDialog = (app: typeof linkedApps[0]) => {
-    setPairingApp(app);
-    setPin("");
-    setIsPairingDialogOpen(true);
-  };
-
-  const handlePairApp = () => {
-    if (!pairingApp) return;
-
-    // Define a hardcoded "correct" PIN for the simulation
-    const correctPin = "123456";
-
-    if (pin.trim() !== correctPin) {
-      toast({
-        title: "Pairing Failed",
-        description: "The PIN you entered is incorrect. Please try again.",
-        variant: "destructive",
-      });
-      setPin(""); // Clear the incorrect PIN
-      return;
-    }
-
-    // If PIN is correct, proceed with pairing
-    const updatedPairedApps = { ...pairedApps, [pairingApp.id]: true };
-    setPairedApps(updatedPairedApps);
-    if(typeof window !== "undefined") {
-      localStorage.setItem("pairedApps", JSON.stringify(updatedPairedApps));
-    }
-
-    toast({
-      title: "Pairing Successful",
-      description: `Successfully paired with ${pairingApp.labelEn}. You can now access its panel.`,
-    });
-
-    setIsPairingDialogOpen(false);
-    setPairingApp(null);
-  };
   
   return (
     <div className="space-y-8">
@@ -109,134 +43,163 @@ export default function PlatformAdminDashboardPage() {
         </Button>
         <ShieldCheck className="h-12 w-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold font-headline text-primary">
-          <BilingualText en="Platform Administration" hi="प्लेटफ़ॉर्म प्रशासन" />
+          <BilingualText en="Mission Control" hi="मिशन कंट्रोल" />
         </h1>
         <p className="text-muted-foreground">
           <BilingualText en="Oversee and manage the OSO Application." hi="ओएसओ एप्लिकेशन का निरीक्षण और प्रबंधन करें।" />
         </p>
       </header>
+      
+       {/* 1. Mission Control Dashboard */}
+      <Card className="col-span-1 lg:col-span-3">
+          <CardHeader>
+              <CardTitle className="font-headline text-lg flex items-center gap-2"><Activity className="text-primary"/> Live Pulse</CardTitle>
+              <CardDescription>High-level, real-time platform metrics.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <MissionControlStatCard titleEn="Active Students" titleHi="सक्रिय छात्र" value="1,24,582" icon={Users} color="text-blue-500" />
+              <MissionControlStatCard titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="246" icon={Package} color="text-green-500" />
+              <MissionControlStatCard titleEn="Revenue Today" titleHi="आज का राजस्व" value="₹1,87,560" icon={IndianRupee} color="text-yellow-500" />
+              <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="13,742" icon={BarChart3} color="text-purple-500" />
+              <MissionControlStatCard titleEn="Complaints Flagged" titleHi="शिकायतें" value="11" icon={AlertTriangle} color="text-red-500" note="3 critical" />
+              <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" icon={Server} color="text-teal-500" note="Downtime: 0.02%" />
+              <MissionControlStatCard titleEn="Top City" titleHi="शीर्ष शहर" value="Lucknow" icon={MapPin} color="text-pink-500" note="2,930 active" />
+              <Card className="flex items-center justify-center p-4">
+                  <Button variant="outline" size="sm" className="mr-2"><Download size={14} className="mr-1"/>XLS</Button>
+                  <Button variant="outline" size="sm" className="mr-2">Snapshot</Button>
+                  <Button variant="outline" size="sm"><Mail size={14} className="mr-1"/>Mail</Button>
+              </Card>
+          </CardContent>
+      </Card>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {platformStats.map(stat => (
-          <Card key={stat.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelHi} /></CardTitle>
-              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+        {/* 2. Finance Panel */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+              <CardTitle className="font-headline text-lg flex items-center gap-2"><IndianRupee className="text-primary"/> Finance & Profitability</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableBody>
+                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education ₹12.3L, Delivery ₹7.5L, Coaching ₹4.8L</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">₹5.21 Lakh</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell><TableCell>View detailed chart</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: ₹3.2 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+          <CardFooter>
+            <Button variant="secondary"><Download className="mr-2"/> Download Tally/Quickbooks Export</Button>
+          </CardFooter>
+        </Card>
+
+        {/* 10. Quick Actions */}
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
+                <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-2">
+                <Button variant="destructive"><AlertTriangle className="mr-2"/>Emergency Push</Button>
+                <Button variant="destructive"><Lock className="mr-2"/>Lock Vendor System</Button>
+                <Button variant="secondary" className="col-span-2"><Download className="mr-2"/>Export All Metrics (XLS)</Button>
+                <Button variant="secondary" className="col-span-2"><Mail className="mr-2"/>Send Mail to All Schools</Button>
+                <Button variant="secondary" className="col-span-2"><TrendingUp className="mr-2"/>Boost a Course/Creator</Button>
+                <Button variant="secondary" className="col-span-2"><MapPin className="mr-2"/>Set City Expansion Plan</Button>
+            </CardContent>
+        </Card>
+
+        {/* 3. Ecosystem Health */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2"><HeartPulse className="text-primary"/> Ecosystem Health Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="students">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="students">Students</TabsTrigger>
+                <TabsTrigger value="schools">Schools</TabsTrigger>
+                <TabsTrigger value="vendors">Vendors</TabsTrigger>
+                <TabsTrigger value="riders">Riders</TabsTrigger>
+                <TabsTrigger value="creators">Creators</TabsTrigger>
+              </TabsList>
+              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>1,234</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>88%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Verified</TableCell><TableCell>52</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>48</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Fulfilment Rate</TableCell><TableCell>98.5%</TableCell></TableRow><TableRow><TableCell>Cancellation Rate</TableCell><TableCell>0.8%</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time (Today)</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>7</TableCell></TableRow><TableRow><TableCell>Best-Selling Course</TableCell><TableCell>JEE Physics Masterclass</TableCell></TableRow></TableBody></Table></TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        {/* 4. Live Ops Monitor */}
+        <Card className="lg:col-span-2">
+            <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2"><MapPin className="text-primary"/> Live Ops Monitor</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                    <Image src="https://placehold.co/600x300.png" alt="Live Map Placeholder" width={600} height={300} data-ai-hint="live city map" className="opacity-50"/>
+                </div>
+                <p className="text-xs text-muted-foreground text-center mt-2">Live map placeholder. Integration with a mapping service is required.</p>
             </CardContent>
-          </Card>
-        ))}
+        </Card>
+        
+        {/* 9. Vision Control Center */}
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2"><GitMerge className="text-primary"/> Vision Control (Moonshots)</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableBody>
+                        <TableRow><TableCell>OSO Circle (Study Pods)</TableCell><TableCell><Badge variant="outline">Phase 2 Testing</Badge></TableCell></TableRow>
+                        <TableRow><TableCell>OSO Mind Diary</TableCell><TableCell>27% Usage - Improve</TableCell></TableRow>
+                        <TableRow><TableCell>OSO Pocket School</TableCell><TableCell><Badge>Launching July 10</Badge></TableCell></TableRow>
+                        <TableRow><TableCell>Coaching+Creators</TableCell><TableCell>82 Active</TableCell></TableRow>
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+        
+         {/* 7. AI & OSO Brain Engine Monitor */}
+        <Card className="lg:col-span-3">
+            <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2"><Bot className="text-primary"/> AI & OSO Brain Engine Monitor</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableBody>
+                        <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
+                        <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities under mental load</TableCell></TableRow>
+                        <TableRow><TableCell>AI Notes Usage</TableCell><TableCell>8,200 this week</TableCell></TableRow>
+                        <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% found useful</TableCell></TableRow>
+                    </TableBody>
+                </Table>
+            </CardContent>
+             <CardFooter>
+                <Button variant="secondary"><Download className="mr-2"/> Download AI Performance Report (PDF)</Button>
+            </CardFooter>
+        </Card>
+        
+        {/* Other Panels as Placeholders */}
+        <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Team Access</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">Team management panel placeholder.</p></CardContent></Card>
+        <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Growth Engine</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">Growth & Marketing KPI panel placeholder.</p></CardContent></Card>
+        <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><Newspaper className="text-primary"/> PR & Brand</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">PR and Social Sentiment panel placeholder.</p></CardContent></Card>
       </div>
-
-      <Card>
-        <CardHeader>
-            <CardTitle className="font-headline"><BilingualText en="Administrative Actions" hi="प्रशासनिक कार्रवाइयां"/></CardTitle>
-            <CardDescription><BilingualText en="Access key platform management modules." hi="प्रमुख प्लेटफ़ॉर्म प्रबंधन मॉड्यूल तक पहुंचें।" /></CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {adminActions.map(action => (
-                <Button
-                    key={action.id}
-                    variant="outline"
-                    className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-                    asChild
-                >
-                    <Link href={action.href}>
-                        <div>
-                            <action.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
-                            <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
-                        </div>
-                    </Link>
-                </Button>
-            ))}
-        </CardContent>
+      
+      {/* Security Layer note */}
+      <Card className="border-destructive/50">
+          <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-destructive"><Lock/> Security Layer</CardTitle>
+              <CardDescription>Security features like Biometric login, device restriction, and access logging are critical backend implementations.</CardDescription>
+          </CardHeader>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline flex items-center gap-2">
-            <LinkIcon className="h-6 w-6 text-primary"/>
-            <BilingualText en="Linked OSO Applications" hi="युग्मित OSO एप्लिकेशन" />
-          </CardTitle>
-          <CardDescription>
-            <BilingualText en="Pair and connect to other platforms in the OSO ecosystem using a PIN." hi="पिन का उपयोग करके OSO पारिस्थितिकी तंत्र में अन्य प्लेटफार्मों से युग्मित करें और कनेक्ट करें।" />
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {linkedApps.map(app => {
-            const isPaired = pairedApps[app.id];
-            
-            const AppButtonContent = () => (
-              <div>
-                <app.icon className="h-7 w-7 text-primary mb-1 mx-auto"/>
-                <span className="text-xs font-medium"><BilingualText en={app.labelEn} hi={app.labelHi} /></span>
-                 {isPaired && (
-                  <div className="flex items-center justify-center gap-1 mt-1 text-green-600">
-                      <CheckCircle size={12}/>
-                      <span className="text-xs font-semibold">Paired</span>
-                  </div>
-                )}
-              </div>
-            );
-
-            return isPaired ? (
-              <Button
-                key={app.id}
-                variant="outline"
-                className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-                asChild
-              >
-                <Link href={app.url} target="_blank" rel="noopener noreferrer">
-                  <AppButtonContent />
-                </Link>
-              </Button>
-            ) : (
-              <Button
-                key={app.id}
-                variant="outline"
-                className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-                onClick={() => handleOpenPairingDialog(app)}
-              >
-                <AppButtonContent />
-              </Button>
-            );
-          })}
-        </CardContent>
-      </Card>
-
-      <Dialog open={isPairingDialogOpen} onOpenChange={setIsPairingDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-                <BilingualText en={`Pair with ${pairingApp?.labelEn || 'Application'}`} hi={`${pairingApp?.labelHi || 'एप्लिकेशन'} के साथ युग्मित करें`} />
-            </DialogTitle>
-            <DialogDescription>
-                <BilingualText en={`Enter the 6-digit PIN from the ${pairingApp?.labelEn} application to establish a secure connection.`} hi={`${pairingApp?.labelHi} एप्लिकेशन से 6-अंकीय पिन दर्ज करें ताकि एक सुरक्षित कनेक्शन स्थापित हो सके।`} />
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Label htmlFor="pin" className="flex items-center mb-2">
-                <KeyRound className="mr-2 h-4 w-4 text-muted-foreground"/>
-                Pairing PIN
-            </Label>
-            <Input
-                id="pin"
-                type="text"
-                maxLength={6}
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                placeholder="Enter 6-digit PIN"
-                className="text-center text-lg tracking-widest font-mono"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsPairingDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handlePairApp}>Pair</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
-}
+
+    
