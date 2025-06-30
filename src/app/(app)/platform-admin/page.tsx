@@ -93,7 +93,14 @@ export default function PlatformAdminDashboardPage() {
                 <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education INR 100 Cr, Delivery INR 80 Cr, Coaching INR 40 Cr, Subscriptions INR 30 Cr</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 50 Cr</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell><TableCell>View detailed chart</TableCell></TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">MRR / ARR Tracker</TableCell>
+                  <TableCell>
+                    <Button asChild variant="link" className="p-0 h-auto font-normal">
+                      <Link href="/platform-admin/analytics">View detailed chart</Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
                 <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: INR 25 Cr (Vendors, Creators, Riders)</TableCell></TableRow>
               </TableBody>
