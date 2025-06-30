@@ -163,6 +163,9 @@ export default function PlatformAdminDashboardPage() {
                     </TableBody>
                 </Table>
             </CardContent>
+             <CardFooter className="bg-muted/50 p-3 mt-4 rounded-b-lg">
+                <p className="text-xs text-muted-foreground"><strong>Notes for Team:</strong> Push Pocket School to schools with no Wi-Fi. Build a Hindi UI fallback.</p>
+            </CardFooter>
         </Card>
         
          {/* 7. AI & OSO Brain Engine Monitor */}
