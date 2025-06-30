@@ -1,3 +1,4 @@
+
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -65,7 +66,7 @@ export default function PlatformAdminDashboardPage() {
           <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="15,20,450" icon={Users} color="text-blue-500" />
               <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="850" icon={Package} color="text-green-500" />
-              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 16,50,000" icon={IndianRupee} color="text-yellow-500" />
+              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 85,00,000" icon={IndianRupee} color="text-yellow-500" />
               <MissionControlStatCard href="/platform-admin/analytics" titleEn="Learning Mins" titleHi="सीखने के मिनट" value="1.5 Crore+" icon={BarChart3} color="text-purple-500" />
               <MissionControlStatCard href="/platform-admin/content-moderation" titleEn="Complaints Flagged" titleHi="शिकायतें" value="110" icon={AlertTriangle} color="text-red-500" note="30 critical" />
               <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" icon={Server} color="text-teal-500" note="Downtime: 0.02%" />
@@ -89,12 +90,12 @@ export default function PlatformAdminDashboardPage() {
           <CardContent>
             <Table>
               <TableBody>
-                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education INR 2 Cr, Delivery INR 1.5 Cr, Coaching INR 75 L, Subscriptions INR 75 L</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education INR 10 Cr, Delivery INR 8 Cr, Coaching INR 4 Cr, Subscriptions INR 3 Cr</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 1 Cr</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 5 Cr</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell><TableCell>View detailed chart</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: INR 45 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: INR 2.2 Cr (Vendors, Creators, Riders)</TableCell></TableRow>
               </TableBody>
             </Table>
           </CardContent>
