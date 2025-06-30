@@ -36,9 +36,7 @@ const LOCAL_STORAGE_KEY = "schoolStudentsList";
 const initialMockStudents: Student[] = [
   { id: "S1001", name: "Aarav Sharma", class: "10", section: "A", rollNumber: "10A01", parentName: "Mr. Rajesh Sharma", status: "Active" },
   { id: "S1002", name: "Priya Singh", class: "9", section: "B", rollNumber: "09B15", parentName: "Mrs. Sunita Singh", status: "Active" },
-  { id: "S1003", name: "Rohan Verma", class: "10", section: "A", rollNumber: "10A02", parentName: "Mr. Anil Verma", status: "Active" },
   { id: "S1004", name: "Sneha Reddy", class: "8", section: "C", rollNumber: "08C05", parentName: "Mr. Mohan Reddy", status: "Inactive" },
-  { id: "S1005", name: "Vikram Kumar", class: "9", section: "A", rollNumber: "09A10", parentName: "Mrs. Meena Kumar", status: "Active" },
 ];
 
 export default function SchoolStudentsPage() {
