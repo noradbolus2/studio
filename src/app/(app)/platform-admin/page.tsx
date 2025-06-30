@@ -63,10 +63,10 @@ export default function PlatformAdminDashboardPage() {
               <CardDescription>High-level, real-time platform metrics.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="12,45,820" icon={Users} color="text-blue-500" />
-              <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="2,460" icon={Package} color="text-green-500" />
-              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 18,75,600" icon={IndianRupee} color="text-yellow-500" />
-              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Learning Mins" titleHi="सीखने के मिनट" value="1,37,420" icon={BarChart3} color="text-purple-500" />
+              <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="15,20,450" icon={Users} color="text-blue-500" />
+              <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="850" icon={Package} color="text-green-500" />
+              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 16,50,000" icon={IndianRupee} color="text-yellow-500" />
+              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Learning Mins" titleHi="सीखने के मिनट" value="1.5 Crore+" icon={BarChart3} color="text-purple-500" />
               <MissionControlStatCard href="/platform-admin/content-moderation" titleEn="Complaints Flagged" titleHi="शिकायतें" value="110" icon={AlertTriangle} color="text-red-500" note="30 critical" />
               <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" icon={Server} color="text-teal-500" note="Downtime: 0.02%" />
               <MissionControlStatCard href="/platform-admin/analytics" titleEn="Top City" titleHi="शीर्ष शहर" value="Lucknow" icon={MapPin} color="text-pink-500" note="29,300 active" />
@@ -82,19 +82,19 @@ export default function PlatformAdminDashboardPage() {
           
         {/* 2. Finance & Profitability Panel */}
         <Card className="lg:col-span-2">
-          <CardHeader>
-              <CardTitle className="font-headline text-lg flex items-center gap-2"><IndianRupee className="text-primary"/> Finance & Profitability</CardTitle>
-              <CardDescription><BilingualText en="Track revenue, expenses, and profitability across the platform." hi="प्लेटफ़ॉर्म पर राजस्व, व्यय और लाभप्रदता को ट्रैक करें।" /></CardDescription>
-          </CardHeader>
+            <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2"><IndianRupee className="text-primary"/> Finance & Profitability</CardTitle>
+                <CardDescription><BilingualText en="Track revenue, expenses, and profitability across the platform." hi="प्लेटफ़ॉर्म पर राजस्व, व्यय और लाभप्रदता को ट्रैक करें।" /></CardDescription>
+            </CardHeader>
           <CardContent>
             <Table>
               <TableBody>
-                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education INR 1.23 Cr, Delivery INR 75 L, Coaching INR 48 L, Subscriptions INR 37.5 L</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education INR 2 Cr, Delivery INR 1.5 Cr, Coaching INR 75 L, Subscriptions INR 75 L</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 89.6 Lakh</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 1 Cr</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell><TableCell>View detailed chart</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: INR 32 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: INR 45 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
               </TableBody>
             </Table>
           </CardContent>
@@ -138,7 +138,7 @@ export default function PlatformAdminDashboardPage() {
                 <TabsTrigger value="riders">Riders</TabsTrigger>
                 <TabsTrigger value="creators">Creators</TabsTrigger>
               </TabsList>
-              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>12,340</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>88%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>5,500</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>55%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Verified</TableCell><TableCell>52</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>48</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Fulfilment Rate</TableCell><TableCell>98.5%</TableCell></TableRow><TableRow><TableCell>Cancellation Rate</TableCell><TableCell>0.8%</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time (Today)</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
@@ -191,7 +191,7 @@ export default function PlatformAdminDashboardPage() {
                         <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
                         <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities under mental load</TableCell></TableRow>
                         <TableRow><TableCell>Aura Map Bugs</TableCell><TableCell>None today</TableCell></TableRow>
-                        <TableRow><TableCell>AI Notes Usage</TableCell><TableCell>82,000 this week</TableCell></TableRow>
+                        <TableRow><TableCell>AI Notes Usage</TableCell><TableCell>1,50,000 this week</TableCell></TableRow>
                         <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% found useful</TableCell></TableRow>
                     </TableBody>
                 </Table>
