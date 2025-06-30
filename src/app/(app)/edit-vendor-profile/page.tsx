@@ -16,14 +16,13 @@ export default function EditVendorProfileRedirectPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Construct new search params for the consolidated edit page
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set('role', 'vendor'); // Ensure role is correctly set for vendor
+    // The recommended safe way to clone searchParams without enumeration
+    const newParams = new URLSearchParams(Array.from(searchParams.entries()));
+    newParams.set('role', 'vendor');
 
     // Redirect to the consolidated edit profile page
     router.replace(`/edit-profile?${newParams.toString()}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams, router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
