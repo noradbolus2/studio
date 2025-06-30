@@ -189,13 +189,17 @@ export default function EditProfilePage() {
     },
   });
 
+  const roleFromParams = searchParams.get("role") || "student";
+  const isSchoolSetupParam = searchParams.get("isSchoolSetup") === 'true';
+  const emailFromParam = searchParams.get("email");
+  const nameFromParam = searchParams.get("name");
+  const designationFromParam = searchParams.get("designation");
+
   const watchedAvatarUrl = watch("avatarUrl");
   const watchedClassName = watch("className");
 
   useEffect(() => {
     setInitialDataLoading(true);
-    const roleFromParams = searchParams.get("role") || "student";
-    const isSchoolSetupParam = searchParams.get("isSchoolSetup") === 'true';
     setIsInitialSchoolSetup(isSchoolSetupParam);
     setCurrentRole(roleFromParams);
     
@@ -206,10 +210,6 @@ export default function EditProfilePage() {
     };
 
     if (typeof window !== "undefined") {
-        const emailFromParam = searchParams.get("email");
-        const nameFromParam = searchParams.get("name"); 
-        const designationFromParam = searchParams.get("designation");
-
         if (emailFromParam) initialProfileData.email = emailFromParam;
         if (nameFromParam) {
             initialProfileData.fullName = nameFromParam; 
@@ -278,7 +278,7 @@ export default function EditProfilePage() {
     }
 
     setInitialDataLoading(false);
-  }, [searchParams, reset, currentRole]); // Added currentRole to ensure effect runs if it changes
+  }, [roleFromParams, isSchoolSetupParam, emailFromParam, nameFromParam, designationFromParam, reset]);
 
   useEffect(() => {
     if (currentRole === 'student' && !isClassNurseryTo12(watchedClassName)) {
@@ -828,5 +828,7 @@ export default function EditProfilePage() {
     
 
 
+
+    
 
     
