@@ -17,18 +17,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 
-const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string }) => (
-    <Card className="glass-card hover:-translate-y-1 transition-transform">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium"><BilingualText en={titleEn} hi={titleHi}/></CardTitle>
-            <Icon className={`h-5 w-5 ${color}`} />
-        </CardHeader>
-        <CardContent>
-            <div className="text-2xl font-bold">{value}</div>
-            {note && <p className="text-xs text-muted-foreground">{note}</p>}
-        </CardContent>
-    </Card>
-);
+const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note, href }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string, href?: string }) => {
+    const cardContent = (
+         <Card className="glass-card hover:-translate-y-1 transition-transform">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium"><BilingualText en={titleEn} hi={titleHi}/></CardTitle>
+                <Icon className={`h-5 w-5 ${color}`} />
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">{value}</div>
+                {note && <p className="text-xs text-muted-foreground">{note}</p>}
+            </CardContent>
+        </Card>
+    );
+
+    if (href) {
+        return <Link href={href}>{cardContent}</Link>;
+    }
+    return cardContent;
+};
 
 
 export default function PlatformAdminDashboardPage() {
@@ -56,25 +63,13 @@ export default function PlatformAdminDashboardPage() {
               <CardDescription>High-level, real-time platform metrics.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <Link href="/platform-admin/users">
-                  <MissionControlStatCard titleEn="Active Students" titleHi="सक्रिय छात्र" value="1,24,582" icon={Users} color="text-blue-500" />
-              </Link>
-              <Link href="/platform-admin/orders">
-                  <MissionControlStatCard titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="246" icon={Package} color="text-green-500" />
-              </Link>
-              <Link href="/platform-admin/analytics">
-                <MissionControlStatCard titleEn="Revenue Today" titleHi="आज का राजस्व" value="₹1,87,560" icon={IndianRupee} color="text-yellow-500" />
-              </Link>
-              <Link href="/platform-admin/analytics">
-                <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="13,742" icon={BarChart3} color="text-purple-500" />
-              </Link>
-              <Link href="/platform-admin/content-moderation">
-                <MissionControlStatCard titleEn="Complaints Flagged" titleHi="शिकायतें" value="11" icon={AlertTriangle} color="text-red-500" note="3 critical" />
-              </Link>
+              <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="12,45,820" icon={Users} color="text-blue-500" />
+              <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="2,460" icon={Package} color="text-green-500" />
+              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="₹18,75,600" icon={IndianRupee} color="text-yellow-500" />
+              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Learning Mins" titleHi="सीखने के मिनट" value="1,37,420" icon={BarChart3} color="text-purple-500" />
+              <MissionControlStatCard href="/platform-admin/content-moderation" titleEn="Complaints Flagged" titleHi="शिकायतें" value="110" icon={AlertTriangle} color="text-red-500" note="30 critical" />
               <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" icon={Server} color="text-teal-500" note="Downtime: 0.02%" />
-              <Link href="/platform-admin/analytics">
-                <MissionControlStatCard titleEn="Top City" titleHi="शीर्ष शहर" value="Lucknow" icon={MapPin} color="text-pink-500" note="2,930 active" />
-              </Link>
+              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Top City" titleHi="शीर्ष शहर" value="Lucknow" icon={MapPin} color="text-pink-500" note="29,300 active" />
               <Card className="flex items-center justify-center p-4">
                   <Button variant="outline" size="sm" className="mr-2"><Download size={14} className="mr-1"/>XLS</Button>
                   <Button variant="outline" size="sm" className="mr-2">Snapshot</Button>
@@ -93,12 +88,12 @@ export default function PlatformAdminDashboardPage() {
           <CardContent>
             <Table>
               <TableBody>
-                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education ₹12.3L, Delivery ₹7.5L, Coaching ₹4.8L</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education ₹1.23 Cr, Delivery ₹75 L, Coaching ₹48 L</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">₹5.21 Lakh</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">₹52.1 Lakh</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell><TableCell>View detailed chart</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: ₹3.2 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: ₹32 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
               </TableBody>
             </Table>
           </CardContent>
@@ -137,7 +132,7 @@ export default function PlatformAdminDashboardPage() {
                 <TabsTrigger value="riders">Riders</TabsTrigger>
                 <TabsTrigger value="creators">Creators</TabsTrigger>
               </TabsList>
-              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>1,234</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>88%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>12,340</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>88%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Verified</TableCell><TableCell>52</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>48</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Fulfilment Rate</TableCell><TableCell>98.5%</TableCell></TableRow><TableRow><TableCell>Cancellation Rate</TableCell><TableCell>0.8%</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time (Today)</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
@@ -190,7 +185,7 @@ export default function PlatformAdminDashboardPage() {
                         <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
                         <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities under mental load</TableCell></TableRow>
                         <TableRow><TableCell>Aura Map Bugs</TableCell><TableCell>None today</TableCell></TableRow>
-                        <TableRow><TableCell>AI Notes Usage</TableCell><TableCell>8,200 this week</TableCell></TableRow>
+                        <TableRow><TableCell>AI Notes Usage</TableCell><TableCell>82,000 this week</TableCell></TableRow>
                         <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% found useful</TableCell></TableRow>
                     </TableBody>
                 </Table>
@@ -200,7 +195,6 @@ export default function PlatformAdminDashboardPage() {
             </CardFooter>
         </Card>
         
-        {/* Functional Links to Other Admin Pages */}
         <Card>
           <CardHeader>
             <CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Team Access</CardTitle>
@@ -254,7 +248,6 @@ export default function PlatformAdminDashboardPage() {
 
       </div>
       
-      {/* Security Layer note */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Lock className="text-primary"/> Security Settings & Controls</CardTitle>
