@@ -1,3 +1,4 @@
+
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -239,11 +240,38 @@ export default function PlatformAdminDashboardPage() {
       </div>
       
       {/* Security Layer note */}
-      <Card className="border-destructive/50">
-          <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-destructive"><Lock/> Security Layer</CardTitle>
-              <CardDescription>Security features like Biometric login, device restriction, and access logging are critical backend implementations.</CardDescription>
-          </CardHeader>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Lock className="text-primary"/> Security Settings & Controls</CardTitle>
+          <CardDescription>
+            Manage roles, permissions, and platform-wide security configurations.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+           <Button asChild variant="outline">
+                <Link href="/platform-admin/roles">
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    Manage Roles
+                </Link>
+            </Button>
+            <Button asChild variant="outline">
+                <Link href="/platform-admin/logs">
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Access Logs
+                </Link>
+            </Button>
+             <Button asChild variant="outline">
+                <Link href="/platform-admin/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    System Settings
+                </Link>
+            </Button>
+        </CardContent>
+        <CardFooter>
+             <p className="text-xs text-muted-foreground">
+                Note: Biometric login and device restriction are configured at the backend/app level.
+            </p>
+        </CardFooter>
       </Card>
 
     </div>
