@@ -1,4 +1,3 @@
-
 // src/app/(app)/school-dashboard/announcements/page.tsx
 "use client";
 import { useState } from "react";
@@ -138,5 +137,3 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
-
-    

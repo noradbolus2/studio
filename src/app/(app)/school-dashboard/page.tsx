@@ -1,4 +1,3 @@
-
 // src/app/(app)/school-dashboard/page.tsx
 "use client";
 
@@ -243,4 +242,3 @@ export default function SchoolDashboardPage() {
     </div>
   );
 }
-

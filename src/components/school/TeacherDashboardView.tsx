@@ -1,4 +1,3 @@
-
 "use client";
 
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -82,5 +81,3 @@ export default function TeacherDashboardView({ teacherName, actions }: TeacherDa
     </div>
   );
 }
-
-    

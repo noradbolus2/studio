@@ -1,4 +1,3 @@
-
 "use client";
 
 import { BilingualText } from "@/components/shared/BilingualText";
