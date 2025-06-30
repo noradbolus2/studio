@@ -1,4 +1,3 @@
-
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -17,6 +16,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
 
 const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note, href }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string, href?: string }) => {
     const cardContent = (
@@ -41,6 +41,14 @@ const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, no
 
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
+  const { toast } = useToast();
+
+  const handleActionClick = (actionName: string) => {
+    toast({
+      title: "Action Triggered (Simulated)",
+      description: `${actionName} has been initiated.`,
+    });
+  };
   
   return (
     <div className="space-y-8">
@@ -148,13 +156,31 @@ export default function PlatformAdminDashboardPage() {
                 <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
                 <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-2">
-                <Button variant="destructive"><AlertTriangle className="mr-2"/>Emergency Push</Button>
-                <Button variant="destructive"><Lock className="mr-2"/>Lock Vendor System</Button>
-                <Button variant="secondary" className="col-span-2"><Download className="mr-2"/>Export All Metrics (XLS)</Button>
-                <Button variant="secondary" className="col-span-2"><Mail className="mr-2"/>Send Mail to All Schools</Button>
-                <Button variant="secondary" className="col-span-2"><TrendingUp className="mr-2"/>Boost a Course/Creator</Button>
-                <Button variant="secondary" className="col-span-2"><MapPin className="mr-2"/>Set City Expansion Plan</Button>
+            <CardContent className="space-y-2">
+                <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Emergency Push Notification")}>
+                    <AlertTriangle className="h-4 w-4"/>
+                    <BilingualText en="Emergency Push" hi="आपातकालीन पुश"/>
+                </Button>
+                <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Lock Vendor System")}>
+                    <Lock className="h-4 w-4"/>
+                    <BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक करें"/>
+                </Button>
+                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
+                    <Download className="h-4 w-4"/>
+                    <BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात करें"/>
+                </Button>
+                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Send Mail to All Schools")}>
+                    <Mail className="h-4 w-4"/>
+                    <BilingualText en="Send Mail to All Schools" hi="सभी स्कूलों को मेल भेजें"/>
+                </Button>
+                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Boost a Course/Creator")}>
+                    <TrendingUp className="h-4 w-4"/>
+                    <BilingualText en="Boost a Course/Creator" hi="कोर्स/निर्माता को बढ़ावा दें"/>
+                </Button>
+                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Set City Expansion Plan")}>
+                    <MapPin className="h-4 w-4"/>
+                    <BilingualText en="Set City Expansion Plan" hi="शहर विस्तार योजना सेट करें"/>
+                </Button>
             </CardContent>
         </Card>
 
