@@ -201,7 +201,22 @@ export default function PlatformAdminDashboardPage() {
             </Button>
           </CardFooter>
         </Card>
-        <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Growth Engine</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">Growth & Marketing KPI panel placeholder.</p></CardContent></Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Growth Engine</CardTitle>
+             <CardDescription><BilingualText en="Track marketing KPIs, referrals, and user acquisition." hi="मार्केटिंग KPIs, रेफरल और उपयोगकर्ता अधिग्रहण को ट्रैक करें।" /></CardDescription>
+          </CardHeader>
+          <CardContent>
+             <p className="text-sm text-muted-foreground">Monitor Ad Spend ROI, referrals, app ratings, and influencer campaigns.</p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild className="w-full">
+                <Link href="/platform-admin/growth">
+                    <BilingualText en="Go to Growth Dashboard" hi="ग्रोथ डैशबोर्ड पर जाएं" />
+                </Link>
+            </Button>
+          </CardFooter>
+        </Card>
         <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><Newspaper className="text-primary"/> PR & Brand</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">PR and Social Sentiment panel placeholder.</p></CardContent></Card>
       </div>
       
