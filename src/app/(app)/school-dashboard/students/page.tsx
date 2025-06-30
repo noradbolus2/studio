@@ -14,6 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface Student {
   id: string;
@@ -41,6 +47,7 @@ export default function SchoolStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterClass, setFilterClass] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -125,8 +132,19 @@ export default function SchoolStudentsPage() {
       setIsDialogOpen(false);
   };
 
+  const classesForFilter = useMemo(() => {
+    const allClasses = Array.from(new Set(students.map(s => s.class)));
+    return ["all", ...allClasses.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))];
+  }, [students]);
+
   const groupedAndFilteredStudents = useMemo(() => {
-    const grouped = students.reduce((acc, student) => {
+    const filteredByAll = students.filter(student => 
+        (student.name.toLowerCase().includes(searchTerm.toLowerCase()) || student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (filterStatus === "all" || student.status === filterStatus) &&
+        (filterClass === "all" || student.class === filterClass)
+    );
+
+    const grouped = filteredByAll.reduce((acc, student) => {
       const key = `Class ${student.class}`;
       if (!acc[key]) {
         acc[key] = [];
@@ -134,13 +152,6 @@ export default function SchoolStudentsPage() {
       acc[key].push(student);
       return acc;
     }, {} as Record<string, Student[]>);
-
-    Object.keys(grouped).forEach(classKey => {
-        grouped[classKey] = grouped[classKey].filter(student => 
-            (student.name.toLowerCase().includes(searchTerm.toLowerCase()) || student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase())) &&
-            (filterStatus === "all" || student.status === filterStatus)
-        );
-    });
 
     const sortedClasses = Object.keys(grouped).sort((a, b) => {
         const numA = parseInt(a.match(/\d+/)?.[0] || '0');
@@ -154,7 +165,7 @@ export default function SchoolStudentsPage() {
         students: grouped[key].sort((a, b) => a.rollNumber.localeCompare(b.rollNumber))
       }))
       .filter(group => group.students.length > 0);
-  }, [students, searchTerm, filterStatus]);
+  }, [students, searchTerm, filterStatus, filterClass]);
 
   return (
     <div className="space-y-6">
@@ -186,6 +197,14 @@ export default function SchoolStudentsPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
+            <Select value={filterClass} onValueChange={(val) => setFilterClass(val)}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder_en="Filter by Class" placeholder_hi="कक्षा से फ़िल्टर करें" />
+                </SelectTrigger>
+                <SelectContent>
+                    {classesForFilter.map(c => <SelectItem key={c} value={c}>{c === "all" ? <BilingualText en="All Classes" hi="सभी कक्षाएं"/> : `Class ${c}`}</SelectItem>)}
+                </SelectContent>
+            </Select>
              <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val)}>
                 <SelectTrigger className="w-full sm:w-[180px]">
                     <SelectValue placeholder_en="Filter by Status" placeholder_hi="स्थिति से फ़िल्टर करें" />
@@ -202,49 +221,57 @@ export default function SchoolStudentsPage() {
             </Button>
           </div>
           
-          <div className="space-y-6">
+          <div className="mt-4">
             {isLoading ? (
                 <div className="h-24 text-center flex items-center justify-center"><LoadingSpinner/></div>
-            ) : groupedAndFilteredStudents.length > 0 ? groupedAndFilteredStudents.map((group) => (
-              <Card key={group.className} className="bg-muted/30">
-                <CardHeader className="py-3 px-4">
-                  <CardTitle className="text-md font-semibold">{group.className}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead><BilingualText en="Roll No." hi="रोल नंबर" /></TableHead>
-                          <TableHead><BilingualText en="Name" hi="नाम" /></TableHead>
-                          <TableHead><BilingualText en="Parent" hi="अभिभावक" /></TableHead>
-                          <TableHead><BilingualText en="Status" hi="स्थिति" /></TableHead>
-                          <TableHead className="text-right"><BilingualText en="Actions" hi="कार्रवाइयां" /></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {group.students.map((student) => (
-                          <TableRow key={student.id}>
-                            <TableCell className="font-medium">{student.rollNumber}</TableCell>
-                            <TableCell>{student.name}</TableCell>
-                            <TableCell>{student.parentName}</TableCell>
-                            <TableCell>
-                                <Badge variant={student.status === "Active" ? "default" : "outline"} className={student.status === "Active" ? "bg-green-500/20 text-green-700 border-green-400" : "bg-red-500/10 text-red-700 border-red-400"}>
-                                    <BilingualText en={student.status} hi={student.status === "Active" ? "सक्रिय" : "निष्क्रिय"}/>
-                                </Badge>
-                            </TableCell>
-                            <TableCell className="text-right space-x-1">
-                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(student)}><Edit className="h-4 w-4" /></Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeleteClick(student.id, student.name)}><Trash2 className="h-4 w-4" /></Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              </Card>
-            )) : (
+            ) : groupedAndFilteredStudents.length > 0 ? (
+                <Accordion type="multiple" defaultValue={groupedAndFilteredStudents.map(g => g.className)}>
+                  {groupedAndFilteredStudents.map((group) => (
+                    <AccordionItem key={group.className} value={group.className}>
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex justify-between w-full pr-4 items-center">
+                            <span className="font-semibold text-md">{group.className}</span>
+                            <Badge variant="secondary">{group.students.length} students</Badge>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="rounded-md border overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead><BilingualText en="Roll No." hi="रोल नंबर" /></TableHead>
+                                <TableHead><BilingualText en="Name" hi="नाम" /></TableHead>
+                                <TableHead><BilingualText en="Parent" hi="अभिभावक" /></TableHead>
+                                <TableHead><BilingualText en="Status" hi="स्थिति" /></TableHead>
+                                <TableHead className="text-right"><BilingualText en="Actions" hi="कार्रवाइयां" /></TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {group.students.map((student) => (
+                                <TableRow key={student.id}>
+                                  <TableCell className="font-medium">{student.rollNumber}</TableCell>
+                                  <TableCell>{student.name}</TableCell>
+                                  <TableCell>{student.parentName}</TableCell>
+                                  <TableCell>
+                                      <Badge variant={student.status === "Active" ? "default" : "outline"} className={student.status === "Active" ? "bg-green-500/20 text-green-700 border-green-400" : "bg-red-500/10 text-red-700 border-red-400"}>
+                                          <BilingualText en={student.status} hi={student.status === "Active" ? "सक्रिय" : "निष्क्रिय"}/>
+                                      </Badge>
+                                  </TableCell>
+                                  <TableCell className="text-right space-x-1">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7"><Eye className="h-4 w-4" /></Button>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(student)}><Edit className="h-4 w-4" /></Button>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeleteClick(student.id, student.name)}><Trash2 className="h-4 w-4" /></Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+            ) : (
               <div className="text-center py-10">
                 <p className="text-muted-foreground">
                   <BilingualText en="No students found matching your criteria." hi="आपके मानदंडों से मेल खाने वाला कोई छात्र नहीं मिला।" />
@@ -256,7 +283,6 @@ export default function SchoolStudentsPage() {
         </CardContent>
       </Card>
       
-      {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
             <DialogHeader>
