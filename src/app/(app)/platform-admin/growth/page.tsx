@@ -1,4 +1,3 @@
-
 // src/app/(app)/platform-admin/growth/page.tsx
 "use client";
 
@@ -17,11 +16,13 @@ const growthStats = [
 ];
 
 const trafficHeatmapData = [
-    { city: "Lucknow", trend: "rising" },
-    { city: "Bhopal", trend: "rising" },
-    { city: "Nagpur", trend: "rising" },
-    { city: "Patna", trend: "stable" },
-    { city: "Jaipur", trend: "stable" },
+    { city: "Delhi NCR", trend: "rising" },
+    { city: "Mumbai", trend: "rising" },
+    { city: "Bengaluru", trend: "rising" },
+    { city: "Pune", trend: "rising" },
+    { city: "Hyderabad", trend: "stable" },
+    { city: "Kolkata", trend: "stable" },
+    { city: "Chennai", trend: "stable" },
 ];
 
 export default function GrowthAnalyticsPage() {
@@ -69,7 +70,7 @@ export default function GrowthAnalyticsPage() {
             </CardHeader>
             <CardContent>
                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center mb-4">
-                    <Image src="https://placehold.co/600x300.png" alt="Traffic Heatmap Placeholder" width={600} height={300} data-ai-hint="city map traffic" className="opacity-50"/>
+                    <Image src="https://placehold.co/600x300.png" alt="Traffic Heatmap Placeholder" width={600} height={300} data-ai-hint="india map traffic" className="opacity-50"/>
                 </div>
                  <ul className="space-y-1 text-sm">
                     {trafficHeatmapData.map(item => (
