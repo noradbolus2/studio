@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { 
     ShieldCheck, Users, School, Briefcase, Sparkles, Package, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
@@ -17,6 +16,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note, href }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string, href?: string }) => {
     const cardContent = (
@@ -37,6 +38,26 @@ const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, no
     }
     return cardContent;
 };
+
+const coreTeam = [
+  { name: "Siddharth (CEO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "male ceo" },
+  { name: "Rohini (CTO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "female cto" },
+  { name: "Aakash (COO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "male coo" },
+  { name: "Priya (Product Head)", avatar: "https://placehold.co/40x40.png", dataAiHint: "female product manager" },
+];
+
+const platformAdminLinks = [
+    { href: "/platform-admin/analytics", icon: BarChart3, titleEn: "Platform Analytics", titleHi: "प्लेटफ़ॉर्म एनालिटिक्स" },
+    { href: "/platform-admin/users", icon: Users, titleEn: "User Management", titleHi: "उपयोगकर्ता प्रबंधन" },
+    { href: "/platform-admin/orders", icon: Package, titleEn: "All Orders", titleHi: "सभी ऑर्डर" },
+    { href: "/platform-admin/team", icon: KeyRound, titleEn: "Team & Roles", titleHi: "टीम और भूमिकाएँ" },
+    { href: "/platform-admin/content-moderation", icon: FileCog, titleEn: "Content Moderation", titleHi: "सामग्री मॉडरेशन" },
+    { href: "/platform-admin/growth", icon: TrendingUp, titleEn: "Growth Engine", titleHi: "ग्रोथ इंजन" },
+    { href: "/platform-admin/pr-brand", icon: Newspaper, titleEn: "PR & Brand", titleHi: "पीआर और ब्रांड" },
+    { href: "/platform-admin/logs", icon: Eye, titleEn: "System Logs", titleHi: "सिस्टम लॉग" },
+    { href: "/platform-admin/settings", icon: Settings, titleEn: "System Settings", titleHi: "सिस्टम सेटिंग्स" },
+    { href: "/codemate", icon: Code2, titleEn: "CodeMate AI Agent", titleHi: "कोडमेट एआई एजेंट" },
+];
 
 
 export default function PlatformAdminDashboardPage() {
@@ -65,306 +86,181 @@ export default function PlatformAdminDashboardPage() {
         </p>
       </header>
       
-       {/* 1. Mission Control Dashboard */}
-      <Card className="col-span-1 lg:col-span-3">
-          <CardHeader>
-              <CardTitle className="font-headline text-lg flex items-center gap-2"><Activity className="text-primary"/> Live Pulse</CardTitle>
-              <CardDescription>High-level, real-time platform metrics.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="7.5 M+" icon={Users} color="text-blue-500" />
-              <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="1,50,000+" icon={Package} color="text-green-500" />
-              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 8.3 Cr" icon={IndianRupee} color="text-yellow-500" />
-              <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="5 Crore+" icon={BarChart3} color="text-purple-500" />
-              <MissionControlStatCard href="/platform-admin/content-moderation" titleEn="Complaints Flagged" titleHi="शिकायतें" value="850" note="150 critical" icon={AlertTriangle} color="text-red-500" />
-              <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" note="Downtime: 0.02%" icon={Server} color="text-teal-500" />
-              <MissionControlStatCard href="/platform-admin/growth" titleEn="Pan-India Reach" titleHi="अखिल भारतीय पहुंच" value="28 States, 8 UTs" note="Top cities: Delhi, Mumbai" icon={MapPin} color="text-pink-500" />
-              <MissionControlStatCard href="/platform-admin/users" titleEn="New Signups Today" titleHi="आज के नए साइनअप" value="50,000+" icon={Users} color="text-blue-500" />
-          </CardContent>
-           <CardFooter className="justify-end gap-2 border-t pt-3 mt-4">
-            <Button variant="outline" size="sm"><Download size={14} className="mr-1"/>XLSSnapshot</Button>
-            <Button variant="outline" size="sm">Mail Report</Button>
-          </CardFooter>
+       {/* 1. Live Pulse Stats Row */}
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2"><Activity className="text-primary"/> Live Pulse</CardTitle>
+            <CardDescription>High-level, real-time platform metrics.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="7.5 M+" icon={Users} color="text-blue-500" />
+            <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="1,50,000+" icon={Package} color="text-green-500" />
+            <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 8.3 Cr" icon={IndianRupee} color="text-yellow-500" />
+            <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="5 Crore+" icon={BarChart3} color="text-purple-500" />
+        </CardContent>
       </Card>
 
+      {/* 2. Main Panels Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-        {/* 2. Finance & Profitability Panel */}
-        <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle className="font-headline text-lg flex items-center gap-2"><IndianRupee className="text-primary"/> Finance & Profitability</CardTitle>
-                 <CardDescription><BilingualText en="Track revenue, expenses, and profitability across the platform." hi="प्लेटफ़ॉर्म पर राजस्व, व्यय और लाभप्रदता को ट्रैक करें।" /></CardDescription>
-            </CardHeader>
-          <CardContent>
-            <Table>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Revenue Sources</TableCell>
-                  <TableCell className="flex flex-wrap gap-1">
-                      <Link href="/platform-admin/analytics?filter=education" passHref>
-                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Education: INR 100 Cr</Badge>
+          {/* Finance & Profitability Panel */}
+          <Card className="lg:col-span-1">
+              <CardHeader>
+                  <CardTitle className="font-headline text-lg flex items-center gap-2"><IndianRupee className="text-primary"/> Finance & Profitability</CardTitle>
+                  <CardDescription>Monthly financial overview.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <Table>
+                      <TableBody>
+                          <TableRow><TableCell className="font-medium">Total Revenue</TableCell><TableCell>INR 250 Cr</TableCell></TableRow>
+                          <TableRow><TableCell className="font-medium">Net Profit</TableCell><TableCell className="text-green-600 font-bold">INR 50 Cr</TableCell></TableRow>
+                          <TableRow><TableCell className="font-medium">Payout Pressure</TableCell>
+                              <TableCell>
+                                  <Button asChild variant="link" className="p-0 h-auto font-normal text-destructive hover:text-destructive">
+                                      <Link href="/platform-admin/orders">
+                                          Due: INR 25 Cr <ExternalLink size={14} className="ml-2" />
+                                      </Link>
+                                  </Button>
+                              </TableCell>
+                          </TableRow>
+                      </TableBody>
+                  </Table>
+              </CardContent>
+              <CardFooter>
+                  <Button asChild className="w-full">
+                      <Link href="/platform-admin/analytics">
+                          <BilingualText en="View Detailed Analytics" hi="विस्तृत एनालिटिक्स देखें" /> <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
-                      <Link href="/platform-admin/analytics?filter=delivery" passHref>
-                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Delivery: INR 80 Cr</Badge>
+                  </Button>
+              </CardFooter>
+          </Card>
+
+          {/* Core Team Panel */}
+          <Card className="lg:col-span-1">
+              <CardHeader>
+                  <CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Our Core Team</CardTitle>
+                  <CardDescription>Key leadership driving the mission.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                  {coreTeam.map(member => (
+                      <div key={member.name} className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9">
+                              <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
+                              <AvatarFallback>{member.name.substring(0,1)}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium text-sm">{member.name}</span>
+                      </div>
+                  ))}
+              </CardContent>
+              <CardFooter>
+                  <Button asChild className="w-full">
+                      <Link href="/platform-admin/team">
+                          <BilingualText en="Manage Full Team" hi="पूरी टीम प्रबंधित करें" /> <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
-                      <Link href="/platform-admin/analytics?filter=coaching" passHref>
-                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Coaching: INR 40 Cr</Badge>
-                      </Link>
-                      <Link href="/platform-admin/analytics?filter=subscriptions" passHref>
-                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Subscriptions: INR 30 Cr</Badge>
-                      </Link>
-                  </TableCell>
-                </TableRow>
-                <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 50 Cr</TableCell></TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">MRR / ARR Tracker</TableCell>
-                  <TableCell>
-                    <Button asChild variant="link" className="p-0 h-auto font-normal">
-                      <Link href="/platform-admin/analytics">View detailed chart</Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
-                <TableRow>
-                  <TableCell className="font-medium text-destructive">Payout Pressure</TableCell>
-                  <TableCell className="text-destructive">
-                    <Button asChild variant="link" className="p-0 h-auto font-normal text-destructive hover:text-destructive">
-                        <Link href="/platform-admin/orders">
-                            Due: INR 25 Cr (Vendors, Creators, Riders)
-                            <ExternalLink size={14} className="ml-2" />
-                        </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-           <CardFooter className="justify-between pt-4">
-            <Button variant="secondary"><Download className="mr-2"/> Download Tally/Quickbooks Export</Button>
-             <Button asChild>
-                <Link href="/platform-admin/analytics">
-                    <BilingualText en="View Detailed Analytics" hi="विस्तृत एनालिटिक्स देखें" /> <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-            </Button>
-          </CardFooter>
-        </Card>
+                  </Button>
+              </CardFooter>
+          </Card>
 
-        {/* 10. Quick Action Center */}
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
-                <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-                <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Emergency Push Notification")}>
-                    <AlertTriangle className="h-4 w-4"/>
-                    <BilingualText en="Emergency Push" hi="आपातकालीन पुश"/>
-                </Button>
-                <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Lock Vendor System")}>
-                    <Lock className="h-4 w-4"/>
-                    <BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक करें"/>
-                </Button>
-                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
-                    <Download className="h-4 w-4"/>
-                    <BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात करें"/>
-                </Button>
-                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Send Mail to All Schools")}>
-                    <Mail className="h-4 w-4"/>
-                    <BilingualText en="Send Mail to All Schools" hi="सभी स्कूलों को मेल भेजें"/>
-                </Button>
-                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Boost a Course/Creator")}>
-                    <TrendingUp className="h-4 w-4"/>
-                    <BilingualText en="Boost a Course/Creator" hi="कोर्स/निर्माता को बढ़ावा दें"/>
-                </Button>
-                <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Set City Expansion Plan")}>
-                    <MapPin className="h-4 w-4"/>
-                    <BilingualText en="Set City Expansion Plan" hi="शहर विस्तार योजना सेट करें"/>
-                </Button>
-            </CardContent>
-        </Card>
-
-        {/* 3. Ecosystem Health */}
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center gap-2"><HeartPulse className="text-primary"/> Ecosystem Health Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="students">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="students">Students</TabsTrigger>
-                <TabsTrigger value="schools">Schools</TabsTrigger>
-                <TabsTrigger value="vendors">Vendors</TabsTrigger>
-                <TabsTrigger value="riders">Riders</TabsTrigger>
-                <TabsTrigger value="creators">Creators</TabsTrigger>
-              </TabsList>
-              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>50,000+</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>65%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow><TableRow><TableCell>Top States</TableCell><TableCell>UP, Maharashtra, Bihar</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow><TableRow><TableCell>Highest Orders</TableCell><TableCell>Delhi NCR</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time (Today)</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>500+</TableCell></TableRow><TableRow><TableCell>Best-Selling Course</TableCell><TableCell>JEE Physics Masterclass</TableCell></TableRow></TableBody></Table></TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* 4. Live Ops Monitor */}
-        <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle className="font-headline text-lg flex items-center gap-2"><MapPin className="text-primary"/> Live Ops Monitor (Pan-India)</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                    <Image src="https://placehold.co/600x300.png" alt="Live Map Placeholder" width={600} height={300} data-ai-hint="india map traffic" className="opacity-50"/>
-                </div>
-                <p className="text-xs text-muted-foreground text-center mt-2">Live map placeholder. Integration with a mapping service is required.</p>
-            </CardContent>
-        </Card>
-        
-        {/* 9. Vision Control Center */}
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline text-lg flex items-center gap-2"><GitMerge className="text-primary"/> Vision Control (Moonshots)</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableBody>
-                        <TableRow><TableCell>OSO Circle (Study Pods)</TableCell><TableCell><Badge variant="outline">Phase 2 Testing</Badge></TableCell></TableRow>
-                        <TableRow><TableCell>OSO Mind Diary</TableCell><TableCell>27% Usage - Improve</TableCell></TableRow>
-                        <TableRow><TableCell>OSO Pocket School</TableCell><TableCell><Badge>Launching July 10</Badge></TableCell></TableRow>
-                        <TableRow><TableCell>Coaching+Creators</TableCell><TableCell>82 Active</TableCell></TableRow>
-                    </TableBody>
-                </Table>
-            </CardContent>
-             <CardFooter className="bg-muted/50 p-3 mt-4 rounded-b-lg">
-                <p className="text-xs text-muted-foreground"><strong>Notes for Team:</strong> Push Pocket School to schools with no Wi-Fi. Build a Hindi UI fallback.</p>
-            </CardFooter>
-        </Card>
-        
-         {/* 7. AI & OSO Brain Engine Monitor */}
-        <Card className="lg:col-span-3">
-            <CardHeader>
-                <CardTitle className="font-headline text-lg flex items-center gap-2"><Bot className="text-primary"/> AI & OSO Brain Engine Monitor</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableBody>
-                        <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
-                        <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities under mental load</TableCell></TableRow>
-                        <TableRow><TableCell>Aura Map Bugs</TableCell><TableCell>None today</TableCell></TableRow>
-                        <TableRow><TableCell>AI Notes Usage</TableCell><TableCell>5,00,000 this week</TableCell></TableRow>
-                        <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% found useful</TableCell></TableRow>
-                    </TableBody>
-                </Table>
-            </CardContent>
-             <CardFooter>
-                <Button variant="secondary"><Download className="mr-2"/> Download AI Performance Report (PDF)</Button>
-            </CardFooter>
-        </Card>
-
-        {/* Link Cards */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center gap-2"><Code2 className="text-primary"/> CodeMate AI Agent</CardTitle>
-            <CardDescription><BilingualText en="Auto-generate features and fix bugs with AI." hi="AI की मदद से स्वचालित रूप से सुविधाएँ बनाएँ और बग ठीक करें।" /></CardDescription>
-          </CardHeader>
-          <CardContent>
-             <p className="text-sm text-muted-foreground">Give plain English instructions to CodeMate to get code, tests, and security rules generated.</p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild className="w-full">
-                <Link href="/codemate">
-                    <BilingualText en="Go to CodeMate" hi="कोडमेट पर जाएं" />
-                </Link>
-            </Button>
-          </CardFooter>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Team Access</CardTitle>
-            <CardDescription><BilingualText en="Manage internal team and access permissions." hi="आंतरिक टीम और एक्सेस अनुमतियों का प्रबंधन करें।" /></CardDescription>
-          </CardHeader>
-          <CardContent>
-             <p className="text-sm text-muted-foreground">View employee lists, set roles, and control platform access.</p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild className="w-full">
-                <Link href="/platform-admin/team">
-                    <BilingualText en="Go to Team Management" hi="टीम प्रबंधन पर जाएं" />
-                </Link>
-            </Button>
-          </CardFooter>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Growth Engine</CardTitle>
-             <CardDescription><BilingualText en="Track marketing KPIs, referrals, and user acquisition." hi="मार्केटिंग KPIs, रेफरल और उपयोगकर्ता अधिग्रहण को ट्रैक करें।" /></CardDescription>
-          </CardHeader>
-          <CardContent>
-             <p className="text-sm text-muted-foreground">Monitor Ad Spend ROI, referrals, app ratings, and influencer campaigns.</p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild className="w-full">
-                <Link href="/platform-admin/growth">
-                    <BilingualText en="Go to Growth Dashboard" hi="ग्रोथ डैशबोर्ड पर जाएं" />
-                </Link>
-            </Button>
-          </CardFooter>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center gap-2"><Newspaper className="text-primary"/> PR & Brand</CardTitle>
-            <CardDescription><BilingualText en="Monitor social sentiment and media mentions." hi="सामाजिक भावना और मीडिया उल्लेखों की निगरानी करें।" /></CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Track app reviews, social media sentiment, and news mentions.</p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild className="w-full">
-                <Link href="/platform-admin/pr-brand">
-                    <BilingualText en="Go to PR Dashboard" hi="पीआर डैशबोर्ड पर जाएं" />
-                </Link>
-            </Button>
-          </CardFooter>
-        </Card>
-
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Lock className="text-primary"/> Security Settings & Controls</CardTitle>
-            <CardDescription>
-              Manage roles, permissions, and platform-wide security configurations.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-           <Button asChild variant="outline">
-                <Link href="/platform-admin/roles">
-                    <ShieldCheck className="mr-2 h-4 w-4" />
-                    Manage Roles
-                </Link>
-            </Button>
-            <Button asChild variant="outline">
-                <Link href="/platform-admin/logs">
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Access Logs
-                </Link>
-            </Button>
-             <Button asChild variant="outline">
-                <Link href="/platform-admin/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    System Settings
-                </Link>
-            </Button>
-          </CardContent>
-          <CardFooter>
-             <p className="text-xs text-muted-foreground">
-                Note: Biometric login and device restriction are configured at the backend/app level.
-            </p>
-          </CardFooter>
-        </Card>
-
+          {/* Quick Action Center Panel */}
+          <Card className="lg:col-span-1">
+              <CardHeader>
+                  <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
+                  <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                  <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Emergency Push Notification")}>
+                      <AlertTriangle className="h-4 w-4"/>
+                      <BilingualText en="Emergency Push" hi="आपातकालीन पुश"/>
+                  </Button>
+                  <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Lock Vendor System")}>
+                      <Lock className="h-4 w-4"/>
+                      <BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक करें"/>
+                  </Button>
+                  <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
+                      <Download className="h-4 w-4"/>
+                      <BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात करें"/>
+                  </Button>
+                  <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Send Mail to All Schools")}>
+                      <Mail className="h-4 w-4"/>
+                      <BilingualText en="Send Mail to All Schools" hi="सभी स्कूलों को मेल भेजें"/>
+                  </Button>
+              </CardContent>
+          </Card>
       </div>
+
+      {/* 3. Detailed Panels Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Card className="lg:col-span-1">
+              <CardHeader>
+                  <CardTitle className="font-headline text-lg flex items-center gap-2"><HeartPulse className="text-primary"/> Ecosystem Health</CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <Tabs defaultValue="students">
+                      <TabsList className="grid w-full grid-cols-5">
+                          <TabsTrigger value="students">Students</TabsTrigger>
+                          <TabsTrigger value="schools">Schools</TabsTrigger>
+                          <TabsTrigger value="vendors">Vendors</TabsTrigger>
+                          <TabsTrigger value="riders">Riders</TabsTrigger>
+                          <TabsTrigger value="creators">Creators</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>50,000+</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>65%</TableCell></TableRow></TableBody></Table></TabsContent>
+                      <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow></TableBody></Table></TabsContent>
+                      <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow></TableBody></Table></TabsContent>
+                      <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
+                      <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>500+</TableCell></TableRow><TableRow><TableCell>Active Creators</TableCell><TableCell>82</TableCell></TableRow></TableBody></Table></TabsContent>
+                  </Tabs>
+              </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-1">
+              <CardHeader>
+                  <CardTitle className="font-headline text-lg flex items-center gap-2"><Bot className="text-primary"/> AI Engine Monitor</CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <Table>
+                      <TableBody>
+                          <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
+                          <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities</TableCell></TableRow>
+                          <TableRow><TableCell>AI Notes Usage (Weekly)</TableCell><TableCell>5,00,000+</TableCell></TableRow>
+                          <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% useful</TableCell></TableRow>
+                      </TableBody>
+                  </Table>
+              </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-1">
+              <CardHeader>
+                  <CardTitle className="font-headline text-lg flex items-center gap-2"><GitMerge className="text-primary"/> Vision Control (Moonshots)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <Table>
+                      <TableBody>
+                          <TableRow><TableCell>OSO Circle (Study Pods)</TableCell><TableCell><Badge variant="outline">Phase 2</Badge></TableCell></TableRow>
+                          <TableRow><TableCell>OSO Pocket School</TableCell><TableCell><Badge>Launched</Badge></TableCell></TableRow>
+                          <TableRow><TableCell>Coaching+Creators</TableCell><TableCell>82 Active</TableCell></TableRow>
+                          <TableRow><TableCell>Parent Mode v2</TableCell><TableCell><Badge variant="outline">Planning</Badge></TableCell></TableRow>
+                      </TableBody>
+                  </Table>
+              </CardContent>
+          </Card>
+      </div>
+
+      {/* 4. Admin Links Panel */}
+      <Card>
+          <CardHeader>
+              <CardTitle className="font-headline text-lg flex items-center gap-2"><Settings className="text-primary"/> Management Panels</CardTitle>
+              <CardDescription>Access all administrative dashboards and tools from one place.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {platformAdminLinks.map(link => (
+                  <Button key={link.href} variant="outline" className="h-auto py-3 justify-start gap-2 hover:bg-muted/70" asChild>
+                      <Link href={link.href}>
+                          <link.icon className="h-5 w-5 text-muted-foreground" />
+                          <span className="text-sm font-medium"><BilingualText en={link.titleEn} hi={link.titleHi} /></span>
+                      </Link>
+                  </Button>
+              ))}
+          </CardContent>
+      </Card>
     </div>
   );
 }
