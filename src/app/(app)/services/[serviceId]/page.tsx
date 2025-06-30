@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent, useRef, type ReactNode } from 'react';
-import { useParams, useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation'; 
 
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -114,9 +114,8 @@ function getNumericClassFromStringForProjects(classNameString?: string): string 
 }
 
 
-export default function ServicePage() {
-  const params = useParams();
-  const serviceId = params.serviceId as string;
+export default function ServicePage({ params }: { params: { serviceId: string } }) {
+  const { serviceId } = params;
   const router = useRouter();
   const { toast } = useToast();
 

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,10 +29,9 @@ interface MapMarkerConfig {
   iconSize?: { width: number; height: number };
 }
 
-export default function TrackOrderPage() {
+export default function TrackOrderPage({ params }: { params: { orderId: string } }) {
   const router = useRouter();
-  const params = useParams();
-  const orderId = params.orderId as string;
+  const { orderId } = params;
 
   const [isLoading, setIsLoading] = useState(true);
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);

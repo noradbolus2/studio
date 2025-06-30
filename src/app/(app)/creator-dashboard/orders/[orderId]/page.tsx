@@ -2,7 +2,7 @@
 // src/app/(app)/creator-dashboard/orders/[orderId]/page.tsx
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,10 +39,9 @@ const mockOrderDetails: Record<string, ProjectOrderDetail> = {
 };
 
 
-export default function CreatorOrderDetailPage() {
+export default function CreatorOrderDetailPage({ params }: { params: { orderId: string } }) {
   const router = useRouter();
-  const params = useParams();
-  const orderId = params.orderId as string;
+  const { orderId } = params;
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
