@@ -1,4 +1,3 @@
-
 // src/app/(app)/school-dashboard/reports/page.tsx
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
