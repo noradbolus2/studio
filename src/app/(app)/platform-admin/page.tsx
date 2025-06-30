@@ -184,7 +184,7 @@ export default function PlatformAdminDashboardPage() {
             </CardFooter>
         </Card>
         
-        {/* Other Panels as Placeholders */}
+        {/* Functional Links to Other Admin Pages */}
         <Card>
           <CardHeader>
             <CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Team Access</CardTitle>
@@ -201,6 +201,7 @@ export default function PlatformAdminDashboardPage() {
             </Button>
           </CardFooter>
         </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="font-headline text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Growth Engine</CardTitle>
@@ -217,7 +218,24 @@ export default function PlatformAdminDashboardPage() {
             </Button>
           </CardFooter>
         </Card>
-        <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><Newspaper className="text-primary"/> PR & Brand</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">PR and Social Sentiment panel placeholder.</p></CardContent></Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2"><Newspaper className="text-primary"/> PR & Brand</CardTitle>
+            <CardDescription><BilingualText en="Monitor social sentiment and media mentions." hi="सामाजिक भावना और मीडिया उल्लेखों की निगरानी करें।" /></CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Track app reviews, social media sentiment, and news mentions.</p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild className="w-full">
+                <Link href="/platform-admin/pr-brand">
+                    <BilingualText en="Go to PR Dashboard" hi="पीआर डैशबोर्ड पर जाएं" />
+                </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
       </div>
       
       {/* Security Layer note */}
