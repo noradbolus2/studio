@@ -17,22 +17,22 @@ interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: 'Engineer' | 'Product Manager' | 'Marketing' | 'Support Lead' | 'Finance' | 'Platform Admin';
+  role: string;
   status: 'Active' | 'On Leave' | 'Terminated';
   joinDate: string;
 }
 
 const mockTeam: TeamMember[] = [
   { id: "TM001", name: "Siddharth (CEO)", email: "siddharth.ceo@oso.com", role: "Platform Admin", status: "Active", joinDate: "2022-01-01" },
-  { id: "TM002", name: "Rohini (CTO)", email: "rohini.cto@oso.com", role: "Engineer", status: "Active", joinDate: "2022-03-15" },
-  { id: "TM003", name: "Aakash (COO)", email: "aakash.coo@oso.com", role: "Marketing", status: "Active", joinDate: "2022-05-20" },
-  { id: "TM004", name: "Priya (Product Head)", email: "priya.product@oso.com", role: "Product Manager", status: "Active", joinDate: "2022-11-01" },
-  { id: "TM005", name: "Vikram (Support Head)", email: "vikram.support@oso.com", role: "Support Lead", status: "Active", joinDate: "2023-02-10" },
-  { id: "TM006", name: "Neha (CFO)", email: "neha.cfo@oso.com", role: "Finance", status: "Active", joinDate: "2022-08-01" },
+  { id: "TM002", name: "Rohini (CTO)", email: "rohini.cto@oso.com", role: "Head of Engineering", status: "Active", joinDate: "2022-03-15" },
+  { id: "TM003", name: "Aakash (COO)", email: "aakash.coo@oso.com", role: "Head of Operations", status: "Active", joinDate: "2022-05-20" },
+  { id: "TM004", name: "Priya (Product Head)", email: "priya.product@oso.com", role: "Head of Product", status: "Active", joinDate: "2022-11-01" },
+  { id: "TM005", name: "Vikram (Support Head)", email: "vikram.support@oso.com", role: "Head of Support", status: "Active", joinDate: "2023-02-10" },
+  { id: "TM006", name: "Neha (CFO)", email: "neha.cfo@oso.com", role: "Head of Finance", status: "Active", joinDate: "2022-08-01" },
 ];
 
 
-const teamRoles = ['Engineer', 'Product Manager', 'Marketing', 'Support Lead', 'Finance', 'Platform Admin'];
+const teamRoles = ['Platform Admin', 'Head of Engineering', 'Head of Operations', 'Head of Product', 'Head of Support', 'Head of Finance'];
 
 export default function TeamManagementPage() {
   const router = useRouter();
