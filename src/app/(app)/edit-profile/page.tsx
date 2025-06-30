@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, useRef, type ChangeEvent, type FormEvent, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -189,11 +189,11 @@ export default function EditProfilePage() {
     },
   });
 
-  const roleFromParams = searchParams.get("role") || "student";
-  const isSchoolSetupParam = searchParams.get("isSchoolSetup") === 'true';
-  const emailFromParam = searchParams.get("email");
-  const nameFromParam = searchParams.get("name");
-  const designationFromParam = searchParams.get("designation");
+  const roleFromParams = useMemo(() => searchParams.get("role") || "student", [searchParams]);
+  const isSchoolSetupParam = useMemo(() => searchParams.get("isSchoolSetup") === 'true', [searchParams]);
+  const emailFromParam = useMemo(() => searchParams.get("email"), [searchParams]);
+  const nameFromParam = useMemo(() => searchParams.get("name"), [searchParams]);
+  const designationFromParam = useMemo(() => searchParams.get("designation"), [searchParams]);
 
   const watchedAvatarUrl = watch("avatarUrl");
   const watchedClassName = watch("className");
