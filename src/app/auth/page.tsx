@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, type FormEvent, useEffect } from "react";
 import Image from "next/image";
@@ -14,7 +15,6 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
-const DEFAULT_SCHOOL_ID = "defaultSchool"; // For prototype simplicity
 
 // Simplified interface for staff member data stored/retrieved for login
 interface LoggedInStaff {
@@ -35,6 +35,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [schoolId, setSchoolId] = useState(''); // Added state for School ID
   const [schoolDesignation, setSchoolDesignation] = useState('');
 
   const router = useRouter();
@@ -113,9 +114,18 @@ export default function AuthPage() {
 
       if (selectedRole === 'school') {
         // --- School Staff Sign In Logic ---
-        const schoolId = DEFAULT_SCHOOL_ID; 
+        if (!schoolId.trim()) {
+          toast({ title: "Error", description: "School ID is required for School Partner login.", variant: "destructive" });
+          setIsLoading(false); return;
+        }
+        
         const schoolStaffString = localStorage.getItem(`schoolStaff_${schoolId}`);
-        const schoolStaffList: LoggedInStaff[] = schoolStaffString ? JSON.parse(schoolStaffString) : [];
+        if (!schoolStaffString) {
+          toast({ title: "Sign In Failed", description: "Invalid School ID or no staff found for this school.", variant: "destructive" });
+          setIsLoading(false); return;
+        }
+        
+        const schoolStaffList: LoggedInStaff[] = JSON.parse(schoolStaffString);
         const staffMember = schoolStaffList.find(staff => staff.email === email && staff.password === password);
 
         if (staffMember) {
@@ -238,6 +248,15 @@ export default function AuthPage() {
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+               {mode === 'signIn' && selectedRole === 'school' && (
+                 <div className="space-y-1 text-left">
+                  <Label htmlFor="schoolId" className="flex items-center text-muted-foreground">
+                    <SchoolIconLucide className="h-4 w-4 mr-1.5 text-primary/70" />
+                    <BilingualText en="School ID" hi="स्कूल आईडी" lang={currentLang} />
+                  </Label>
+                  <Input id="schoolId" value={schoolId} onChange={(e) => setSchoolId(e.target.value)} placeholder_en="Enter your School ID" placeholder_hi="अपना स्कूल आईडी दर्ज करें" required />
+                </div>
+               )}
               {mode === 'signUp' && (
                 <div className="space-y-1 text-left">
                   <Label htmlFor="name" className="flex items-center text-muted-foreground">

@@ -1,3 +1,4 @@
+
 // src/app/(app)/school-dashboard/page.tsx
 "use client";
 
@@ -74,39 +75,38 @@ export default function SchoolDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfileFormData | null>(null);
-  const [loggedInUser, setLoggedInUser] = useState<{role?: string; designation?: string; fullName?: string; email?:string} | null>(null);
+  const [loggedInUser, setLoggedInUser] = useState<{role?: string; designation?: string; fullName?: string; email?:string; schoolId?: string;} | null>(null);
   const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const specificProfileString = localStorage.getItem('schoolProfileData');
-      const genericProfileString = localStorage.getItem('userProfileData');
       const loggedInUserString = localStorage.getItem('loggedInUser');
-      
-      let profileToUse: SchoolProfileFormData | null = null;
-      if (specificProfileString) {
-        try {
-          profileToUse = JSON.parse(specificProfileString);
-        } catch (e) { console.error("Failed to parse schoolProfileData", e); }
-      }
-      if (!profileToUse && genericProfileString) {
-         try {
-          const parsedGeneric = JSON.parse(genericProfileString);
-          if (parsedGeneric.role === 'school' && loggedInUserString) {
-            const loggedUser = JSON.parse(loggedInUserString);
-            if (parsedGeneric.email === loggedUser.email) {
-                 profileToUse = parsedGeneric;
-            }
-          }
-        } catch (e) { console.error("Failed to parse userProfileData as school profile", e); }
-      }
-      setSchoolProfile(profileToUse);
-
+      let userDetails = null;
       if (loggedInUserString) {
         try {
-          setLoggedInUser(JSON.parse(loggedInUserString));
-        } catch (e) { console.error("Failed to parse loggedInUser", e); }
+          userDetails = JSON.parse(loggedInUserString);
+          setLoggedInUser(userDetails);
+        } catch (e) { 
+          console.error("Failed to parse loggedInUser", e); 
+          setLoadingData(false);
+          return;
+        }
+      } else {
+          setLoadingData(false);
+          return;
       }
+      
+      let profileToUse: SchoolProfileFormData | null = null;
+      if (userDetails && userDetails.schoolId) {
+        const schoolProfileKey = `schoolProfileData_${userDetails.schoolId}`;
+        const specificProfileString = localStorage.getItem(schoolProfileKey);
+        if (specificProfileString) {
+          try {
+            profileToUse = JSON.parse(specificProfileString);
+          } catch (e) { console.error(`Failed to parse ${schoolProfileKey}`, e); }
+        }
+      }
+      setSchoolProfile(profileToUse);
     }
     setLoadingData(false);
   }, []);
@@ -119,7 +119,9 @@ export default function SchoolDashboardPage() {
     if (typeof window !== "undefined") {
         localStorage.removeItem('loggedInUser'); 
         localStorage.removeItem('userProfileData'); 
-        localStorage.removeItem('schoolProfileData'); 
+        if (loggedInUser?.schoolId) {
+            localStorage.removeItem(`schoolProfileData_${loggedInUser.schoolId}`);
+        }
     }
     toast({
       title: "Logged Out",
