@@ -1,3 +1,4 @@
+
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -11,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
     ShieldCheck, Users, School, Briefcase, Sparkles, Package, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
     CheckCircle, KeyRound, Download, Mail, TrendingUp, IndianRupee, Server, AlertTriangle, HeartPulse, Newspaper, Video, ThumbsUp, Lock, Power, ClipboardList,
-    GitMerge, MapPin, Activity, Code2, ArrowRight
+    GitMerge, MapPin, Activity, Code2, ArrowRight, ExternalLink
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -102,7 +103,17 @@ export default function PlatformAdminDashboardPage() {
                   </TableCell>
                 </TableRow>
                 <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: INR 25 Cr (Vendors, Creators, Riders)</TableCell></TableRow>
+                <TableRow>
+                  <TableCell className="font-medium text-destructive">Payout Pressure</TableCell>
+                  <TableCell className="text-destructive">
+                    <Button asChild variant="link" className="p-0 h-auto font-normal text-destructive hover:text-destructive">
+                        <Link href="/platform-admin/orders">
+                            Due: INR 25 Cr (Vendors, Creators, Riders)
+                            <ExternalLink size={14} className="ml-2" />
+                        </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </CardContent>
@@ -147,8 +158,8 @@ export default function PlatformAdminDashboardPage() {
                 <TabsTrigger value="creators">Creators</TabsTrigger>
               </TabsList>
               <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>50,000+</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>65%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow><TableRow><TableCell>Market Share</TableCell><TableCell>~90% of all Indian schools</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow><TableRow><TableCell>Market Share</TableCell><TableCell>~90% of stationery vendors</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow><TableRow><TableCell>Top States</TableCell><TableCell>UP, Maharashtra, Bihar</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow><TableRow><TableCell>Highest Orders</TableCell><TableCell>Delhi NCR</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time (Today)</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>500+</TableCell></TableRow><TableRow><TableCell>Best-Selling Course</TableCell><TableCell>JEE Physics Masterclass</TableCell></TableRow></TableBody></Table></TabsContent>
             </Tabs>
