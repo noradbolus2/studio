@@ -1,4 +1,3 @@
-
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -186,7 +185,22 @@ export default function PlatformAdminDashboardPage() {
         </Card>
         
         {/* Other Panels as Placeholders */}
-        <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Team Access</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">Team management panel placeholder.</p></CardContent></Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Team Access</CardTitle>
+            <CardDescription><BilingualText en="Manage internal team and access permissions." hi="आंतरिक टीम और एक्सेस अनुमतियों का प्रबंधन करें।" /></CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">View employee lists, set roles, and control platform access.</p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild className="w-full">
+                <Link href="/platform-admin/team">
+                    <BilingualText en="Go to Team Management" hi="टीम प्रबंधन पर जाएं" />
+                </Link>
+            </Button>
+          </CardFooter>
+        </Card>
         <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><TrendingUp className="text-primary"/> Growth Engine</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">Growth & Marketing KPI panel placeholder.</p></CardContent></Card>
         <Card><CardHeader><CardTitle className="font-headline text-lg flex items-center gap-2"><Newspaper className="text-primary"/> PR & Brand</CardTitle></CardHeader><CardContent><p className="text-muted-foreground">PR and Social Sentiment panel placeholder.</p></CardContent></Card>
       </div>
