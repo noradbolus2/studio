@@ -40,7 +40,7 @@ const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, no
 };
 
 const coreTeam = [
-  { name: "Siddharth (CEO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "male ceo" },
+  { name: "Abhishek verma (CEO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "male ceo" },
   { name: "Rohini (CTO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "female cto" },
   { name: "Aakash (COO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "male coo" },
   { name: "Priya (Product Head)", avatar: "https://placehold.co/40x40.png", dataAiHint: "female product manager" },
@@ -92,12 +92,16 @@ export default function PlatformAdminDashboardPage() {
             <CardTitle className="font-headline text-lg flex items-center gap-2"><Activity className="text-primary"/> Live Pulse</CardTitle>
             <CardDescription>High-level, real-time platform metrics.</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="7.5 M+" icon={Users} color="text-blue-500" />
             <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="1,50,000+" icon={Package} color="text-green-500" />
             <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 8.3 Cr" icon={IndianRupee} color="text-yellow-500" />
-            <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="5 Crore+" icon={BarChart3} color="text-purple-500" />
+            <MissionControlStatCard titleEn="Pan-India Reach" titleHi="पैन-इंडिया पहुंच" value="28 States, 8 UTs" icon={MapPin} color="text-purple-500" note="Top cities: Delhi, Mumbai"/>
         </CardContent>
+        <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4 border-t">
+            <Button variant="outline" size="sm"><Download className="mr-2 h-4 w-4"/>Download XLSSnapshot</Button>
+            <Button variant="outline" size="sm"><Mail className="mr-2 h-4 w-4"/>Mail Daily Report</Button>
+        </CardFooter>
       </Card>
 
       {/* 2. Main Panels Row */}
@@ -113,14 +117,34 @@ export default function PlatformAdminDashboardPage() {
                       <TableBody>
                           <TableRow><TableCell className="font-medium">Total Revenue</TableCell><TableCell>INR 250 Cr</TableCell></TableRow>
                           <TableRow><TableCell className="font-medium">Net Profit</TableCell><TableCell className="text-green-600 font-bold">INR 50 Cr</TableCell></TableRow>
-                          <TableRow><TableCell className="font-medium">Payout Pressure</TableCell>
-                              <TableCell>
-                                  <Button asChild variant="link" className="p-0 h-auto font-normal text-destructive hover:text-destructive">
-                                      <Link href="/platform-admin/orders">
-                                          Due: INR 25 Cr <ExternalLink size={14} className="ml-2" />
-                                      </Link>
-                                  </Button>
-                              </TableCell>
+                          <TableRow>
+                            <TableCell className="font-medium">Revenue Sources</TableCell>
+                            <TableCell className="flex flex-wrap gap-1">
+                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=education"><Badge variant="secondary">Education: INR 100 Cr</Badge></Link></Button>
+                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=delivery"><Badge variant="secondary">Delivery: INR 80 Cr</Badge></Link></Button>
+                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=coaching"><Badge variant="secondary">Coaching: INR 40 Cr</Badge></Link></Button>
+                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=subscriptions"><Badge variant="secondary">Subscriptions: INR 30 Cr</Badge></Link></Button>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Payout Pressure</TableCell>
+                            <TableCell>
+                                <Button asChild variant="link" className="p-0 h-auto font-normal text-destructive hover:text-destructive">
+                                    <Link href="/platform-admin/orders">
+                                        Due: INR 25 Cr (Vendors, Creators, Riders) <ExternalLink size={14} className="ml-2" />
+                                    </Link>
+                                </Button>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">MRR / ARR Tracker</TableCell>
+                            <TableCell>
+                                <Button asChild variant="link" className="p-0 h-auto font-normal">
+                                  <Link href="/platform-admin/analytics">
+                                      View detailed chart <ExternalLink size={14} className="ml-2" />
+                                  </Link>
+                                </Button>
+                            </TableCell>
                           </TableRow>
                       </TableBody>
                   </Table>
@@ -221,7 +245,7 @@ export default function PlatformAdminDashboardPage() {
                           <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
                           <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities</TableCell></TableRow>
                           <TableRow><TableCell>AI Notes Usage (Weekly)</TableCell><TableCell>5,00,000+</TableCell></TableRow>
-                          <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% useful</TableCell></TableRow>
+                          <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% found useful</TableCell></TableRow>
                       </TableBody>
                   </Table>
               </CardContent>

@@ -23,7 +23,7 @@ interface TeamMember {
 }
 
 const mockTeam: TeamMember[] = [
-  { id: "TM001", name: "Siddharth (CEO)", email: "siddharth.ceo@oso.com", role: "Platform Admin", status: "Active", joinDate: "2022-01-01" },
+  { id: "TM001", name: "Abhishek verma (CEO)", email: "abhishek.ceo@oso.com", role: "Platform Admin", status: "Active", joinDate: "2022-01-01" },
   { id: "TM002", name: "Rohini (CTO)", email: "rohini.cto@oso.com", role: "Head of Engineering", status: "Active", joinDate: "2022-03-15" },
   { id: "TM003", name: "Aakash (COO)", email: "aakash.coo@oso.com", role: "Head of Operations", status: "Active", joinDate: "2022-05-20" },
   { id: "TM004", name: "Priya (Product Head)", email: "priya.product@oso.com", role: "Head of Product", status: "Active", joinDate: "2022-11-01" },
