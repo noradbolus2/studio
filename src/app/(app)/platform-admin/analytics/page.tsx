@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ArrowLeft, BarChart3, Users, IndianRupee, PieChart as PieChartIcon, Download } from "lucide-react";
+import { ArrowLeft, BarChart3, Users, IndianRupee, PieChart as PieChartIcon, Download, Activity, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, XAxis, YAxis, CartesianGrid, Line, Pie, Cell, Tooltip as RechartsTooltip, PieChart } from "recharts";
@@ -12,19 +12,29 @@ import { BarChart, LineChart } from "recharts";
 
 
 const userGrowthData = [
-  { month: "Jan", users: 186 },
-  { month: "Feb", users: 305 },
-  { month: "Mar", users: 237 },
-  { month: "Apr", users: 73 },
-  { month: "May", users: 209 },
-  { month: "Jun", users: 214 },
+  { month: "Jan", users: 18600 },
+  { month: "Feb", users: 30500 },
+  { month: "Mar", users: 23700 },
+  { month: "Apr", users: 17300 },
+  { month: "May", users: 20900 },
+  { month: "Jun", users: 25000 },
 ];
 
-const revenueData = [
-  { category: "Courses", revenue: 45000 },
-  { category: "Projects", revenue: 32000 },
-  { category: "Stationery", revenue: 68000 },
-  { category: "Subscriptions", revenue: 12000 },
+const monthlyRevenueData = [
+  { month: "Jan", revenue: 9800000 },
+  { month: "Feb", revenue: 12000000 },
+  { month: "Mar", revenue: 11000000 },
+  { month: "Apr", revenue: 13500000 },
+  { month: "May", revenue: 15500000 },
+  { month: "Jun", revenue: 18756000 },
+];
+
+const topCitiesData = [
+  { city: "Delhi", users: 120000 },
+  { city: "Mumbai", users: 95000 },
+  { city: "Bengaluru", users: 88000 },
+  { city: "Pune", users: 76000 },
+  { city: "Lucknow", users: 85000 },
 ];
 
 const engagementData = [
@@ -50,10 +60,53 @@ export default function PlatformAnalyticsPage() {
         </Button>
       </div>
 
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                  <IndianRupee className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                  <div className="text-2xl font-bold">INR 1.25 Cr</div>
+                  <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+              </CardContent>
+          </Card>
+           <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                  <div className="text-2xl font-bold">25,20,450</div>
+                  <p className="text-xs text-muted-foreground">+180.1% from last year</p>
+              </CardContent>
+          </Card>
+           <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Daily Active Users</CardTitle>
+                  <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                  <div className="text-2xl font-bold">1,50,000+</div>
+                  <p className="text-xs text-muted-foreground">+19% from yesterday</p>
+              </CardContent>
+          </Card>
+           <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Monthly Active Users</CardTitle>
+                  <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                  <div className="text-2xl font-bold">8,00,000+</div>
+                  <p className="text-xs text-muted-foreground">+12% from last month</p>
+              </CardContent>
+          </Card>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5"/> User Growth</CardTitle>
+                <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5"/> New User Signups</CardTitle>
                 <CardDescription>Monthly new user signups.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -70,45 +123,64 @@ export default function PlatformAnalyticsPage() {
           </Card>
           <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><IndianRupee className="h-5 w-5"/> Revenue by Category</CardTitle>
-                <CardDescription>Revenue from different platform features.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5"/> Monthly Revenue Trend</CardTitle>
+                <CardDescription>Monthly revenue growth over time.</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={{}} className="h-[250px] w-full">
-                    <BarChart data={revenueData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                    <LineChart data={monthlyRevenueData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" />
-                        <YAxis dataKey="category" type="category" width={80} tickLine={false} axisLine={false} />
-                        <RechartsTooltip content={<ChartTooltipContent />} cursor={{fill: 'hsl(var(--muted))'}} />
-                        <Bar dataKey="revenue" fill="hsl(var(--accent))" radius={4} />
-                    </BarChart>
+                        <XAxis dataKey="month" />
+                        <YAxis tickFormatter={(value) => `₹${value / 100000}L`} />
+                        <RechartsTooltip formatter={(value: number) => `INR ${value.toLocaleString()}`} content={<ChartTooltipContent />} />
+                        <Line type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" strokeWidth={2} />
+                    </LineChart>
                 </ChartContainer>
             </CardContent>
           </Card>
-          <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><PieChartIcon className="h-5 w-5"/> Feature Engagement</CardTitle>
-                <CardDescription>Distribution of user interactions with key features.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-                <ChartContainer config={{}} className="h-[300px] w-full max-w-sm">
-                   <PieChart>
-                      <RechartsTooltip content={<ChartTooltipContent nameKey="name" />} />
-                      <Pie data={engagementData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
-                        {engagementData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                </ChartContainer>
-            </CardContent>
-             <CardFooter>
-                <Button variant="outline" className="w-full">
-                    <Download className="mr-2 h-4 w-4"/> <BilingualText en="Download Full Report" hi="पूरी रिपोर्ट डाउनलोड करें" />
-                </Button>
-            </CardFooter>
-          </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><PieChartIcon className="h-5 w-5"/> Feature Engagement</CardTitle>
+                    <CardDescription>Distribution of user interactions.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                    <ChartContainer config={{}} className="h-[250px] w-full max-w-xs">
+                       <PieChart>
+                          <RechartsTooltip content={<ChartTooltipContent nameKey="name" />} />
+                          <Pie data={engagementData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                            {engagementData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))}
+                          </Pie>
+                        </PieChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5"/> Top 5 Cities by Users</CardTitle>
+                    <CardDescription>User distribution across major cities.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ChartContainer config={{}} className="h-[250px] w-full">
+                        <BarChart data={topCitiesData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis type="number" />
+                            <YAxis dataKey="city" type="category" width={80} tickLine={false} axisLine={false} />
+                            <RechartsTooltip content={<ChartTooltipContent />} cursor={{fill: 'hsl(var(--muted))'}} />
+                            <Bar dataKey="users" fill="hsl(var(--chart-3))" radius={4} />
+                        </BarChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
       </div>
+      <Card>
+          <CardFooter className="pt-6">
+            <Button variant="outline" className="w-full">
+                <Download className="mr-2 h-4 w-4"/> <BilingualText en="Download Full Analytics Report" hi="पूरी एनालिटिक्स रिपोर्ट डाउनलोड करें" />
+            </Button>
+          </CardFooter>
+      </Card>
     </div>
   );
 }
