@@ -63,14 +63,14 @@ export default function PlatformAdminDashboardPage() {
               <CardDescription>High-level, real-time platform metrics.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="25,20,450" icon={Users} color="text-blue-500" />
-              <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="12,500" icon={Package} color="text-green-500" />
+              <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="7.5 M+" icon={Users} color="text-blue-500" />
+              <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="1,50,000+" icon={Package} color="text-green-500" />
               <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 3.33 Cr" icon={IndianRupee} color="text-yellow-500" />
-              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Learning Mins" titleHi="सीखने के मिनट" value="5 Crore+" icon={BarChart3} color="text-purple-500" />
-              <MissionControlStatCard href="/platform-admin/content-moderation" titleEn="Complaints Flagged" titleHi="शिकायतें" value="850" icon={AlertTriangle} color="text-red-500" note="150 critical" />
-              <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" icon={Server} color="text-teal-500" note="Downtime: 0.02%" />
-              <MissionControlStatCard href="/platform-admin/growth" titleEn="Pan-India Reach" titleHi="अखिल भारतीय पहुंच" value="28 States, 8 UTs" icon={MapPin} color="text-pink-500" note="Top cities: Delhi, Mumbai" />
-              <MissionControlStatCard href="/platform-admin/users" titleEn="New Signups Today" titleHi="आज के नए साइनअप" value="25,000" icon={Users} color="text-blue-500" />
+              <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="5 Crore+" icon={BarChart3} color="text-purple-500" />
+              <MissionControlStatCard href="/platform-admin/content-moderation" titleEn="Complaints Flagged" titleHi="शिकायतें" value="850" note="150 critical" icon={AlertTriangle} color="text-red-500" />
+              <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" note="Downtime: 0.02%" icon={Server} color="text-teal-500" />
+              <MissionControlStatCard href="/platform-admin/growth" titleEn="Pan-India Reach" titleHi="अखिल भारतीय पहुंच" value="28 States, 8 UTs" note="Top cities: Delhi, Mumbai" icon={MapPin} color="text-pink-500" />
+              <MissionControlStatCard href="/platform-admin/users" titleEn="New Signups Today" titleHi="आज के नए साइनअप" value="50,000+" icon={Users} color="text-blue-500" />
           </CardContent>
           <CardFooter className="justify-end gap-2 border-t pt-3 mt-4">
             <Button variant="outline" size="sm"><Download size={14} className="mr-1"/>XLS</Button>
@@ -139,11 +139,11 @@ export default function PlatformAdminDashboardPage() {
                 <TabsTrigger value="riders">Riders</TabsTrigger>
                 <TabsTrigger value="creators">Creators</TabsTrigger>
               </TabsList>
-              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>65%</TableCell></TableRow><TableRow><TableCell>Avg. Session Duration</TableCell><TableCell>28 mins</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Verified</TableCell><TableCell>52</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>48</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Fulfilment Rate</TableCell><TableCell>98.5%</TableCell></TableRow><TableRow><TableCell>Cancellation Rate</TableCell><TableCell>0.8%</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>50,000+</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>65%</TableCell></TableRow><TableRow><TableCell>Top 3 Subjects</TableCell><TableCell>Physics, Maths, Biology</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow><TableRow><TableCell>Adoption Rate</TableCell><TableCell>~90% of all Indian schools</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow><TableRow><TableCell>Market Share</TableCell><TableCell>~90% of stationery vendors</TableCell></TableRow></TableBody></Table></TabsContent>
               <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time (Today)</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
-              <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>7</TableCell></TableRow><TableRow><TableCell>Best-Selling Course</TableCell><TableCell>JEE Physics Masterclass</TableCell></TableRow></TableBody></Table></TabsContent>
+              <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>500+</TableCell></TableRow><TableRow><TableCell>Best-Selling Course</TableCell><TableCell>JEE Physics Masterclass</TableCell></TableRow></TableBody></Table></TabsContent>
             </Tabs>
           </CardContent>
         </Card>
