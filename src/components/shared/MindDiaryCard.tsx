@@ -1,8 +1,10 @@
+"use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Smile, Meh, Frown, Laugh, HeartPulse, Music2 } from "lucide-react";
 import { BilingualText } from "./BilingualText";
+import { Label } from "../ui/label";
 
 const moodEmojis = [
   { icon: Laugh, labelEn: "Joyful", labelHi: "आनंदित", color: "text-green-500" },
