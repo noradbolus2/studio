@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -112,7 +113,7 @@ export default function PlatformOrdersPage() {
                     <TableCell>{order.customerName}</TableCell>
                     <TableCell>{order.type}</TableCell>
                     <TableCell>{order.vendorOrCreator}</TableCell>
-                    <TableCell>₹{order.totalAmount.toFixed(2)}</TableCell>
+                    <TableCell>INR {order.totalAmount.toFixed(2)}</TableCell>
                     <TableCell>{getStatusBadge(order.status)}</TableCell>
                     <TableCell className="text-right space-x-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7"><Eye className="h-4 w-4" /></Button>

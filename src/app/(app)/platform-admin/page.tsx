@@ -1,3 +1,4 @@
+
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -11,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
     ShieldCheck, Users, School, Briefcase, Sparkles, Package, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
     CheckCircle, KeyRound, Download, Mail, TrendingUp, IndianRupee, Server, AlertTriangle, HeartPulse, Newspaper, Video, ThumbsUp, Lock, Power, ClipboardList,
-    GitMerge, MapPin, Activity
+    GitMerge, MapPin, Activity, Code2
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -65,7 +66,7 @@ export default function PlatformAdminDashboardPage() {
           <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="12,45,820" icon={Users} color="text-blue-500" />
               <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="2,460" icon={Package} color="text-green-500" />
-              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="₹18,75,600" icon={IndianRupee} color="text-yellow-500" />
+              <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 18,75,600" icon={IndianRupee} color="text-yellow-500" />
               <MissionControlStatCard href="/platform-admin/analytics" titleEn="Learning Mins" titleHi="सीखने के मिनट" value="1,37,420" icon={BarChart3} color="text-purple-500" />
               <MissionControlStatCard href="/platform-admin/content-moderation" titleEn="Complaints Flagged" titleHi="शिकायतें" value="110" icon={AlertTriangle} color="text-red-500" note="30 critical" />
               <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" icon={Server} color="text-teal-500" note="Downtime: 0.02%" />
@@ -88,12 +89,12 @@ export default function PlatformAdminDashboardPage() {
           <CardContent>
             <Table>
               <TableBody>
-                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education ₹1.23 Cr, Delivery ₹75 L, Coaching ₹48 L</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education INR 1.23 Cr, Delivery INR 75 L, Coaching INR 48 L</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">₹52.1 Lakh</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 52.1 Lakh</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell><TableCell>View detailed chart</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Refund Rate</TableCell><TableCell>1.2% this month</TableCell></TableRow>
-                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: ₹32 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
+                <TableRow><TableCell className="font-medium text-destructive">Payout Pressure</TableCell><TableCell className="text-destructive">Due: INR 32 Lakh (Vendors, Creators, Riders)</TableCell></TableRow>
               </TableBody>
             </Table>
           </CardContent>
@@ -194,6 +195,24 @@ export default function PlatformAdminDashboardPage() {
                 <Button variant="secondary"><Download className="mr-2"/> Download AI Performance Report (PDF)</Button>
             </CardFooter>
         </Card>
+
+        {/* Link Cards */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2"><Code2 className="text-primary"/> CodeMate AI Agent</CardTitle>
+            <CardDescription><BilingualText en="Auto-generate features and fix bugs with AI." hi="AI की मदद से स्वचालित रूप से सुविधाएँ बनाएँ और बग ठीक करें।" /></CardDescription>
+          </CardHeader>
+          <CardContent>
+             <p className="text-sm text-muted-foreground">Give plain English instructions to CodeMate to get code, tests, and security rules generated.</p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild className="w-full">
+                <Link href="/codemate">
+                    <BilingualText en="Go to CodeMate" hi="कोडमेट पर जाएं" />
+                </Link>
+            </Button>
+          </CardFooter>
+        </Card>
         
         <Card>
           <CardHeader>
@@ -201,7 +220,7 @@ export default function PlatformAdminDashboardPage() {
             <CardDescription><BilingualText en="Manage internal team and access permissions." hi="आंतरिक टीम और एक्सेस अनुमतियों का प्रबंधन करें।" /></CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">View employee lists, set roles, and control platform access.</p>
+             <p className="text-sm text-muted-foreground">View employee lists, set roles, and control platform access.</p>
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full">

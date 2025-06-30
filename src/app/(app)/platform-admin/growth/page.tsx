@@ -1,3 +1,4 @@
+
 // src/app/(app)/platform-admin/growth/page.tsx
 "use client";
 
@@ -9,7 +10,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const growthStats = [
-  { id: "roi", titleEn: "Ad Spend ROI", titleHi: "विज्ञापन खर्च ROI", value: "₹1 ➔ ₹7.8", icon: BadgePercent, note: "Last 30 days" },
+  { id: "roi", titleEn: "Ad Spend ROI", titleHi: "विज्ञापन खर्च ROI", value: "INR 1 ➔ INR 7.8", icon: BadgePercent, note: "Last 30 days" },
   { id: "referrals", titleEn: "Referrals Today", titleHi: "आज के रेफरल", value: "1,223", icon: Share2, note: "From 4 active campaigns" },
   { id: "rating", titleEn: "App Store Rating", titleHi: "ऐप स्टोर रेटिंग", value: "4.5 ⭐", icon: Star, note: "Based on 1.2k reviews" },
   { id: "sentiment", titleEn: "Social Sentiment", titleHi: "सामाजिक भावना", value: "8.7/10", icon: MessageSquare, note: "Positive mentions" },

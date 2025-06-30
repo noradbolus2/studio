@@ -1,3 +1,4 @@
+
 // src/app/(app)/school-dashboard/fees/page.tsx
 "use client";
 import { useState } from "react";
@@ -129,7 +130,7 @@ export default function SchoolFeesPage() {
                     <TableCell>{record.rollNumber}</TableCell>
                     <TableCell className="font-medium">{record.studentName}</TableCell>
                     <TableCell>{record.class}</TableCell>
-                    <TableCell>₹{record.amountDue.toFixed(2)}</TableCell>
+                    <TableCell>INR {record.amountDue.toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getStatusBadgeVariant(record.status)}>{record.status}</Badge>
                     </TableCell>
