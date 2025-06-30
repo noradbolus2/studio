@@ -16,8 +16,8 @@ export default function EditSchoolProfileRedirectPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // The recommended safe way to clone searchParams without enumeration
-    const newParams = new URLSearchParams(Array.from(searchParams.entries()));
+    // Using searchParams.toString() is the recommended way to create a mutable copy
+    const newParams = new URLSearchParams(searchParams.toString());
     newParams.set('role', 'school');
 
     // Redirect to the consolidated edit profile page
