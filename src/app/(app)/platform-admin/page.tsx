@@ -175,6 +175,7 @@ export default function PlatformAdminDashboardPage() {
                     <TableBody>
                         <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
                         <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities under mental load</TableCell></TableRow>
+                        <TableRow><TableCell>Aura Map Bugs</TableCell><TableCell>None today</TableCell></TableRow>
                         <TableRow><TableCell>AI Notes Usage</TableCell><TableCell>8,200 this week</TableCell></TableRow>
                         <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% found useful</TableCell></TableRow>
                     </TableBody>
