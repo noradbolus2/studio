@@ -1,16 +1,20 @@
 
 // src/app/(app)/school-dashboard/students/page.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users, PlusCircle, Search, Filter, Edit, Trash2, Eye } from "lucide-react";
+import { ArrowLeft, Users, PlusCircle, Search, Edit, Trash2, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 interface Student {
   id: string;
@@ -22,7 +26,9 @@ interface Student {
   status: "Active" | "Inactive";
 }
 
-const mockStudents: Student[] = [
+const LOCAL_STORAGE_KEY = "schoolStudentsList";
+
+const initialMockStudents: Student[] = [
   { id: "S1001", name: "Aarav Sharma", class: "10", section: "A", rollNumber: "10A01", parentName: "Mr. Rajesh Sharma", status: "Active" },
   { id: "S1002", name: "Priya Singh", class: "9", section: "B", rollNumber: "09B15", parentName: "Mrs. Sunita Singh", status: "Active" },
   { id: "S1003", name: "Rohan Verma", class: "10", section: "A", rollNumber: "10A02", parentName: "Mr. Anil Verma", status: "Active" },
@@ -32,17 +38,106 @@ const mockStudents: Student[] = [
 
 export default function SchoolStudentsPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const [students, setStudents] = useState<Student[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterClass, setFilterClass] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  const filteredStudents = mockStudents.filter(student => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [formData, setFormData] = useState<Omit<Student, 'id'>>({
+      name: "", class: "", section: "", rollNumber: "", parentName: "", status: "Active"
+  });
+
+  useEffect(() => {
+    try {
+        const storedStudents = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (storedStudents) {
+            setStudents(JSON.parse(storedStudents));
+        } else {
+            setStudents(initialMockStudents);
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(initialMockStudents));
+        }
+    } catch (error) {
+        console.error("Failed to load students from storage:", error);
+        setStudents(initialMockStudents);
+    }
+    setIsLoading(false);
+  }, []);
+
+  const saveStudentsToStorage = (updatedStudents: Student[]) => {
+      try {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedStudents));
+      } catch (error) {
+          console.error("Failed to save students to storage:", error);
+          toast({ title: "Error", description: "Could not save changes to your browser's storage.", variant: "destructive"});
+      }
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({...prev, [name]: value}));
+  }
+
+  const handleSelectChange = (name: keyof typeof formData, value: string) => {
+      setFormData(prev => ({...prev, [name]: value as Student['status']}));
+  }
+
+  const handleAddNewClick = () => {
+    setEditingStudent(null);
+    setFormData({ name: "", class: "", section: "", rollNumber: "", parentName: "", status: "Active" });
+    setIsDialogOpen(true);
+  };
+  
+  const handleEditClick = (student: Student) => {
+    setEditingStudent(student);
+    setFormData(student);
+    setIsDialogOpen(true);
+  };
+  
+  const handleDeleteClick = (studentId: string, studentName: string) => {
+    if (window.confirm(`Are you sure you want to delete ${studentName}?`)) {
+        const updatedStudents = students.filter(s => s.id !== studentId);
+        setStudents(updatedStudents);
+        saveStudentsToStorage(updatedStudents);
+        toast({ title: "Student Deleted", description: `${studentName} has been removed.`});
+    }
+  };
+
+  const handleSaveChanges = (e: FormEvent) => {
+      e.preventDefault();
+      if (!formData.name || !formData.class || !formData.rollNumber) {
+          toast({ title: "Missing Fields", description: "Name, Class, and Roll Number are required.", variant: "destructive"});
+          return;
+      }
+
+      let updatedStudents;
+      if (editingStudent) {
+          // Update existing student
+          updatedStudents = students.map(s => s.id === editingStudent.id ? { ...formData, id: s.id } : s);
+          toast({ title: "Student Updated", description: `${formData.name}'s details have been updated.`});
+      } else {
+          // Add new student
+          const newStudent: Student = { ...formData, id: `S${Date.now()}`};
+          updatedStudents = [newStudent, ...students];
+          toast({ title: "Student Added", description: `${formData.name} has been added to the roster.`});
+      }
+      setStudents(updatedStudents);
+      saveStudentsToStorage(updatedStudents);
+      setIsDialogOpen(false);
+  };
+
+  const filteredStudents = students.filter(student => {
     return (
       (student.name.toLowerCase().includes(searchTerm.toLowerCase()) || student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (filterClass === "all" || student.class === filterClass) &&
-      (filterStatus === "all" || student.status.toLowerCase() === filterStatus)
+      (filterStatus === "all" || student.status === filterStatus)
     );
   });
+  
+  const uniqueClasses = ["all", ...Array.from(new Set(students.map(s => s.class)))].sort();
 
   return (
     <div className="space-y-6">
@@ -79,21 +174,20 @@ export default function SchoolStudentsPage() {
                     <SelectValue placeholder_en="Filter by Class" placeholder_hi="कक्षा से फ़िल्टर करें" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="all"><BilingualText en="All Classes" hi="सभी कक्षाएं"/></SelectItem>
-                    {[...new Set(mockStudents.map(s => s.class))].sort().map(c => <SelectItem key={c} value={c}><BilingualText en={`Class ${c}`} hi={`कक्षा ${c}`}/></SelectItem>)}
+                    {uniqueClasses.map(c => <SelectItem key={c} value={c}>{c === "all" ? <BilingualText en="All Classes" hi="सभी कक्षाएं"/> : `Class ${c}`}</SelectItem>)}
                 </SelectContent>
             </Select>
-             <Select value={filterStatus} onValueChange={setFilterStatus}>
+             <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val)}>
                 <SelectTrigger className="w-full sm:w-[150px]">
                     <SelectValue placeholder_en="Filter by Status" placeholder_hi="स्थिति से फ़िल्टर करें" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all"><BilingualText en="All Status" hi="सभी स्थितियाँ"/></SelectItem>
-                    <SelectItem value="active"><BilingualText en="Active" hi="सक्रिय"/></SelectItem>
-                    <SelectItem value="inactive"><BilingualText en="Inactive" hi="निष्क्रिय"/></SelectItem>
+                    <SelectItem value="Active"><BilingualText en="Active" hi="सक्रिय"/></SelectItem>
+                    <SelectItem value="Inactive"><BilingualText en="Inactive" hi="निष्क्रिय"/></SelectItem>
                 </SelectContent>
             </Select>
-            <Button className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto" onClick={handleAddNewClick}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 <BilingualText en="Add New Student" hi="नया छात्र जोड़ें" />
             </Button>
@@ -112,7 +206,9 @@ export default function SchoolStudentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStudents.length > 0 ? filteredStudents.map((student) => (
+                {isLoading ? (
+                    <TableRow><TableCell colSpan={6} className="h-24 text-center"><LoadingSpinner/></TableCell></TableRow>
+                ) : filteredStudents.length > 0 ? filteredStudents.map((student) => (
                   <TableRow key={student.id}>
                     <TableCell className="font-medium">{student.rollNumber}</TableCell>
                     <TableCell>{student.name}</TableCell>
@@ -124,9 +220,8 @@ export default function SchoolStudentsPage() {
                         </Badge>
                     </TableCell>
                     <TableCell className="text-right space-x-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7"><Eye className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(student)}><Edit className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeleteClick(student.id, student.name)}><Trash2 className="h-4 w-4" /></Button>
                     </TableCell>
                   </TableRow>
                 )) : (
@@ -141,6 +236,60 @@ export default function SchoolStudentsPage() {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Add/Edit Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>{editingStudent ? "Edit Student Details" : "Add New Student"}</DialogTitle>
+                <DialogDescription>
+                    {editingStudent ? "Update the student's information below." : "Enter the new student's details."}
+                </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSaveChanges}>
+                <div className="space-y-4 py-3">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="name">Full Name</Label>
+                            <Input id="name" name="name" value={formData.name} onChange={handleFormChange} required />
+                        </div>
+                         <div>
+                            <Label htmlFor="rollNumber">Roll Number</Label>
+                            <Input id="rollNumber" name="rollNumber" value={formData.rollNumber} onChange={handleFormChange} required />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="class">Class</Label>
+                            <Input id="class" name="class" value={formData.class} onChange={handleFormChange} required />
+                        </div>
+                        <div>
+                            <Label htmlFor="section">Section</Label>
+                            <Input id="section" name="section" value={formData.section} onChange={handleFormChange} />
+                        </div>
+                    </div>
+                     <div>
+                        <Label htmlFor="parentName">Parent's Name</Label>
+                        <Input id="parentName" name="parentName" value={formData.parentName} onChange={handleFormChange} />
+                    </div>
+                     <div>
+                        <Label htmlFor="status">Status</Label>
+                        <Select value={formData.status} onValueChange={(val) => handleSelectChange('status', val)}>
+                            <SelectTrigger id="status"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Active">Active</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                    <Button type="submit">Save Changes</Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -157,5 +306,3 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
-
-    
