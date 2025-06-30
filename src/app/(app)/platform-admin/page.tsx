@@ -1,4 +1,3 @@
-
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -60,12 +59,22 @@ export default function PlatformAdminDashboardPage() {
               <Link href="/platform-admin/users">
                   <MissionControlStatCard titleEn="Active Students" titleHi="सक्रिय छात्र" value="1,24,582" icon={Users} color="text-blue-500" />
               </Link>
-              <MissionControlStatCard titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="246" icon={Package} color="text-green-500" />
-              <MissionControlStatCard titleEn="Revenue Today" titleHi="आज का राजस्व" value="₹1,87,560" icon={IndianRupee} color="text-yellow-500" />
-              <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="13,742" icon={BarChart3} color="text-purple-500" />
-              <MissionControlStatCard titleEn="Complaints Flagged" titleHi="शिकायतें" value="11" icon={AlertTriangle} color="text-red-500" note="3 critical" />
+              <Link href="/platform-admin/orders">
+                  <MissionControlStatCard titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="246" icon={Package} color="text-green-500" />
+              </Link>
+              <Link href="/platform-admin/analytics">
+                <MissionControlStatCard titleEn="Revenue Today" titleHi="आज का राजस्व" value="₹1,87,560" icon={IndianRupee} color="text-yellow-500" />
+              </Link>
+              <Link href="/platform-admin/analytics">
+                <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="13,742" icon={BarChart3} color="text-purple-500" />
+              </Link>
+              <Link href="/platform-admin/content-moderation">
+                <MissionControlStatCard titleEn="Complaints Flagged" titleHi="शिकायतें" value="11" icon={AlertTriangle} color="text-red-500" note="3 critical" />
+              </Link>
               <MissionControlStatCard titleEn="Uptime" titleHi="अपटाइम" value="99.98%" icon={Server} color="text-teal-500" note="Downtime: 0.02%" />
-              <MissionControlStatCard titleEn="Top City" titleHi="शीर्ष शहर" value="Lucknow" icon={MapPin} color="text-pink-500" note="2,930 active" />
+              <Link href="/platform-admin/analytics">
+                <MissionControlStatCard titleEn="Top City" titleHi="शीर्ष शहर" value="Lucknow" icon={MapPin} color="text-pink-500" note="2,930 active" />
+              </Link>
               <Card className="flex items-center justify-center p-4">
                   <Button variant="outline" size="sm" className="mr-2"><Download size={14} className="mr-1"/>XLS</Button>
                   <Button variant="outline" size="sm" className="mr-2">Snapshot</Button>
