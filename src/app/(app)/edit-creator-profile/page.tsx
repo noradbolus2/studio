@@ -22,7 +22,8 @@ export default function EditCreatorProfileRedirectPage() {
 
     // Redirect to the consolidated edit profile page
     router.replace(`/edit-profile?${newParams.toString()}`);
-  }, [router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
@@ -33,5 +34,3 @@ export default function EditCreatorProfileRedirectPage() {
     </div>
   );
 }
-
-    
