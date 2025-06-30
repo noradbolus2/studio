@@ -96,7 +96,7 @@ export default function PlatformAdminDashboardPage() {
           </CardFooter>
         </Card>
 
-        {/* 10. Quick Actions */}
+        {/* 10. Quick Action Center */}
         <Card>
             <CardHeader>
                 <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
@@ -201,5 +201,4 @@ export default function PlatformAdminDashboardPage() {
 
     </div>
   );
-
-    
+}
