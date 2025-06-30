@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, Bike, Landmark, ExternalLink } from "lucide-react";
+import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, Bike, Landmark, ExternalLink, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
@@ -20,16 +20,14 @@ export default function RoleSelectionPage() {
     router.push(`/auth?role=${role}`);
   };
 
-  const internalRoles = [
+  const allRoles = [
     { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User },
     { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck },
-  ];
-
-  const externalApps = [
-    { role: 'school', labelEn: 'OSO School Partner', labelHi: 'OSO स्कूल पार्टनर', icon: School, href: 'https://9000-firebase-studio-1750860597047.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev' },
-    { role: 'rider', labelEn: 'OSO Rider App', labelHi: 'OSO राइडर ऐप', icon: Bike, href: 'https://9000-firebase-studio-1750860970812.cluster-nzwlpk54dvagsxetkvxzbvslyi.cloudworkstations.dev' },
-    { role: 'vendor', labelEn: 'KopyKart Vendor', labelHi: 'कॉपीकार्ट विक्रेता', icon: Briefcase, href: 'https://9000-firebase-studio-1750860571220.cluster-73qgvk7hjjadkrjeyexca5ivva.cloudworkstations.dev' },
-    { role: 'unipanel', labelEn: 'OSO UniPanel', labelHi: 'OSO यूनिपैनल', icon: Landmark, href: 'https://9000-firebase-studio-1750861524292.cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev' },
+    { role: 'school', labelEn: 'School / Teacher', labelHi: 'स्कूल / शिक्षक', icon: School },
+    { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon },
+    { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase },
+    { role: 'rider', labelEn: 'Rider', labelHi: 'राइडर', icon: Bike },
+    { role: 'platform-admin', labelEn: 'Platform Admin', labelHi: 'प्लेटफ़ॉर्म एडमिन', icon: ShieldCheck },
   ];
 
   return (
@@ -65,54 +63,18 @@ export default function RoleSelectionPage() {
               <BilingualText en="Please select your role to continue." hi="कृपया जारी रखने के लिए अपनी भूमिका चुनें।" lang={currentLang} />
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-                <p className="text-xs text-muted-foreground text-left font-semibold">
-                    <BilingualText en="For Students & Parents" hi="छात्रों और अभिभावकों के लिए" lang={currentLang} />
-                </p>
-                {internalRoles.map(item => (
-                    <Button
-                    key={item.role}
-                    variant="secondary"
-                    className="w-full justify-start text-base font-medium py-3 h-14"
-                    onClick={() => handleRoleSelection(item.role)}
-                    >
-                    <item.icon className="h-6 w-6 mr-4 text-primary" />
-                    <BilingualText en={item.labelEn} hi={item.labelHi} lang={currentLang} />
-                    </Button>
-                ))}
-            </div>
-             <div className="relative py-2">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">
-                        <BilingualText en="Partner Apps" hi="पार्टनर ऐप्स" lang={currentLang} />
-                    </span>
-                </div>
-            </div>
-             <div className="space-y-2">
-                {externalApps.map(item => {
-                const buttonContent = (
-                    <>
-                    <item.icon className="h-6 w-6 mr-4 text-primary" />
-                    <span className="flex-grow text-left">
-                        <BilingualText en={item.labelEn} hi={item.labelHi} lang={currentLang} />
-                    </span>
-                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    </>
-                );
-
-                return (
-                    <Button key={item.role} variant="secondary" className="w-full justify-start text-base font-medium py-3 h-14" asChild>
-                    <Link href={item.href} target="_blank" rel="noopener noreferrer">
-                        {buttonContent}
-                    </Link>
-                    </Button>
-                );
-                })}
-            </div>
+          <CardContent className="space-y-3">
+              {allRoles.map(item => (
+                  <Button
+                  key={item.role}
+                  variant="secondary"
+                  className="w-full justify-start text-base font-medium py-3 h-14"
+                  onClick={() => handleRoleSelection(item.role)}
+                  >
+                  <item.icon className="h-6 w-6 mr-4 text-primary" />
+                  <BilingualText en={item.labelEn} hi={item.labelHi} lang={currentLang} />
+                  </Button>
+              ))}
           </CardContent>
         </Card>
 

@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, type FormEvent, useEffect } from "react";
 import Image from "next/image";
@@ -146,6 +145,8 @@ export default function AuthPage() {
               case 'vendor': signinRedirectPath = '/vendor-dashboard'; break;
               case 'creator': signinRedirectPath = '/creator-dashboard'; break;
               case 'teacher': signinRedirectPath = '/coaching-panel'; break;
+              case 'rider': signinRedirectPath = '/rider-dashboard'; break;
+              case 'platform-admin': signinRedirectPath = '/platform-admin'; break;
               case 'student': default: signinRedirectPath = '/'; break;
             }
           } else {
