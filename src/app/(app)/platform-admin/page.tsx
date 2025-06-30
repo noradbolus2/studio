@@ -74,9 +74,8 @@ export default function PlatformAdminDashboardPage() {
               <MissionControlStatCard href="/platform-admin/users" titleEn="New Signups Today" titleHi="आज के नए साइनअप" value="50,000+" icon={Users} color="text-blue-500" />
           </CardContent>
            <CardFooter className="justify-end gap-2 border-t pt-3 mt-4">
-            <Button variant="outline" size="sm"><Download size={14} className="mr-1"/>XLS</Button>
-            <Button variant="outline" size="sm">Snapshot</Button>
-            <Button variant="outline" size="sm"><Mail size={14} className="mr-1"/>Mail Report</Button>
+            <Button variant="outline" size="sm"><Download size={14} className="mr-1"/>XLSSnapshot</Button>
+            <Button variant="outline" size="sm">Mail Report</Button>
           </CardFooter>
       </Card>
 
@@ -86,12 +85,28 @@ export default function PlatformAdminDashboardPage() {
         <Card className="lg:col-span-2">
             <CardHeader>
                 <CardTitle className="font-headline text-lg flex items-center gap-2"><IndianRupee className="text-primary"/> Finance & Profitability</CardTitle>
-                <CardDescription><BilingualText en="Track revenue, expenses, and profitability across the platform." hi="प्लेटफ़ॉर्म पर राजस्व, व्यय और लाभप्रदता को ट्रैक करें।" /></CardDescription>
+                 <CardDescription><BilingualText en="Track revenue, expenses, and profitability across the platform." hi="प्लेटफ़ॉर्म पर राजस्व, व्यय और लाभप्रदता को ट्रैक करें।" /></CardDescription>
             </CardHeader>
           <CardContent>
             <Table>
               <TableBody>
-                <TableRow><TableCell className="font-medium">Revenue Sources</TableCell><TableCell>Education INR 100 Cr, Delivery INR 80 Cr, Coaching INR 40 Cr, Subscriptions INR 30 Cr</TableCell></TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Revenue Sources</TableCell>
+                  <TableCell className="flex flex-wrap gap-1">
+                      <Link href="/platform-admin/analytics?filter=education" passHref>
+                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Education: INR 100 Cr</Badge>
+                      </Link>
+                      <Link href="/platform-admin/analytics?filter=delivery" passHref>
+                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Delivery: INR 80 Cr</Badge>
+                      </Link>
+                      <Link href="/platform-admin/analytics?filter=coaching" passHref>
+                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Coaching: INR 40 Cr</Badge>
+                      </Link>
+                      <Link href="/platform-admin/analytics?filter=subscriptions" passHref>
+                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">Subscriptions: INR 30 Cr</Badge>
+                      </Link>
+                  </TableCell>
+                </TableRow>
                 <TableRow><TableCell className="font-medium">Expense Breakdown</TableCell><TableCell>Server, Vendor Payouts, Riders, Marketing</TableCell></TableRow>
                 <TableRow><TableCell className="font-medium">Net Profit (Monthly)</TableCell><TableCell className="text-green-600 font-bold">INR 50 Cr</TableCell></TableRow>
                 <TableRow>
