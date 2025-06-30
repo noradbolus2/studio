@@ -7,7 +7,7 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { 
-    GraduationCap, Edit, Video, ArrowLeft, BarChart3, MessageCircleQuestion, Users, BookOpen, AlertCircle, Watch, PlayCircle, Send, CheckCircle, RefreshCw
+    GraduationCap, Edit, Video, ArrowLeft, BarChart3, MessageCircleQuestion, Users, BookOpen, AlertCircle, Watch, PlayCircle, Send, CheckCircle, RefreshCw, PlusCircle, CalendarDays, LineChart
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -219,21 +219,27 @@ export default function CoachingPanelPage() {
         </CardHeader>
         <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <Button asChild variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5">
-            <Link href="/schedule-class">
-              <Video className="h-7 w-7 text-primary mb-1" />
-              <span className="text-xs font-medium"><BilingualText en="Schedule Live Class" hi="लाइव क्लास शेड्यूल करें" /></span>
+            <Link href="/coaching-panel/create-course">
+              <PlusCircle className="h-7 w-7 text-primary mb-1" />
+              <span className="text-xs font-medium"><BilingualText en="Create New Course" hi="नया कोर्स बनाएं" /></span>
             </Link>
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5" asChild>
-            <Link href="/creator-dashboard/upload-project">
-                <BookOpen className="h-7 w-7 text-primary mb-1" />
-                <span className="text-xs font-medium"><BilingualText en="Create Course Content" hi="कोर्स सामग्री बनाएं" /></span>
+          <Button asChild variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5">
+            <Link href="/coaching-panel/my-courses">
+              <BookOpen className="h-7 w-7 text-primary mb-1" />
+              <span className="text-xs font-medium"><BilingualText en="Manage My Courses" hi="मेरे कोर्स प्रबंधित करें" /></span>
             </Link>
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5" asChild>
-            <Link href="/creator-dashboard/my-projects">
-                <Users className="h-7 w-7 text-primary mb-1" />
-                <span className="text-xs font-medium"><BilingualText en="My Courses & Classes" hi="मेरे पाठ्यक्रम और कक्षाएं" /></span>
+           <Button asChild variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5">
+            <Link href="/coaching-panel/analytics">
+              <LineChart className="h-7 w-7 text-primary mb-1" />
+              <span className="text-xs font-medium"><BilingualText en="Student Analytics" hi="छात्र एनालिटिक्स" /></span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5">
+            <Link href="/coaching-panel/timetable">
+              <CalendarDays className="h-7 w-7 text-primary mb-1" />
+              <span className="text-xs font-medium"><BilingualText en="My Timetable" hi="मेरी समय-सारणी" /></span>
             </Link>
           </Button>
         </CardContent>
