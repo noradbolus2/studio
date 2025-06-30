@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { BookText, Search, Filter, BookOpenCheck, DownloadCloud, ShoppingCart, Info, ArrowLeft } from 'lucide-react';
 import type { ProfileFormData } from '../edit-profile/page';
-import Link from 'next/link'; // Added Link for navigation
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface NcertBook {
@@ -79,7 +80,7 @@ function getNumericClassFromString(classNameString?: string): string | null {
 export default function NcertBooksPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState<string>('all');
-  const [selectedSubject, setSelectedSubject] = useState<string>('all');
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>(['all']);
   const [selectedBoard, setSelectedBoard] = useState<string>('all');
   const [selectedMedium, setSelectedMedium] = useState<string>('all');
   const router = useRouter();
@@ -103,15 +104,42 @@ export default function NcertBooksPage() {
     }
   }, []);
 
+  const handleSubjectSelectionChange = (subject: string) => {
+    setSelectedSubjects(currentSelection => {
+      if (subject === 'all') {
+        return ['all'];
+      }
+      const selectionWithoutAll = currentSelection.filter(id => id !== 'all');
+      const isCurrentlySelected = selectionWithoutAll.includes(subject);
+
+      if (isCurrentlySelected) {
+        const newSelection = selectionWithoutAll.filter(id => id !== subject);
+        return newSelection.length === 0 ? ['all'] : newSelection;
+      } else {
+        return [...selectionWithoutAll, subject];
+      }
+    });
+  };
+
   const filteredBooks = useMemo(() => {
     return allNcertBooks.filter(book =>
       (book.titleEn.toLowerCase().includes(searchTerm.toLowerCase()) || book.titleHi.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (selectedClass === 'all' || book.class === parseInt(selectedClass)) &&
-      (selectedSubject === 'all' || book.subjectEn === selectedSubject) &&
+      (selectedSubjects.includes('all') || selectedSubjects.includes(book.subjectEn)) &&
       (selectedBoard === 'all' || book.board === selectedBoard) &&
       (selectedMedium === 'all' || book.medium === selectedMedium)
     );
-  }, [searchTerm, selectedClass, selectedSubject, selectedBoard, selectedMedium]);
+  }, [searchTerm, selectedClass, selectedSubjects, selectedBoard, selectedMedium]);
+  
+  const getSubjectDropdownTriggerText = () => {
+    if (selectedSubjects.includes('all') || selectedSubjects.length === 0) {
+      return <BilingualText en="Select Subject(s)" hi="विषय चुनें" />;
+    }
+    if (selectedSubjects.length === 1) {
+      return selectedSubjects[0];
+    }
+    return <BilingualText en={`${selectedSubjects.length} subjects selected`} hi={`${selectedSubjects.length} विषय चुने गए`} />;
+  };
 
   return (
     <div className="space-y-6">
@@ -156,17 +184,33 @@ export default function NcertBooksPage() {
             </SelectContent>
           </Select>
 
-          <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-            <SelectTrigger className="h-11">
-              <SelectValue placeholder={<BilingualText en="Select Subject" hi="विषय चुनें" />} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all"><BilingualText en="All Subjects" hi="सभी विषय" /></SelectItem>
-              {availableSubjectsEn.map(sub => (
-                <SelectItem key={sub} value={sub}>{sub}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-11 w-full justify-start text-left">
+                    <span className="truncate flex-grow">{getSubjectDropdownTriggerText()}</span>
+                     <Filter className="h-4 w-4 shrink-0 opacity-50 ml-2"/>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[240px]">
+                <DropdownMenuLabel>Filter by Subject</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem
+                    checked={selectedSubjects.includes('all')}
+                    onCheckedChange={() => handleSubjectSelectionChange('all')}
+                >
+                    All Subjects
+                </DropdownMenuCheckboxItem>
+                {availableSubjectsEn.map(sub => (
+                    <DropdownMenuCheckboxItem
+                        key={sub}
+                        checked={selectedSubjects.includes(sub)}
+                        onCheckedChange={() => handleSubjectSelectionChange(sub)}
+                    >
+                        {sub}
+                    </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Select value={selectedBoard} onValueChange={setSelectedBoard}>
             <SelectTrigger className="h-11">
@@ -231,13 +275,11 @@ export default function NcertBooksPage() {
                       </a>
                     </Button>
                     <Button asChild variant="outline" size="sm" className="w-full text-xs h-8">
-                      {/* Forcing download is tricky with cross-origin, browser usually handles PDF opening */}
                       <a href={book.pdfUrl} target="_blank" rel="noopener noreferrer" download>
                         <DownloadCloud size={14} className="mr-1.5" />
                         <BilingualText en="Download PDF" hi="पीडीएफ डाउनलोड करें" />
                       </a>
                     </Button>
-                    {/* If it was a 'buy' book with a sample PDF, the Add to Cart button would still be here based on status */}
                     {book.status === 'buy' && (
                         <Button size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90 text-xs h-8 mt-1.5">
                             <ShoppingCart size={14} className="mr-1.5" />
@@ -245,7 +287,7 @@ export default function NcertBooksPage() {
                         </Button>
                     )}
                   </>
-                ) : book.status === 'buy' ? ( // 'buy' status but no PDF sample
+                ) : book.status === 'buy' ? ( 
                   <>
                     <Button variant="outline" size="sm" className="w-full text-xs h-8 opacity-50 cursor-not-allowed">
                       <Info size={14} className="mr-1.5" />
@@ -256,7 +298,7 @@ export default function NcertBooksPage() {
                       <BilingualText en="Add to Cart" hi="कार्ट में डालें" />
                     </Button>
                   </>
-                ) : ( // 'free' status but no PDF URL
+                ) : ( 
                   <>
                     <Button variant="outline" size="sm" className="w-full text-xs h-8 opacity-50 cursor-not-allowed">
                       <BookOpenCheck size={14} className="mr-1.5" />
@@ -287,14 +329,9 @@ export default function NcertBooksPage() {
   );
 }
 
-// Add placeholder to Input component for bilingual support if not already done (it should be via global declaration)
-// declare module 'react' {
-//     interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
-//       placeholder_en?: string;
-//       placeholder_hi?: string;
-//     }
-//   }
-
-    
-
-    
+declare module 'react' {
+    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
+}
