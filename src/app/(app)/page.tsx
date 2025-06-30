@@ -42,7 +42,7 @@ function BrainCircuit(props: React.SVGProps<SVGSVGElement>): JSX.Element {
 // Mock data
 const defaultUser = {
   name: 'Abhishek Verma',
-  avatarUrl: 'https://images.unsplash.com/photo-1698356253803-838dceb68946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080',
+  avatarUrl: 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080',
   dataAiHint: 'student avatar'
 };
 
@@ -65,7 +65,7 @@ const baseQuickCategories = [
   { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["peer", "circle", "connect", "group"] },
   { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-violet-600', bgColor: 'bg-violet-100/70 hover:bg-violet-200/70', keywords: ["college", "admission", "predictor", "university"] },
   { id: 'study_dashboard', labelEn: 'Study Dashboard', labelHi: 'अध्ययन डैशबोर्ड', icon: ClipboardList, href: '/study-dashboard', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["study", "dashboard", "notes", "offline", "tracker", "progress"] },
-  { id: 'schedule_class', labelEn: 'Schedule Class', labelHi: 'कक्षा शेड्यूल करें', icon: Video, href: '/schedule-class', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["class", "live", "schedule", "online class"] },
+  { id: 'schedule_class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Video, href: '/schedule-class', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["class", "live", "schedule", "online class"] },
 ];
 
 const recommendationsMock = [
@@ -588,7 +588,7 @@ export default function ModernHomePage() {
       </section>
 
       <Dialog open={isLocationModalOpen} onOpenChange={setIsLocationModalOpen}>
-        <DialogContent className="sm:max-w-[425px] glass-card border-border">
+        <DialogContent className="sm:max-w-[425px] z-[150]">
           <DialogHeader>
             <DialogTitle><BilingualText en="Select Your Location" hi="अपना स्थान चुनें" lang={currentLang} /></DialogTitle>
             <DialogDescription>
