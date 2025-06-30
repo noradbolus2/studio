@@ -57,7 +57,9 @@ export default function PlatformAdminDashboardPage() {
               <CardDescription>High-level, real-time platform metrics.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <MissionControlStatCard titleEn="Active Students" titleHi="सक्रिय छात्र" value="1,24,582" icon={Users} color="text-blue-500" />
+              <Link href="/platform-admin/users">
+                  <MissionControlStatCard titleEn="Active Students" titleHi="सक्रिय छात्र" value="1,24,582" icon={Users} color="text-blue-500" />
+              </Link>
               <MissionControlStatCard titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="246" icon={Package} color="text-green-500" />
               <MissionControlStatCard titleEn="Revenue Today" titleHi="आज का राजस्व" value="₹1,87,560" icon={IndianRupee} color="text-yellow-500" />
               <MissionControlStatCard titleEn="Learning Mins" titleHi="सीखने के मिनट" value="13,742" icon={BarChart3} color="text-purple-500" />
