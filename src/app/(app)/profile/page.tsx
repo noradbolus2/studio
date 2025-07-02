@@ -439,13 +439,6 @@ export default function ProfilePage() {
                     <BilingualText en="Manage Linked Accounts" hi="जुड़े हुए खाते प्रबंधित करें" />
                 </Link>
             </Button>
-            {/* Placeholder for Platform Admin Link */}
-            <Button asChild variant="outline" className="w-full justify-start gap-2">
-                <Link href="/platform-admin">
-                    <ShieldCheck className="h-5 w-5 text-destructive" />
-                    <BilingualText en="Platform Admin" hi="प्लेटफ़ॉर्म एडमिन" />
-                </Link>
-            </Button>
         </CardContent>
       </Card>
       
