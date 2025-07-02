@@ -59,7 +59,7 @@ const baseQuickCategories = [
   { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["peer", "circle", "connect", "group"] },
   { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-violet-600', bgColor: 'bg-violet-100/70 hover:bg-violet-200/70', keywords: ["college", "admission", "predictor", "university"] },
   { id: 'study_dashboard', labelEn: 'Study Dashboard', labelHi: 'अध्ययन डैशबोर्ड', icon: ClipboardList, href: '/study-dashboard', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["study", "dashboard", "notes", "offline", "tracker", "progress"] },
-  { id: 'schedule_class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Video, href: '/schedule-class', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["class", "live", "schedule", "online class"] },
+  { id: 'schedule_class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Video, href: '/live-classes/all', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["class", "live", "schedule", "online class"] },
 ];
 
 const recommendationsMock = [
@@ -163,6 +163,7 @@ export default function ModernHomePage() {
     let liveNow: LiveClass[] = [];
     let upcoming: LiveClass[] = [];
     let recorded: LiveClass[] = [];
+    let personalizedClassesFound = false;
 
     if (profileData) {
         const examTargetLower = profileData.examTarget?.toLowerCase();
@@ -174,30 +175,30 @@ export default function ModernHomePage() {
                 matches = true;
             } else if (classNameLower && lc.classLevel?.toLowerCase().includes(classNameLower)) {
                 matches = true;
-            } else if (!examTargetLower && !classNameLower && (lc.classLevel?.toLowerCase() === 'all ages' || !lc.classLevel)) { // Show "All Ages" if no specific target
-                matches = true;
             }
 
             if (matches) {
+                personalizedClassesFound = true;
                 if (lc.status === 'live') liveNow.push(lc);
                 else if (lc.status === 'upcoming') upcoming.push(lc);
                 else if (lc.status === 'recorded') recorded.push(lc);
             }
         });
     }
-    // If few or no personalized results, fill with general ones to ensure content
-    const fillIfNeeded = (arr: LiveClass[], type: 'live' | 'upcoming' | 'recorded', minCount = 2) => {
-        if (arr.length < minCount) {
-            const generalClasses = allLiveClasses.filter(lc => lc.status === type && !arr.find(pLc => pLc.id === lc.id));
-            arr.push(...generalClasses.slice(0, minCount - arr.length));
-        }
-        return arr;
-    };
+    
+    // If no profile or no personalized classes were found, show all classes.
+    if (!profileData || !personalizedClassesFound) {
+        allLiveClasses.forEach(lc => {
+            if (lc.status === 'live' && !liveNow.find(c => c.id === lc.id)) liveNow.push(lc);
+            else if (lc.status === 'upcoming' && !upcoming.find(c => c.id === lc.id)) upcoming.push(lc);
+            else if (lc.status === 'recorded' && !recorded.find(c => c.id === lc.id)) recorded.push(lc);
+        });
+    }
 
     setPersonalizedLiveClasses({
-        liveNow: fillIfNeeded(liveNow, 'live', 1).sort((a,b) => (b.viewers || 0) - (a.viewers || 0)), // Sort live by viewers
-        upcoming: fillIfNeeded(upcoming, 'upcoming', 2).sort((a,b) => new Date(a.dateTime!).getTime() - new Date(b.dateTime!).getTime()),
-        recorded: fillIfNeeded(recorded, 'recorded', 2).sort((a,b) => new Date(b.dateTime!).getTime() - new Date(a.dateTime!).getTime()),
+        liveNow: liveNow.sort((a,b) => (b.viewers || 0) - (a.viewers || 0)),
+        upcoming: upcoming.sort((a,b) => new Date(a.dateTime!).getTime() - new Date(b.dateTime!).getTime()),
+        recorded: recorded.sort((a,b) => new Date(b.dateTime!).getTime() - new Date(a.dateTime!).getTime()),
     });
 
   }, [profileData, allLiveClasses]);
