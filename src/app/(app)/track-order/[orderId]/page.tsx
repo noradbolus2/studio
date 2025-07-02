@@ -29,6 +29,15 @@ interface MapMarkerConfig {
   iconSize?: { width: number; height: number };
 }
 
+const mockTrackingData: TrackingStep[] = [
+  { id: 'placed', statusEn: 'Order Placed', statusHi: 'ऑर्डर दिया गया', icon: ShoppingBag, completed: false },
+  { id: 'confirmed', statusEn: 'Order Confirmed by Vendor', statusHi: 'विक्रेता द्वारा ऑर्डर की पुष्टि', icon: CheckCircle, completed: false },
+  { id: 'preparing', statusEn: 'Preparing Your Order', statusHi: 'आपका ऑर्डर तैयार हो रहा है', icon: Package, completed: false },
+  { id: 'out_for_delivery', statusEn: 'Rider En Route', statusHi: 'राइडर रास्ते में है', icon: Truck, completed: false },
+  { id: 'delivered', statusEn: 'Delivered to Your Location', statusHi: 'आपके स्थान पर पहुंचाया गया', icon: HomeIcon, completed: false },
+];
+
+
 export default function TrackOrderPage({ params }: { params: { orderId: string } }) {
   const router = useRouter();
   const { orderId } = params;
@@ -52,14 +61,6 @@ export default function TrackOrderPage({ params }: { params: { orderId: string }
     lng: (vendorLocation.lng + deliveryLocation.lng) / 2,
   }), [vendorLocation, deliveryLocation]);
 
-
-  const mockTrackingData: TrackingStep[] = [
-    { id: 'placed', statusEn: 'Order Placed', statusHi: 'ऑर्डर दिया गया', icon: ShoppingBag, completed: false },
-    { id: 'confirmed', statusEn: 'Order Confirmed by Vendor', statusHi: 'विक्रेता द्वारा ऑर्डर की पुष्टि', icon: CheckCircle, completed: false },
-    { id: 'preparing', statusEn: 'Preparing Your Order', statusHi: 'आपका ऑर्डर तैयार हो रहा है', icon: Package, completed: false },
-    { id: 'out_for_delivery', statusEn: 'Rider En Route', statusHi: 'राइडर रास्ते में है', icon: Truck, completed: false },
-    { id: 'delivered', statusEn: 'Delivered to Your Location', statusHi: 'आपके स्थान पर पहुंचाया गया', icon: HomeIcon, completed: false },
-  ];
 
   useEffect(() => {
     if (orderId) {
