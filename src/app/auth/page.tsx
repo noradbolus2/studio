@@ -2,7 +2,7 @@
 "use client";
 import { useState, type FormEvent, useEffect } from "react";
 import Image from "next/image";
-import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon, ArrowLeft, Briefcase, School as SchoolIconLucide, Sparkles as CreatorIcon, Edit3, Landmark, ShieldCheck } from "lucide-react";
+import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon, ArrowLeft, Briefcase, School as SchoolIconLucide, Sparkles as CreatorIcon, Bike, Landmark, ExternalLink, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { ProfileFormData } from "../(app)/edit-profile/page";
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 
@@ -92,8 +93,19 @@ export default function AuthPage() {
         return; 
       } else {
         // --- Other Roles Sign Up Logic ---
+        const userProfile: ProfileFormData = {
+          role: selectedRole || 'student',
+          fullName: name,
+          email: email,
+          avatarUrl: '',
+          dataAiHint: '',
+          country: 'India',
+        };
+
         localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student' }));
         localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student' }));
+        localStorage.setItem('userProfileData', JSON.stringify(userProfile)); // Store initial profile
+
         queryParams.set('isNewUser', 'true');
         queryParams.set('name', name);
         const otherSignupRedirectPath = `/edit-profile?${queryParams.toString()}`;
@@ -129,13 +141,21 @@ export default function AuthPage() {
         const staffMember = schoolStaffList.find(staff => staff.email === email && staff.password === password);
 
         if (staffMember) {
-          localStorage.setItem('loggedInUser', JSON.stringify({
+          const loggedInInfo = {
             email: staffMember.email,
             fullName: staffMember.name,
             role: 'school', 
             designation: staffMember.role, 
             schoolId: staffMember.schoolId 
-          }));
+          };
+          localStorage.setItem('loggedInUser', JSON.stringify(loggedInInfo));
+          
+          // Also set userProfileData for the staff member on login
+           localStorage.setItem('userProfileData', JSON.stringify({
+              ...loggedInInfo,
+              schoolName: localStorage.getItem(`schoolProfileData_${schoolId}`) ? JSON.parse(localStorage.getItem(`schoolProfileData_${schoolId}`)!).name : ''
+           }));
+
           toast({ title: "Sign In Successful", description: `Welcome back, ${staffMember.name}!` });
           signinRedirectPath = '/school-dashboard';
         } else {
@@ -148,7 +168,19 @@ export default function AuthPage() {
           const storedCredentials = JSON.parse(storedCredentialsString);
           if (storedCredentials.password === password) {
             const userRole = storedCredentials.role || selectedRole || 'student';
-            localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: storedCredentials.fullName, role: userRole }));
+            const loggedInInfo = { email, fullName: storedCredentials.fullName, role: userRole };
+            localStorage.setItem('loggedInUser', JSON.stringify(loggedInInfo));
+            // On sign in, also load the full profile into userProfileData
+            const userProfileString = localStorage.getItem('userProfileData'); // This assumes there's one user profile, which we should enforce
+            if(userProfileString) {
+                const userProfile = JSON.parse(userProfileString);
+                // Simple check to see if the stored profile matches the logging-in user
+                if (userProfile.email !== email) {
+                    console.warn("Mismatch in stored profile, clearing for new user.");
+                    localStorage.removeItem('userProfileData');
+                }
+            }
+
             toast({ title: "Sign In Successful", description: "Welcome back!" });
             switch (userRole) {
               case 'parent': signinRedirectPath = '/parent-mode'; break;

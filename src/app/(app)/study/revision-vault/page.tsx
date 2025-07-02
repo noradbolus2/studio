@@ -14,20 +14,24 @@ import type { DoubtInboxItem } from '@/types/doubt-inbox';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { ProfileFormData } from '../../edit-profile/page';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 
-const mockRevisionItems: RevisionVaultItem[] = [
+const REVISION_VAULT_KEY = "revisionVaultItems";
+const DOUBT_INBOX_KEY = "doubtInbox_mock";
+
+const initialMockRevisionItems: RevisionVaultItem[] = [
   { id: 'rev1', lectureId: "phy_motion_01", lectureTitle: "Physics - Newton’s 2nd Law", timestamp: "00:10:12", note: "Acceleration = net force / mass — derivation samajh nahi aaya", subject: "Physics", chapter: "Motion Ch 1", topic: "Newton's 2nd Law", status: 'revision' },
   { id: 'rev2', lectureId: "maths_trigo_02", lectureTitle: "Maths - Trigonometry Part 2", timestamp: "00:14:58", note: "tan(A) ka derivation logic samajh nahi aaya", subject: "Maths", chapter: "Trigonometry", topic: "tan(A) Derivation", status: 'revision' },
   { id: 'rev3', lectureId: "bio_cells_01", lectureTitle: "Biology - Cell Structure", timestamp: "00:08:22", note: "Mitochondria function needs more clarity.", subject: "Biology", chapter: "The Cell", topic: "Mitochondria", status: 'doubt_asked' },
   { id: 'rev4', lectureId: "chem_organic_04", lectureTitle: "Chemistry - Alkanes", timestamp: "00:21:05", subject: "Chemistry", chapter: "Organic Chemistry", topic: "Nomenclature", status: 'resolved', teacherResponse: { type: 'text', content: 'Remember the IUPAC rules for the longest chain. Shared a PDF in your notes.' } },
 ];
 
-const DOUBT_INBOX_KEY = "doubtInbox_mock";
 
 export default function RevisionVaultPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [vaultItems, setVaultItems] = useState<RevisionVaultItem[]>(mockRevisionItems);
+  const [vaultItems, setVaultItems] = useState<RevisionVaultItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
 
   useEffect(() => {
@@ -37,7 +41,17 @@ export default function RevisionVaultPage() {
       if (storedProfile) {
         setProfileData(JSON.parse(storedProfile));
       }
+      
+      const storedVaultItems = localStorage.getItem(REVISION_VAULT_KEY);
+      if (storedVaultItems) {
+        setVaultItems(JSON.parse(storedVaultItems));
+      } else {
+        // If nothing in storage, initialize with mock data
+        setVaultItems(initialMockRevisionItems);
+        localStorage.setItem(REVISION_VAULT_KEY, JSON.stringify(initialMockRevisionItems));
+      }
     }
+    setIsLoading(false);
   }, []);
 
   const handleAskTeacher = (itemId: string) => {
@@ -67,7 +81,7 @@ export default function RevisionVaultPage() {
     try {
       const storedInboxString = localStorage.getItem(DOUBT_INBOX_KEY);
       const existingInbox: DoubtInboxItem[] = storedInboxString ? JSON.parse(storedInboxString) : [];
-      const updatedInbox = [...existingInbox, doubtItem];
+      const updatedInbox = [doubtItem, ...existingInbox];
       localStorage.setItem(DOUBT_INBOX_KEY, JSON.stringify(updatedInbox));
     } catch (e) {
       console.error("Failed to update mock doubt inbox:", e);
@@ -75,12 +89,13 @@ export default function RevisionVaultPage() {
       return;
     }
 
-    // 3. Update the local state of the vault item
-    setVaultItems(prevItems =>
-      prevItems.map(item =>
+    // 3. Update the local state and localStorage for the vault item
+    const updatedVaultItems = vaultItems.map(item =>
         item.id === itemId ? { ...item, status: 'doubt_asked' } : item
-      )
     );
+    setVaultItems(updatedVaultItems);
+    localStorage.setItem(REVISION_VAULT_KEY, JSON.stringify(updatedVaultItems));
+
 
     // 4. Notify user
     toast({
@@ -97,6 +112,14 @@ export default function RevisionVaultPage() {
       default: return <Badge>{status}</Badge>;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

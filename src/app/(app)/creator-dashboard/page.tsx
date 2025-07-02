@@ -55,10 +55,13 @@ export default function CreatorDashboardPage() {
   
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedProfileString = localStorage.getItem('creatorProfileData');
+      const storedProfileString = localStorage.getItem('userProfileData');
       if (storedProfileString) {
         try {
-          setCreatorProfile(JSON.parse(storedProfileString));
+          const parsedProfile = JSON.parse(storedProfileString);
+           if (parsedProfile.role === 'creator') {
+            setCreatorProfile(parsedProfile);
+          }
         } catch (e) {
           console.error("Failed to parse creator profile from localStorage", e);
         }
@@ -118,7 +121,7 @@ export default function CreatorDashboardPage() {
         </Button>
         <Briefcase className="h-12 w-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold font-headline text-primary">
-          {creatorProfile?.creatorName || creatorProfile?.contactPersonName || <BilingualText en="Creator Dashboard" hi="क्रिएटर डैशबोर्ड" />}
+          {creatorProfile?.creatorName || creatorProfile?.fullName || <BilingualText en="Creator Dashboard" hi="निर्माता डैशबोर्ड" />}
         </h1>
         <p className="text-muted-foreground">
           <BilingualText en="Manage your content, orders, and earnings." hi="अपनी सामग्री, ऑर्डर और कमाई का प्रबंधन करें।" />

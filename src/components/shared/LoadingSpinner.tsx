@@ -1,3 +1,4 @@
+
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +13,12 @@ export function LoadingSpinner({ size = 24, className }: LoadingSpinnerProps) {
       size={size}
       className={cn('animate-spin text-primary', className)}
     />
+  );
+}
+
+export function BrainCircuit(props: React.SVGProps<SVGSVGElement>): JSX.Element {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a10 10 0 0 0-6.8 17.2c.4.2.7.4.9.7.4.4.8.8 1.3 1.1A10 10 0 0 0 12 22a10 10 0 0 0 7.6-3.9c.4-.4.9-.7 1.3-1.1.2-.3.5-.5.9-.7A10 10 0 0 0 12 2Z"/><path d="M12 12a2.5 2.5 0 0 0-2.5 2.5V17a2.5 2.5 0 0 0 5 0v-2.5A2.5 2.5 0 0 0 12 12Z"/><path d="M20 8.5c.5-.5.5-1 0-1.5A7.48 7.48 0 0 0 12 4a7.48 7.48 0 0 0-8 4.5c-.5.5-.5 1 0 1.5"/><path d="M4.5 12A7.48 7.48 0 0 0 12 20a7.48 7.48 0 0 0 7.5-8"/></svg>
   );
 }
 

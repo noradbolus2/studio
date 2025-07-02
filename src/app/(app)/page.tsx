@@ -16,6 +16,7 @@ import {
   FileSignature,
   History
 } from 'lucide-react';
+import { BrainCircuit } from '@/components/shared/LoadingSpinner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,13 +32,6 @@ import { useToast } from '@/hooks/use-toast';
 import { ClassCard, type LiveClass } from '@/components/live-class/ClassCard';
 import type { ProfileFormData } from './edit-profile/page'; 
 import { Badge } from '@/components/ui/badge';
-
-function BrainCircuit(props: React.SVGProps<SVGSVGElement>): JSX.Element {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a10 10 0 0 0-6.8 17.2c.4.2.7.4.9.7.4.4.8.8 1.3 1.1A10 10 0 0 0 12 22a10 10 0 0 0 7.6-3.9c.4-.4.9-.7 1.3-1.1.2-.3.5-.5.9-.7A10 10 0 0 0 12 2Z"/><path d="M12 12a2.5 2.5 0 0 0-2.5 2.5V17a2.5 2.5 0 0 0 5 0v-2.5A2.5 2.5 0 0 0 12 12Z"/><path d="M20 8.5c.5-.5.5-1 0-1.5A7.48 7.48 0 0 0 12 4a7.48 7.48 0 0 0-8 4.5c-.5.5-.5 1 0 1.5"/><path d="M4.5 12A7.48 7.48 0 0 0 12 20a7.48 7.48 0 0 0 7.5-8"/></svg>
-  );
-}
-
 
 // Mock data
 const defaultUser = {
@@ -101,16 +95,7 @@ const mockLocations = [
     { id: "del_modern", name: "Modern School, Barakhamba Road, Delhi", type: "School" },
 ];
 
-
-const mockLiveClassesAll: LiveClass[] = [
-  { id: 'live1', titleEn: 'Live: Solving Complex Equations', titleHi: 'लाइव: जटिल समीकरणों का समाधान', subjectEn: 'Maths', subjectHi: 'गणित', creatorNameEn: 'Prof. Algebra', creatorNameHi: 'प्रो. बीजगणित', thumbnailUrl: 'https://images.unsplash.com/photo-1635372722656-389f87a941b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYXRocyUyMGVxdWF0aW9uJTIwbGl2ZXxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintThumbnail: 'maths equation live', status: 'live', dateTime: new Date().toISOString(), viewers: 102, classLevel: 'JEE', creatorAvatarUrl: 'https://images.unsplash.com/photo-1581089778245-3ce67677f718?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYXRoJTIwdGVhY2hlciUyMGF2YXRhcnxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintAvatar: 'math teacher avatar' },
-  { id: 'live2', titleEn: 'NEET Biology: Genetics Q&A', titleHi: 'नीट जीवविज्ञान: आनुवंशिकी प्रश्नोत्तर', subjectEn: 'Biology', subjectHi: 'जीवविज्ञान', creatorNameEn: 'Dr. Bio', creatorNameHi: 'डॉ. बायो', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'biology dna live', status: 'live', dateTime: new Date().toISOString(), viewers: 150, classLevel: 'NEET', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'biology teacher' },
-  { id: 'upcoming1', titleEn: 'Organic Chemistry Basics', titleHi: 'कार्बनिक रसायन विज्ञान की मूल बातें', subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', creatorNameEn: 'Dr. Chem', creatorNameHi: 'डॉ. केम', thumbnailUrl: 'https://images.unsplash.com/flagged/photo-1560130346-48963a3bca33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjaGVtaXN0cnklMjBsZWN0dXJlfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintThumbnail: 'chemistry lecture', status: 'upcoming', countdown: 'Tomorrow 6 PM', dateTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), classLevel: 'NEET', creatorAvatarUrl: 'https://images.unsplash.com/photo-1595440067890-aa9548ec678b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGVtaXN0cnklMjB0ZWFjaGVyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintAvatar: 'chemistry teacher' },
-  { id: 'upcoming2', titleEn: 'Physics: Laws of Motion', titleHi: 'भौतिकी: गति के नियम', subjectEn: 'Physics', subjectHi: 'भौतिकी', creatorNameEn: 'Newton Jr.', creatorNameHi: 'न्यूटन जूनियर', thumbnailUrl: 'https://images.unsplash.com/photo-1538393362382-95cfe47eaa2e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwaHlzaWNzJTIwZ3Jhdml0eSUyMGFwcGxlfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintThumbnail: 'physics gravity apple', status: 'upcoming', countdown: 'In 2 hours', dateTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), classLevel: 'Class 11', creatorAvatarUrl: 'https://images.unsplash.com/photo-1597570889212-97f48e632dad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaHlzaWNzJTIwcHJvZmVzc29yfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintAvatar: 'physics professor' },
-  { id: 'upcoming_jee', titleEn: 'JEE Maths: Calculus Workshop', titleHi: 'जेईई गणित: कैलकुलस कार्यशाला', subjectEn: 'Maths', subjectHi: 'गणित', creatorNameEn: 'Calculus King', creatorNameHi: 'कैलकुलस किंग', thumbnailUrl: 'https://placehold.co/300x168.png', dataAiHintThumbnail: 'calculus graph math', status: 'upcoming', countdown: 'Next Monday 7 PM', dateTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'JEE Advanced', creatorAvatarUrl: 'https://placehold.co/40x40.png', dataAiHintAvatar: 'maths expert' },
-  { id: 'recorded1', titleEn: 'Intro to Python Programming', titleHi: 'पायथन प्रोग्रामिंग का परिचय', subjectEn: 'Computer Science', subjectHi: 'कंप्यूटर विज्ञान', creatorNameEn: 'Code Master', creatorNameHi: 'कोड मास्टर', thumbnailUrl: 'https://images.unsplash.com/photo-1676859024015-c98cbe0b6747?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxweXRob24lMjBsb2dvfGVufDB8fHx8MTc1MTE1NTM5N3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintThumbnail: 'python logo', status: 'recorded', duration: '55min', dateTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'All Ages', creatorAvatarUrl: 'https://images.unsplash.com/photo-1648526605941-d87e594f24f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb2RlciUyMGF2YXRhcnxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintAvatar: 'coder avatar' },
-  { id: 'recorded_neet_chem', titleEn: 'NEET Chemistry: Mole Concept', titleHi: 'नीट रसायन विज्ञान: मोल अवधारणा', subjectEn: 'Chemistry', subjectHi: 'रसायन विज्ञान', creatorNameEn: 'Mole Maestro', creatorNameHi: 'मोल मेस्ट्रो', thumbnailUrl: 'https://images.unsplash.com/photo-1617155092918-480ef0b17330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaGVtaXN0cnklMjBiZWFrZXJzfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintThumbnail: 'chemistry beakers', status: 'recorded', duration: '48min', dateTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), classLevel: 'NEET', creatorAvatarUrl: 'https://images.unsplash.com/photo-1511629091441-ee46146481b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzY2llbmNlJTIwdGVhY2hlciUyMGF2YXRhcnxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHintAvatar: 'science teacher avatar' },
-];
+const LIVE_CLASSES_KEY = "liveClasses_mock";
 
 type LangState = 'en' | 'hi' | 'hng';
 
@@ -130,6 +115,7 @@ export default function ModernHomePage() {
   const [displayAvatar, setDisplayAvatar] = useState(defaultUser.avatarUrl);
   const [displayAvatarHint, setDisplayAvatarHint] = useState(defaultUser.dataAiHint);
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState(recommendationsMock.slice(0,4)); // Show 4 by default
+  const [allLiveClasses, setAllLiveClasses] = useState<LiveClass[]>([]);
   const [personalizedLiveClasses, setPersonalizedLiveClasses] = useState({ liveNow: [] as LiveClass[], upcoming: [] as LiveClass[], recorded: [] as LiveClass[] });
 
 
@@ -146,6 +132,11 @@ export default function ModernHomePage() {
         } catch (err) {
           console.warn("Could not parse profile data from localStorage for Home Page:", err);
         }
+      }
+
+      const storedClasses = localStorage.getItem(LIVE_CLASSES_KEY);
+      if (storedClasses) {
+        setAllLiveClasses(JSON.parse(storedClasses));
       }
     }
   }, []);
@@ -177,7 +168,7 @@ export default function ModernHomePage() {
         const examTargetLower = profileData.examTarget?.toLowerCase();
         const classNameLower = profileData.className?.toLowerCase();
 
-        mockLiveClassesAll.forEach(lc => {
+        allLiveClasses.forEach(lc => {
             let matches = false;
             if (examTargetLower && lc.classLevel?.toLowerCase().includes(examTargetLower)) {
                 matches = true;
@@ -197,7 +188,7 @@ export default function ModernHomePage() {
     // If few or no personalized results, fill with general ones to ensure content
     const fillIfNeeded = (arr: LiveClass[], type: 'live' | 'upcoming' | 'recorded', minCount = 2) => {
         if (arr.length < minCount) {
-            const generalClasses = mockLiveClassesAll.filter(lc => lc.status === type && !arr.find(pLc => pLc.id === lc.id));
+            const generalClasses = allLiveClasses.filter(lc => lc.status === type && !arr.find(pLc => pLc.id === lc.id));
             arr.push(...generalClasses.slice(0, minCount - arr.length));
         }
         return arr;
@@ -209,7 +200,7 @@ export default function ModernHomePage() {
         recorded: fillIfNeeded(recorded, 'recorded', 2).sort((a,b) => new Date(b.dateTime!).getTime() - new Date(a.dateTime!).getTime()),
     });
 
-  }, [profileData]);
+  }, [profileData, allLiveClasses]);
 
 
   const startSlideShow = () => {

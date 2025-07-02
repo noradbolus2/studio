@@ -10,9 +10,9 @@ import { Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChec
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import type { SchoolProfileFormData as VendorProfileFormData } from '../edit-vendor-profile/page'; // Using same structure for now
+import type { ProfileFormData as VendorProfileFormData } from '../edit-profile/page'; 
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { Badge } from "@/components/ui/badge"; // Added this import
+import { Badge } from "@/components/ui/badge"; 
 
 const vendorStats = [
   { id: "pending_orders", labelEn: "Pending Orders", labelHi: "लंबित आदेश", value: "12", icon: ListChecks, color: "text-orange-500" },
@@ -49,10 +49,13 @@ export default function VendorDashboardPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedProfileString = localStorage.getItem('vendorProfileData');
+      const storedProfileString = localStorage.getItem('userProfileData');
       if (storedProfileString) {
         try {
-          setVendorProfile(JSON.parse(storedProfileString));
+          const parsedProfile = JSON.parse(storedProfileString);
+          if (parsedProfile.role === 'vendor') {
+            setVendorProfile(parsedProfile);
+          }
         } catch (e) {
           console.error("Failed to parse vendor profile from localStorage", e);
         }
@@ -86,7 +89,7 @@ export default function VendorDashboardPage() {
           <BilingualText en="Manage your products, orders, and earnings efficiently." hi="अपने उत्पादों, आदेशों और कमाई का कुशलतापूर्वक प्रबंधन करें।" />
         </p>
          <Button asChild variant="outline" size="sm" className="mt-2">
-            <Link href="/edit-vendor-profile">
+            <Link href="/edit-profile?role=vendor">
                 <Edit className="mr-2 h-4 w-4"/>
                 <BilingualText en="Edit Vendor Info" hi="विक्रेता जानकारी संपादित करें" />
             </Link>

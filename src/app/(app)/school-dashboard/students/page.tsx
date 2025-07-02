@@ -1,3 +1,4 @@
+
 // src/app/(app)/school-dashboard/students/page.tsx
 "use client";
 import { useState, useEffect, useMemo, type FormEvent } from "react";
@@ -31,8 +32,6 @@ interface Student {
   status: "Active" | "Inactive";
 }
 
-const LOCAL_STORAGE_KEY = "schoolStudentsList";
-
 const initialMockStudents: Student[] = [
   { id: "S1001", name: "Aarav Sharma", class: "10", section: "A", rollNumber: "10A01", parentName: "Mr. Rajesh Sharma", status: "Active" },
   { id: "S1002", name: "Priya Singh", class: "9", section: "B", rollNumber: "09B15", parentName: "Mrs. Sunita Singh", status: "Active" },
@@ -47,6 +46,7 @@ export default function SchoolStudentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterClass, setFilterClass] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [schoolId, setSchoolId] = useState<string | null>(null);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
@@ -55,24 +55,38 @@ export default function SchoolStudentsPage() {
   });
 
   useEffect(() => {
-    try {
-        const storedStudents = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (storedStudents) {
-            setStudents(JSON.parse(storedStudents));
-        } else {
+    let currentSchoolId: string | null = null;
+    const loggedInUserString = localStorage.getItem('loggedInUser');
+    if (loggedInUserString) {
+      const loggedInUser = JSON.parse(loggedInUserString);
+      currentSchoolId = loggedInUser.schoolId;
+      setSchoolId(currentSchoolId);
+    }
+
+    if (currentSchoolId) {
+        try {
+            const storedStudents = localStorage.getItem(`schoolStudents_${currentSchoolId}`);
+            if (storedStudents) {
+                setStudents(JSON.parse(storedStudents));
+            } else {
+                setStudents(initialMockStudents); // You might want to have school-specific mocks or an empty array
+                localStorage.setItem(`schoolStudents_${currentSchoolId}`, JSON.stringify(initialMockStudents));
+            }
+        } catch (error) {
+            console.error("Failed to load students from storage:", error);
             setStudents(initialMockStudents);
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(initialMockStudents));
         }
-    } catch (error) {
-        console.error("Failed to load students from storage:", error);
-        setStudents(initialMockStudents);
     }
     setIsLoading(false);
   }, []);
 
   const saveStudentsToStorage = (updatedStudents: Student[]) => {
+      if (!schoolId) {
+        toast({ title: "Error", description: "School ID not found. Cannot save changes.", variant: "destructive"});
+        return;
+      }
       try {
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedStudents));
+          localStorage.setItem(`schoolStudents_${schoolId}`, JSON.stringify(updatedStudents));
       } catch (error) {
           console.error("Failed to save students to storage:", error);
           toast({ title: "Error", description: "Could not save changes to your browser's storage.", variant: "destructive"});
