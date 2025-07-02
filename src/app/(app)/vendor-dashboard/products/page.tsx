@@ -21,6 +21,7 @@ interface Product {
   price: number;
   stock: number;
   status: "Active" | "Inactive";
+  schoolName?: string;
 }
 
 const VENDOR_PRODUCTS_KEY = "vendorProducts_mock";
@@ -33,6 +34,10 @@ const initialMockProducts: Product[] = [
   { id: "PROD005", name: "Camel Poster Colors (12 Shades)", category: "Art Supplies", price: 120, stock: 75, status: "Active" },
   { id: "PROD006", name: "Sticky Notes (Yellow, 3x3)", category: "Adhesives", price: 25, stock: 8, status: "Active" },
   { id: "PROD007", name: "Parker Vector Gold Roller Ball Pen", category: "Pens", price: 250, stock: 40, status: "Active" },
+  { id: "UNI001", name: "Boys Shirt (Summer, White)", category: "School Uniforms", price: 450, stock: 100, status: "Active", schoolName: "Delhi Public School, Noida" },
+  { id: "UNI002", name: "Girls Skirt (Summer, Grey)", category: "School Uniforms", price: 400, stock: 80, status: "Active", schoolName: "Delhi Public School, Noida" },
+  { id: "UNI003", name: "Unisex Blazer (Winter, Navy Blue)", category: "School Uniforms", price: 1200, stock: 50, status: "Active", schoolName: "Modern School, Barakhamba" },
+  { id: "UNI004", name: "House T-Shirt (Red)", category: "School Uniforms", price: 300, stock: 120, status: "Active", schoolName: "All Schools" },
 ];
 
 export default function VendorProductsPage() {
@@ -41,7 +46,7 @@ export default function VendorProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'status'>>({ name: '', category: '', price: 0, stock: 0 });
+  const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'status'>>({ name: '', category: '', price: 0, stock: 0, schoolName: '' });
 
   useEffect(() => {
     try {
@@ -83,7 +88,7 @@ export default function VendorProductsPage() {
     saveProductsToStorage(updatedProducts);
     toast({ title: "Product Added!", description: `"${productToAdd.name}" has been added.`});
     setIsAddDialogOpen(false);
-    setNewProduct({ name: '', category: '', price: 0, stock: 0 }); // Reset form
+    setNewProduct({ name: '', category: '', price: 0, stock: 0, schoolName: '' }); // Reset form
   };
 
   const handleDeleteProduct = (productId: string) => {
@@ -159,6 +164,9 @@ export default function VendorProductsPage() {
                             <Card key={product.id} className="grid grid-cols-4 items-center p-2">
                                 <div className="col-span-2">
                                     <p className="font-medium text-sm">{product.name}</p>
+                                     {product.schoolName && (
+                                      <p className="text-xs text-muted-foreground">For: <span className="font-medium">{product.schoolName}</span></p>
+                                    )}
                                     <p className="text-xs text-muted-foreground">ID: {product.id}</p>
                                 </div>
                                 <div className="text-center">
@@ -207,9 +215,15 @@ export default function VendorProductsPage() {
                             <Label htmlFor="name">Product Name</Label>
                             <Input id="name" value={newProduct.name} onChange={(e) => setNewProduct(p => ({...p, name: e.target.value}))} />
                         </div>
-                        <div>
-                            <Label htmlFor="category">Category</Label>
-                            <Input id="category" value={newProduct.category} onChange={(e) => setNewProduct(p => ({...p, category: e.target.value}))} />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor="category">Category</Label>
+                                <Input id="category" value={newProduct.category} onChange={(e) => setNewProduct(p => ({...p, category: e.target.value}))} />
+                            </div>
+                            <div>
+                                <Label htmlFor="schoolName">School Name (if uniform)</Label>
+                                <Input id="schoolName" value={newProduct.schoolName || ''} onChange={(e) => setNewProduct(p => ({...p, schoolName: e.target.value}))} />
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
