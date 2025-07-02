@@ -14,16 +14,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { ProfileFormData } from "../(app)/edit-profile/page";
+import type { StaffMember } from '@/types/school-staff';
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 
 // Simplified interface for staff member data stored/retrieved for login
-interface LoggedInStaff {
-  email: string;
-  password?: string; // Password check is direct within handleSubmit
-  name: string;
-  role: string; // This 'role' is the designation from schoolStaff list
-  schoolId: string;
+interface LoggedInStaff extends StaffMember {
+  // Password is part of StaffMember now
 }
 
 
@@ -46,8 +43,10 @@ export default function AuthPage() {
   const selectedRole = searchParams.get('role');
 
   useEffect(() => {
-    if (selectedRole !== 'school') {
-      setSchoolDesignation('');
+    // If the role is 'school', force sign-in mode.
+    if (selectedRole === 'school') {
+      setMode('signIn');
+      setSchoolDesignation(''); // Reset designation if role changes
     }
   }, [selectedRole]);
 
@@ -73,48 +72,37 @@ export default function AuthPage() {
         toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" });
         setIsLoading(false); return;
       }
-
+      
+      // School signup is disabled from this page, handled by CEO dashboard.
       if (selectedRole === 'school') {
-        if (!schoolDesignation) {
-          toast({ title: "Error", description: "Please select your designation for school registration.", variant: "destructive" });
-          setIsLoading(false); return;
-        }
-        // --- School Admin Sign Up Logic ---
-        localStorage.setItem('tempInitialAdminCredentials', JSON.stringify({ email, password, fullName: name, designation: schoolDesignation }));
-        
-        queryParams.set('isSchoolSetup', 'true'); 
-        queryParams.set('name', name); 
-        queryParams.set('designation', schoolDesignation); 
-        const schoolSignupRedirectPath = `/edit-profile?${queryParams.toString()}`;
-        
-        toast({ title: "Admin Registration Initiated", description: "Please complete school profile setup." });
-        router.push(schoolSignupRedirectPath);
-        setIsLoading(false); 
-        return; 
-      } else {
-        // --- Other Roles Sign Up Logic ---
-        const userProfile: ProfileFormData = {
-          role: selectedRole || 'student',
-          fullName: name,
-          email: email,
-          avatarUrl: '',
-          dataAiHint: '',
-          country: 'India',
-        };
-
-        localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student' }));
-        localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student' }));
-        localStorage.setItem('userProfileData', JSON.stringify(userProfile)); // Store initial profile
-
-        queryParams.set('isNewUser', 'true');
-        queryParams.set('name', name);
-        const otherSignupRedirectPath = `/edit-profile?${queryParams.toString()}`;
-
-        toast({ title: "Sign Up Successful", description: "Please complete your profile." });
-        router.push(otherSignupRedirectPath);
-        setIsLoading(false);
-        return; 
+         toast({ title: "Registration Error", description: "School registration must be done by a Platform Administrator.", variant: "destructive" });
+         setIsLoading(false);
+         return;
       }
+      
+      // --- Other Roles Sign Up Logic ---
+      const userProfile: ProfileFormData = {
+        role: selectedRole || 'student',
+        fullName: name,
+        email: email,
+        avatarUrl: '',
+        dataAiHint: '',
+        country: 'India',
+      };
+
+      localStorage.setItem(`userCredentials_${email}`, JSON.stringify({ password, fullName: name, role: selectedRole || 'student' }));
+      localStorage.setItem('loggedInUser', JSON.stringify({ email, fullName: name, role: selectedRole || 'student' }));
+      localStorage.setItem('userProfileData', JSON.stringify(userProfile)); // Store initial profile
+
+      queryParams.set('isNewUser', 'true');
+      queryParams.set('name', name);
+      const otherSignupRedirectPath = `/edit-profile?${queryParams.toString()}`;
+
+      toast({ title: "Sign Up Successful", description: "Please complete your profile." });
+      router.push(otherSignupRedirectPath);
+      setIsLoading(false);
+      return; 
+      
     } else { // Sign In
       // --- Sign In Validations ---
       if (!email.trim() || !password.trim()) {
@@ -150,10 +138,13 @@ export default function AuthPage() {
           };
           localStorage.setItem('loggedInUser', JSON.stringify(loggedInInfo));
           
+          const schoolProfileString = localStorage.getItem(`schoolProfileData_${schoolId}`);
+          const schoolName = schoolProfileString ? JSON.parse(schoolProfileString).schoolName : '';
+
           // Also set userProfileData for the staff member on login
            localStorage.setItem('userProfileData', JSON.stringify({
               ...loggedInInfo,
-              schoolName: localStorage.getItem(`schoolProfileData_${schoolId}`) ? JSON.parse(localStorage.getItem(`schoolProfileData_${schoolId}`)!).name : ''
+              schoolName: schoolName
            }));
 
           toast({ title: "Sign In Successful", description: `Welcome back, ${staffMember.name}!` });
@@ -210,9 +201,6 @@ export default function AuthPage() {
 
 
   const getFullNameLabel = () => {
-    if (selectedRole === 'school' && mode === 'signUp') {
-        return { en: "Your Full Name (Admin/Principal)", hi: "आपका पूरा नाम (एडमिन/प्रधानाचार्य)" };
-    }
     switch (selectedRole) {
         case 'vendor':
         case 'creator':
@@ -262,9 +250,7 @@ export default function AuthPage() {
               )}
               {selectedRole && (
                 <span className="text-sm text-muted-foreground block mt-1">
-                  (<BilingualText en={`as ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}`} hi={`${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)} के रूप में`} lang={currentLang} />
-                  {mode === 'signUp' && selectedRole === 'school' && " Administrator"}
-                  )
+                  (<BilingualText en={`as ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}`} hi={`${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)} के रूप में`} lang={currentLang} />)
                 </span>
               )}
             </CardTitle>
@@ -273,14 +259,14 @@ export default function AuthPage() {
                 <BilingualText en="Welcome back! Please enter your details." hi="वापसी पर स्वागत है! कृपया अपना विवरण दर्ज करें।" lang={currentLang} />
               ) : (
                 <BilingualText 
-                    en={selectedRole === 'school' ? "Register as School Administrator to set up your school." : "Create your OSO account."} 
-                    hi={selectedRole === 'school' ? "अपने स्कूल को स्थापित करने के लिए स्कूल प्रशासक के रूप में पंजीकरण करें।" : "अपना OSO खाता बनाएं।"} lang={currentLang} />
+                    en="Create your OSO account." 
+                    hi="अपना OSO खाता बनाएं।" lang={currentLang} />
               )}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
-               {mode === 'signIn' && selectedRole === 'school' && (
+               {selectedRole === 'school' && (
                  <div className="space-y-1 text-left">
                   <Label htmlFor="schoolId" className="flex items-center text-muted-foreground">
                     <SchoolIconLucide className="h-4 w-4 mr-1.5 text-primary/70" />
@@ -321,24 +307,6 @@ export default function AuthPage() {
                     </Label>
                     <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder_en="Confirm your password" placeholder_hi="अपने पासवर्ड की पुष्टि करें" required={mode === 'signUp'} />
                   </div>
-                  {selectedRole === 'school' && (
-                    <div className="space-y-1 text-left">
-                        <Label htmlFor="schoolDesignation" className="flex items-center text-muted-foreground">
-                            <ShieldCheck className="h-4 w-4 mr-1.5 text-primary/70" />
-                            <BilingualText en="Your Designation (as Admin)" hi="आपकी पदवी (एडमिन के रूप में)" lang={currentLang} />*
-                        </Label>
-                        <Select value={schoolDesignation} onValueChange={setSchoolDesignation} required>
-                            <SelectTrigger id="schoolDesignation">
-                                <SelectValue placeholder_en="Select your designation" placeholder_hi="अपनी पदवी चुनें" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {schoolDesignations.map(desig => (
-                                    <SelectItem key={desig} value={desig}>{desig}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                  )}
                 </>
               )}
             </CardContent>
@@ -348,21 +316,23 @@ export default function AuthPage() {
                 {mode === 'signIn' ? (
                   <BilingualText en="Sign In" hi="साइन इन करें" lang={currentLang} />
                 ) : (
-                  <BilingualText en={selectedRole === 'school' ? "Register School Admin & Proceed" : "Sign Up & Proceed"} hi={selectedRole === 'school' ? "स्कूल एडमिन पंजीकृत करें और आगे बढ़ें" : "साइन अप करें और आगे बढ़ें"} lang={currentLang} />
+                  <BilingualText en="Sign Up & Proceed" hi="साइन अप करें और आगे बढ़ें" lang={currentLang} />
                 )}
               </Button>
-              <Button
-                type="button"
-                variant="link"
-                onClick={() => setMode(mode === 'signIn' ? 'signUp' : 'signIn')}
-                className="text-primary hover:text-primary/80 text-sm"
-              >
-                {mode === 'signIn' ? (
-                  <BilingualText en="Don't have an account? Sign Up" hi="खाता नहीं है? साइन अप करें" lang={currentLang} />
-                ) : (
-                  <BilingualText en="Already have an account? Sign In" hi="पहले से ही खाता है? साइन इन करें" lang={currentLang} />
-                )}
-              </Button>
+              {selectedRole !== 'school' && (
+                <Button
+                    type="button"
+                    variant="link"
+                    onClick={() => setMode(mode === 'signIn' ? 'signUp' : 'signIn')}
+                    className="text-primary hover:text-primary/80 text-sm"
+                >
+                    {mode === 'signIn' ? (
+                    <BilingualText en="Don't have an account? Sign Up" hi="खाता नहीं है? साइन अप करें" lang={currentLang} />
+                    ) : (
+                    <BilingualText en="Already have an account? Sign In" hi="पहले से ही खाता है? साइन इन करें" lang={currentLang} />
+                    )}
+                </Button>
+              )}
             </CardFooter>
           </form>
         </Card>

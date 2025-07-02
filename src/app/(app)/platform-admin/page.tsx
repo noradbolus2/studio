@@ -1,7 +1,7 @@
-
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
+import { useState, useEffect, type FormEvent } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -11,13 +11,19 @@ import { Badge } from "@/components/ui/badge";
 import { 
     ShieldCheck, Users, School, Briefcase, Sparkles, Package, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
     CheckCircle, KeyRound, Download, Mail, TrendingUp, IndianRupee, Server, AlertTriangle, HeartPulse, Newspaper, Video, ThumbsUp, Lock, Power, ClipboardList,
-    GitMerge, MapPin, Activity, Code2, ArrowRight, ExternalLink
+    GitMerge, MapPin, Activity, Code2, ArrowRight, ExternalLink, PlusCircle
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { StaffMember } from '@/types/school-staff'; 
+import type { ProfileFormData } from '../../edit-profile/page';
 
 
 const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note, href }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string, href?: string }) => {
@@ -60,16 +66,92 @@ const platformAdminLinks = [
     { href: "/codemate", icon: Code2, titleEn: "CodeMate AI Agent", titleHi: "कोडमेट एआई एजेंट" },
 ];
 
+const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
+
 
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isRegisterSchoolOpen, setIsRegisterSchoolOpen] = useState(false);
+  const [newSchoolData, setNewSchoolData] = useState({
+    schoolName: "",
+    city: "",
+    adminName: "",
+    adminEmail: "",
+    adminPassword: "",
+    adminDesignation: "Principal",
+  });
 
   const handleActionClick = (actionName: string) => {
     toast({
       title: "Action Triggered (Simulated)",
       description: `${actionName} has been initiated.`,
     });
+  };
+
+  const handleRegisterSchool = (e: FormEvent) => {
+    e.preventDefault();
+    if (!newSchoolData.schoolName || !newSchoolData.adminName || !newSchoolData.adminEmail || !newSchoolData.adminPassword) {
+      toast({ title: "Error", description: "Please fill all required fields.", variant: "destructive" });
+      return;
+    }
+    
+    // 1. Generate unique School ID
+    const schoolId = `sch_${Date.now()}`;
+    
+    // 2. Create School Profile object
+    const schoolProfile: ProfileFormData = {
+      schoolId: schoolId,
+      schoolName: newSchoolData.schoolName,
+      city: newSchoolData.city,
+      principalName: newSchoolData.adminDesignation.toLowerCase().includes('principal') ? newSchoolData.adminName : '',
+      contactPersonName: newSchoolData.adminName,
+      contactPersonEmail: newSchoolData.adminEmail,
+      schoolDesignation: newSchoolData.adminDesignation,
+      role: 'school',
+      fullName: newSchoolData.schoolName, // Using school name as the 'fullName' for the school entity profile
+      email: newSchoolData.adminEmail, // Using admin email as the primary contact for the school entity
+    };
+    
+    // 3. Create initial Admin Staff Member object
+    const adminStaff: StaffMember = {
+      id: `staff_${Date.now()}`,
+      name: newSchoolData.adminName,
+      email: newSchoolData.adminEmail,
+      password: newSchoolData.adminPassword,
+      role: newSchoolData.adminDesignation,
+      subjectOrDepartment: "Administration",
+      contact: "",
+      status: "Active",
+      schoolId: schoolId,
+    };
+    
+    // 4. Save to localStorage
+    try {
+      localStorage.setItem(`schoolProfileData_${schoolId}`, JSON.stringify(schoolProfile));
+      localStorage.setItem(`schoolStaff_${schoolId}`, JSON.stringify([adminStaff]));
+    } catch (err) {
+      toast({ title: "Storage Error", description: "Could not save school data to browser storage.", variant: "destructive" });
+      return;
+    }
+    
+    // 5. Show success and credentials
+    toast({
+      title: "School Registered Successfully!",
+      description: (
+        <div className="text-xs">
+          <p>School: {newSchoolData.schoolName}</p>
+          <p className="font-bold">School ID: {schoolId}</p>
+          <p>Admin Email: {newSchoolData.adminEmail}</p>
+          <p>Admin Password: {newSchoolData.adminPassword}</p>
+          <p className="mt-2 text-destructive">Please securely share these credentials with the school administrator.</p>
+        </div>
+      ),
+      duration: 15000,
+    });
+    
+    setIsRegisterSchoolOpen(false);
+    setNewSchoolData({ schoolName: "", city: "", adminName: "", adminEmail: "", adminPassword: "", adminDesignation: "Principal" });
   };
   
   return (
@@ -226,10 +308,10 @@ export default function PlatformAdminDashboardPage() {
                           <TabsTrigger value="creators">Creators</TabsTrigger>
                       </TabsList>
                       <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>50,000+</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>65%</TableCell></TableRow></TableBody></Table></TabsContent>
-                      <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow></TableBody></Table></TabsContent>
-                      <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow></TableBody></Table></TabsContent>
-                      <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table></TabsContent>
-                      <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>500+</TableCell></TableRow><TableRow><TableCell>Active Creators</TableCell><TableCell>82</TableCell></TableRow></TableBody></Table></TabsContent>
+                      <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" onClick={() => setIsRegisterSchoolOpen(true)}><PlusCircle className="mr-2 h-4 w-4"/> Register New School</Button></TabsContent>
+                      <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" variant="outline">Onboard New Vendor</Button></TabsContent>
+                      <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" variant="outline">Onboard New Rider</Button></TabsContent>
+                      <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>500+</TableCell></TableRow><TableRow><TableCell>Active Creators</TableCell><TableCell>82</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" variant="outline">Onboard New Creator</Button></TabsContent>
                   </Tabs>
               </CardContent>
           </Card>
@@ -284,6 +366,58 @@ export default function PlatformAdminDashboardPage() {
               ))}
           </CardContent>
       </Card>
+      
+      {/* School Registration Dialog */}
+       <Dialog open={isRegisterSchoolOpen} onOpenChange={setIsRegisterSchoolOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Register New School</DialogTitle>
+                <DialogDescription>
+                    Onboard a new school to the OSO platform. A unique School ID will be generated.
+                </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRegisterSchool}>
+                <div className="space-y-4 py-3">
+                    <h4 className="text-sm font-semibold">School Details</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="schoolName">School Name*</Label>
+                            <Input id="schoolName" value={newSchoolData.schoolName} onChange={(e) => setNewSchoolData(p => ({...p, schoolName: e.target.value}))} required />
+                        </div>
+                        <div>
+                            <Label htmlFor="city">City*</Label>
+                            <Input id="city" value={newSchoolData.city} onChange={(e) => setNewSchoolData(p => ({...p, city: e.target.value}))} required/>
+                        </div>
+                    </div>
+                     <hr/>
+                    <h4 className="text-sm font-semibold pt-2">Initial Admin Account</h4>
+                     <div>
+                        <Label htmlFor="adminName">Admin Full Name*</Label>
+                        <Input id="adminName" value={newSchoolData.adminName} onChange={(e) => setNewSchoolData(p => ({...p, adminName: e.target.value}))} required/>
+                    </div>
+                     <div>
+                        <Label htmlFor="adminEmail">Admin Email (Login ID)*</Label>
+                        <Input id="adminEmail" type="email" value={newSchoolData.adminEmail} onChange={(e) => setNewSchoolData(p => ({...p, adminEmail: e.target.value}))} required/>
+                    </div>
+                     <div>
+                        <Label htmlFor="adminPassword">Set Initial Password*</Label>
+                        <Input id="adminPassword" type="text" value={newSchoolData.adminPassword} onChange={(e) => setNewSchoolData(p => ({...p, adminPassword: e.target.value}))} required/>
+                    </div>
+                     <div>
+                        <Label htmlFor="adminDesignation">Admin Designation*</Label>
+                        <Select value={newSchoolData.adminDesignation} onValueChange={(val) => setNewSchoolData(p => ({...p, adminDesignation: val}))} required>
+                            <SelectTrigger id="adminDesignation"><SelectValue /></SelectTrigger>
+                            <SelectContent>{schoolDesignations.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="submit">Register School</Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -13,23 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import type { StaffMember } from '@/types/school-staff';
 
-const DEFAULT_SCHOOL_ID = "defaultSchool"; // For prototype simplicity
+
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
-
-
-interface StaffMember {
-  id: string;
-  name: string;
-  email: string; // Used for login
-  password?: string; // For prototype, admin sets this. In real app, this would be hashed or invite-based.
-  role: "Teacher" | "Admin" | "Support Staff" | "Principal" | "Librarian" | "Accountant" | string; // Allow string for "Other"
-  subjectOrDepartment: string;
-  contact: string;
-  status: "Active" | "Inactive";
-  schoolId: string;
-}
-
 
 export default function SchoolStaffPage() {
   const router = useRouter();
@@ -37,6 +24,7 @@ export default function SchoolStaffPage() {
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
+  const [schoolId, setSchoolId] = useState<string | null>(null);
 
   const [isAddStaffDialogOpen, setIsAddStaffDialogOpen] = useState(false);
   const [newStaffData, setNewStaffData] = useState({
@@ -51,9 +39,16 @@ export default function SchoolStaffPage() {
 
   useEffect(() => {
     // Load staff from localStorage
-    const storedStaffString = localStorage.getItem(`schoolStaff_${DEFAULT_SCHOOL_ID}`);
-    if (storedStaffString) {
-      setStaffList(JSON.parse(storedStaffString));
+    const loggedInUserString = localStorage.getItem('loggedInUser');
+    if (loggedInUserString) {
+        const loggedInUser = JSON.parse(loggedInUserString);
+        if (loggedInUser.schoolId) {
+            setSchoolId(loggedInUser.schoolId);
+            const storedStaffString = localStorage.getItem(`schoolStaff_${loggedInUser.schoolId}`);
+            if (storedStaffString) {
+                setStaffList(JSON.parse(storedStaffString));
+            }
+        }
     }
   }, []);
 
@@ -68,6 +63,10 @@ export default function SchoolStaffPage() {
 
   const handleAddNewStaff = (e: FormEvent) => {
     e.preventDefault();
+    if (!schoolId) {
+        toast({ title: "Error", description: "School ID not found. Cannot add staff.", variant: "destructive" });
+        return;
+    }
     if (newStaffData.password !== newStaffData.confirmPassword) {
         toast({ title: "Error", description: "Passwords do not match.", variant: "destructive"});
         return;
@@ -86,12 +85,12 @@ export default function SchoolStaffPage() {
         subjectOrDepartment: newStaffData.subjectOrDepartment,
         contact: newStaffData.contact,
         status: "Active",
-        schoolId: DEFAULT_SCHOOL_ID,
+        schoolId: schoolId,
     };
 
     const updatedStaffList = [...staffList, newStaffMember];
     setStaffList(updatedStaffList);
-    localStorage.setItem(`schoolStaff_${DEFAULT_SCHOOL_ID}`, JSON.stringify(updatedStaffList));
+    localStorage.setItem(`schoolStaff_${schoolId}`, JSON.stringify(updatedStaffList));
 
     toast({ title: "Staff Added", description: `${newStaffData.name} has been added successfully.`});
     setIsAddStaffDialogOpen(false);
