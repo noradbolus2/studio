@@ -20,7 +20,7 @@ export type MindDiaryReflectionInput = z.infer<typeof MindDiaryReflectionInputSc
 const MindDiaryReflectionOutputSchema = z.object({
   motivationalLine: z.string().describe("A short, encouraging motivational line in Hinglish (Roman script)."),
   actionableTip: z.string().describe("A small, practical actionable tip in Hinglish (Roman script) to improve learning clarity or well-being."),
-  respondedInLanguage: z.literal('hng').describe("Confirms the response is in Hinglish ('hng').")
+  respondedInLanguage: z.enum(['hng']).describe("Confirms the response is in Hinglish ('hng').")
 });
 export type MindDiaryReflectionOutput = z.infer<typeof MindDiaryReflectionOutputSchema>;
 
