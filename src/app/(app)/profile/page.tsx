@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, ClockIcon, BarChart3, Trophy, ShieldCheck, Gem, ArrowRight } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, BarChart3, Trophy } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -15,6 +15,8 @@ import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast'; 
 import { format } from "date-fns";
 import type { ProfileFormData } from '../edit-profile/page'; // Import the type
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from '@/lib/utils';
 
 // UserProfile interface now mirrors ProfileFormData for easier mapping, with display-specific transformations done in JSX
 interface UserProfileDisplay extends Omit<ProfileFormData, 'dateOfBirth'> {
@@ -56,6 +58,7 @@ interface LeaderboardEntry {
   avatarUrl?: string;
   dataAiHint?: string;
   category?: string; 
+  isCurrentUser?: boolean;
 }
 
 const mockOrderHistory: OrderHistoryItem[] = [
@@ -75,13 +78,29 @@ const mockClassHistory: ClassHistoryItem[] = [
   { id: "CLS102", title: "Introduction to Physics", subject: "Physics", date: "2024-07-09", time: "02:00 PM", duration: "45 mins" },
 ];
 
-const mockLeaderboardSample: LeaderboardEntry[] = [
-  { rank: 1, name: "Priya Sharma", score: "99.2%", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student female avatar", category: "Class 12 CBSE Topper" },
-  { rank: 2, name: "Rohan Mehra", score: "710/720", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student male avatar", category: "NEET UG - All India" },
-  { rank: 3, name: "Aisha Khan", score: "AIR 25", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student girl avatar", category: "JEE Advanced" },
-  { rank: 125, name: "Vikram Singh", score: "85%", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student boy avatar", category: "Class 10 ICSE - Top 500" },
-  { rank: 450, name: "Sneha Reddy", score: "Class 10 + State Board + CUET", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student female south", category: "Combined Ranker" },
-];
+const mockLeaderboards: Record<string, LeaderboardEntry[]> = {
+  class: [
+    { rank: 1, name: "Anika Singh", score: "98.5%", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student girl avatar", category: "Class 11 Science" },
+    { rank: 2, name: "Rohan Desai", score: "97.8%", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student male avatar", category: "Class 11 Science" },
+    { rank: 3, name: "Aisha Khan", score: "97.2%", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student girl avatar", category: "Class 11 Science" },
+  ],
+  board: [
+    { rank: 1, name: "Vidya Iyer", score: "99.2% (CBSE)", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student girl avatar", category: "All India CBSE" },
+    { rank: 2, name: "Arjun Mehta", score: "98.9% (ICSE)", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student boy avatar", category: "All India ICSE" },
+    { rank: 3, name: "Suresh Patil", score: "98.5% (Maharashtra State)", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student male avatar", category: "State Topper" },
+  ],
+  exam: [
+    { rank: 1, name: "Priya Sharma", score: "710/720", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student female avatar", category: "NEET UG - All India" },
+    { rank: 2, name: "Rohan Mehra", score: "AIR 25", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student male avatar", category: "JEE Advanced" },
+    { rank: 450, name: "Aarav Sharma (You)", score: "650/720", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student boy avatar", category: "NEET UG - All India", isCurrentUser: true },
+  ],
+  combined: [
+    { rank: 1, name: "Aisha Khan", score: "9982", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student girl avatar", category: "School + Board + Exam" },
+    { rank: 2, name: "Priya Sharma", score: "9950", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student female avatar", category: "School + Board + Exam" },
+    { rank: 350, name: "Aarav Sharma (You)", score: "8500", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "student boy avatar", category: "School + Board + Exam", isCurrentUser: true },
+  ],
+};
+
 
 
 export default function ProfilePage() {
@@ -272,27 +291,60 @@ export default function ProfilePage() {
           </div>
         </CardContent>
       </Card>
-
+      
       <Card>
         <CardHeader>
           <CardTitle className="font-headline flex items-center gap-2">
-            <Gem className="text-yellow-500 h-6 w-6" />
-            <BilingualText en="My Subscription" hi="मेरी सदस्यता" />
+            <Trophy className="text-yellow-500 h-6 w-6" />
+            <BilingualText en="All India Rank & Leaderboards" hi="अखिल भारतीय रैंक और लीडरबोर्ड" />
           </CardTitle>
+          <CardDescription>
+            <BilingualText en="Compare your performance with peers across India." hi="पूरे भारत में साथियों के साथ अपने प्रदर्शन की तुलना करें।" />
+          </CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-between">
-          <div>
-            <p className="font-semibold"><BilingualText en="Current Plan" hi="वर्तमान योजना" /></p>
-            <p className="text-2xl font-bold text-primary"><BilingualText en="Free Plan" hi="मुफ्त योजना" /></p>
-          </div>
-          <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-            <Link href="/subscribe">
-              <BilingualText en="Upgrade to Premium" hi="प्रीमियम में अपग्रेड करें" />
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+        <CardContent>
+          <Tabs defaultValue="exam" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+              <TabsTrigger value="class"><BilingualText en="Class" hi="कक्षा"/></TabsTrigger>
+              <TabsTrigger value="board"><BilingualText en="Board" hi="बोर्ड"/></TabsTrigger>
+              <TabsTrigger value="exam"><BilingualText en="Exam" hi="परीक्षा"/></TabsTrigger>
+              <TabsTrigger value="combined"><BilingualText en="Combined" hi="संयुक्त"/></TabsTrigger>
+            </TabsList>
+            
+            {(Object.keys(mockLeaderboards) as (keyof typeof mockLeaderboards)[]).map(key => (
+              <TabsContent key={key} value={key} className="mt-4">
+                <ul className="space-y-2">
+                  {mockLeaderboards[key].map((student) => (
+                    <li
+                      key={student.rank}
+                      className={cn(
+                        "flex items-center justify-between p-2 rounded-md text-sm",
+                        student.isCurrentUser ? "bg-accent/50 border border-accent" : "bg-muted/40"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold w-8 text-center text-lg text-muted-foreground">{student.rank}.</span>
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={student.avatarUrl || 'https://placehold.co/40x40.png'} alt={student.name} data-ai-hint={student.dataAiHint || 'student avatar'} />
+                          <AvatarFallback>{student.name.substring(0, 1)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-semibold">{student.name}</p>
+                            <p className="text-xs text-muted-foreground">{student.category}</p>
+                        </div>
+                      </div>
+                      <Badge variant={student.isCurrentUser ? "default" : "secondary"} className="font-bold text-xs sm:text-sm">
+                        {student.score}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              </TabsContent>
+            ))}
+          </Tabs>
         </CardContent>
       </Card>
+      
 
       <Card>
         <CardHeader>
@@ -359,53 +411,6 @@ export default function ProfilePage() {
             )}
         </CardContent>
       </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline flex items-center gap-2">
-            <Trophy className="text-yellow-500 h-6 w-6" />
-            <BilingualText en="All India Rank & Leaderboards" hi="अखिल भारतीय रैंक और लीडरबोर्ड" />
-          </CardTitle>
-          <CardDescription>
-            <BilingualText en="Compare your performance with peers across India." hi="पूरे भारत में साथियों के साथ अपने प्रदर्शन की तुलना करें।" />
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            <Button variant="outline" size="sm"><BilingualText en="Class Toppers" hi="कक्षा टॉपर्स" /></Button>
-            <Button variant="outline" size="sm"><BilingualText en="Board Toppers" hi="बोर्ड टॉपर्स" /></Button>
-            <Button variant="outline" size="sm"><BilingualText en="Exam Toppers" hi="परीक्षा टॉपर्स" /></Button>
-            <Button variant="outline" size="sm" className="col-span-2 sm:col-span-3"><BilingualText en="My Combined Rank (School + Board + Exam)" hi="मेरी संयुक्त रैंक (स्कूल + बोर्ड + परीक्षा)" /></Button>
-          </div>
-          
-          <div className="mt-4">
-            <h4 className="text-sm font-semibold mb-2"><BilingualText en="Sample Leaderboard (All India NEET)" hi="नमूना लीडरबोर्ड (अखिल भारतीय नीट)" /></h4>
-            <ul className="space-y-2">
-              {mockLeaderboardSample.slice(0, 3).map(student => ( // Show top 3 for sample
-                <li key={student.rank} className="flex items-center justify-between p-2 bg-muted/30 rounded-md text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold w-6 text-center">{student.rank}.</span>
-                    <Avatar className="h-6 w-6">
-                        <AvatarImage 
-                          src={student.avatarUrl || 'https://placehold.co/40x40.png'} 
-                          alt={student.name} 
-                          data-ai-hint={student.dataAiHint || 'student avatar'}
-                        />
-                        <AvatarFallback>{student.name.substring(0,1)}</AvatarFallback>
-                    </Avatar>
-                    <span>{student.name}</span>
-                  </div>
-                  <Badge variant={student.rank <=3 ? "default" : "secondary"} className="text-xs">{student.score}</Badge>
-                </li>
-              ))}
-            </ul>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              <BilingualText en="Full leaderboards are coming soon!" hi="पूर्ण लीडरबोर्ड जल्द ही आ रहे हैं!" />
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
 
        <Card>
         <CardHeader>
@@ -449,3 +454,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
