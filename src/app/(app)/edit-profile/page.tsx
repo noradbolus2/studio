@@ -468,8 +468,8 @@ export default function EditProfilePage() {
             router.push('/school-dashboard'); 
         }
 
-    } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student' || currentRole === 'teacher') {
-        const profileKey = (currentRole === 'student' || currentRole === 'teacher' || currentRole === 'creator') ? 'userProfileData' : `${currentRole}ProfileData`;
+    } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student' || currentRole === 'teacher' || currentRole === 'platform-admin') {
+        const profileKey = (currentRole === 'student' || currentRole === 'teacher' || currentRole === 'creator' || currentRole === 'platform-admin') ? 'userProfileData' : `${currentRole}ProfileData`;
         const fullProfileData = { ...data, role: currentRole }; 
         localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
         
@@ -485,6 +485,7 @@ export default function EditProfilePage() {
         else if (currentRole === 'creator') redirectPath = '/creator-dashboard';
         else if (currentRole === 'teacher') redirectPath = '/coaching-panel';
         else if (currentRole === 'student') redirectPath = '/'; 
+        else if (currentRole === 'platform-admin') redirectPath = '/platform-admin';
         router.push(redirectPath);
     }
     
@@ -832,4 +833,5 @@ export default function EditProfilePage() {
     
 
     
+
 
