@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { StationeryItemCard, type StationeryItem } from '@/components/delivery/StationeryItemCard'; 
 import { CheckoutDialog } from '@/components/delivery/CheckoutDialog';
+import { OrderConfirmationDialog } from '@/components/delivery/OrderConfirmationDialog';
 import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter, Apple as AppleIcon, StickyNote, FolderOpen, Palette, Ruler, Scissors, ArrowLeft } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
