@@ -1,3 +1,4 @@
+
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -79,7 +80,7 @@ export default function PlatformAdminDashboardPage() {
         </Button>
         <ShieldCheck className="h-12 w-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold font-headline text-primary">
-          <BilingualText en="Mission Control" hi="मिशन कंट्रोल" />
+          <BilingualText en="CEO Dashboard" hi="सीईओ डैशबोर्ड" />
         </h1>
         <p className="text-muted-foreground">
           <BilingualText en="Oversee and manage the OSO Application." hi="ओएसओ एप्लिकेशन का निरीक्षण और प्रबंधन करें।" />
