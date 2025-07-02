@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react'; // Changed from import * as React
+import React from 'react';
 import { useState, type FormEvent } from 'react';
 import { aiPeerMatch, type AiPeerMatchInput, type AiPeerMatchOutput } from '@/ai/flows/ai-peer-match';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,9 @@ import { Label } from '@/components/ui/label';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Image from 'next/image';
-import { Users, MapPin, BookOpen, Phone } from 'lucide-react';
+import { Users, MapPin, BookOpen, Phone, LocateFixed } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
+import { useToast } from '@/hooks/use-toast';
 
 export function PeerMatch() {
   const [formData, setFormData] = useState<AiPeerMatchInput>({
@@ -22,12 +23,72 @@ export function PeerMatch() {
   });
   const [results, setResults] = useState<AiPeerMatchOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: name === 'numberOfMatches' ? Number(value) : value }));
   };
+  
+  const handleAutoCatchLocation = () => {
+    if (!navigator.geolocation) {
+        toast({ title: "Geolocation not supported", description: "Your browser does not support this feature.", variant: "destructive" });
+        return;
+    }
+
+    setIsFetchingLocation(true);
+    toast({ title: "Fetching your location..." });
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const { latitude, longitude } = position.coords;
+            const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+            if (!apiKey) {
+                toast({ title: "Configuration Error", description: "Google Maps API key is missing.", variant: "destructive" });
+                setIsFetchingLocation(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`);
+                const data = await response.json();
+                
+                if (data.status === 'OK' && data.results[0]) {
+                    const addressComponents = data.results[0].address_components;
+                    const locality = addressComponents.find((c: any) => c.types.includes('locality'))?.long_name;
+                    const city = addressComponents.find((c: any) => c.types.includes('administrative_area_level_2'))?.long_name;
+                    
+                    const formattedLocation = [locality, city].filter(Boolean).join(', ');
+
+                    setFormData(prev => ({ ...prev, location: formattedLocation || data.results[0].formatted_address }));
+                    toast({ title: "Location Found!", description: formattedLocation, variant: "default" });
+                } else {
+                    throw new Error(data.error_message || "Could not determine address from coordinates.");
+                }
+            } catch (apiError: any) {
+                toast({ title: "Error Fetching Address", description: apiError.message, variant: "destructive" });
+            } finally {
+                setIsFetchingLocation(false);
+            }
+        },
+        (error) => {
+            let errorMessage = "An unknown error occurred.";
+            if (error.code === error.PERMISSION_DENIED) {
+                errorMessage = "You denied the request for Geolocation.";
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+                errorMessage = "Location information is unavailable.";
+            } else if (error.code === error.TIMEOUT) {
+                errorMessage = "The request to get user location timed out.";
+            }
+            toast({ title: "Geolocation Error", description: errorMessage, variant: "destructive" });
+            setIsFetchingLocation(false);
+        }
+    );
+  };
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -46,7 +107,6 @@ export function PeerMatch() {
   };
 
   return (
-    // Removed React.Fragment as Card is a single root element
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-headline">
@@ -67,7 +127,12 @@ export function PeerMatch() {
           )}
           <div>
             <Label htmlFor="location"><BilingualText en="Your Location (City/Area)" hi="आपका स्थान (शहर/क्षेत्र)" /></Label>
-            <Input id="location" name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g., Delhi, Karol Bagh" required />
+            <div className="flex items-center gap-2">
+              <Input id="location" name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g., Delhi, Karol Bagh" required />
+              <Button type="button" variant="outline" size="icon" onClick={handleAutoCatchLocation} disabled={isFetchingLocation} aria-label="Auto-detect location">
+                {isFetchingLocation ? <LoadingSpinner size={16} /> : <LocateFixed className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
           <div>
             <Label htmlFor="subject"><BilingualText en="Subject" hi="विषय" /></Label>
