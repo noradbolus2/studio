@@ -158,10 +158,6 @@ export default function BrainmatePage() {
     const trimmedInput = finalQuery.trim();
 
     if (!trimmedInput || isLoading) return;
-    if (!currentTopic.trim()) {
-        toast({ title: "Topic Missing", description: "Please select your subject or topic first.", variant: "destructive" });
-        return;
-    }
 
     const userMessage: BrainmateMessage = {
       id: `user-${Date.now()}`,
@@ -218,10 +214,6 @@ export default function BrainmatePage() {
   };
 
   const handlePromptClick = (prompt: string) => {
-    if (!currentTopic.trim()) {
-        toast({ title: "Topic Missing", description: "Please enter the subject or topic you're studying first.", variant: "destructive" });
-        return;
-    }
     handleSubmit(undefined, prompt);
   };
 
@@ -244,7 +236,7 @@ export default function BrainmatePage() {
         </div>
         <Select value={currentTopic} onValueChange={setCurrentTopic}>
             <SelectTrigger className="mt-3 h-9">
-                <SelectValue placeholder="What's your current subject/topic?" />
+                <SelectValue placeholder="Select a topic (optional) to improve results" />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
@@ -329,7 +321,7 @@ export default function BrainmatePage() {
             }}
             disabled={isLoading}
           />
-          <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0" disabled={isLoading || !inputValue.trim() || !currentTopic.trim()}>
+          <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90 text-primary-foreground shrink-0" disabled={isLoading || !inputValue.trim()}>
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
             <span className="sr-only"><BilingualText en="Send" hi="भेजें"/></span>
           </Button>
