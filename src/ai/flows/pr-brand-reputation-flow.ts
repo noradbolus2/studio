@@ -36,7 +36,7 @@ const PrBrandReputationOutputSchema = z.object({
       title: z.string().describe("The title of the viral video."),
       platform: z.enum(["YouTube", "Instagram Reels", "TikTok"]).describe("The video platform."),
       views: z.string().describe("The number of views, e.g., '1.2M' or '500k'."),
-      url: z.string().url().describe("A placeholder URL for the video.")
+      url: z.string().describe("A placeholder URL for the video.")
   })).length(2, "Generate exactly 2 viral videos.").describe("Trending videos related to the company.")
 });
 export type PrBrandReputationOutput = z.infer<typeof PrBrandReputationOutputSchema>;
