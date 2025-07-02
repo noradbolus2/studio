@@ -25,7 +25,7 @@ interface CheckoutDialogProps {
   onClose: () => void;
   cartItems: StationeryItem[];
   cartTotal: number;
-  onConfirmOrder: (details: { address: string; coupon?: string }) => void;
+  onConfirmOrder: (details: { address: string; coupon?: string; items: StationeryItem[] }) => void;
 }
 
 // Mock saved addresses
@@ -60,7 +60,7 @@ export function CheckoutDialog({ isOpen, onClose, cartItems, cartTotal, onConfir
         alert("Please select or enter a delivery address.");
         return;
     }
-    onConfirmOrder({ address: finalAddress, coupon: couponCode });
+    onConfirmOrder({ address: finalAddress, coupon: couponCode, items: cartItems });
   };
 
   return (

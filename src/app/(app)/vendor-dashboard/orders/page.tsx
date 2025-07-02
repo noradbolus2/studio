@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useToast } from '@/hooks/use-toast';
 
 interface OrderItem {
   id: string;
@@ -27,22 +28,55 @@ interface Order {
   status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
 }
 
-const mockOrders: Order[] = [
-  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Classmate Notebook", quantity: 2, price: 45}, {id: "pen1", productName: "Cello Pen", quantity: 5, price: 10}], totalAmount: 140, status: "Pending" },
+const VENDOR_ORDERS_KEY = "vendorOrders_mock";
+
+const initialMockOrders: Order[] = [
   { id: "ORD78924", customerName: "Priya Singh", date: "2024-07-21", items: [{id: "art1", productName: "Color Pencils", quantity: 1, price: 150}], totalAmount: 150, status: "Processing" },
   { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Shipped" },
   { id: "ORD78926", customerName: "Sneha Reddy", date: "2024-07-19", items: [{id: "nb2", productName: "Spiral Notebook", quantity: 3, price: 70}], totalAmount: 210, status: "Delivered" },
   { id: "ORD78927", customerName: "Vikram Kumar", date: "2024-07-18", items: [{id: "pen2", productName: "Apsara Pencils", quantity: 1, price: 50}], totalAmount: 50, status: "Cancelled" },
 ];
 
+
 export default function VendorOrdersPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [orders, setOrders] = useState<Order[]>([]);
 
-  const filteredOrders = mockOrders.filter(order => 
-    order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.customerName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    // Load orders from localStorage
+    try {
+        const storedOrdersString = localStorage.getItem(VENDOR_ORDERS_KEY);
+        if (storedOrdersString) {
+            setOrders(JSON.parse(storedOrdersString));
+        } else {
+            setOrders(initialMockOrders); // Fallback to mock if nothing in storage
+        }
+    } catch(e) {
+        console.error("Failed to load orders from localStorage:", e);
+        setOrders(initialMockOrders);
+    }
+  }, []);
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => 
+      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, orders]);
+
+  const handleUpdateStatus = (orderId: string, newStatus: Order['status']) => {
+    const updatedOrders = orders.map(order => 
+        order.id === orderId ? { ...order, status: newStatus } : order
+    );
+    setOrders(updatedOrders);
+    localStorage.setItem(VENDOR_ORDERS_KEY, JSON.stringify(updatedOrders));
+    toast({
+        title: "Order Updated",
+        description: `Order #${orderId} has been marked as ${newStatus}.`
+    });
+  };
 
   const getStatusBadge = (status: Order['status']) => {
     switch(status) {
@@ -95,12 +129,12 @@ export default function VendorOrdersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead><BilingualText en="Order ID" hi="ऑर्डर आईडी" /></TableHead>
-                  <TableHead><BilingualText en="Customer" hi="ग्राहक" /></TableHead>
-                  <TableHead><BilingualText en="Date" hi="दिनांक" /></TableHead>
-                  <TableHead><BilingualText en="Total" hi="कुल" /></TableHead>
-                  <TableHead><BilingualText en="Status" hi="स्थिति" /></TableHead>
-                  <TableHead className="text-right"><BilingualText en="Actions" hi="कार्रवाइयां" /></TableHead>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -108,10 +142,16 @@ export default function VendorOrdersPage() {
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">{order.id}</TableCell>
                     <TableCell>{order.customerName}</TableCell>
-                    <TableCell>{order.date}</TableCell>
+                    <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
                     <TableCell>INR {order.totalAmount.toFixed(2)}</TableCell>
                     <TableCell>{getStatusBadge(order.status)}</TableCell>
                     <TableCell className="text-right space-x-1">
+                      {order.status === 'Pending' && (
+                        <Button size="xs" onClick={() => handleUpdateStatus(order.id, 'Processing')}>Accept</Button>
+                      )}
+                      {order.status === 'Processing' && (
+                        <Button size="xs" onClick={() => handleUpdateStatus(order.id, 'Shipped')}>Mark as Shipped</Button>
+                      )}
                       <Button variant="ghost" size="icon" className="h-7 w-7"><Printer className="h-4 w-4" /></Button>
                     </TableCell>
                   </TableRow>

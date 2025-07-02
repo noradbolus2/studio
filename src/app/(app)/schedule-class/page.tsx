@@ -21,6 +21,10 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import type { LiveClass } from '@/components/live-class/ClassCard'; 
+import type { ProfileFormData } from '../edit-profile/page';
+
+const LIVE_CLASSES_KEY = "liveClasses_mock";
 
 const classLevels = ["Nursery", "LKG", "UKG", "Class 1-3", "Class 4-5", "Class 6", "Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12", "JEE", "NEET", "CUET", "UPSC", "General"];
 const subjects = ["Maths", "Physics", "Chemistry", "Biology", "Science", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "AI/ML", "Art & Craft", "General Knowledge", "Current Affairs", "Revision", "Doubt Solving", "Other"];
@@ -33,6 +37,7 @@ const scheduleClassSchema = z.object({
   tags: z.string().optional(), // Comma-separated
   description: z.string().min(10, "Description must be at least 10 characters").max(300, "Max 300 chars"),
   thumbnailName: z.string().optional(), // Store file name for now
+  thumbnailDataUrl: z.string().optional(), // For image preview and storage
 });
 
 type ScheduleClassFormData = z.infer<typeof scheduleClassSchema>;
@@ -43,6 +48,16 @@ export default function ScheduleClassPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const thumbnailFileRef = useRef<HTMLInputElement>(null);
+  const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem('userProfileData');
+      if (storedProfile) {
+        setProfileData(JSON.parse(storedProfile));
+      }
+    }
+  }, []);
 
   const { control, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<ScheduleClassFormData>({
     resolver: zodResolver(scheduleClassSchema),
@@ -58,20 +73,43 @@ export default function ScheduleClassPage() {
 
   const onSubmit: SubmitHandler<ScheduleClassFormData> = async (data) => {
     setIsLoading(true);
-    const fullData = {
-      ...data,
-      streamType: "in_app", // Default as per requirement
-      thumbnailFile: thumbnailFileRef.current?.files?.[0] // For actual upload later
+
+    const newClass: LiveClass = {
+        id: `live_${Date.now()}`,
+        titleEn: data.title,
+        titleHi: data.title, // For prototype, use same title
+        subjectEn: data.subject,
+        subjectHi: data.subject,
+        creatorNameEn: profileData?.creatorName || "An OSO Teacher",
+        creatorNameHi: profileData?.creatorName || "एक OSO शिक्षक",
+        creatorAvatarUrl: profileData?.avatarUrl,
+        dataAiHintAvatar: profileData?.dataAiHint,
+        thumbnailUrl: data.thumbnailDataUrl || "https://placehold.co/300x168.png",
+        dataAiHintThumbnail: "scheduled class",
+        status: new Date(data.dateTime) > new Date() ? 'upcoming' : 'recorded', // Simple logic for status
+        dateTime: data.dateTime.toISOString(),
+        classLevel: data.classLevel,
+        tags: data.tags?.split(',').map(t => t.trim()).filter(Boolean),
+        descriptionEn: data.description,
     };
-    console.log("Class Data to Schedule:", fullData);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast({
-      title: "Class Scheduled",
-      description: `"${data.title}" has been scheduled.`,
-    });
-    setIsLoading(false);
-    router.push("/coaching-panel"); 
+    
+    try {
+        const existingClassesString = localStorage.getItem(LIVE_CLASSES_KEY);
+        const existingClasses: LiveClass[] = existingClassesString ? JSON.parse(existingClassesString) : [];
+        const updatedClasses = [newClass, ...existingClasses];
+        localStorage.setItem(LIVE_CLASSES_KEY, JSON.stringify(updatedClasses));
+
+        toast({
+          title: "Class Scheduled",
+          description: `"${data.title}" has been scheduled.`,
+        });
+        router.push("/coaching-panel"); 
+    } catch(e) {
+        console.error("Failed to save class to localStorage:", e);
+        toast({ title: "Error", description: "Could not schedule the class.", variant: "destructive"});
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   const handleThumbnailFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -79,23 +117,20 @@ export default function ScheduleClassPage() {
     if (file) {
       if (!file.type.startsWith('image/')) {
         toast({ title: "Invalid File Type", description: "Please select an image file.", variant: "destructive" });
-        setSelectedFileName(null);
-        if(thumbnailFileRef.current) thumbnailFileRef.current.value = "";
-        setValue("thumbnailName", "");
         return;
       }
       if (file.size > 2 * 1024 * 1024) { // 2MB limit
         toast({ title: "File Too Large", description: "Image must be less than 2MB.", variant: "destructive" });
-        setSelectedFileName(null);
-        if(thumbnailFileRef.current) thumbnailFileRef.current.value = "";
-        setValue("thumbnailName", "");
         return;
       }
       setSelectedFileName(file.name);
-      setValue("thumbnailName", file.name); // Store name for validation
-    } else {
-      setSelectedFileName(null);
-      setValue("thumbnailName", "");
+      setValue("thumbnailName", file.name);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+          setValue("thumbnailDataUrl", reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 

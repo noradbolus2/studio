@@ -1,18 +1,36 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { StationeryItemCard, type StationeryItem } from '@/components/delivery/StationeryItemCard'; 
-import { OrderConfirmationDialog } from '@/components/delivery/OrderConfirmationDialog';
 import { CheckoutDialog } from '@/components/delivery/CheckoutDialog';
 import { Search, Notebook, PenTool, Book, Package, ShoppingBag, Filter, Apple as AppleIcon, StickyNote, FolderOpen, Palette, Ruler, Scissors, ArrowLeft } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
+import type { ProfileFormData } from '../edit-profile/page'; 
+
+// Import the vendor order type
+interface OrderItem {
+  id: string;
+  productName: string;
+  quantity: number;
+  price: number;
+}
+interface VendorOrder {
+  id: string;
+  customerName: string;
+  date: string;
+  items: OrderItem[];
+  totalAmount: number;
+  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+}
+
+const VENDOR_ORDERS_KEY = "vendorOrders_mock";
 
 const categories = [
   { id: 'all', nameEn: 'All', nameHi: 'सभी', icon: Package, key: 'all' },
@@ -78,7 +96,18 @@ export default function DeliveryPage() {
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(false);
   const [confirmedOrderId, setConfirmedOrderId] = useState("");
   const [isCheckoutDialogOpen, setIsCheckoutDialogOpen] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    // Load profile data to get user's name for the order
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem('userProfileData');
+      if (storedProfile) {
+        setProfileData(JSON.parse(storedProfile));
+      }
+    }
+  }, []);
 
   const handleAddToCart = (item: StationeryItem) => {
     setCart((prevCart) => [...prevCart, item]);
@@ -100,9 +129,31 @@ export default function DeliveryPage() {
     setIsCheckoutDialogOpen(true);
   };
 
-  const handleConfirmOrderFromCheckout = (details: { address: string; coupon?: string }) => {
-    console.log("Order Details:", details);
-    const newOrderId = `OSO${Math.floor(Math.random() * 90000) + 10000}`;
+  const handleConfirmOrderFromCheckout = (details: { address: string; coupon?: string; items: StationeryItem[] }) => {
+    const newOrderId = `ORD${Math.floor(Math.random() * 90000) + 10000}`;
+    
+    // Create new order object for vendor dashboard
+    const newOrder: VendorOrder = {
+      id: newOrderId,
+      customerName: profileData?.fullName || "A Student",
+      date: new Date().toISOString().split('T')[0],
+      items: details.items.map(item => ({ id: item.id, productName: item.nameEn, quantity: 1, price: item.price })), // Simplification: quantity is 1
+      totalAmount: details.items.reduce((sum, item) => sum + item.price, 0),
+      status: "Pending"
+    };
+
+    // Save to localStorage to simulate backend
+    try {
+        const existingOrdersString = localStorage.getItem(VENDOR_ORDERS_KEY);
+        const existingOrders: VendorOrder[] = existingOrdersString ? JSON.parse(existingOrdersString) : [];
+        const updatedOrders = [newOrder, ...existingOrders];
+        localStorage.setItem(VENDOR_ORDERS_KEY, JSON.stringify(updatedOrders));
+    } catch(e) {
+        console.error("Failed to save order to localStorage:", e);
+        toast({ title: "Error", description: "Could not place order (localStorage error).", variant: "destructive"});
+        return;
+    }
+
     setConfirmedOrderId(newOrderId);
     setIsOrderConfirmed(true);
     setCart([]); 
@@ -227,4 +278,3 @@ declare module 'react' {
       placeholder_hi?: string;
     }
 }
-
