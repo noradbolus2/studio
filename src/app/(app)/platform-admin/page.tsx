@@ -41,10 +41,10 @@ const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, no
 };
 
 const coreTeam = [
-  { name: "Abhishek verma (CEO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "male ceo" },
-  { name: "Rohini (CTO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "female cto" },
-  { name: "Aakash (COO)", avatar: "https://placehold.co/40x40.png", dataAiHint: "male coo" },
-  { name: "Priya (Product Head)", avatar: "https://placehold.co/40x40.png", dataAiHint: "female product manager" },
+  { name: "Abhishek verma (CEO)", avatar: "https://images.unsplash.com/photo-1737568120928-3600286a297d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYWxlJTIwY2VvfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male ceo" },
+  { name: "Rohini (CTO)", avatar: "https://images.unsplash.com/photo-1582201943155-606a5f4e7941?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBjdG98ZW58MHx8fHwxNzUxNDc3NjU3fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female cto" },
+  { name: "Aakash (COO)", avatar: "https://images.unsplash.com/photo-1619959706197-ab0a94d4947b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWxlJTIwY29vfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male coo" },
+  { name: "Priya (Product Head)", avatar: "https://images.unsplash.com/photo-1659353219716-699803846194?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmZW1hbGUlMjBwcm9kdWN0JTIwbWFuYWdlcnxlbnwwfHx8fDE3NTE0Nzc2NTd8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female product manager" },
 ];
 
 const platformAdminLinks = [
