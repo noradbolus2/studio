@@ -118,7 +118,7 @@ export default function PlatformAdminDashboardPage() {
                       <TableBody>
                           <TableRow><TableCell className="font-medium">Total Revenue</TableCell><TableCell>INR 250 Cr</TableCell></TableRow>
                           <TableRow><TableCell className="font-medium">Net Profit</TableCell><TableCell className="text-green-600 font-bold">INR 50 Cr</TableCell></TableRow>
-                          <TableRow>
+                           <TableRow>
                             <TableCell className="font-medium">Revenue Sources</TableCell>
                             <TableCell className="flex flex-wrap gap-1">
                                 <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=education"><Badge variant="secondary">Education: INR 100 Cr</Badge></Link></Button>
@@ -127,8 +127,7 @@ export default function PlatformAdminDashboardPage() {
                                 <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=subscriptions"><Badge variant="secondary">Subscriptions: INR 30 Cr</Badge></Link></Button>
                             </TableCell>
                           </TableRow>
-                          <TableRow>
-                            <TableCell className="font-medium">Payout Pressure</TableCell>
+                          <TableRow><TableCell className="font-medium">Payout Pressure</TableCell>
                             <TableCell>
                                 <Button asChild variant="link" className="p-0 h-auto font-normal text-destructive hover:text-destructive">
                                     <Link href="/platform-admin/orders">
@@ -136,10 +135,9 @@ export default function PlatformAdminDashboardPage() {
                                     </Link>
                                 </Button>
                             </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell className="font-medium">MRR / ARR Tracker</TableCell>
-                            <TableCell>
+                           </TableRow>
+                          <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell>
+                           <TableCell>
                                 <Button asChild variant="link" className="p-0 h-auto font-normal">
                                   <Link href="/platform-admin/analytics">
                                       View detailed chart <ExternalLink size={14} className="ml-2" />
@@ -191,22 +189,22 @@ export default function PlatformAdminDashboardPage() {
                   <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
                   <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2">
-                  <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Emergency Push Notification")}>
-                      <AlertTriangle className="h-4 w-4"/>
-                      <BilingualText en="Emergency Push" hi="आपातकालीन पुश"/>
+              <CardContent className="grid grid-cols-2 gap-2">
+                 <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Emergency Push Notification")}>
+                      <AlertTriangle className="h-4 w-4 shrink-0"/>
+                      <span className="text-xs font-medium leading-tight"><BilingualText en="Emergency Push" hi="आपातकालीन पुश"/></span>
                   </Button>
-                  <Button variant="destructive" className="w-full justify-start gap-2" onClick={() => handleActionClick("Lock Vendor System")}>
-                      <Lock className="h-4 w-4"/>
-                      <BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक करें"/>
+                   <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Lock Vendor System")}>
+                      <Lock className="h-4 w-4 shrink-0"/>
+                      <span className="text-xs font-medium leading-tight"><BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक"/></span>
                   </Button>
-                  <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
-                      <Download className="h-4 w-4"/>
-                      <BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात करें"/>
+                   <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
+                      <Download className="h-4 w-4 shrink-0"/>
+                      <span className="text-xs font-medium leading-tight"><BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात"/></span>
                   </Button>
-                  <Button variant="secondary" className="w-full justify-start gap-2" onClick={() => handleActionClick("Send Mail to All Schools")}>
-                      <Mail className="h-4 w-4"/>
-                      <BilingualText en="Send Mail to All Schools" hi="सभी स्कूलों को मेल भेजें"/>
+                  <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Send Mail to All Schools")}>
+                      <Mail className="h-4 w-4 shrink-0"/>
+                      <span className="text-xs font-medium leading-tight"><BilingualText en="Send Mail to Schools" hi="स्कूलों को मेल"/></span>
                   </Button>
               </CardContent>
           </Card>
