@@ -1,4 +1,3 @@
-
 "use client";
 
 import { PeerMatch } from "@/components/circle/PeerMatch";
@@ -56,12 +55,12 @@ export default function CirclePage() {
           <CardContent className="flex-grow space-y-3">
             <div className="aspect-video bg-muted rounded-md flex items-center justify-center border border-dashed">
                 <Image 
-                  src="https://placehold.co/600x400.png" 
+                  src="https://images.unsplash.com/photo-1604357209793-fca5dca89f97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXAlMjBsb2NhdGlvbnxlbnwwfHx8fDE3NTE0OTI4MTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Map Placeholder" 
                   width={600} 
                   height={400} 
                   data-ai-hint="map location"
-                  className="opacity-60"
+                  className="opacity-60 object-cover"
                 />
             </div>
             <p className="text-sm text-muted-foreground">

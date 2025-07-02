@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -163,7 +162,7 @@ export function PeerMatch() {
           {results.matches.map((match, index) => (
             <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardContent className="p-4 flex items-start space-x-4">
-                <Image src={`https://placehold.co/60x60.png?text=${match.name.substring(0,1)}`} alt={match.name} width={60} height={60} className="rounded-full border" data-ai-hint="student avatar" />
+                <Image src="https://images.unsplash.com/photo-1729824186568-be656d0eecf9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTQ5MTY2OXww&ixlib=rb-4.1.0&q=80&w=1080" alt={match.name} width={60} height={60} className="rounded-full border object-cover" data-ai-hint="student avatar" />
                 <div className="flex-grow">
                   <h4 className="font-semibold text-md text-primary">{match.name}</h4>
                   <div className="text-sm text-muted-foreground space-y-1 mt-1">
