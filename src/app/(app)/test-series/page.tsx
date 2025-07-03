@@ -1,4 +1,3 @@
-
 "use client"; 
 
 import { useState, useEffect } from 'react'; 
@@ -6,7 +5,7 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Target, BrainCircuit, Rocket, FileText, ArrowLeft } from "lucide-react"; 
+import { Target, BrainCircuit, Rocket, FileText, ArrowLeft, ShoppingCart } from "lucide-react"; 
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
@@ -550,14 +549,17 @@ export default function TestSeriesPage() {
                 <p className="text-lg font-bold text-accent">{test.price}</p>
               </CardContent>
               <CardFooter>
-                <Button asChild size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground">
-                  <Link href={`/attempt-test?id=${test.id}&title=${encodeURIComponent(test.generationTitleEn || test.titleEn)}${test.defaultNumQuestions ? `&numQuestions=${test.defaultNumQuestions}` : ''}&examType=${encodeURIComponent(testCategories.find(tc => tc.id === test.categoryId)?.nameEn || test.generationTitleEn || test.titleEn)}`}>
+                 <Button 
+                    size="sm" 
+                    className="w-full bg-primary/90 hover:bg-primary text-primary-foreground"
+                    onClick={() => toast({ title: "Purchase Action", description: "This would normally lead to a payment gateway for the test pack."})}
+                  >
+                     <ShoppingCart className="mr-2 h-4 w-4" />
                      <BilingualText 
-                        en="Attempt Sample Full Test"
-                        hi="सैंपल पूर्ण टेस्ट दें" 
+                        en="Buy Test Pack"
+                        hi="टेस्ट पैक खरीदें" 
                     />
-                  </Link>
-                </Button>
+                  </Button>
               </CardFooter>
             </Card>
           ))}
