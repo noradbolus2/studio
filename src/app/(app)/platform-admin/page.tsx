@@ -53,7 +53,6 @@ const platformAdminLinks = [
     { href: "/platform-admin/analytics", icon: BarChart3, titleEn: "Platform Analytics", titleHi: "प्लेटफ़ॉर्म एनालिटिक्स" },
     { href: "/platform-admin/users", icon: Users, titleEn: "User Management", titleHi: "उपयोगकर्ता प्रबंधन" },
     { href: "/platform-admin/orders", icon: Package, titleEn: "All Orders", titleHi: "सभी ऑर्डर" },
-    { href: "/platform-admin/team", icon: KeyRound, titleEn: "Team & Roles", titleHi: "टीम और भूमिकाएँ" },
     { href: "/platform-admin/content-moderation", icon: FileCog, titleEn: "Content Moderation", titleHi: "सामग्री मॉडरेशन" },
     { href: "/platform-admin/growth", icon: TrendingUp, titleEn: "Growth Engine", titleHi: "ग्रोथ इंजन" },
     { href: "/platform-admin/pr-brand", icon: Newspaper, titleEn: "PR & Brand", titleHi: "पीआर और ब्रांड" },
@@ -93,12 +92,32 @@ const mockCreators: Creator[] = [
     { id: 'CRT02', name: 'ArtfulScribe', expertise: 'Calligraphy, Art', status: 'Pending' },
 ];
 
-const coreTeam = [
-  { name: "Abhishek verma (CEO)", avatar: "https://images.unsplash.com/photo-1737568120928-3600286a297d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYWxlJTIwY2VvfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male ceo" },
-  { name: "Rohini (CTO)", avatar: "https://images.unsplash.com/photo-1582201943155-606a5f4e7941?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBjdG98ZW58MHx8fHwxNzUxNDc3NjU3fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female cto" },
-  { name: "Aakash (COO)", avatar: "https://images.unsplash.com/photo-1619959706197-ab0a94dceb68946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWxlJTIwY29vfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male coo" },
-  { name: "Priya (Product Head)", avatar: "https://images.unsplash.com/photo-1659353219716-699803846194?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmZW1hbGUlMjBwcm9kdWN0JTIwbWFuYWdlcnxlbnwwfHx8f17NTE0Nzc2NTd8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female product manager" },
-];
+const teamStructure = {
+    leadership: [
+        { role: "Founder & CEO", responsibility: "Overall vision, decision making, funding, and expansion." },
+        { role: "COO", responsibility: "Handles ground-level operations: schools, vendors, riders, and logistics." },
+        { role: "CTO", responsibility: "Manages the entire tech stack: App, Backend, AI, and Firebase." },
+        { role: "CFO", responsibility: "Oversees revenue, costs, accounting, and investor relations." },
+    ],
+    technical: [
+        { role: "App Development Lead", responsibility: "Manages app development and assigns tasks to developers." },
+        { role: "Backend Architect", responsibility: "Designs and manages data, APIs, and server-side logic." },
+        { role: "QA + Bug Testing Engineer", responsibility: "Identifies and tests for issues within the app." },
+        { role: "AI Engineer", responsibility: "Develops and maintains OSO's AI features like Aura Map and Mind Diary." },
+    ],
+    academic: [
+        { role: "Chief Academic Officer", responsibility: "Sets the direction for the entire academic system." },
+        { role: "Content Curators", responsibility: "Prepare notes, modules, and lecture materials." },
+        { role: "Video Production Team", responsibility: "Records and edits educational video content." },
+        { role: "Guru ji Training Head", responsibility: "Manages teacher training and develops learning plans." },
+    ],
+    field_ops: [
+        { role: "B2B Sales Head", responsibility: "Secures tie-ups and partnerships with schools." },
+        { role: "School Partner Executives", responsibility: "Meets with schools and handles the onboarding process." },
+        { role: "Delivery Zone Executives", responsibility: "Maps riders and vendors to specific service areas." },
+        { role: "Logistics & Fulfilment", responsibility: "Manages inventory, packaging, quality control, and dispatch." },
+    ]
+};
 
 
 export default function PlatformAdminDashboardPage() {
@@ -304,21 +323,37 @@ export default function PlatformAdminDashboardPage() {
                    </Button>
                 </CardFooter>
             </Card>
+            
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-lg flex items-center gap-2"><KeyRound className="text-primary"/> Core Team</CardTitle>
+                    <CardTitle className="font-headline text-lg flex items-center gap-2"><KeyRound className="text-primary"/> Internal Team Structure</CardTitle>
+                    <CardDescription>Overview of the OSO operational teams.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                    {coreTeam.map(member => (
-                        <div key={member.name} className="flex items-center gap-3 p-2 bg-muted/50 rounded-md">
-                            <Avatar className="h-9 w-9">
-                                <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint}/>
-                                <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <p className="text-sm font-medium">{member.name}</p>
-                        </div>
-                    ))}
+                 <CardContent>
+                    <Tabs defaultValue="leadership" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+                            <TabsTrigger value="leadership" className="text-xs">Leadership</TabsTrigger>
+                            <TabsTrigger value="technical" className="text-xs">Technical</TabsTrigger>
+                            <TabsTrigger value="academic" className="text-xs">Academic</TabsTrigger>
+                            <TabsTrigger value="field_ops" className="text-xs">Field & Ops</TabsTrigger>
+                        </TabsList>
+                        {(Object.keys(teamStructure) as Array<keyof typeof teamStructure>).map((teamKey) => (
+                            <TabsContent key={teamKey} value={teamKey} className="mt-4 text-xs space-y-2">
+                                {teamStructure[teamKey].map(role => (
+                                    <div key={role.role} className="p-2 bg-muted/50 rounded-md">
+                                        <p className="font-semibold">{role.role}</p>
+                                        <p className="text-muted-foreground">{role.responsibility}</p>
+                                    </div>
+                                ))}
+                            </TabsContent>
+                        ))}
+                    </Tabs>
                 </CardContent>
+                 <CardFooter>
+                   <Button variant="outline" size="sm" asChild>
+                        <Link href="/platform-admin/team">Manage Team Members <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                   </Button>
+                </CardFooter>
             </Card>
         </div>
       </div>
