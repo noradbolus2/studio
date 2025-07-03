@@ -38,9 +38,8 @@ const mockTrackingData: TrackingStep[] = [
 ];
 
 
-export default function TrackOrderPage({ params }: { params: { orderId: string } }) {
+export default function TrackOrderPage({ params: { orderId } }: { params: { orderId: string } }) {
   const router = useRouter();
-  const { orderId } = params;
 
   const [isLoading, setIsLoading] = useState(true);
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);

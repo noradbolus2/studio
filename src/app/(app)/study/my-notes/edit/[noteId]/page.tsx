@@ -26,9 +26,8 @@ interface Note {
 
 const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
 
-export default function EditNotePage({ params }: { params: { noteId: string } }) {
+export default function EditNotePage({ params: { noteId } }: { params: { noteId: string } }) {
   const router = useRouter();
-  const { noteId } = params;
 
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
