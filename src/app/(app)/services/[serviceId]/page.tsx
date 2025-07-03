@@ -99,7 +99,7 @@ const mockProjects: MockProject[] = [
   { id: "proj3", title: "Essay: Impact of AI on Society", category: "essay_research", classFilter: ["10", "11 Arts", "12 Arts"], subjectFilter: ["English", "Social Studies", "Computer Science"], dataAiHint: "essay writing ai", description: "Research and write a compelling essay on the societal impacts of Artificial Intelligence.", materials: [{ name: "Research Access (OSO e-Library)", qty: "Subscription", price:0 }], tutorialUrl: "#", estimatedTime: "Research + 2 hours writing" }, // No image
   { id: "proj4", title: "Basic Python Calculator", category: "coding", classFilter: ["9","10","11 Science", "12 Science"], subjectFilter: ["Computer Science"], sampleImageUrl: "https://placehold.co/600x337.png", dataAiHint: "python code computer", description: "Develop a simple calculator application using Python programming language.", materials: [{ name: "Python IDE (e.g., VS Code)", qty: 1, price:0 }], tutorialUrl: "#", creatorPrice: 249, estimatedTime: "5 hours coding" },
   { id: "hw1", title: "Algebra Worksheet (Ch 3)", category: "homework", classFilter: ["8"], subjectFilter: ["Maths"], dataAiHint: "maths worksheet", description: "Complete the algebra practice problems from Chapter 3.", materials: [{name: "Notebook", qty:1}, {name:"Pen", qty:1}], estimatedTime: "1 hour"}, // No image
-  { id: "proj5", title: "Volcano Eruption Model", category: "science_model", classFilter: ["6","7"], subjectFilter: ["Science", "Geography"], sampleImageUrl: "https://images.unsplash.com/photo-1634842135325-3519b715a2a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx2b2xjYW5vJTIwbW9kZWwlMjBlcnVwdGluZ3xlbnwwfHx8fDE3NTE0OTExMzh8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "volcano model erupting", description: "Create an exciting volcano model that erupts using baking soda and vinegar.", materials: [{name: "Plastic Bottle", qty: 1}, {name: "Cardboard Base", qty:1}, {name:"Clay or Papier-mâché", qty:1}, {name:"Baking Soda", qty:1}, {name:"Vinegar", qty:1}, {name:"Red Food Coloring", qty:1}], tutorialUrl: "#", estimatedTime: "2-3 hours"},
+  { id: "proj5", title: "Volcano Eruption Model", category: "science_model", classFilter: ["6","7"], subjectFilter: ["Science", "Geography"], sampleImageUrl: "https://images.unsplash.com/photo-1634842135325-3519b715a2a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx2b2xjYW5vJTIwbW9kZWwlMjBlcnVwdGluZ3xlbnwwfHx8fDE3NTE0OTExMzh8MA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "volcano model erupting", description: "Create an exciting volcano model that erupts using baking soda and vinegar.", materials: [{name: "Plastic Bottle", qty: 1}, {name: "Cardboard Base", qty:1}, {name:"Clay or Papier-mâché", qty:1}, {name:"Baking Soda", qty:1}, {name:"Vinegar", qty:1}, {name:"Red Food Coloring", qty:1}], tutorialUrl: "#", estimatedTime: "2-3 hours"},
   { id: "proj6", title: "Water Cycle Poster", category: "art_poster", classFilter: ["5","6"], subjectFilter: ["Science", "Art"], dataAiHint: "water cycle diagram", description: "Design an informative and visually appealing poster explaining the water cycle.", materials: [{name: "Large Chart Paper", qty:1}, {name:"Color Pencils/Markers", qty:1}, {name:"Cotton Balls (for clouds)", qty:"1 pack"}], creatorPrice: 79, estimatedTime: "2 hours"}, // No image
 ];
 
@@ -591,10 +591,10 @@ export default function ServicePage({ params: { serviceId } }: { params: { servi
                             <p className="text-muted-foreground">Guruji is analyzing and preparing recommendations...</p>
                         </div>
                     )}
-                    {testRecommendationError && (
+                    {recommendationError && (
                         <Alert variant="destructive">
                             <AlertTitle>Recommendation Error</AlertTitle>
-                            <AlertDescription>{testRecommendationError}</AlertDescription>
+                            <AlertDescription>{recommendationError}</AlertDescription>
                         </Alert>
                     )}
                     {testRecommendations && (
@@ -634,12 +634,63 @@ export default function ServicePage({ params: { serviceId } }: { params: { servi
                                     </div>
                                 </div>
                             )}
-                 {recommendations.recommendedTests.length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-3"><BilingualText en="Guruji didn't find specific tests for you right now, but gave some general advice. Keep learning!" hi="गुरुजी को अभी आपके लिए कोई विशिष्ट परीक्षण नहीं मिला, लेकिन कुछ सामान्य सलाह दी। सीखते रहें!"/></p>
-                 )}
+                        </div>
+                    )}
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={handleGetRecommendations} className="w-full" disabled={isTestRecommendationLoading}>
+                         {isTestRecommendationLoading ? <LoadingSpinner size={20}/> : <Rocket className="mr-2 h-4 w-4" />}
+                        Get New Recommendations
+                    </Button>
+                </CardFooter>
+            </Card>
+        );
+
+      case 'info_page':
+        return (
+          <Card className="w-full">
+             <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Avatar className="h-12 w-12 border-2 border-primary">
+                            <AvatarImage 
+                                src={serviceData.data?.avatarUrl || `https://placehold.co/100x100.png`} 
+                                alt={serviceData.name} 
+                                data-ai-hint={serviceData.data?.dataAiHint || "service icon"} 
+                            />
+                            <AvatarFallback>{serviceData.name.substring(0,1)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <CardTitle className="text-xl font-headline text-primary">{serviceData.name}</CardTitle>
+                            {serviceData.description && <CardDescription>{serviceData.description}</CardDescription>}
+                        </div>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => router.back()}>
+                        <ChevronLeft className="mr-1 h-4 w-4"/> Back
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="text-sm text-foreground/80 whitespace-pre-wrap">
+              {serviceData.data?.content || "No information available for this service."}
             </CardContent>
-        </Card>
-      )}
+          </Card>
+        );
+        
+      default:
+        return <p>Service type "{serviceData.type}" not recognized.</p>;
+    }
+  };
+
+  return (
+    <div className="w-full">
+      {renderServiceContent()}
     </div>
   );
+}
+
+declare module 'react' {
+    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+      placeholder_en?: string;
+      placeholder_hi?: string;
+    }
 }
