@@ -5,13 +5,14 @@ import { useState, useMemo } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users, Search, Filter, Edit, Trash2, ShieldCheck, PlusCircle } from "lucide-react";
+import { ArrowLeft, Users, Search, Filter, Edit, Trash2, ShieldCheck, PlusCircle, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Import Avatar components
 
 interface TeamMember {
   id: string;
@@ -20,32 +21,53 @@ interface TeamMember {
   role: string;
   status: 'Active' | 'On Leave' | 'Terminated';
   joinDate: string;
+  avatarUrl?: string;
+  dataAiHint?: string;
 }
 
-const mockTeam: TeamMember[] = [
-  { id: "TM001", name: "Abhishek verma (CEO)", email: "abhishek.ceo@oso.com", role: "CEO", status: "Active", joinDate: "2022-01-01" },
-  { id: "TM002", name: "Rohini (CTO)", email: "rohini.cto@oso.com", role: "Head of Engineering", status: "Active", joinDate: "2022-03-15" },
-  { id: "TM003", name: "Aakash (COO)", email: "aakash.coo@oso.com", role: "Head of Operations", status: "Active", joinDate: "2022-05-20" },
-  { id: "TM004", name: "Priya (Product Head)", email: "priya.product@oso.com", role: "Head of Product", status: "Active", joinDate: "2022-11-01" },
-  { id: "TM005", name: "Vikram (Support Head)", email: "vikram.support@oso.com", role: "Head of Support", status: "Active", joinDate: "2023-02-10" },
-  { id: "TM006", name: "Neha (CFO)", email: "neha.cfo@oso.com", role: "Head of Finance", status: "Active", joinDate: "2022-08-01" },
-];
+const teamData = {
+    leadership: [
+        { id: "TM001", name: "Abhishek verma", email: "abhishek.ceo@oso.com", role: "Founder & CEO", status: "Active", joinDate: "2022-01-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+        { id: "TM002", name: "Rohini", email: "rohini.cto@oso.com", role: "CTO", status: "Active", joinDate: "2022-03-15", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "TM003", name: "Aakash", email: "aakash.coo@oso.com", role: "COO", status: "Active", joinDate: "2022-05-20", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+        { id: "TM006", name: "Neha", email: "neha.cfo@oso.com", role: "CFO", status: "Active", joinDate: "2022-08-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+    ],
+    technical: [
+        { id: "TM004", name: "Priya Sharma", email: "priya.dev@oso.com", role: "App Development Lead", status: "Active", joinDate: "2022-11-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
+        { id: "TM007", name: "Rajesh Kumar", email: "rajesh.backend@oso.com", role: "Backend Architect", status: "Active", joinDate: "2023-01-20", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
+    ],
+    operations: [
+        { id: "TM005", name: "Vikram Singh", email: "vikram.support@oso.com", role: "Support Lead", status: "Active", joinDate: "2023-02-10", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male support" },
+        { id: "TM008", name: "Sunita Devi", email: "sunita.logistics@oso.com", role: "Logistics Head", status: "Active", joinDate: "2023-04-11", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female logistics" },
+    ]
+};
 
-
-const teamRoles = ['CEO', 'Head of Engineering', 'Head of Operations', 'Head of Product', 'Head of Support', 'Head of Finance'];
 
 export default function TeamManagementPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterRole, setFilterRole] = useState("all");
 
-  const filteredTeam = useMemo(() => {
-    return mockTeam.filter(member => 
-      (member.name.toLowerCase().includes(searchTerm.toLowerCase()) || member.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (filterRole === "all" || member.role === filterRole)
-    );
-  }, [searchTerm, filterRole]);
-  
+  const filteredTeamData = useMemo(() => {
+    if (!searchTerm) return teamData;
+
+    const lowercasedFilter = searchTerm.toLowerCase();
+    const filtered: typeof teamData = { leadership: [], technical: [], operations: [] };
+    
+    (Object.keys(teamData) as Array<keyof typeof teamData>).forEach(key => {
+        const department = teamData[key];
+        const filteredMembers = department.filter(member =>
+            member.name.toLowerCase().includes(lowercasedFilter) ||
+            member.email.toLowerCase().includes(lowercasedFilter) ||
+            member.role.toLowerCase().includes(lowercasedFilter)
+        );
+        if (filteredMembers.length > 0) {
+            filtered[key] = filteredMembers;
+        }
+    });
+
+    return filtered;
+  }, [searchTerm]);
+
   const getStatusBadgeVariant = (status: TeamMember['status']) => {
     switch (status) {
       case "Active": return "bg-green-500/20 text-green-700 border-green-400";
@@ -54,6 +76,49 @@ export default function TeamManagementPage() {
       default: return "outline";
     }
   };
+
+  const TeamTable = ({ members }: { members: TeamMember[] }) => (
+    <div className="rounded-md border">
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {members.length > 0 ? members.map((member) => (
+                <TableRow key={member.id}>
+                    <TableCell className="font-medium flex items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={member.avatarUrl} data-ai-hint={member.dataAiHint} />
+                            <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p>{member.name}</p>
+                            <p className="text-xs text-muted-foreground">{member.email}</p>
+                        </div>
+                    </TableCell>
+                    <TableCell>{member.role}</TableCell>
+                    <TableCell><Badge variant="outline" className={getStatusBadgeVariant(member.status)}>{member.status}</Badge></TableCell>
+                    <TableCell className="text-right space-x-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                    </TableCell>
+                </TableRow>
+                )) : (
+                    <TableRow>
+                        <TableCell colSpan={4} className="h-24 text-center">
+                        No team members found in this department.
+                        </TableCell>
+                    </TableRow>
+                )}
+            </TableBody>
+        </Table>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -69,30 +134,21 @@ export default function TeamManagementPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle><BilingualText en="Internal Team" hi="आंतरिक टीम" /></CardTitle>
-          <CardDescription><BilingualText en="Manage employee access, roles, and view activity logs." hi="कर्मचारी पहुंच, भूमिकाएं और गतिविधि लॉग प्रबंधित करें।" /></CardDescription>
+          <CardTitle><BilingualText en="Internal Team Structure" hi="आंतरिक टीम संरचना" /></CardTitle>
+          <CardDescription><BilingualText en="Manage employee access, roles, and view activity logs by department." hi="विभाग के अनुसार कर्मचारी पहुंच, भूमिकाएं और गतिविधि लॉग प्रबंधित करें।" /></CardDescription>
         </CardHeader>
         <CardContent>
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
                 <div className="relative flex-grow">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input 
-                        placeholder_en="Search by name or email..." 
-                        placeholder_hi="नाम या ईमेल से खोजें..."
+                        placeholder_en="Search by name, email, or role..." 
+                        placeholder_hi="नाम, ईमेल या भूमिका से खोजें..."
                         className="pl-8"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Select value={filterRole} onValueChange={setFilterRole}>
-                    <SelectTrigger className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="Filter by Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Roles</SelectItem>
-                        {teamRoles.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}
-                    </SelectContent>
-                </Select>
                  <Button asChild>
                     <Link href="/platform-admin/roles">
                         <ShieldCheck className="mr-2 h-4 w-4" />
@@ -104,42 +160,28 @@ export default function TeamManagementPage() {
                     <BilingualText en="Add Member" hi="सदस्य जोड़ें" />
                 </Button>
             </div>
-
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Join Date</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredTeam.length > 0 ? filteredTeam.map((member) => (
-                        <TableRow key={member.id}>
-                            <TableCell className="font-medium">{member.name}</TableCell>
-                            <TableCell>{member.email}</TableCell>
-                            <TableCell>{member.role}</TableCell>
-                            <TableCell><Badge variant="outline" className={getStatusBadgeVariant(member.status)}>{member.status}</Badge></TableCell>
-                            <TableCell>{member.joinDate}</TableCell>
-                            <TableCell className="text-right space-x-1">
-                                <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                            </TableCell>
-                        </TableRow>
-                        )) : (
-                            <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center">
-                                No team members found.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+            
+            <Accordion type="multiple" defaultValue={['leadership', 'technical', 'operations']} className="w-full">
+                {Object.keys(filteredTeamData).map((key) => {
+                    const departmentKey = key as keyof typeof filteredTeamData;
+                    if (filteredTeamData[departmentKey].length === 0) return null;
+                    return (
+                        <AccordionItem value={departmentKey} key={departmentKey}>
+                            <AccordionTrigger className="text-lg font-semibold capitalize hover:no-underline">
+                                {departmentKey.replace('_', ' & ')}
+                            </AccordionTrigger>
+                            <AccordionContent>
+                               <TeamTable members={filteredTeamData[departmentKey]} />
+                            </AccordionContent>
+                        </AccordionItem>
+                    );
+                })}
+            </Accordion>
+             {Object.values(filteredTeamData).every(arr => arr.length === 0) && (
+                <div className="text-center py-10 text-muted-foreground">
+                    <p>No results found for "{searchTerm}".</p>
+                </div>
+            )}
         </CardContent>
       </Card>
     </div>
