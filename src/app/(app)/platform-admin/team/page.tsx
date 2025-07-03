@@ -1,3 +1,4 @@
+
 // src/app/(app)/platform-admin/team/page.tsx
 "use client";
 
@@ -28,17 +29,21 @@ interface TeamMember {
 const teamData = {
     leadership: [
         { id: "TM001", name: "Abhishek verma", email: "abhishek.ceo@oso.com", role: "Founder & CEO", status: "Active", joinDate: "2022-01-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
-        { id: "TM002", name: "Rohini", email: "rohini.cto@oso.com", role: "CTO", status: "Active", joinDate: "2022-03-15", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
-        { id: "TM003", name: "Aakash", email: "aakash.coo@oso.com", role: "COO", status: "Active", joinDate: "2022-05-20", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
-        { id: "TM006", name: "Neha", email: "neha.cfo@oso.com", role: "CFO", status: "Active", joinDate: "2022-08-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "TM002", name: "Rohini Sharma", email: "rohini.cto@oso.com", role: "CTO", status: "Active", joinDate: "2022-03-15", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "TM003", name: "Aakash Singh", email: "aakash.coo@oso.com", role: "COO", status: "Active", joinDate: "2022-05-20", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+        { id: "TM006", name: "Neha Gupta", email: "neha.cfo@oso.com", role: "CFO", status: "Active", joinDate: "2022-08-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
     ],
     technical: [
         { id: "TM004", name: "Priya Sharma", email: "priya.dev@oso.com", role: "App Development Lead", status: "Active", joinDate: "2022-11-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
         { id: "TM007", name: "Rajesh Kumar", email: "rajesh.backend@oso.com", role: "Backend Architect", status: "Active", joinDate: "2023-01-20", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
+        { id: "TM009", name: "Anjali Mehta", email: "anjali.qa@oso.com", role: "QA Engineer", status: "Active", joinDate: "2023-03-10", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
+        { id: "TM010", name: "Karan Desai", email: "karan.ai@oso.com", role: "AI Engineer", status: "On Leave", joinDate: "2023-05-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
     ],
     operations: [
+        { id: "TM011", name: "Sanjay Verma", email: "sanjay.sales@oso.com", role: "B2B Sales Head", status: "Active", joinDate: "2022-09-05", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
         { id: "TM005", name: "Vikram Singh", email: "vikram.support@oso.com", role: "Support Lead", status: "Active", joinDate: "2023-02-10", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male support" },
         { id: "TM008", name: "Sunita Devi", email: "sunita.logistics@oso.com", role: "Logistics Head", status: "Active", joinDate: "2023-04-11", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female logistics" },
+        { id: "TM012", name: "Ravi Kumar", email: "ravi.marketing@oso.com", role: "Digital Marketing Head", status: "Active", joinDate: "2023-06-15", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
     ]
 };
 
@@ -78,7 +83,7 @@ export default function TeamManagementPage() {
   };
 
   const TeamTable = ({ members }: { members: TeamMember[] }) => (
-    <div className="rounded-md border">
+    <div className="rounded-md border-t">
         <Table>
             <TableHeader>
                 <TableRow>
@@ -134,7 +139,7 @@ export default function TeamManagementPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle><BilingualText en="Internal Team Structure" hi="आंतरिक टीम संरचना" /></CardTitle>
+          <CardTitle><BilingualText en="Internal Team Directory" hi="आंतरिक टीम निर्देशिका" /></CardTitle>
           <CardDescription><BilingualText en="Manage employee access, roles, and view activity logs by department." hi="विभाग के अनुसार कर्मचारी पहुंच, भूमिकाएं और गतिविधि लॉग प्रबंधित करें।" /></CardDescription>
         </CardHeader>
         <CardContent>
@@ -161,22 +166,25 @@ export default function TeamManagementPage() {
                 </Button>
             </div>
             
-            <Accordion type="multiple" defaultValue={['leadership', 'technical', 'operations']} className="w-full">
+             <div className="space-y-6 mt-6">
                 {Object.keys(filteredTeamData).map((key) => {
                     const departmentKey = key as keyof typeof filteredTeamData;
                     if (filteredTeamData[departmentKey].length === 0) return null;
                     return (
-                        <AccordionItem value={departmentKey} key={departmentKey}>
-                            <AccordionTrigger className="text-lg font-semibold capitalize hover:no-underline">
-                                {departmentKey.replace('_', ' & ')}
-                            </AccordionTrigger>
-                            <AccordionContent>
+                        <Card key={departmentKey} className="overflow-hidden">
+                            <CardHeader className="bg-muted/30">
+                                <CardTitle className="text-lg font-semibold capitalize">
+                                    {departmentKey.replace('_', ' & ')}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
                                <TeamTable members={filteredTeamData[departmentKey]} />
-                            </AccordionContent>
-                        </AccordionItem>
+                            </CardContent>
+                        </Card>
                     );
                 })}
-            </Accordion>
+            </div>
+            
              {Object.values(filteredTeamData).every(arr => arr.length === 0) && (
                 <div className="text-center py-10 text-muted-foreground">
                     <p>No results found for "{searchTerm}".</p>
