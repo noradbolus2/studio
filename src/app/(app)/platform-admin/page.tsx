@@ -27,6 +27,7 @@ import type { ProfileFormData } from '../../edit-profile/page';
 import { getPrBrandReputationData, type PrBrandReputationOutput } from '@/ai/flows/pr-brand-reputation-flow';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 
 const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note, href }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string, href?: string }) => {
@@ -92,53 +93,18 @@ const mockCreators: Creator[] = [
     { id: 'CRT02', name: 'ArtfulScribe', expertise: 'Calligraphy, Art', status: 'Pending' },
 ];
 
-const teamStructure = {
-    leadership: [
-        { role: "Founder & CEO", responsibility: "Poore OSO ka vision, decision making, funding, expansion. Har major vertical ko monitor karte hain (Tech, Ops, Finance)." },
-        { role: "COO – Chief Operations Officer", responsibility: "Ground level ka incharge: schools, vendors, riders, delivery. Field + Logistics + Support Teams ko handle karta hai." },
-        { role: "CTO – Chief Technology Officer", responsibility: "Poore tech stack ka malik: App, Backend, AI, Firebase. Technical Team ka head." },
-        { role: "CFO – Chief Financial Officer", responsibility: "Revenue, cost, accounting, investor reports ka boss. (Note: CFO ka sub-team chart me nahi diya gaya hai)." },
-    ],
-    technical: [
-        { role: "App Development Lead", responsibility: "App banwana, devs ko assign karna" },
-        { role: "Backend Architect", responsibility: "Data, APIs, server-side logics" },
-        { role: "QA + Bug Testing Engineer", responsibility: "App me problem dhoondhna aur test karna" },
-        { role: "AI Engineer", responsibility: "OSO Aura Map™, Mind Diary, AI Tools" },
-    ],
-    academic: [
-        { role: "Chief Academic Officer", responsibility: "Poore academic system ka direction set karta" },
-        { role: "Content Curators", responsibility: "Notes, modules, lectures ready karte hain" },
-        { role: "Video Production Team", responsibility: "Content record/edit karte hain" },
-        { role: "Guru ji Training Head", responsibility: "Teachers ki training, learning plans" },
-        { role: "Course Translators", responsibility: "Hindi, regional language conversion" },
-    ],
-    field_partnerships: [
-        { role: "B2B Sales Head", responsibility: "School se tie-ups lana" },
-        { role: "School Partner Executives", responsibility: "Schools se milna, onboarding handle karna" },
-        { role: "Delivery Zone Executives", responsibility: "Rider/Vendor mapping area-wise" },
-    ],
-    marketing: [
-        { role: "Digital Marketing Head", responsibility: "Meta, Google ads, SEO/ASO" },
-        { role: "Offline Marketing Manager", responsibility: "Posters, stalls, events" },
-        { role: "Campus Brand Ambassadors", responsibility: "College promotion, student engagement" },
-        { role: "Community Manager", responsibility: "Telegram, WhatsApp, Instagram engagement" },
-    ],
-    support: [
-        { role: "Customer Support Executives", responsibility: "Chat/email par problems solve karte hain" },
-        { role: "Campus Brand Ambassadors", responsibility: "Colleges me awareness create karte hain" },
-        { role: "Community Manager", responsibility: "Students se daily engagement handle karta hai" },
-    ],
-    logistics: [
-        { role: "Warehouse/Dark Store In-Charges", responsibility: "Inventory stocking & dispatch manage" },
-        { role: "Inventory Manager", responsibility: "Product count, refill, reports" },
-        { role: "Delivery Team Lead", responsibility: "Riders ke tasks, route check" },
-        { role: "Project Packaging & QC Head", responsibility: "Packing quality & dispatch checking" },
-    ]
-};
 
-const departmentOrder: (keyof typeof teamStructure)[] = ["leadership", "technical", "academic", "field_partnerships", "marketing", "support", "logistics"];
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: 'Active' | 'On Leave' | 'Terminated';
+  avatarUrl?: string;
+  dataAiHint?: string;
+}
 
-const departmentLabels: Record<keyof typeof teamStructure, string> = {
+const departmentLabels = {
     leadership: "Leadership",
     technical: "Technical",
     academic: "Content & Academic",
@@ -146,6 +112,41 @@ const departmentLabels: Record<keyof typeof teamStructure, string> = {
     marketing: "Marketing",
     support: "Support",
     logistics: "Logistics & Fulfilment",
+};
+
+const departmentOrder: (keyof typeof departmentLabels)[] = ["leadership", "technical", "academic", "field_partnerships", "marketing", "support", "logistics"];
+
+const teamData: Record<keyof typeof departmentLabels, TeamMember[]> = {
+    leadership: [
+        { id: "TM001", name: "Abhishek verma", email: "abhishek.ceo@oso.com", role: "Founder & CEO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+        { id: "TM002", name: "Rohini Sharma", email: "rohini.cto@oso.com", role: "CTO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "TM003", name: "Aakash Singh", email: "aakash.coo@oso.com", role: "COO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+        { id: "TM006", name: "Neha Gupta", email: "neha.cfo@oso.com", role: "CFO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+    ],
+    technical: [
+        { id: "TM004", name: "Priya Sharma", email: "priya.dev@oso.com", role: "App Development Lead", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
+        { id: "TM007", name: "Rajesh Kumar", email: "rajesh.backend@oso.com", role: "Backend Architect", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
+        { id: "TM009", name: "Anjali Mehta", email: "anjali.qa@oso.com", role: "QA Engineer", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
+        { id: "TM010", name: "Karan Desai", email: "karan.ai@oso.com", role: "AI Engineer", status: "On Leave", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
+    ],
+    academic: [
+        { id: "AC001", name: "Dr. Vidya Nair", email: "vidya.cao@oso.com", role: "Chief Academic Officer", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female academic" },
+        { id: "AC002", name: "Ravi Kumar", email: "ravi.content@oso.com", role: "Content Curator (Physics)", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male academic" },
+    ],
+    field_partnerships: [
+        { id: "FP001", name: "Sanjay Verma", email: "sanjay.sales@oso.com", role: "B2B Sales Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male sales" },
+        { id: "FP002", name: "Meera Iyer", email: "meera.partner@oso.com", role: "School Partner Executive", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female sales" },
+    ],
+    marketing: [
+        { id: "MKT01", name: "Alisha Khan", email: "alisha.mktg@oso.com", role: "Digital Marketing Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female marketing" },
+        { id: "MKT02", name: "Arjun Das", email: "arjun.community@oso.com", role: "Community Manager", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male marketing" },
+    ],
+    support: [
+        { id: "SUP01", name: "Vikram Singh", email: "vikram.support@oso.com", role: "Support Lead", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male support" },
+    ],
+    logistics: [
+        { id: "LOG01", name: "Sunita Devi", email: "sunita.logistics@oso.com", role: "Logistics Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female logistics" },
+    ],
 };
 
 
@@ -250,6 +251,14 @@ export default function PlatformAdminDashboardPage() {
     const filteredRiders = useMemo(() => mockRiders.filter(r => r.name.toLowerCase().includes(ecosystemSearch.toLowerCase()) || r.location.toLowerCase().includes(ecosystemSearch.toLowerCase())), [ecosystemSearch]);
     const filteredCreators = useMemo(() => mockCreators.filter(c => c.name.toLowerCase().includes(ecosystemSearch.toLowerCase()) || c.expertise.toLowerCase().includes(ecosystemSearch.toLowerCase())), [ecosystemSearch]);
 
+    const getStatusBadgeVariant = (status: TeamMember['status']) => {
+        switch (status) {
+          case "Active": return "bg-green-500/20 text-green-700 border-green-400";
+          case "On Leave": return "bg-yellow-500/20 text-yellow-700 border-yellow-400";
+          case "Terminated": return "bg-red-500/20 text-red-700 border-red-400";
+          default: return "outline";
+        }
+    };
 
   return (
     <div className="space-y-8">
@@ -353,10 +362,10 @@ export default function PlatformAdminDashboardPage() {
                 </CardFooter>
             </Card>
             
-            <Card>
+             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-lg flex items-center gap-2"><KeyRound className="text-primary"/> Internal Team Structure</CardTitle>
-                    <CardDescription>Overview of the OSO operational teams.</CardDescription>
+                    <CardTitle className="font-headline text-lg flex items-center gap-2"><KeyRound className="text-primary"/> Internal Team</CardTitle>
+                    <CardDescription>Overview of the OSO operational team.</CardDescription>
                 </CardHeader>
                  <CardContent>
                     <Tabs defaultValue="leadership" className="w-full">
@@ -367,21 +376,38 @@ export default function PlatformAdminDashboardPage() {
                                 ))}
                             </TabsList>
                         </ScrollArea>
-                        {departmentOrder.map((teamKey) => (
-                            <TabsContent key={teamKey} value={teamKey} className="mt-4 text-xs space-y-2">
-                                {teamStructure[teamKey].map(role => (
-                                    <div key={role.role} className="p-2.5 bg-muted/50 rounded-lg border border-border/50">
-                                        <p className="font-semibold text-sm text-foreground">{role.role}</p>
-                                        <p className="text-muted-foreground text-xs mt-0.5">{role.responsibility}</p>
-                                    </div>
-                                ))}
-                            </TabsContent>
-                        ))}
+                        <div className="mt-4 max-h-[250px] overflow-y-auto pr-2">
+                           {departmentOrder.map((teamKey) => (
+                              <TabsContent key={teamKey} value={teamKey} className="mt-0 text-xs space-y-2">
+                                  <Table>
+                                    <TableBody>
+                                        {teamData[teamKey].map(member => (
+                                            <TableRow key={member.id}>
+                                                <TableCell className="font-medium flex items-center gap-2 p-2">
+                                                    <Avatar className="h-8 w-8">
+                                                        <AvatarImage src={member.avatarUrl} data-ai-hint={member.dataAiHint} />
+                                                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <p className="text-sm">{member.name}</p>
+                                                        <p className="text-xs text-muted-foreground">{member.role}</p>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-right p-2">
+                                                    <Badge variant="outline" className={getStatusBadgeVariant(member.status)}>{member.status}</Badge>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                              </TabsContent>
+                          ))}
+                        </div>
                     </Tabs>
                 </CardContent>
                  <CardFooter>
                    <Button variant="outline" size="sm" asChild>
-                        <Link href="/platform-admin/team">Manage Team Members <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                        <Link href="/platform-admin/team">Manage Full Team <ArrowRight className="ml-2 h-4 w-4"/></Link>
                    </Button>
                 </CardFooter>
             </Card>
