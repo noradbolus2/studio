@@ -75,7 +75,7 @@ export default function AuthPage() {
       
       // School signup is disabled from this page, handled by CEO dashboard.
       if (selectedRole === 'school') {
-         toast({ title: "Registration Error", description: "School registration must be done by a Platform Administrator.", variant: "destructive" });
+         toast({ title: "Registration Not Allowed", description: "School registration must be done by a Platform Administrator. Please contact OSO to get your school onboarded.", variant: "destructive" });
          setIsLoading(false);
          return;
       }
