@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef, type ChangeEvent, type FormEvent, useMemo } from "react";
+import { useEffect, useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -189,11 +189,11 @@ export default function EditProfilePage() {
     },
   });
 
-  const roleFromParams = useMemo(() => searchParams.get("role") || "student", [searchParams]);
-  const isSchoolSetupParam = useMemo(() => searchParams.get("isSchoolSetup") === 'true', [searchParams]);
-  const emailFromParam = useMemo(() => searchParams.get("email"), [searchParams]);
-  const nameFromParam = useMemo(() => searchParams.get("name"), [searchParams]);
-  const designationFromParam = useMemo(() => searchParams.get("designation"), [searchParams]);
+  const roleFromParams = searchParams.get("role") || "student";
+  const isSchoolSetupParam = searchParams.get("isSchoolSetup") === 'true';
+  const emailFromParam = searchParams.get("email");
+  const nameFromParam = searchParams.get("name");
+  const designationFromParam = searchParams.get("designation");
 
   const watchedAvatarUrl = watch("avatarUrl");
   const watchedClassName = watch("className");
@@ -795,7 +795,7 @@ export default function EditProfilePage() {
                       <div><Label htmlFor="contactPersonName"><BilingualText en="Contact Person Full Name" hi="संपर्क व्यक्ति का पूरा नाम" /></Label><Controller name="contactPersonName" control={control} render={({ field }) => <Input id="contactPersonName" {...field} value={field.value ?? ''} />} /></div>
                       <div><Label htmlFor="contactPersonEmail"><BilingualText en="Contact Person Email" hi="संपर्क व्यक्ति ईमेल" /></Label><Controller name="contactPersonEmail" control={control} render={({ field }) => <Input id="contactPersonEmail" type="email" {...field} value={field.value ?? ''} />} /></div>
                     </div>
-                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Phone" hi="संपर्क फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} value={field.value ?? ''} />} /></div>
+                    <div className="mt-4"><Label htmlFor="contactPersonPhone"><BilingualText en="Contact Person Phone" hi="संपर्क व्यक्ति फ़ोन" /></Label><Controller name="contactPersonPhone" control={control} render={({ field }) => <Input id="contactPersonPhone" {...field} value={field.value ?? ''} />} /></div>
                 </Card>
               </>
             )}
@@ -833,5 +833,6 @@ export default function EditProfilePage() {
     
 
     
+
 
 
