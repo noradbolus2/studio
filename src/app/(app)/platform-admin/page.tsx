@@ -1,4 +1,3 @@
-
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -27,6 +26,7 @@ import type { StaffMember } from '@/types/school-staff';
 import type { ProfileFormData } from '../../edit-profile/page';
 import { getPrBrandReputationData, type PrBrandReputationOutput } from '@/ai/flows/pr-brand-reputation-flow';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note, href }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string, href?: string }) => {
@@ -94,29 +94,58 @@ const mockCreators: Creator[] = [
 
 const teamStructure = {
     leadership: [
-        { role: "Founder & CEO", responsibility: "Overall vision, decision making, funding, and expansion." },
-        { role: "COO", responsibility: "Handles ground-level operations: schools, vendors, riders, and logistics." },
-        { role: "CTO", responsibility: "Manages the entire tech stack: App, Backend, AI, and Firebase." },
-        { role: "CFO", responsibility: "Oversees revenue, costs, accounting, and investor relations." },
+        { role: "Founder & CEO", responsibility: "Poore OSO ka vision, decision making, funding, expansion. Har major vertical ko monitor karte hain (Tech, Ops, Finance)." },
+        { role: "COO – Chief Operations Officer", responsibility: "Ground level ka incharge: schools, vendors, riders, delivery. Field + Logistics + Support Teams ko handle karta hai." },
+        { role: "CTO – Chief Technology Officer", responsibility: "Poore tech stack ka malik: App, Backend, AI, Firebase. Technical Team ka head." },
+        { role: "CFO – Chief Financial Officer", responsibility: "Revenue, cost, accounting, investor reports ka boss. (Note: CFO ka sub-team chart me nahi diya gaya hai)." },
     ],
     technical: [
-        { role: "App Development Lead", responsibility: "Manages app development and assigns tasks to developers." },
-        { role: "Backend Architect", responsibility: "Designs and manages data, APIs, and server-side logic." },
-        { role: "QA + Bug Testing Engineer", responsibility: "Identifies and tests for issues within the app." },
-        { role: "AI Engineer", responsibility: "Develops and maintains OSO's AI features like Aura Map and Mind Diary." },
+        { role: "App Development Lead", responsibility: "App banwana, devs ko assign karna" },
+        { role: "Backend Architect", responsibility: "Data, APIs, server-side logics" },
+        { role: "QA + Bug Testing Engineer", responsibility: "App me problem dhoondhna aur test karna" },
+        { role: "AI Engineer", responsibility: "OSO Aura Map™, Mind Diary, AI Tools" },
     ],
     academic: [
-        { role: "Chief Academic Officer", responsibility: "Sets the direction for the entire academic system." },
-        { role: "Content Curators", responsibility: "Prepare notes, modules, and lecture materials." },
-        { role: "Video Production Team", responsibility: "Records and edits educational video content." },
-        { role: "Guru ji Training Head", responsibility: "Manages teacher training and develops learning plans." },
+        { role: "Chief Academic Officer", responsibility: "Poore academic system ka direction set karta" },
+        { role: "Content Curators", responsibility: "Notes, modules, lectures ready karte hain" },
+        { role: "Video Production Team", responsibility: "Content record/edit karte hain" },
+        { role: "Guru ji Training Head", responsibility: "Teachers ki training, learning plans" },
+        { role: "Course Translators", responsibility: "Hindi, regional language conversion" },
     ],
-    field_ops: [
-        { role: "B2B Sales Head", responsibility: "Secures tie-ups and partnerships with schools." },
-        { role: "School Partner Executives", responsibility: "Meets with schools and handles the onboarding process." },
-        { role: "Delivery Zone Executives", responsibility: "Maps riders and vendors to specific service areas." },
-        { role: "Logistics & Fulfilment", responsibility: "Manages inventory, packaging, quality control, and dispatch." },
+    field_partnerships: [
+        { role: "B2B Sales Head", responsibility: "School se tie-ups lana" },
+        { role: "School Partner Executives", responsibility: "Schools se milna, onboarding handle karna" },
+        { role: "Delivery Zone Executives", responsibility: "Rider/Vendor mapping area-wise" },
+    ],
+    marketing: [
+        { role: "Digital Marketing Head", responsibility: "Meta, Google ads, SEO/ASO" },
+        { role: "Offline Marketing Manager", responsibility: "Posters, stalls, events" },
+        { role: "Campus Brand Ambassadors", responsibility: "College promotion, student engagement" },
+        { role: "Community Manager", responsibility: "Telegram, WhatsApp, Instagram engagement" },
+    ],
+    support: [
+        { role: "Customer Support Executives", responsibility: "Chat/email par problems solve karte hain" },
+        { role: "Campus Brand Ambassadors", responsibility: "Colleges me awareness create karte hain" },
+        { role: "Community Manager", responsibility: "Students se daily engagement handle karta hai" },
+    ],
+    logistics: [
+        { role: "Warehouse/Dark Store In-Charges", responsibility: "Inventory stocking & dispatch manage" },
+        { role: "Inventory Manager", responsibility: "Product count, refill, reports" },
+        { role: "Delivery Team Lead", responsibility: "Riders ke tasks, route check" },
+        { role: "Project Packaging & QC Head", responsibility: "Packing quality & dispatch checking" },
     ]
+};
+
+const departmentOrder: (keyof typeof teamStructure)[] = ["leadership", "technical", "academic", "field_partnerships", "marketing", "support", "logistics"];
+
+const departmentLabels: Record<keyof typeof teamStructure, string> = {
+    leadership: "Leadership",
+    technical: "Technical",
+    academic: "Content & Academic",
+    field_partnerships: "Field & Partnerships",
+    marketing: "Marketing",
+    support: "Support",
+    logistics: "Logistics & Fulfilment",
 };
 
 
@@ -331,18 +360,19 @@ export default function PlatformAdminDashboardPage() {
                 </CardHeader>
                  <CardContent>
                     <Tabs defaultValue="leadership" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
-                            <TabsTrigger value="leadership" className="text-xs">Leadership</TabsTrigger>
-                            <TabsTrigger value="technical" className="text-xs">Technical</TabsTrigger>
-                            <TabsTrigger value="academic" className="text-xs">Academic</TabsTrigger>
-                            <TabsTrigger value="field_ops" className="text-xs">Field & Ops</TabsTrigger>
-                        </TabsList>
-                        {(Object.keys(teamStructure) as Array<keyof typeof teamStructure>).map((teamKey) => (
+                        <ScrollArea>
+                            <TabsList className="w-max pb-1">
+                                {departmentOrder.map((key) => (
+                                    <TabsTrigger key={key} value={key} className="text-xs">{departmentLabels[key]}</TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </ScrollArea>
+                        {departmentOrder.map((teamKey) => (
                             <TabsContent key={teamKey} value={teamKey} className="mt-4 text-xs space-y-2">
                                 {teamStructure[teamKey].map(role => (
-                                    <div key={role.role} className="p-2 bg-muted/50 rounded-md">
-                                        <p className="font-semibold">{role.role}</p>
-                                        <p className="text-muted-foreground">{role.responsibility}</p>
+                                    <div key={role.role} className="p-2.5 bg-muted/50 rounded-lg border border-border/50">
+                                        <p className="font-semibold text-sm text-foreground">{role.role}</p>
+                                        <p className="text-muted-foreground text-xs mt-0.5">{role.responsibility}</p>
                                     </div>
                                 ))}
                             </TabsContent>
