@@ -4,7 +4,7 @@ import { useState, type FormEvent, useEffect } from "react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, UserCog, PlusCircle, Search, Edit, Trash2, Eye, Phone, Mail, KeyRound } from "lucide-react";
+import { ArrowLeft, UserCog, PlusCircle, Search, Edit, Trash2, Eye, Phone, Mail, KeyRound, ShieldCheck, Briefcase } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
