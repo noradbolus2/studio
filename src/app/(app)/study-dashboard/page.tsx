@@ -21,7 +21,8 @@ import {
     Video, 
     FileText as NoteIcon, 
     HelpCircle as QuizIcon,
-    Lock
+    Lock,
+    Target
 } from "lucide-react"; 
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -401,5 +402,3 @@ export default function StudyDashboardPage() {
     </div>
   );
 }
-
-    
