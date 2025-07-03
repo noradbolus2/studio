@@ -1,7 +1,8 @@
+
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent, useMemo } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -11,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
     ShieldCheck, Users, School, Briefcase, Sparkles, Package, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
     CheckCircle, KeyRound, Download, Mail, TrendingUp, IndianRupee, Server, AlertTriangle, HeartPulse, Newspaper, Video, ThumbsUp, Lock, Power, ClipboardList,
-    GitMerge, MapPin, Activity, Code2, ArrowRight, ExternalLink, PlusCircle
+    GitMerge, MapPin, Activity, Code2, ArrowRight, ExternalLink, PlusCircle, Search
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -49,7 +50,7 @@ const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, no
 const coreTeam = [
   { name: "Abhishek verma (CEO)", avatar: "https://images.unsplash.com/photo-1737568120928-3600286a297d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYWxlJTIwY2VvfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male ceo" },
   { name: "Rohini (CTO)", avatar: "https://images.unsplash.com/photo-1582201943155-606a5f4e7941?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBjdG98ZW58MHx8fHwxNzUxNDc3NjU3fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female cto" },
-  { name: "Aakash (COO)", avatar: "https://images.unsplash.com/photo-1619959706197-ab0a94d4947b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWxlJTIwY29vfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male coo" },
+  { name: "Aakash (COO)", avatar: "https://images.unsplash.com/photo-1619959706197-ab0a94dceb68946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWxlJTIwY29vfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male coo" },
   { name: "Priya (Product Head)", avatar: "https://images.unsplash.com/photo-1659353219716-699803846194?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmZW1hbGUlMjBwcm9kdWN0JTIwbWFuYWdlcnxlbnwwfHx8fDE3NTE0Nzc2NTd8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female product manager" },
 ];
 
@@ -68,6 +69,35 @@ const platformAdminLinks = [
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 
+// --- Mock Data for Ecosystem Management ---
+interface Student { id: string; name: string; schoolName: string; status: 'Active' | 'Inactive'; avatarUrl: string; dataAiHint: string; }
+interface SchoolEntity { id: string; name: string; city: string; status: 'Verified' | 'Pending'; }
+interface Vendor { id: string; name: string; category: string; status: 'Active' | 'On Hold'; }
+interface Rider { id: string; name: string; location: string; status: 'Online' | 'Offline'; }
+interface Creator { id: string; name: string; expertise: string; status: 'Active' | 'Pending'; }
+
+const mockStudents: Student[] = [
+    { id: 'S1001', name: 'Aarav Sharma', schoolName: 'DPS Noida', status: 'Active', avatarUrl: 'https://placehold.co/40x40.png', dataAiHint: 'student avatar' },
+    { id: 'S1002', name: 'Priya Singh', schoolName: 'Modern School', status: 'Active', avatarUrl: 'https://placehold.co/40x40.png', dataAiHint: 'student avatar' },
+];
+const mockSchools: SchoolEntity[] = [
+    { id: 'sch_123', name: 'DPS Noida', city: 'Noida', status: 'Verified' },
+    { id: 'sch_456', name: 'Modern School, Barakhamba', city: 'Delhi', status: 'Verified' },
+    { id: 'sch_789', name: 'Springdales School, Pusa Road', city: 'Delhi', status: 'Pending' },
+];
+const mockVendors: Vendor[] = [
+    { id: 'VND001', name: 'Gupta Stationery', category: 'Stationery', status: 'Active' },
+    { id: 'VND002', name: 'Anil Book Store', category: 'Books', status: 'Active' },
+];
+const mockRiders: Rider[] = [
+    { id: 'RDR01', name: 'Suresh Kumar', location: 'Karol Bagh, Delhi', status: 'Online' },
+    { id: 'RDR02', name: 'Mohit Sharma', location: 'Sector 18, Noida', status: 'Offline' },
+];
+const mockCreators: Creator[] = [
+    { id: 'CRT01', name: 'ScienceWonders', expertise: 'Science Models', status: 'Active' },
+    { id: 'CRT02', name: 'ArtfulScribe', expertise: 'Calligraphy, Art', status: 'Pending' },
+];
+
 
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
@@ -81,6 +111,7 @@ export default function PlatformAdminDashboardPage() {
     adminPassword: "",
     adminDesignation: "Principal",
   });
+  const [ecosystemSearch, setEcosystemSearch] = useState("");
 
   const handleActionClick = (actionName: string) => {
     toast({
@@ -96,10 +127,7 @@ export default function PlatformAdminDashboardPage() {
       return;
     }
     
-    // 1. Generate unique School ID
     const schoolId = `sch_${Date.now()}`;
-    
-    // 2. Create School Profile object
     const schoolProfile: ProfileFormData = {
       schoolId: schoolId,
       schoolName: newSchoolData.schoolName,
@@ -109,11 +137,10 @@ export default function PlatformAdminDashboardPage() {
       contactPersonEmail: newSchoolData.adminEmail,
       schoolDesignation: newSchoolData.adminDesignation,
       role: 'school',
-      fullName: newSchoolData.schoolName, // Using school name as the 'fullName' for the school entity profile
-      email: newSchoolData.adminEmail, // Using admin email as the primary contact for the school entity
+      fullName: newSchoolData.schoolName,
+      email: newSchoolData.adminEmail,
     };
     
-    // 3. Create initial Admin Staff Member object
     const adminStaff: StaffMember = {
       id: `staff_${Date.now()}`,
       name: newSchoolData.adminName,
@@ -126,7 +153,6 @@ export default function PlatformAdminDashboardPage() {
       schoolId: schoolId,
     };
     
-    // 4. Save to localStorage
     try {
       localStorage.setItem(`schoolProfileData_${schoolId}`, JSON.stringify(schoolProfile));
       localStorage.setItem(`schoolStaff_${schoolId}`, JSON.stringify([adminStaff]));
@@ -135,7 +161,6 @@ export default function PlatformAdminDashboardPage() {
       return;
     }
     
-    // 5. Show success and credentials
     toast({
       title: "School Registered Successfully!",
       description: (
@@ -154,6 +179,13 @@ export default function PlatformAdminDashboardPage() {
     setNewSchoolData({ schoolName: "", city: "", adminName: "", adminEmail: "", adminPassword: "", adminDesignation: "Principal" });
   };
   
+    const filteredStudents = useMemo(() => mockStudents.filter(s => s.name.toLowerCase().includes(ecosystemSearch.toLowerCase()) || s.schoolName.toLowerCase().includes(ecosystemSearch.toLowerCase())), [ecosystemSearch]);
+    const filteredSchools = useMemo(() => mockSchools.filter(s => s.name.toLowerCase().includes(ecosystemSearch.toLowerCase()) || s.city.toLowerCase().includes(ecosystemSearch.toLowerCase())), [ecosystemSearch]);
+    const filteredVendors = useMemo(() => mockVendors.filter(v => v.name.toLowerCase().includes(ecosystemSearch.toLowerCase()) || v.category.toLowerCase().includes(ecosystemSearch.toLowerCase())), [ecosystemSearch]);
+    const filteredRiders = useMemo(() => mockRiders.filter(r => r.name.toLowerCase().includes(ecosystemSearch.toLowerCase()) || r.location.toLowerCase().includes(ecosystemSearch.toLowerCase())), [ecosystemSearch]);
+    const filteredCreators = useMemo(() => mockCreators.filter(c => c.name.toLowerCase().includes(ecosystemSearch.toLowerCase()) || c.expertise.toLowerCase().includes(ecosystemSearch.toLowerCase())), [ecosystemSearch]);
+
+
   return (
     <div className="space-y-8">
       <header className="text-center relative">
@@ -169,7 +201,6 @@ export default function PlatformAdminDashboardPage() {
         </p>
       </header>
       
-       {/* 1. Live Pulse Stats Row */}
       <Card>
         <CardHeader>
             <CardTitle className="font-headline text-lg flex items-center gap-2"><Activity className="text-primary"/> Live Pulse</CardTitle>
@@ -181,175 +212,76 @@ export default function PlatformAdminDashboardPage() {
             <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 8.3 Cr" icon={IndianRupee} color="text-yellow-500" />
             <MissionControlStatCard titleEn="Pan-India Reach" titleHi="पैन-इंडिया पहुंच" value="28 States, 8 UTs" icon={MapPin} color="text-purple-500" note="Top cities: Delhi, Mumbai"/>
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4 border-t">
-            <Button variant="outline" size="sm"><Download className="mr-2 h-4 w-4"/>Download XLSSnapshot</Button>
-            <Button variant="outline" size="sm"><Mail className="mr-2 h-4 w-4"/>Mail Daily Report</Button>
-        </CardFooter>
       </Card>
 
-      {/* 2. Main Panels Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Finance & Profitability Panel */}
-          <Card className="lg:col-span-1">
-              <CardHeader>
-                  <CardTitle className="font-headline text-lg flex items-center gap-2"><IndianRupee className="text-primary"/> Finance & Profitability</CardTitle>
-                  <CardDescription>Monthly financial overview.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                  <Table>
-                      <TableBody>
-                          <TableRow><TableCell className="font-medium">Total Revenue</TableCell><TableCell>INR 250 Cr</TableCell></TableRow>
-                          <TableRow><TableCell className="font-medium">Net Profit</TableCell><TableCell className="text-green-600 font-bold">INR 50 Cr</TableCell></TableRow>
-                           <TableRow>
-                            <TableCell className="font-medium">Revenue Sources</TableCell>
-                            <TableCell className="flex flex-wrap gap-1">
-                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=education"><Badge variant="secondary">Education: INR 100 Cr</Badge></Link></Button>
-                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=delivery"><Badge variant="secondary">Delivery: INR 80 Cr</Badge></Link></Button>
-                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=coaching"><Badge variant="secondary">Coaching: INR 40 Cr</Badge></Link></Button>
-                                <Button asChild size="xs" variant="secondary" className="cursor-pointer"><Link href="/platform-admin/analytics?source=subscriptions"><Badge variant="secondary">Subscriptions: INR 30 Cr</Badge></Link></Button>
-                            </TableCell>
-                          </TableRow>
-                          <TableRow><TableCell className="font-medium">Payout Pressure</TableCell>
-                            <TableCell>
-                                <Button asChild variant="link" className="p-0 h-auto font-normal text-destructive hover:text-destructive">
-                                    <Link href="/platform-admin/orders">
-                                        Due: INR 25 Cr (Vendors, Creators, Riders) <ExternalLink size={14} className="ml-2" />
-                                    </Link>
-                                </Button>
-                            </TableCell>
-                           </TableRow>
-                          <TableRow><TableCell className="font-medium">MRR / ARR Tracker</TableCell>
-                           <TableCell>
-                                <Button asChild variant="link" className="p-0 h-auto font-normal">
-                                  <Link href="/platform-admin/analytics">
-                                      View detailed chart <ExternalLink size={14} className="ml-2" />
-                                  </Link>
-                                </Button>
-                            </TableCell>
-                          </TableRow>
-                      </TableBody>
-                  </Table>
-              </CardContent>
-              <CardFooter>
-                  <Button asChild className="w-full">
-                      <Link href="/platform-admin/analytics">
-                          <BilingualText en="View Detailed Analytics" hi="विस्तृत एनालिटिक्स देखें" /> <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                  </Button>
-              </CardFooter>
-          </Card>
+      <Card className="lg:col-span-3">
+            <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2"><HeartPulse className="text-primary"/> Ecosystem Management</CardTitle>
+                <CardDescription>Search and manage all entities on the platform.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Tabs defaultValue="students">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+                        <TabsTrigger value="students">Students</TabsTrigger>
+                        <TabsTrigger value="schools">Schools</TabsTrigger>
+                        <TabsTrigger value="vendors">Vendors</TabsTrigger>
+                        <TabsTrigger value="riders">Riders</TabsTrigger>
+                        <TabsTrigger value="creators">Creators</TabsTrigger>
+                    </TabsList>
+                    <div className="relative mt-4 mb-2">
+                       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                       <Input placeholder="Search across this category..." className="pl-8" value={ecosystemSearch} onChange={(e) => setEcosystemSearch(e.target.value)} />
+                    </div>
+                    <TabsContent value="students" className="mt-4">
+                        <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>School</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                        <TableBody>{filteredStudents.map(s=><TableRow key={s.id}><TableCell className="font-medium flex items-center gap-2"><Avatar className="h-6 w-6"><AvatarImage src={s.avatarUrl} data-ai-hint={s.dataAiHint}/><AvatarFallback>{s.name.charAt(0)}</AvatarFallback></Avatar> {s.name}</TableCell><TableCell>{s.schoolName}</TableCell><TableCell><Badge variant={s.status === 'Active' ? 'default' : 'outline'} className={s.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{s.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                    </TabsContent>
+                    <TabsContent value="schools" className="mt-4">
+                        <Table><TableHeader><TableRow><TableHead>School Name</TableHead><TableHead>City</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                        <TableBody>{filteredSchools.map(s=><TableRow key={s.id}><TableCell className="font-medium">{s.name}</TableCell><TableCell>{s.city}</TableCell><TableCell><Badge variant={s.status === 'Verified' ? 'default' : 'outline'} className={s.status === 'Verified' ? 'bg-green-100 text-green-800' : ''}>{s.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                        <Button size="sm" className="w-full mt-2" onClick={() => setIsRegisterSchoolOpen(true)}><PlusCircle className="mr-2 h-4 w-4"/> Register New School</Button>
+                    </TabsContent>
+                    <TabsContent value="vendors" className="mt-4">
+                        <Table><TableHeader><TableRow><TableHead>Vendor Name</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                        <TableBody>{filteredVendors.map(v=><TableRow key={v.id}><TableCell className="font-medium">{v.name}</TableCell><TableCell>{v.category}</TableCell><TableCell><Badge variant={v.status === 'Active' ? 'default' : 'outline'} className={v.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{v.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                    </TabsContent>
+                    <TabsContent value="riders" className="mt-4">
+                       <Table><TableHeader><TableRow><TableHead>Rider Name</TableHead><TableHead>Location</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                        <TableBody>{filteredRiders.map(r=><TableRow key={r.id}><TableCell className="font-medium">{r.name}</TableCell><TableCell>{r.location}</TableCell><TableCell><Badge variant={r.status === 'Online' ? 'default' : 'outline'} className={r.status === 'Online' ? 'bg-green-100 text-green-800' : ''}>{r.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                    </TabsContent>
+                    <TabsContent value="creators" className="mt-4">
+                        <Table><TableHeader><TableRow><TableHead>Creator Name</TableHead><TableHead>Expertise</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                        <TableBody>{filteredCreators.map(c=><TableRow key={c.id}><TableCell className="font-medium">{c.name}</TableCell><TableCell>{c.expertise}</TableCell><TableCell><Badge variant={c.status === 'Active' ? 'default' : 'outline'} className={c.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{c.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                    </TabsContent>
+                </Tabs>
+            </CardContent>
+        </Card>
+      
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
+            <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-2">
+            <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Emergency Push Notification")}>
+                <AlertTriangle className="h-4 w-4 shrink-0"/>
+                <span className="text-xs font-medium leading-tight"><BilingualText en="Emergency Push" hi="आपातकालीन पुश"/></span>
+            </Button>
+            <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Lock Vendor System")}>
+                <Lock className="h-4 w-4 shrink-0"/>
+                <span className="text-xs font-medium leading-tight"><BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक"/></span>
+            </Button>
+            <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
+                <Download className="h-4 w-4 shrink-0"/>
+                <span className="text-xs font-medium leading-tight"><BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात"/></span>
+            </Button>
+            <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Send Mail to All Schools")}>
+                <Mail className="h-4 w-4 shrink-0"/>
+                <span className="text-xs font-medium leading-tight"><BilingualText en="Send Mail to Schools" hi="स्कूलों को मेल"/></span>
+            </Button>
+        </CardContent>
+      </Card>
 
-          {/* Core Team Panel */}
-          <Card className="lg:col-span-1">
-              <CardHeader>
-                  <CardTitle className="font-headline text-lg flex items-center gap-2"><Users className="text-primary"/> Our Core Team</CardTitle>
-                  <CardDescription>Key leadership driving the mission.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                  {coreTeam.map(member => (
-                      <div key={member.name} className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9">
-                              <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
-                              <AvatarFallback>{member.name.substring(0,1)}</AvatarFallback>
-                          </Avatar>
-                          <span className="font-medium text-sm">{member.name}</span>
-                      </div>
-                  ))}
-              </CardContent>
-              <CardFooter>
-                  <Button asChild className="w-full">
-                      <Link href="/platform-admin/team">
-                          <BilingualText en="Manage Full Team" hi="पूरी टीम प्रबंधित करें" /> <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                  </Button>
-              </CardFooter>
-          </Card>
-
-          {/* Quick Action Center Panel */}
-          <Card className="lg:col-span-1">
-              <CardHeader>
-                  <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
-                  <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-2">
-                 <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Emergency Push Notification")}>
-                      <AlertTriangle className="h-4 w-4 shrink-0"/>
-                      <span className="text-xs font-medium leading-tight"><BilingualText en="Emergency Push" hi="आपातकालीन पुश"/></span>
-                  </Button>
-                   <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Lock Vendor System")}>
-                      <Lock className="h-4 w-4 shrink-0"/>
-                      <span className="text-xs font-medium leading-tight"><BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक"/></span>
-                  </Button>
-                   <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
-                      <Download className="h-4 w-4 shrink-0"/>
-                      <span className="text-xs font-medium leading-tight"><BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात"/></span>
-                  </Button>
-                  <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Send Mail to All Schools")}>
-                      <Mail className="h-4 w-4 shrink-0"/>
-                      <span className="text-xs font-medium leading-tight"><BilingualText en="Send Mail to Schools" hi="स्कूलों को मेल"/></span>
-                  </Button>
-              </CardContent>
-          </Card>
-      </div>
-
-      {/* 3. Detailed Panels Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <Card className="lg:col-span-1">
-              <CardHeader>
-                  <CardTitle className="font-headline text-lg flex items-center gap-2"><HeartPulse className="text-primary"/> Ecosystem Health</CardTitle>
-              </CardHeader>
-              <CardContent>
-                  <Tabs defaultValue="students">
-                      <TabsList className="grid w-full grid-cols-5">
-                          <TabsTrigger value="students">Students</TabsTrigger>
-                          <TabsTrigger value="schools">Schools</TabsTrigger>
-                          <TabsTrigger value="vendors">Vendors</TabsTrigger>
-                          <TabsTrigger value="riders">Riders</TabsTrigger>
-                          <TabsTrigger value="creators">Creators</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="students" className="pt-4"><Table><TableBody><TableRow><TableCell>New Signups Today</TableCell><TableCell>50,000+</TableCell></TableRow><TableRow><TableCell>Retention Rate (Monthly)</TableCell><TableCell>65%</TableCell></TableRow></TableBody></Table></TabsContent>
-                      <TabsContent value="schools" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>1.4 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Verified & Active</TableCell><TableCell>92%</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" onClick={() => setIsRegisterSchoolOpen(true)}><PlusCircle className="mr-2 h-4 w-4"/> Register New School</Button></TabsContent>
-                      <TabsContent value="vendors" className="pt-4"><Table><TableBody><TableRow><TableCell>Total Onboarded</TableCell><TableCell>2.8 M+ (~90%)</TableCell></TableRow><TableRow><TableCell>Active This Week</TableCell><TableCell>95%</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" variant="outline">Onboard New Vendor</Button></TabsContent>
-                      <TabsContent value="riders" className="pt-4"><Table><TableBody><TableRow><TableCell>Avg. Delivery Time</TableCell><TableCell>28 mins</TableCell></TableRow><TableRow><TableCell>On-time %</TableCell><TableCell>96%</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" variant="outline">Onboard New Rider</Button></TabsContent>
-                      <TabsContent value="creators" className="pt-4"><Table><TableBody><TableRow><TableCell>New Courses Today</TableCell><TableCell>500+</TableCell></TableRow><TableRow><TableCell>Active Creators</TableCell><TableCell>82</TableCell></TableRow></TableBody></Table><Button size="sm" className="w-full mt-2" variant="outline">Onboard New Creator</Button></TabsContent>
-                  </Tabs>
-              </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-1">
-              <CardHeader>
-                  <CardTitle className="font-headline text-lg flex items-center gap-2"><Bot className="text-primary"/> AI Engine Monitor</CardTitle>
-              </CardHeader>
-              <CardContent>
-                  <Table>
-                      <TableBody>
-                          <TableRow><TableCell>Brain Scan Health (Avg. Clarity)</TableCell><TableCell>72%</TableCell></TableRow>
-                          <TableRow><TableCell className="text-destructive">Stress Spike Alerts</TableCell><TableCell className="text-destructive">3 cities</TableCell></TableRow>
-                          <TableRow><TableCell>AI Notes Usage (Weekly)</TableCell><TableCell>5,00,000+</TableCell></TableRow>
-                          <TableRow><TableCell>Smart Revision Feedback</TableCell><TableCell>92% found useful</TableCell></TableRow>
-                      </TableBody>
-                  </Table>
-              </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-1">
-              <CardHeader>
-                  <CardTitle className="font-headline text-lg flex items-center gap-2"><GitMerge className="text-primary"/> Vision Control (Moonshots)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                  <Table>
-                      <TableBody>
-                          <TableRow><TableCell>OSO Circle (Study Pods)</TableCell><TableCell><Badge variant="outline">Phase 2</Badge></TableCell></TableRow>
-                          <TableRow><TableCell>OSO Pocket School</TableCell><TableCell><Badge>Launched</Badge></TableCell></TableRow>
-                          <TableRow><TableCell>Coaching+Creators</TableCell><TableCell>82 Active</TableCell></TableRow>
-                          <TableRow><TableCell>Parent Mode v2</TableCell><TableCell><Badge variant="outline">Planning</Badge></TableCell></TableRow>
-                      </TableBody>
-                  </Table>
-              </CardContent>
-          </Card>
-      </div>
-
-      {/* 4. Admin Links Panel */}
       <Card>
           <CardHeader>
               <CardTitle className="font-headline text-lg flex items-center gap-2"><Settings className="text-primary"/> Management Panels</CardTitle>
