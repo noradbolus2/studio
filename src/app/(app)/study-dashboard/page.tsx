@@ -4,39 +4,30 @@
 import { useState, useEffect, useMemo } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { 
     Activity, 
     AlertTriangle, 
     CheckCircle, 
     BrainCircuit, 
-    Lightbulb, 
-    Target, 
     Bot, 
     BookOpen, 
-    ChevronDown, 
-    ChevronUp, 
     ListChecks, 
-    Sparkles, 
     MessageSquareQuote, 
     Headphones, 
     Edit, 
     Video, 
     FileText as NoteIcon, 
     HelpCircle as QuizIcon,
-    PlayCircle, 
-    BookMarked, 
-    Check 
+    Lock
 } from "lucide-react"; 
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { ProfileFormData } from '../edit-profile/page';
-import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Badge } from '@/components/ui/badge';
 
@@ -46,6 +37,7 @@ interface LessonItem {
   titleHi: string;
   type: 'video' | 'quiz' | 'notes';
   completed: boolean;
+  locked: boolean;
   replays_played?: number;
   max_replays?: number;
 }
@@ -66,15 +58,15 @@ interface PendingTask {
   type: 'assignment' | 'quiz' | 'reading';
 }
 
-const mockChapters: Chapter[] = [
+const mockChaptersData: Omit<Chapter, 'lessons'> & { lessons: Omit<LessonItem, 'locked'>[] }[] = [
   {
     id: "ch1",
     titleEn: "Chapter 1: Chemical Reactions and Equations",
     titleHi: "अध्याय 1: रासायनिक अभिक्रियाएँ एवं समीकरण",
     isCurrent: true,
     lessons: [
-      { id: "l1a", titleEn: "Video 1: Types of Reactions", titleHi: "वीडियो 1: अभिक्रियाओं के प्रकार", type: 'video', completed: true, replays_played: 2, max_replays: 10 },
-      { id: "l1b", titleEn: "Video 2: Balancing Equations", titleHi: "वीडियो 2: समीकरणों को संतुलित करना", type: 'video', completed: false, replays_played: 9, max_replays: 10 },
+      { id: "l1a", titleEn: "Video 1: Types of Reactions", titleHi: "वीडियो 1: अभिक्रियाओं के प्रकार", type: 'video', completed: false, replays_played: 0, max_replays: 10 },
+      { id: "l1b", titleEn: "Video 2: Balancing Equations", titleHi: "वीडियो 2: समीकरणों को संतुलित करना", type: 'video', completed: false, replays_played: 0, max_replays: 10 },
       { id: "l1c", titleEn: "Notes: Redox Reactions", titleHi: "नोट्स: रेडॉक्स अभिक्रियाएँ", type: 'notes', completed: false },
       { id: "l1d", titleEn: "Quiz: Chapter 1", titleHi: "प्रश्नोत्तरी: अध्याय 1", type: 'quiz', completed: false },
     ],
@@ -86,6 +78,17 @@ const mockChapters: Chapter[] = [
     lessons: [
       { id: "l2a", titleEn: "Video: Properties of Acids", titleHi: "वीडियो: अम्ल के गुणधर्म", type: 'video', completed: false, replays_played: 0, max_replays: 10 },
       { id: "l2b", titleEn: "Notes: pH Scale", titleHi: "नोट्स: पीएच स्केल", type: 'notes', completed: false },
+      { id: "l2c", titleEn: "Quiz: Chapter 2", titleHi: "प्रश्नोत्तरी: अध्याय 2", type: 'quiz', completed: false },
+    ],
+  },
+   {
+    id: "ch3",
+    titleEn: "Chapter 3: Metals and Non-metals",
+    titleHi: "अध्याय 3: धातु एवं अधातु",
+    lessons: [
+      { id: "l3a", titleEn: "Video: Physical Properties", titleHi: "वीडियो: भौतिक गुणधर्म", type: 'video', completed: false, replays_played: 0, max_replays: 10 },
+      { id: "l3b", titleEn: "Video: Chemical Properties", titleHi: "वीडियो: रासायनिक गुणधर्म", type: 'video', completed: false, replays_played: 0, max_replays: 10 },
+      { id: "l3c", titleEn: "Notes: Reactivity Series", titleHi: "नोट्स: सक्रियता श्रेणी", type: 'notes', completed: false },
     ],
   },
 ];
@@ -97,43 +100,51 @@ const mockPendingTasks: PendingTask[] = [
 
 const mockWeakTopics: string[] = ["Balancing Complex Equations", "Thermodynamics concepts"];
 
-function LessonRow({ lesson, chapterId, onLessonClick }: { lesson: LessonItem, chapterId: string, onLessonClick: (chapterId: string, lessonId: string) => void }) {
+function LessonRow({ lesson, onLessonClick }: { lesson: LessonItem, onLessonClick: () => void }) {
     const getLessonIcon = (type: LessonItem['type']) => {
         switch (type) {
-        case 'video': return <Video className="h-5 w-5 text-pink-500" />;
-        case 'notes': return <NoteIcon className="h-5 w-5 text-blue-500" />;
-        case 'quiz': return <QuizIcon className="h-5 w-5 text-green-500" />;
-        default: return <BookOpen className="h-5 w-5 text-gray-500" />;
+            case 'video': return <Video className="h-5 w-5 text-pink-500" />;
+            case 'notes': return <NoteIcon className="h-5 w-5 text-blue-500" />;
+            case 'quiz': return <QuizIcon className="h-5 w-5 text-green-500" />;
+            default: return <BookOpen className="h-5 w-5 text-gray-500" />;
         }
     };
     
     const isReplayLimitReached = lesson.type === 'video' && (lesson.replays_played ?? 0) >= (lesson.max_replays ?? Infinity);
 
+    let buttonTextEn = "Start";
+    let buttonTextHi = "शुरू करें";
+    if (lesson.type === 'video') { buttonTextEn = "Watch Video"; buttonTextHi = "वीडियो देखें"; }
+    if (lesson.type === 'notes') { buttonTextEn = "Read Notes"; buttonTextHi = "नोट्स पढ़ें"; }
+    if (lesson.type === 'quiz') { buttonTextEn = "Take Quiz"; buttonTextHi = "क्विज़ दें"; }
+
     return (
-        <div key={lesson.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+        <div className={cn(
+            "flex items-center justify-between p-3 rounded-lg transition-all",
+            lesson.locked ? "bg-muted/30 opacity-60" : "bg-muted/50 hover:bg-muted/70",
+            lesson.completed && "bg-green-500/10"
+        )}>
             <div className="flex items-center gap-3">
-                {lesson.completed ? (
-                    <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
-                ) : (
-                    getLessonIcon(lesson.type)
-                )}
+                {lesson.locked ? <Lock className="h-6 w-6 text-muted-foreground flex-shrink-0"/> : 
+                 lesson.completed ? <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" /> : getLessonIcon(lesson.type)}
                 <div>
-                    <p className={cn("text-sm font-medium", lesson.completed && "text-muted-foreground")}>
+                    <p className={cn("text-sm font-medium", lesson.completed && "text-muted-foreground line-through")}>
                       <BilingualText en={lesson.titleEn} hi={lesson.titleHi} />
                     </p>
-                    {isReplayLimitReached && (
-                         <Badge variant="destructive" className="mt-1 text-xs">Replay Limit Reached</Badge>
+                    {lesson.type === 'video' && lesson.max_replays && (
+                         <p className="text-xs text-muted-foreground">Replays left: {lesson.max_replays - (lesson.replays_played || 0)}/{lesson.max_replays}</p>
                     )}
                 </div>
             </div>
              <Button 
                 size="sm" 
                 variant={lesson.completed ? "ghost" : "default"} 
-                onClick={() => onLessonClick(chapterId, lesson.id)}
-                disabled={isReplayLimitReached}
-                className={cn(isReplayLimitReached && "opacity-50 cursor-not-allowed")}
+                onClick={onLessonClick}
+                disabled={lesson.locked || isReplayLimitReached}
             >
-                {lesson.completed ? <BilingualText en="Review" hi="समीक्षा"/> : <BilingualText en="Start" hi="शुरू करें"/>}
+                {lesson.locked ? <BilingualText en="Locked" hi="लॉक"/> :
+                 lesson.completed ? <BilingualText en="Review" hi="समीक्षा"/> : 
+                 <BilingualText en={buttonTextEn} hi={buttonTextHi}/>}
             </Button>
         </div>
     );
@@ -142,19 +153,41 @@ function LessonRow({ lesson, chapterId, onLessonClick }: { lesson: LessonItem, c
 export default function StudyDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [chapters, setChapters] = useState<Chapter[]>(mockChapters);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
   const [weakTopics, setWeakTopics] = useState<string[]>(mockWeakTopics);
   const [showAiHelp, setShowAiHelp] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      setIsLoading(true);
       const storedProfile = localStorage.getItem('userProfileData');
       if (storedProfile) {
         try {
           setProfileData(JSON.parse(storedProfile) as ProfileFormData);
         } catch (err) { console.warn("Could not parse profile for Study Dashboard:", err); }
       }
+
+      // Initialize lesson states based on completion status
+      const updatedChapters: Chapter[] = mockChaptersData.map(ch => ({ ...ch, lessons: ch.lessons.map(l => ({ ...l, locked: true })) }));
+      let firstUnlocked = false;
+      for (const chapter of updatedChapters) {
+          for (const lesson of chapter.lessons) {
+              if (!lesson.completed) {
+                  lesson.locked = false;
+                  firstUnlocked = true;
+                  break;
+              }
+          }
+          if (firstUnlocked) break;
+      }
+      // If all are completed, unlock all
+      if (!firstUnlocked && updatedChapters.length > 0) {
+          updatedChapters.forEach(ch => ch.lessons.forEach(l => l.locked = false));
+      }
+      setChapters(updatedChapters);
+      setIsLoading(false);
     }
   }, []);
 
@@ -171,10 +204,21 @@ export default function StudyDashboardPage() {
   }, [chapters, weakTopics]);
 
   const handleLessonClick = (chapterId: string, lessonId: string) => {
-      const chapter = chapters.find(c => c.id === chapterId);
-      const lesson = chapter?.lessons.find(l => l.id === lessonId);
+      let chapterIndex = -1, lessonIndex = -1;
+      chapters.forEach((ch, cIdx) => {
+        const lIdx = ch.lessons.findIndex(l => l.id === lessonId);
+        if (lIdx !== -1) {
+          chapterIndex = cIdx;
+          lessonIndex = lIdx;
+        }
+      });
+      if (chapterIndex === -1 || lessonIndex === -1) return;
+      const lesson = chapters[chapterIndex].lessons[lessonIndex];
 
-      if(!lesson) return;
+      if(lesson.locked) {
+          toast({ title: "Lesson Locked", description: "Please complete the previous lesson to unlock this one."});
+          return;
+      }
       
       const isReplayLimitReached = lesson.type === 'video' && (lesson.replays_played ?? 0) >= (lesson.max_replays ?? Infinity);
       if (isReplayLimitReached) {
@@ -185,26 +229,28 @@ export default function StudyDashboardPage() {
       toast({ title: "Starting Lesson...", description: `Loading "${lesson.titleEn}"`});
 
       setTimeout(() => {
-         setChapters(prevChapters =>
-            prevChapters.map(ch =>
-                ch.id === chapterId
-                ? {
-                    ...ch,
-                    lessons: ch.lessons.map(l =>
-                        l.id === lessonId 
-                        ? { 
-                            ...l, 
-                            completed: true, 
-                            replays_played: l.type === 'video' ? (l.replays_played ?? 0) + 1 : l.replays_played 
-                          } 
-                        : l
-                    ),
-                    }
-                : ch
-            )
-        );
-         toast({ title: "Lesson Completed!", description: "Great job keeping up!"});
-      }, 1500)
+         setChapters(prevChapters => {
+            const newChapters = JSON.parse(JSON.stringify(prevChapters)); 
+
+            // Mark current lesson as complete
+            newChapters[chapterIndex].lessons[lessonIndex].completed = true;
+            if (newChapters[chapterIndex].lessons[lessonIndex].type === 'video') {
+                 newChapters[chapterIndex].lessons[lessonIndex].replays_played = (newChapters[chapterIndex].lessons[lessonIndex].replays_played || 0) + 1;
+            }
+
+            // Unlock next lesson in the same chapter
+            if (lessonIndex + 1 < newChapters[chapterIndex].lessons.length) {
+                newChapters[chapterIndex].lessons[lessonIndex + 1].locked = false;
+            } 
+            // Or unlock the first lesson of the next chapter
+            else if (chapterIndex + 1 < newChapters.length) {
+                newChapters[chapterIndex + 1].lessons[0].locked = false;
+            }
+
+            return newChapters;
+        });
+         toast({ title: "Lesson Completed!", description: "Great job! The next lesson is now unlocked."});
+      }, 1500);
   };
 
   const overallProgress = useMemo(() => {
@@ -213,7 +259,18 @@ export default function StudyDashboardPage() {
     return totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
   }, [chapters]);
 
-  const currentChapterForDisplay = chapters.find(ch => ch.isCurrent) || chapters[0];
+  const currentChapterForDisplay = useMemo(() => {
+    return chapters.find(ch => ch.lessons.some(l => !l.completed && !l.locked)) || chapters[0];
+  }, [chapters]);
+
+  if (isLoading) {
+      return (
+          <div className="flex items-center justify-center h-64">
+              <LoadingSpinner />
+              <p className="ml-2">Loading your dashboard...</p>
+          </div>
+      );
+  }
 
   return (
     <div className="space-y-6">
@@ -268,7 +325,7 @@ export default function StudyDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {currentChapterForDisplay.lessons.map(lesson => (
-              <LessonRow key={lesson.id} lesson={lesson} chapterId={currentChapterForDisplay.id} onLessonClick={handleLessonClick} />
+              <LessonRow key={lesson.id} lesson={lesson} onLessonClick={() => handleLessonClick(currentChapterForDisplay.id, lesson.id)} />
             ))}
           </CardContent>
         </Card>
@@ -310,18 +367,22 @@ export default function StudyDashboardPage() {
                     <BilingualText en="All Chapters / Modules" hi="सभी अध्याय / मॉड्यूल"/>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3">
-                    {chapters.filter(ch => !ch.isCurrent).map(chapter => (
-                        <Card key={chapter.id} className="bg-muted/40">
-                            <CardHeader className="py-3 px-4">
-                                <CardTitle className="text-sm font-medium">
-                                    <BilingualText en={chapter.titleEn} hi={chapter.titleHi}/>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="py-2 px-4 text-xs text-muted-foreground">
-                                <BilingualText en={`${chapter.lessons.filter(t=>t.completed).length} / ${chapter.lessons.length} lessons completed`} hi={`${chapter.lessons.length} में से ${chapter.lessons.filter(t=>t.completed).length} पाठ पूर्ण`}/>
-                            </CardContent>
-                        </Card>
-                    ))}
+                    {chapters.filter(ch => ch.id !== currentChapterForDisplay?.id).map(chapter => {
+                         const chapterProgress = chapter.lessons.length > 0 ? (chapter.lessons.filter(l => l.completed).length / chapter.lessons.length) * 100 : 0;
+                         return (
+                            <Card key={chapter.id} className="bg-muted/40">
+                                <CardHeader className="py-3 px-4">
+                                    <CardTitle className="text-sm font-medium">
+                                        <BilingualText en={chapter.titleEn} hi={chapter.titleHi}/>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="py-2 px-4 text-xs text-muted-foreground space-y-1">
+                                    <p><BilingualText en={`${chapter.lessons.filter(t=>t.completed).length} / ${chapter.lessons.length} lessons completed`} hi={`${chapter.lessons.length} में से ${chapter.lessons.filter(t=>t.completed).length} पाठ पूर्ण`}/></p>
+                                    <Progress value={chapterProgress} className="h-1.5"/>
+                                </CardContent>
+                            </Card>
+                         )
+                    })}
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="integrations">
@@ -341,19 +402,4 @@ export default function StudyDashboardPage() {
   );
 }
 
-declare module 'react' {
-    interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
-      placeholder_en?: string;
-      placeholder_hi?: string;
-    }
-    interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
-        placeholder_en?: string;
-        placeholder_hi?: string;
-    }
-}
-declare module "@radix-ui/react-select" {
-  interface SelectValueProps {
-    placeholder_en?: string;
-    placeholder_hi?: string;
-  }
-}
+    
