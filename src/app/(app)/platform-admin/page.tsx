@@ -1,4 +1,3 @@
-
 // src/app/(app)/platform-admin/page.tsx
 "use client";
 
@@ -12,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
     ShieldCheck, Users, School, Briefcase, Sparkles, Package, BarChart3, Settings, FileCog, Eye, Bot, ArrowLeft, Link as LinkIcon, Bike, Landmark,
     CheckCircle, KeyRound, Download, Mail, TrendingUp, IndianRupee, Server, AlertTriangle, HeartPulse, Newspaper, Video, ThumbsUp, Lock, Power, ClipboardList,
-    GitMerge, MapPin, Activity, Code2, ArrowRight, ExternalLink, PlusCircle, Search
+    GitMerge, MapPin, Activity, Code2, ArrowRight, ExternalLink, PlusCircle, Search, MessageSquare
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,6 +24,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { StaffMember } from '@/types/school-staff'; 
 import type { ProfileFormData } from '../../edit-profile/page';
+import { getPrBrandReputationData, type PrBrandReputationOutput } from '@/ai/flows/pr-brand-reputation-flow';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 
 
 const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, note, href }: { titleEn: string, titleHi: string, value: string, icon: React.ElementType, color: string, note?: string, href?: string }) => {
@@ -46,13 +47,6 @@ const MissionControlStatCard = ({ titleEn, titleHi, value, icon: Icon, color, no
     }
     return cardContent;
 };
-
-const coreTeam = [
-  { name: "Abhishek verma (CEO)", avatar: "https://images.unsplash.com/photo-1737568120928-3600286a297d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYWxlJTIwY2VvfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male ceo" },
-  { name: "Rohini (CTO)", avatar: "https://images.unsplash.com/photo-1582201943155-606a5f4e7941?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBjdG98ZW58MHx8fHwxNzUxNDc3NjU3fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female cto" },
-  { name: "Aakash (COO)", avatar: "https://images.unsplash.com/photo-1619959706197-ab0a94dceb68946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWxlJTIwY29vfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male coo" },
-  { name: "Priya (Product Head)", avatar: "https://images.unsplash.com/photo-1659353219716-699803846194?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmZW1hbGUlMjBwcm9kdWN0JTIwbWFuYWdlcnxlbnwwfHx8fDE3NTE0Nzc2NTd8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female product manager" },
-];
 
 const platformAdminLinks = [
     { href: "/platform-admin/analytics", icon: BarChart3, titleEn: "Platform Analytics", titleHi: "प्लेटफ़ॉर्म एनालिटिक्स" },
@@ -98,6 +92,13 @@ const mockCreators: Creator[] = [
     { id: 'CRT02', name: 'ArtfulScribe', expertise: 'Calligraphy, Art', status: 'Pending' },
 ];
 
+const coreTeam = [
+  { name: "Abhishek verma (CEO)", avatar: "https://images.unsplash.com/photo-1737568120928-3600286a297d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYWxlJTIwY2VvfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male ceo" },
+  { name: "Rohini (CTO)", avatar: "https://images.unsplash.com/photo-1582201943155-606a5f4e7941?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBjdG98ZW58MHx8fHwxNzUxNDc3NjU3fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female cto" },
+  { name: "Aakash (COO)", avatar: "https://images.unsplash.com/photo-1619959706197-ab0a94dceb68946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWxlJTIwY29vfGVufDB8fHx8MTc1MTQ3NzY1N3ww&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "male coo" },
+  { name: "Priya (Product Head)", avatar: "https://images.unsplash.com/photo-1659353219716-699803846194?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmZW1hbGUlMjBwcm9kdWN0JTIwbWFuYWdlcnxlbnwwfHx8f17NTE0Nzc2NTd8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "female product manager" },
+];
+
 
 export default function PlatformAdminDashboardPage() {
   const router = useRouter();
@@ -112,13 +113,28 @@ export default function PlatformAdminDashboardPage() {
     adminDesignation: "Principal",
   });
   const [ecosystemSearch, setEcosystemSearch] = useState("");
+  const [prData, setPrData] = useState<PrBrandReputationOutput | null>(null);
+  const [isLoadingPr, setIsLoadingPr] = useState(true);
 
-  const handleActionClick = (actionName: string) => {
-    toast({
-      title: "Action Triggered (Simulated)",
-      description: `${actionName} has been initiated.`,
-    });
-  };
+  useEffect(() => {
+    const fetchPrData = async () => {
+        setIsLoadingPr(true);
+        try {
+            const result = await getPrBrandReputationData();
+            setPrData(result);
+        } catch (error) {
+            console.error("Failed to fetch PR & Brand data:", error);
+            toast({
+                title: "AI Error",
+                description: "Could not fetch PR & Brand data from the AI.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsLoadingPr(false);
+        }
+    };
+    fetchPrData();
+  }, [toast]);
 
   const handleRegisterSchool = (e: FormEvent) => {
     e.preventDefault();
@@ -201,87 +217,111 @@ export default function PlatformAdminDashboardPage() {
         </p>
       </header>
       
-      <Card>
-        <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center gap-2"><Activity className="text-primary"/> Live Pulse</CardTitle>
-            <CardDescription>High-level, real-time platform metrics.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="7.5 M+" icon={Users} color="text-blue-500" />
-            <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="1,50,000+" icon={Package} color="text-green-500" />
-            <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 8.3 Cr" icon={IndianRupee} color="text-yellow-500" />
-            <MissionControlStatCard titleEn="Pan-India Reach" titleHi="पैन-इंडिया पहुंच" value="28 States, 8 UTs" icon={MapPin} color="text-purple-500" note="Top cities: Delhi, Mumbai"/>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-lg flex items-center gap-2"><Activity className="text-primary"/> Live Pulse</CardTitle>
+                    <CardDescription>High-level, real-time platform metrics.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <MissionControlStatCard href="/platform-admin/users" titleEn="Active Students" titleHi="सक्रिय छात्र" value="7.5 M+" icon={Users} color="text-blue-500" />
+                    <MissionControlStatCard href="/platform-admin/orders" titleEn="Orders in Progress" titleHi="प्रगति में आदेश" value="1,50,000+" icon={Package} color="text-green-500" />
+                    <MissionControlStatCard href="/platform-admin/analytics" titleEn="Revenue Today" titleHi="आज का राजस्व" value="INR 8.3 Cr" icon={IndianRupee} color="text-yellow-500" />
+                    <MissionControlStatCard titleEn="Pan-India Reach" titleHi="पैन-इंडिया पहुंच" value="28 States, 8 UTs" icon={MapPin} color="text-purple-500" note="Top cities: Delhi, Mumbai"/>
+                </CardContent>
+            </Card>
 
-      <Card className="lg:col-span-3">
-            <CardHeader>
-                <CardTitle className="font-headline text-lg flex items-center gap-2"><HeartPulse className="text-primary"/> Ecosystem Management</CardTitle>
-                <CardDescription>Search and manage all entities on the platform.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Tabs defaultValue="students">
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
-                        <TabsTrigger value="students">Students</TabsTrigger>
-                        <TabsTrigger value="schools">Schools</TabsTrigger>
-                        <TabsTrigger value="vendors">Vendors</TabsTrigger>
-                        <TabsTrigger value="riders">Riders</TabsTrigger>
-                        <TabsTrigger value="creators">Creators</TabsTrigger>
-                    </TabsList>
-                    <div className="relative mt-4 mb-2">
-                       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                       <Input placeholder="Search across this category..." className="pl-8" value={ecosystemSearch} onChange={(e) => setEcosystemSearch(e.target.value)} />
-                    </div>
-                    <TabsContent value="students" className="mt-4">
-                        <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>School</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
-                        <TableBody>{filteredStudents.map(s=><TableRow key={s.id}><TableCell className="font-medium flex items-center gap-2"><Avatar className="h-6 w-6"><AvatarImage src={s.avatarUrl} data-ai-hint={s.dataAiHint}/><AvatarFallback>{s.name.charAt(0)}</AvatarFallback></Avatar> {s.name}</TableCell><TableCell>{s.schoolName}</TableCell><TableCell><Badge variant={s.status === 'Active' ? 'default' : 'outline'} className={s.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{s.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
-                    </TabsContent>
-                    <TabsContent value="schools" className="mt-4">
-                        <Table><TableHeader><TableRow><TableHead>School Name</TableHead><TableHead>City</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
-                        <TableBody>{filteredSchools.map(s=><TableRow key={s.id}><TableCell className="font-medium">{s.name}</TableCell><TableCell>{s.city}</TableCell><TableCell><Badge variant={s.status === 'Verified' ? 'default' : 'outline'} className={s.status === 'Verified' ? 'bg-green-100 text-green-800' : ''}>{s.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
-                        <Button size="sm" className="w-full mt-2" onClick={() => setIsRegisterSchoolOpen(true)}><PlusCircle className="mr-2 h-4 w-4"/> Register New School</Button>
-                    </TabsContent>
-                    <TabsContent value="vendors" className="mt-4">
-                        <Table><TableHeader><TableRow><TableHead>Vendor Name</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
-                        <TableBody>{filteredVendors.map(v=><TableRow key={v.id}><TableCell className="font-medium">{v.name}</TableCell><TableCell>{v.category}</TableCell><TableCell><Badge variant={v.status === 'Active' ? 'default' : 'outline'} className={v.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{v.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
-                    </TabsContent>
-                    <TabsContent value="riders" className="mt-4">
-                       <Table><TableHeader><TableRow><TableHead>Rider Name</TableHead><TableHead>Location</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
-                        <TableBody>{filteredRiders.map(r=><TableRow key={r.id}><TableCell className="font-medium">{r.name}</TableCell><TableCell>{r.location}</TableCell><TableCell><Badge variant={r.status === 'Online' ? 'default' : 'outline'} className={r.status === 'Online' ? 'bg-green-100 text-green-800' : ''}>{r.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
-                    </TabsContent>
-                    <TabsContent value="creators" className="mt-4">
-                        <Table><TableHeader><TableRow><TableHead>Creator Name</TableHead><TableHead>Expertise</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
-                        <TableBody>{filteredCreators.map(c=><TableRow key={c.id}><TableCell className="font-medium">{c.name}</TableCell><TableCell>{c.expertise}</TableCell><TableCell><Badge variant={c.status === 'Active' ? 'default' : 'outline'} className={c.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{c.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
-                    </TabsContent>
-                </Tabs>
-            </CardContent>
-        </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-lg flex items-center gap-2"><HeartPulse className="text-primary"/> Ecosystem Management</CardTitle>
+                    <CardDescription>Search and manage all entities on the platform.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Tabs defaultValue="students">
+                        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+                            <TabsTrigger value="students">Students</TabsTrigger>
+                            <TabsTrigger value="schools">Schools</TabsTrigger>
+                            <TabsTrigger value="vendors">Vendors</TabsTrigger>
+                            <TabsTrigger value="riders">Riders</TabsTrigger>
+                            <TabsTrigger value="creators">Creators</TabsTrigger>
+                        </TabsList>
+                        <div className="relative mt-4 mb-2">
+                           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                           <Input placeholder="Search across this category..." className="pl-8" value={ecosystemSearch} onChange={(e) => setEcosystemSearch(e.target.value)} />
+                        </div>
+                        <TabsContent value="students" className="mt-4">
+                            <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>School</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                            <TableBody>{filteredStudents.map(s=><TableRow key={s.id}><TableCell className="font-medium flex items-center gap-2"><Avatar className="h-6 w-6"><AvatarImage src={s.avatarUrl} data-ai-hint={s.dataAiHint}/><AvatarFallback>{s.name.charAt(0)}</AvatarFallback></Avatar> {s.name}</TableCell><TableCell>{s.schoolName}</TableCell><TableCell><Badge variant={s.status === 'Active' ? 'default' : 'outline'} className={s.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{s.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                        </TabsContent>
+                        <TabsContent value="schools" className="mt-4">
+                            <Table><TableHeader><TableRow><TableHead>School Name</TableHead><TableHead>City</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                            <TableBody>{filteredSchools.map(s=><TableRow key={s.id}><TableCell className="font-medium">{s.name}</TableCell><TableCell>{s.city}</TableCell><TableCell><Badge variant={s.status === 'Verified' ? 'default' : 'outline'} className={s.status === 'Verified' ? 'bg-green-100 text-green-800' : ''}>{s.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                            <Button size="sm" className="w-full mt-2" onClick={() => setIsRegisterSchoolOpen(true)}><PlusCircle className="mr-2 h-4 w-4"/> Register New School</Button>
+                        </TabsContent>
+                        <TabsContent value="vendors" className="mt-4">
+                            <Table><TableHeader><TableRow><TableHead>Vendor Name</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                            <TableBody>{filteredVendors.map(v=><TableRow key={v.id}><TableCell className="font-medium">{v.name}</TableCell><TableCell>{v.category}</TableCell><TableCell><Badge variant={v.status === 'Active' ? 'default' : 'outline'} className={v.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{v.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                        </TabsContent>
+                        <TabsContent value="riders" className="mt-4">
+                           <Table><TableHeader><TableRow><TableHead>Rider Name</TableHead><TableHead>Location</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                            <TableBody>{filteredRiders.map(r=><TableRow key={r.id}><TableCell className="font-medium">{r.name}</TableCell><TableCell>{r.location}</TableCell><TableCell><Badge variant={r.status === 'Online' ? 'default' : 'outline'} className={r.status === 'Online' ? 'bg-green-100 text-green-800' : ''}>{r.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                        </TabsContent>
+                        <TabsContent value="creators" className="mt-4">
+                            <Table><TableHeader><TableRow><TableHead>Creator Name</TableHead><TableHead>Expertise</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                            <TableBody>{filteredCreators.map(c=><TableRow key={c.id}><TableCell className="font-medium">{c.name}</TableCell><TableCell>{c.expertise}</TableCell><TableCell><Badge variant={c.status === 'Active' ? 'default' : 'outline'} className={c.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>{c.status}</Badge></TableCell></TableRow>)}</TableBody></Table>
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
+        </div>
+
+        <div className="lg:col-span-1 space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-lg flex items-center gap-2"><Newspaper className="text-primary"/> PR & Brand Reputation</CardTitle>
+                    <CardDescription>AI-driven summary of brand health.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {isLoadingPr ? <div className="h-24 flex items-center justify-center"><LoadingSpinner/></div> : prData ? (
+                        <div className="space-y-3">
+                           <div className="p-3 bg-muted/50 rounded-lg">
+                                <h4 className="font-semibold flex items-center gap-1.5 text-sm"><MessageSquare size={16}/> Social Sentiment</h4>
+                                <p className="text-xl font-bold text-green-500">{prData.socialSentiment.score}</p>
+                            </div>
+                             <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                                 <h4 className="font-semibold flex items-center gap-1.5 text-sm text-destructive"><AlertTriangle size={16}/> Flagged Review</h4>
+                                <p className="text-xs italic truncate">"{prData.flaggedReviews[0]?.comment}"</p>
+                                 <p className="text-xs text-muted-foreground">Source: {prData.flaggedReviews[0]?.source}</p>
+                            </div>
+                        </div>
+                    ) : <p className="text-sm text-muted-foreground">Could not load PR data.</p>}
+                </CardContent>
+                <CardFooter>
+                   <Button variant="outline" size="sm" asChild>
+                        <Link href="/platform-admin/pr-brand">View Full Report <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                   </Button>
+                </CardFooter>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-lg flex items-center gap-2"><KeyRound className="text-primary"/> Core Team</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                    {coreTeam.map(member => (
+                        <div key={member.name} className="flex items-center gap-3 p-2 bg-muted/50 rounded-md">
+                            <Avatar className="h-9 w-9">
+                                <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint}/>
+                                <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <p className="text-sm font-medium">{member.name}</p>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+        </div>
+      </div>
       
-      <Card>
-        <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center gap-2"><Power className="text-primary"/> Quick Action Center</CardTitle>
-            <CardDescription>CEO-level shortcuts for critical actions.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2">
-            <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Emergency Push Notification")}>
-                <AlertTriangle className="h-4 w-4 shrink-0"/>
-                <span className="text-xs font-medium leading-tight"><BilingualText en="Emergency Push" hi="आपातकालीन पुश"/></span>
-            </Button>
-            <Button variant="destructive" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Lock Vendor System")}>
-                <Lock className="h-4 w-4 shrink-0"/>
-                <span className="text-xs font-medium leading-tight"><BilingualText en="Lock Vendor System" hi="विक्रेता प्रणाली लॉक"/></span>
-            </Button>
-            <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Export All Metrics (XLS)")}>
-                <Download className="h-4 w-4 shrink-0"/>
-                <span className="text-xs font-medium leading-tight"><BilingualText en="Export All Metrics" hi="सभी मेट्रिक्स निर्यात"/></span>
-            </Button>
-            <Button variant="secondary" className="justify-start gap-2 h-auto py-2 text-left" onClick={() => handleActionClick("Send Mail to All Schools")}>
-                <Mail className="h-4 w-4 shrink-0"/>
-                <span className="text-xs font-medium leading-tight"><BilingualText en="Send Mail to Schools" hi="स्कूलों को मेल"/></span>
-            </Button>
-        </CardContent>
-      </Card>
-
       <Card>
           <CardHeader>
               <CardTitle className="font-headline text-lg flex items-center gap-2"><Settings className="text-primary"/> Management Panels</CardTitle>
