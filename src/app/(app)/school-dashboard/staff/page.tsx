@@ -139,7 +139,7 @@ export default function SchoolStaffPage() {
             </div>
             <Select value={filterRole} onValueChange={setFilterRole}>
                 <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder_en="Filter by Role" placeholder_hi="भूमिका से फ़िल्टर करें" />
+                    <SelectValue placeholder={<BilingualText en="Filter by Role" hi="भूमिका से फ़िल्टर करें" />} />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all"><BilingualText en="All Roles" hi="सभी भूमिकाएँ"/></SelectItem>
@@ -227,7 +227,7 @@ export default function SchoolStaffPage() {
                     <div>
                         <Label htmlFor="staffDesignation"><ShieldCheck className="mr-1.5 h-4 w-4" /> <BilingualText en="Designation" hi="पदवी" /></Label>
                         <Select name="designation" onValueChange={handleDesignationChange} value={newStaffData.designation} required>
-                            <SelectTrigger id="staffDesignation"><SelectValue placeholder_en="Select Designation" placeholder_hi="पदवी चुनें" /></SelectTrigger>
+                            <SelectTrigger id="staffDesignation"><SelectValue placeholder={<BilingualText en="Select Designation" hi="पदवी चुनें"/>} /></SelectTrigger>
                             <SelectContent>
                                 {schoolDesignations.map(desig => (<SelectItem key={desig} value={desig}>{desig}</SelectItem>))}
                             </SelectContent>
