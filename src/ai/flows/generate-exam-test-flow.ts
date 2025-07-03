@@ -91,7 +91,9 @@ const generateTextQuestionsPrompt = ai.definePrompt({
       questions: z.array(BaseQuestionSchema.omit({ diagramDataUri: true })).describe('An array of generated questions without diagram data URI.'),
     }).required({ testTitle: true })
   },
-  prompt: `You are an expert AI Test Generator for Indian competitive and school exams. Your output must be a JSON object that strictly adheres to the provided output schema.
+  prompt: `You are an expert AI Test Generator for Indian competitive and school exams.
+Your output MUST be a JSON object that strictly adheres to the provided output schema.
+CRITICAL: The root of your JSON response MUST contain a 'testTitle' property with a descriptive title for the test, and a 'questions' property which is an array of question objects.
 
 **Key Generation Directives:**
 
@@ -116,8 +118,8 @@ const generateTextQuestionsPrompt = ai.definePrompt({
     *   **Diagrams:** For questions requiring a visual, include a \`diagramPrompt\` field with a clear, textual description of the diagram (e.g., "A pulley system with two masses..."). The \`questionText\` should refer to it.
     *   **Plain Text Only:** All text, including formulas (H2O, CH3-CH2-OH) and symbols (->, AND), must be plain text. No LaTeX or special formatting.
 
-4.  **Final Output:**
-    *   The root of the JSON output must contain two properties: \`testTitle\` (a descriptive title for the test) and \`questions\` (an array of question objects).
+4.  **Final Output (Reminder):**
+    *   The root of the JSON output MUST contain two properties: \`testTitle\` (a descriptive title for the test) and \`questions\` (an array of question objects). A suitable title MUST be generated. Example: "NEET UG Full Syllabus Mock Test".
 
 **Request Details:**
 *   **Exam:** {{{examNameOrType}}}
