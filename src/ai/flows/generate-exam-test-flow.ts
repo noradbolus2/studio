@@ -144,7 +144,7 @@ const generateExamTestFlow = ai.defineFlow(
       const {output: textOutput} = await generateTextQuestionsPrompt(input);
 
       if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions) || textOutput.questions.length === 0) {
-          console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure (text part). Output was null, malformed, or empty:", textOutput);
+          console.error("[Genkit Flow - generateExamTestFlow] AI failed to generate the initial test structure. The output was null, malformed, or empty.");
           // Return a valid empty structure if the AI completely fails
           return {
             testTitle: `Error Generating Test for ${input.examNameOrType}`,
@@ -179,7 +179,7 @@ const generateExamTestFlow = ai.defineFlow(
                 diagramPrompt: undefined 
               } as z.infer<typeof QuestionSchema>;
             } catch (imgError) {
-              console.error(`[Genkit Flow - generateExamTestFlow] Failed to generate diagram for question "${question.questionText.substring(0,30)}...":`, imgError);
+              console.error(`[Genkit Flow - generateExamTestFlow] Failed to generate diagram for question "${question.questionText.substring(0,30)}...". Error: ${imgError instanceof Error ? imgError.message : 'Unknown image gen error'}`);
               return { ...question, diagramPrompt: undefined, diagramDataUri: undefined } as z.infer<typeof QuestionSchema>; 
             }
           }
@@ -195,7 +195,7 @@ const generateExamTestFlow = ai.defineFlow(
       console.log(`[Genkit Flow - generateExamTestFlow] Test Generation Complete. Title: "${finalOutput.testTitle}". Total questions processed: ${finalOutput.questions.length}. Questions with diagrams generated (attempted): ${finalOutput.questions.filter(q => q.diagramDataUri).length}`);
       return finalOutput;
     } catch (error: any) {
-      console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred during test generation for "${input.examNameOrType}":`, error);
+      console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred during test generation for "${input.examNameOrType}". Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       // Instead of throwing, return a structured error object that the UI can display.
       // This provides a better user experience than a generic error toast.
       return {
