@@ -1,4 +1,3 @@
-
 // src/app/(app)/platform-admin/team/page.tsx
 "use client";
 
@@ -10,10 +9,9 @@ import { ArrowLeft, Users, Search, Filter, Edit, Trash2, ShieldCheck, PlusCircle
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Import Avatar components
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface TeamMember {
   id: string;
@@ -21,30 +19,55 @@ interface TeamMember {
   email: string;
   role: string;
   status: 'Active' | 'On Leave' | 'Terminated';
-  joinDate: string;
+  joinDate?: string;
   avatarUrl?: string;
   dataAiHint?: string;
 }
 
-const teamData = {
+const departmentLabels = {
+    leadership: "Leadership",
+    technical: "Technical",
+    academic: "Content & Academic",
+    field_partnerships: "Field & Partnerships",
+    marketing: "Marketing & Branding",
+    support: "Support",
+    logistics: "Logistics & Fulfilment",
+};
+
+const departmentOrder: (keyof typeof departmentLabels)[] = ["leadership", "technical", "academic", "field_partnerships", "marketing", "support", "logistics"];
+
+
+const teamData: Record<keyof typeof departmentLabels, TeamMember[]> = {
     leadership: [
-        { id: "TM001", name: "Abhishek verma", email: "abhishek.ceo@oso.com", role: "Founder & CEO", status: "Active", joinDate: "2022-01-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
-        { id: "TM002", name: "Rohini Sharma", email: "rohini.cto@oso.com", role: "CTO", status: "Active", joinDate: "2022-03-15", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
-        { id: "TM003", name: "Aakash Singh", email: "aakash.coo@oso.com", role: "COO", status: "Active", joinDate: "2022-05-20", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
-        { id: "TM006", name: "Neha Gupta", email: "neha.cfo@oso.com", role: "CFO", status: "Active", joinDate: "2022-08-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "TM001", name: "Abhishek verma", email: "abhishek.ceo@oso.com", role: "Founder & CEO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+        { id: "TM002", name: "Rohini Sharma", email: "rohini.cto@oso.com", role: "CTO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "TM003", name: "Aakash Singh", email: "aakash.coo@oso.com", role: "COO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+        { id: "TM006", name: "Neha Gupta", email: "neha.cfo@oso.com", role: "CFO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
     ],
     technical: [
-        { id: "TM004", name: "Priya Sharma", email: "priya.dev@oso.com", role: "App Development Lead", status: "Active", joinDate: "2022-11-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
-        { id: "TM007", name: "Rajesh Kumar", email: "rajesh.backend@oso.com", role: "Backend Architect", status: "Active", joinDate: "2023-01-20", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
-        { id: "TM009", name: "Anjali Mehta", email: "anjali.qa@oso.com", role: "QA Engineer", status: "Active", joinDate: "2023-03-10", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
-        { id: "TM010", name: "Karan Desai", email: "karan.ai@oso.com", role: "AI Engineer", status: "On Leave", joinDate: "2023-05-01", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
+        { id: "TM004", name: "Priya Sharma", email: "priya.dev@oso.com", role: "App Development Lead", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
+        { id: "TM007", name: "Rajesh Kumar", email: "rajesh.backend@oso.com", role: "Backend Architect", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
+        { id: "TM009", name: "Anjali Mehta", email: "anjali.qa@oso.com", role: "QA Engineer", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
+        { id: "TM010", name: "Karan Desai", email: "karan.ai@oso.com", role: "AI Engineer", status: "On Leave", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male developer" },
     ],
-    operations: [
-        { id: "TM011", name: "Sanjay Verma", email: "sanjay.sales@oso.com", role: "B2B Sales Head", status: "Active", joinDate: "2022-09-05", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
-        { id: "TM005", name: "Vikram Singh", email: "vikram.support@oso.com", role: "Support Lead", status: "Active", joinDate: "2023-02-10", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male support" },
-        { id: "TM008", name: "Sunita Devi", email: "sunita.logistics@oso.com", role: "Logistics Head", status: "Active", joinDate: "2023-04-11", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female logistics" },
-        { id: "TM012", name: "Ravi Kumar", email: "ravi.marketing@oso.com", role: "Digital Marketing Head", status: "Active", joinDate: "2023-06-15", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
-    ]
+    academic: [
+        { id: "AC001", name: "Dr. Vidya Nair", email: "vidya.cao@oso.com", role: "Chief Academic Officer", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female academic" },
+        { id: "AC002", name: "Ravi Kumar", email: "ravi.content@oso.com", role: "Content Curator (Physics)", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male academic" },
+    ],
+    field_partnerships: [
+        { id: "FP001", name: "Sanjay Verma", email: "sanjay.sales@oso.com", role: "B2B Sales Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male sales" },
+        { id: "FP002", name: "Meera Iyer", email: "meera.partner@oso.com", role: "School Partner Executive", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female sales" },
+    ],
+    marketing: [
+        { id: "MKT01", name: "Alisha Khan", email: "alisha.mktg@oso.com", role: "Digital Marketing Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female marketing" },
+        { id: "MKT02", name: "Arjun Das", email: "arjun.community@oso.com", role: "Community Manager", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male marketing" },
+    ],
+    support: [
+        { id: "SUP01", name: "Vikram Singh", email: "vikram.support@oso.com", role: "Support Lead", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male support" },
+    ],
+    logistics: [
+        { id: "LOG01", name: "Sunita Devi", email: "sunita.logistics@oso.com", role: "Logistics Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female logistics" },
+    ],
 };
 
 
@@ -56,9 +79,9 @@ export default function TeamManagementPage() {
     if (!searchTerm) return teamData;
 
     const lowercasedFilter = searchTerm.toLowerCase();
-    const filtered: typeof teamData = { leadership: [], technical: [], operations: [] };
+    const filtered: typeof teamData = { leadership: [], technical: [], academic: [], field_partnerships: [], marketing: [], support: [], logistics: [] };
     
-    (Object.keys(teamData) as Array<keyof typeof teamData>).forEach(key => {
+    departmentOrder.forEach(key => {
         const department = teamData[key];
         const filteredMembers = department.filter(member =>
             member.name.toLowerCase().includes(lowercasedFilter) ||
@@ -167,14 +190,14 @@ export default function TeamManagementPage() {
             </div>
             
              <div className="space-y-6 mt-6">
-                {Object.keys(filteredTeamData).map((key) => {
+                {departmentOrder.map((key) => {
                     const departmentKey = key as keyof typeof filteredTeamData;
                     if (filteredTeamData[departmentKey].length === 0) return null;
                     return (
                         <Card key={departmentKey} className="overflow-hidden">
                             <CardHeader className="bg-muted/30">
                                 <CardTitle className="text-lg font-semibold capitalize">
-                                    {departmentKey.replace('_', ' & ')}
+                                    {departmentLabels[departmentKey]}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-0">
