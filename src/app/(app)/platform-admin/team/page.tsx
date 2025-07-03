@@ -53,20 +53,29 @@ const teamData: Record<keyof typeof departmentLabels, TeamMember[]> = {
     academic: [
         { id: "AC001", name: "Dr. Vidya Nair", email: "vidya.cao@oso.com", role: "Chief Academic Officer", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female academic" },
         { id: "AC002", name: "Ravi Kumar", email: "ravi.content@oso.com", role: "Content Curator (Physics)", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male academic" },
+        { id: "AC003", name: "Sunita Joshi", email: "sunita.video@oso.com", role: "Video Production Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "AC004", name: "Gaurav Singh", email: "gaurav.training@oso.com", role: "Guruji Training Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
     ],
     field_partnerships: [
         { id: "FP001", name: "Sanjay Verma", email: "sanjay.sales@oso.com", role: "B2B Sales Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male sales" },
         { id: "FP002", name: "Meera Iyer", email: "meera.partner@oso.com", role: "School Partner Executive", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female sales" },
+        { id: "FP003", name: "Amit Patel", email: "amit.deliveryzone@oso.com", role: "Delivery Zone Executive", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
     ],
     marketing: [
         { id: "MKT01", name: "Alisha Khan", email: "alisha.mktg@oso.com", role: "Digital Marketing Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female marketing" },
         { id: "MKT02", name: "Arjun Das", email: "arjun.community@oso.com", role: "Community Manager", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male marketing" },
+        { id: "MKT03", name: "Riya Kapoor", email: "riya.offline@oso.com", role: "Offline Marketing Manager", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female marketing" },
+        { id: "MKT04", name: "Sameer Shah", email: "sameer.campus@oso.com", role: "Campus Brand Ambassador", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male student" },
     ],
     support: [
         { id: "SUP01", name: "Vikram Singh", email: "vikram.support@oso.com", role: "Support Lead", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male support" },
+        { id: "SUP02", name: "Pooja Mehta", email: "pooja.support@oso.com", role: "Customer Support Executive", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female support" },
     ],
     logistics: [
         { id: "LOG01", name: "Sunita Devi", email: "sunita.logistics@oso.com", role: "Logistics Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female logistics" },
+        { id: "LOG02", name: "Manish Kumar", email: "manish.warehouse@oso.com", role: "Dark Store In-Charge", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male worker" },
+        { id: "LOG03", name: "Deepak Sharma", email: "deepak.inventory@oso.com", role: "Inventory Manager", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male worker" },
+        { id: "LOG04", name: "Anil Yadav", email: "anil.packaging@oso.com", role: "Packaging & QC Head", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male worker" },
     ],
 };
 
