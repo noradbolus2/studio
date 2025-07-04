@@ -14,10 +14,10 @@ import type { ProfileFormData } from '../edit-profile/page';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 
 const teacherStats = [
-    { id: "courses", labelEn: "Live Courses", value: "3", icon: Video },
-    { id: "upcoming", labelEn: "Upcoming Live Classes", value: "2 Today", icon: CalendarDays },
-    { id: "students", labelEn: "Enrolled Students", value: "1,285", icon: Users },
-    { id: "earnings", labelEn: "Earnings This Month", value: "₹41,320", icon: IndianRupee },
+    { id: "courses", labelEn: "My Courses", value: "3", icon: Video, href: "/coaching-panel/create-course" },
+    { id: "upcoming", labelEn: "Upcoming Classes", value: "2 Today", icon: CalendarDays, href: "/schedule-class" },
+    { id: "students", labelEn: "My Students", value: "1,285", icon: Users, href: "/coaching-panel/analytics" },
+    { id: "earnings", labelEn: "My Earnings", value: "₹41,320", icon: IndianRupee, href: "/coaching-panel/earnings" },
 ];
 
 export default function CoachingPanelPage() {
@@ -68,15 +68,19 @@ export default function CoachingPanelPage() {
       {/* Stat cards */}
        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {teacherStats.map(stat => (
-            <Card key={stat.id}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelEn} /></CardTitle>
-                    <stat.icon className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{stat.value}</div>
-                </CardContent>
-            </Card>
+            <Link key={stat.id} href={stat.href || "#"} legacyBehavior>
+                <a className="h-full">
+                    <Card className="hover:bg-muted/50 transition-colors h-full">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelEn} /></CardTitle>
+                            <stat.icon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stat.value}</div>
+                        </CardContent>
+                    </Card>
+                </a>
+            </Link>
         ))}
        </div>
       
