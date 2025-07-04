@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { 
     Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School, Printer, ClipboardList, Gift,
-    Trophy, Star, Rocket, Shield // Added for new card
+    Trophy, Star, Rocket, Shield
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ const vendorActions = [
   { id: "manage_products", labelEn: "Manage Products", labelHi: "उत्पाद प्रबंधित करें", icon: UploadCloud, href: "/vendor-dashboard/products" },
   { id: "view_orders", labelEn: "View Orders", labelHi: "आदेश देखें", icon: ShoppingBag, href: "/vendor-dashboard/orders" },
   { id: "uniforms", labelEn: "School Uniforms", labelHi: "स्कूल यूनिफ़ॉर्म", icon: School, href: "/vendor-dashboard/uniforms" },
+  { id: "b2b_orders", labelEn: "School / B2B Orders", labelHi: "स्कूल / B2B ऑर्डर", icon: Briefcase, href: "/vendor-dashboard/school-orders" },
   { id: "print_on_demand", labelEn: "Print-on-Demand", labelHi: "प्रिंट-ऑन-डिमांड", icon: Printer, href: "/vendor-dashboard/print-on-demand" },
   { id: "school_forms", labelEn: "School Forms", labelHi: "स्कूल फॉर्म", icon: ClipboardList, href: "/vendor-dashboard/school-forms" },
   { id: "bundles", labelEn: "Study & Festival Kits", labelHi: "अध्ययन और त्योहार किट", icon: Gift, href: "/vendor-dashboard/bundles" },
