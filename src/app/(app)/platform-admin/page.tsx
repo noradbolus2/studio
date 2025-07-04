@@ -106,6 +106,7 @@ interface TeamMember {
 
 const departmentLabels = {
     leadership: "Leadership",
+    finance: "Finance & Accounts",
     technical: "Technical",
     academic: "Content & Academic",
     field_partnerships: "Field & Partnerships",
@@ -114,14 +115,17 @@ const departmentLabels = {
     logistics: "Logistics & Fulfilment",
 };
 
-const departmentOrder: (keyof typeof departmentLabels)[] = ["leadership", "technical", "academic", "field_partnerships", "marketing", "support", "logistics"];
+const departmentOrder: (keyof typeof departmentLabels)[] = ["leadership", "finance", "technical", "academic", "field_partnerships", "marketing", "support", "logistics"];
 
 const teamData: Record<keyof typeof departmentLabels, TeamMember[]> = {
     leadership: [
         { id: "TM001", name: "Abhishek verma", email: "abhishek.ceo@oso.com", role: "Founder & CEO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
         { id: "TM002", name: "Rohini Sharma", email: "rohini.cto@oso.com", role: "CTO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
         { id: "TM003", name: "Aakash Singh", email: "aakash.coo@oso.com", role: "COO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male professional" },
+    ],
+    finance: [
         { id: "TM006", name: "Neha Gupta", email: "neha.cfo@oso.com", role: "CFO", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female professional" },
+        { id: "FIN01", name: "Ravi Shankar", email: "ravi.accounts@oso.com", role: "Senior Accountant", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "male accountant" },
     ],
     technical: [
         { id: "TM004", name: "Priya Sharma", email: "priya.dev@oso.com", role: "App Development Lead", status: "Active", avatarUrl: "https://placehold.co/40x40.png", dataAiHint: "female developer" },
