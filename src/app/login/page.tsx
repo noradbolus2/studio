@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Languages, User, Briefcase, School, UserCheck, LogIn, Sparkles as CreatorIcon, Bike, Landmark, ExternalLink, ShieldCheck } from "lucide-react";
+import { Languages, LogIn, UserPlus, KeyRound, Mail, User, ArrowLeft, Briefcase, School, Sparkles as CreatorIcon, Bike, ExternalLink, ShieldCheck, UserCheck, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,8 @@ export default function RoleSelectionPage() {
   const allRoles = [
     { role: 'student', labelEn: 'Student', labelHi: 'छात्र', icon: User },
     { role: 'parent', labelEn: 'Parent', labelHi: 'अभिभावक', icon: UserCheck },
-    { role: 'school', labelEn: 'School / Teacher', labelHi: 'स्कूल / शिक्षक', icon: School },
+    { role: 'school', labelEn: 'School Partner', labelHi: 'स्कूल पार्टनर', icon: School },
+    { role: 'teacher', labelEn: 'Coaching Teacher', labelHi: 'कोचिंग शिक्षक', icon: GraduationCap },
     { role: 'creator', labelEn: 'Creator', labelHi: 'निर्माता', icon: CreatorIcon },
     { role: 'vendor', labelEn: 'Vendor', labelHi: 'विक्रेता', icon: Briefcase },
     { role: 'rider', labelEn: 'Rider', labelHi: 'राइडर', icon: Bike },
