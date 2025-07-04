@@ -13,6 +13,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 export default function CreatorDashboardPage() {
   const creatorStats = {
@@ -21,6 +29,13 @@ export default function CreatorDashboardPage() {
       activeTasks: 5,
       responseRate: "98%",
   }
+
+  const taskOverviewData = [
+    { task: "Doubts", pending: 2, inProgress: 1, completed: 6 },
+    { task: "Flashcards", pending: 1, inProgress: 0, completed: 3 },
+    { task: "Voiceovers", pending: 0, inProgress: 0, completed: 4 },
+    { task: "MCQs", pending: 1, inProgress: 1, completed: 7 },
+  ];
 
   return (
     <div className="space-y-6">
@@ -68,25 +83,49 @@ export default function CreatorDashboardPage() {
             </Card>
         </div>
 
-        {/* Placeholder for other dashboard widgets */}
-        <Card>
-            <CardHeader>
-                <CardTitle>Active Tasks</CardTitle>
-                <CardDescription>Tasks that require your attention.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">[Active Tasks List Placeholder]</p>
-            </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                 <CardDescription>Latest updates on your tasks and earnings.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">[Recent Activity Feed Placeholder]</p>
-            </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2">
+                <CardHeader>
+                    <CardTitle>Task Overview</CardTitle>
+                    <CardDescription>A summary of your current workload.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Task Type</TableHead>
+                                <TableHead>Pending</TableHead>
+                                <TableHead>In Progress</TableHead>
+                                <TableHead>Completed</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {taskOverviewData.map((row) => (
+                                <TableRow key={row.task}>
+                                    <TableCell className="font-medium">{row.task}</TableCell>
+                                    <TableCell>{row.pending}</TableCell>
+                                    <TableCell>{row.inProgress}</TableCell>
+                                    <TableCell>{row.completed}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Quick Actions</CardTitle>
+                    <CardDescription>Your most common actions.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-2">
+                    <Button>Start New Task</Button>
+                    <Button variant="secondary">Submit Completed Work</Button>
+                    <Button variant="outline">View Earnings Report</Button>
+                    <Button variant="ghost">Switch Role</Button>
+                </CardContent>
+            </Card>
+        </div>
     </div>
   );
 }
