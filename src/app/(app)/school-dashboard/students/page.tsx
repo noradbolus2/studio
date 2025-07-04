@@ -1,4 +1,3 @@
-
 // src/app/(app)/school-dashboard/students/page.tsx
 "use client";
 import { useState, useEffect, useMemo, type FormEvent } from "react";

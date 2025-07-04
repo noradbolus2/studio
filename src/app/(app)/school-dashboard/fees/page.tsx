@@ -1,4 +1,3 @@
-
 // src/app/(app)/school-dashboard/fees/page.tsx
 "use client";
 import { useState } from "react";
