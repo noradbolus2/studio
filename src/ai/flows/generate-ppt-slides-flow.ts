@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI flow to generate presentation slides from raw text notes.
@@ -10,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GeneratePptSlidesInputSchema = z.object({
+const GeneratePptSlidesInputSchema = z.object({
   topic: z.string().describe('The main topic or title for the presentation deck.'),
   rawText: z.string().describe('The raw notes, chapter content, or text to be converted into slides.'),
   studentLevel: z.string().optional().describe('The target audience, e.g., "Class 10", "JEE Aspirants".'),
@@ -23,7 +24,7 @@ const SlideSchema = z.object({
   diagramSuggestion: z.string().optional().describe('A simple description for a suggested diagram or illustration for this slide, if applicable. E.g., "A diagram showing the process of photosynthesis."'),
 });
 
-export const GeneratePptSlidesOutputSchema = z.object({
+const GeneratePptSlidesOutputSchema = z.object({
   deckTitle: z.string().describe('A suitable title for the entire slide deck.'),
   slides: z.array(SlideSchema).min(2).describe('An array of generated slide objects.'),
 });
