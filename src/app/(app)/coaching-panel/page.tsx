@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { 
     Video, CalendarDays, Users, IndianRupee, UploadCloud, PlayCircle, BarChart3, Edit,
-    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package
+    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package, Lightbulb
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,6 +27,12 @@ const mockNotifications = [
     { id: 2, text: "Your course 'Modern Physics' is trending in Lucknow", icon: TrendingUp, color: "text-blue-500" },
     { id: 3, text: "5 students ordered your printed notes – Vendor notified", icon: Package, color: "text-orange-500" },
     { id: 4, text: "Student dropped out after Chapter 3 – Auto Feedback Requested", icon: UserMinus, color: "text-red-500" },
+];
+
+const mockAiSuggestions = [
+    "Avg. student watch time is dropping. Consider uploading shorter revision videos.",
+    "Add chapter-wise mock tests to 'NEET Chemistry 2025' to improve engagement.",
+    "Offer 'Class 10 Foundation' as a low-cost add-on to attract more students."
 ];
 
 
@@ -129,6 +135,25 @@ export default function CoachingPanelPage() {
             <div key={notification.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
               <notification.icon className={`h-5 w-5 mt-1 flex-shrink-0 ${notification.color}`} />
               <p className="text-sm text-foreground">{notification.text}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+      
+      <Card className="bg-primary/5 border-primary/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-headline text-primary">
+            <Lightbulb className="h-6 w-6"/>
+            <BilingualText en="GURU Mode™ AI Insights" hi="गुरु मोड™ एआई अंतर्दृष्टि"/>
+          </CardTitle>
+          <CardDescription>
+            <BilingualText en="Data-based tips to improve your course performance." hi="अपने पाठ्यक्रम के प्रदर्शन को बेहतर बनाने के लिए डेटा-आधारित सुझाव।"/>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {mockAiSuggestions.map((suggestion, index) => (
+            <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-primary/20">
+              <p className="text-sm text-foreground">{suggestion}</p>
             </div>
           ))}
         </CardContent>
