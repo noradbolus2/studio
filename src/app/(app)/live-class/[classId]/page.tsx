@@ -2,8 +2,7 @@
 // src/app/(app)/live-class/[classId]/page.tsx
 "use client";
 
-import React, { useState, useRef } from 'react';
-import Image from 'next/image';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,8 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
 
 const colorPalette = ['#000000', '#EF4444', '#3B82F6', '#22C55E', '#F97316', '#8B5CF6'];
@@ -24,9 +25,37 @@ export default function LiveClassPage() {
   const router = useRouter();
   const whiteboardRef = useRef<WhiteboardHandle>(null);
   
-  const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
-  const [color, setColor] = useState('#000000');
-  const [lineWidth, setLineWidth] = useState(5);
+  const [tool, setTool] = React.useState<'pen' | 'eraser'>('pen');
+  const [color, setColor] = React.useState('#000000');
+  const [lineWidth, setLineWidth] = React.useState(5);
+
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setHasCameraPermission(true);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this feature.',
+        });
+      }
+    };
+
+    getCameraPermission();
+  }, [toast]);
+
 
   const clearCanvas = () => {
     if (whiteboardRef.current) {
@@ -88,8 +117,8 @@ export default function LiveClassPage() {
         <aside className="w-80 border-l bg-card flex flex-col">
           <Card className="flex-shrink-0 border-0 border-b rounded-none shadow-none">
             <CardContent className="p-2">
-              <div className="aspect-video bg-muted rounded-md relative flex items-center justify-center text-white">
-                <Image src="https://placehold.co/1600x900.png" layout="fill" objectFit="cover" alt="Teacher's Video" className="rounded-md" data-ai-hint="teacher video call" />
+              <div className="aspect-video bg-black rounded-md relative flex items-center justify-center text-white">
+                 <video ref={videoRef} className="w-full h-full object-cover rounded-md" autoPlay muted playsInline />
                 <div className="absolute bottom-2 left-2 right-2 flex justify-center items-center gap-2">
                   <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full bg-black/50 hover:bg-black/70 border-0">
                     <MicOff size={18} />
@@ -99,6 +128,14 @@ export default function LiveClassPage() {
                   </Button>
                 </div>
               </div>
+               { !hasCameraPermission && (
+                  <Alert variant="destructive" className="mt-2">
+                      <AlertTitle>Camera Access Required</AlertTitle>
+                      <AlertDescription>
+                          Please allow camera access to use this feature.
+                      </AlertDescription>
+                  </Alert>
+              )}
             </CardContent>
           </Card>
 
