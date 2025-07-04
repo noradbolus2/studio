@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
     Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic,
-    Zap, BatteryWarning, WifiOff
+    Zap, BatteryWarning, WifiOff, UserCheck
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Label } from '@/components/ui/label';
+import { StudentIdScanDialog } from '@/components/delivery/StudentIdScanDialog';
 
 
 type RiderStatus = 'Online' | 'Offline' | 'On Break';
@@ -65,7 +66,7 @@ const initialMockOrders: Order[] = [
     pickupLocation: 'Gupta Stationery', 
     pickupDistance: '0.5 km', 
     pickupReadyBy: '11:55 AM', 
-    deliveryTo: 'Priya (Class 10)', 
+    deliveryTo: 'Priya (Class 8)', 
     deliveryLocation: 'Modern School, Barakhamba Road', 
     deliveryInstructions: 'Drop at Gate 2 - Ask Mr. Tripathi (Security)',
     deliveryWindow: "9:30–11:00 AM",
@@ -108,17 +109,61 @@ export default function RiderDashboardPage() {
   const { toast } = useToast();
   const [riderStatus, setRiderStatus] = useState<RiderStatus>('Online');
   const [orders, setOrders] = useState<Order[]>(initialMockOrders);
+  const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
+  const [currentOrderForScan, setCurrentOrderForScan] = useState<Order | null>(null);
+
+  const handleUpdateStatus = (orderId: string, newStatus: Order['status']) => {
+    const updatedOrders = orders.map(order => 
+        order.id === orderId ? { ...order, status: newStatus } : order
+    );
+    setOrders(updatedOrders);
+    toast({
+        title: "Order Updated",
+        description: `Order #${orderId} has been marked as ${newStatus}.`
+    });
+  };
+
+  const handleScanAndDeliver = (order: Order) => {
+    setCurrentOrderForScan(order);
+    setIsScanDialogOpen(true);
+  };
+  
+  const handleConfirmDeliveryFromDialog = () => {
+    if (currentOrderForScan) {
+      handleUpdateStatus(currentOrderForScan.id, 'Delivered');
+    }
+    setIsScanDialogOpen(false);
+    setCurrentOrderForScan(null);
+  };
 
   const OrderCard = ({ order }: { order: Order }) => {
     const DeliveryIcon = deliveryTypeIcons[order.type];
     const isPickup = order.status === 'Pending Pickup';
     
+    let actionButton;
+    switch (order.status) {
+      case 'Pending Pickup':
+        actionButton = <Button className="w-full" onClick={() => handleUpdateStatus(order.id, 'Processing')}><CheckCircle className="mr-2 h-4 w-4"/> Accept & Go</Button>;
+        break;
+      case 'Processing':
+        actionButton = <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleUpdateStatus(order.id, 'Ready for Pickup')}><Package className="mr-2 h-4 w-4"/> Mark Packed</Button>;
+        break;
+      case 'Ready for Pickup':
+        actionButton = <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => handleUpdateStatus(order.id, 'Out for Delivery')}><Bike className="mr-2 h-4 w-4"/> Start Delivery</Button>;
+        break;
+      case 'Out for Delivery':
+        actionButton = <Button className="w-full bg-green-600 hover:bg-green-700" onClick={() => handleScanAndDeliver(order)}><UserCheck className="mr-2 h-4 w-4"/> Scan & Deliver</Button>;
+        break;
+      default:
+        actionButton = null;
+    }
+
     return (
       <Card className={cn(
           "shadow-md border-l-4 transition-all", 
           order.isPriority && "border-destructive bg-destructive/10 shadow-lg shadow-destructive/20 animate-pulse",
           !order.isPriority && isPickup && "border-blue-500 bg-blue-500/5",
-          !order.isPriority && !isPickup && "border-orange-500 bg-orange-500/5"
+          !order.isPriority && !isPickup && order.status === 'Out for Delivery' && "border-orange-500 bg-orange-500/5"
       )}>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
@@ -157,19 +202,15 @@ export default function RiderDashboardPage() {
                     <p className="flex items-center gap-1.5"><MapPin size={14}/> <strong>Deliver to:</strong> {order.deliveryTo} @ {order.deliveryLocation}</p>
                     {order.deliveryWindow && <p className="flex items-start gap-1.5 text-amber-600"><Clock size={14} className="mt-0.5 shrink-0"/> Delivery Window: {order.deliveryWindow}</p>}
                     {order.deliveryInstructions && <p className="flex items-start gap-1.5 text-primary font-medium"><SchoolIconLucide size={14} className="mt-0.5 shrink-0"/> {order.deliveryInstructions}</p>}
-                    {order.deliveryOtp && <p className="font-bold text-lg text-center my-2 text-primary">OTP: {order.deliveryOtp}</p>}
                 </div>
             )}
         </CardContent>
-        <CardFooter className="p-2 bg-muted/50 border-t flex gap-2">
-            <Button variant="outline" className="flex-1"><Map className="mr-2 h-4 w-4"/> MAP</Button>
-            <Button variant="outline" className="flex-1"><Phone className="mr-2 h-4 w-4"/> CALL</Button>
-            {isPickup ? (
-                <Button className="flex-1" onClick={() => {}}><CheckCircle className="mr-2 h-4 w-4"/> PICKED</Button>
-            ) : (
-                <Button className="flex-1" onClick={() => {}}><CheckCircle className="mr-2 h-4 w-4"/> DELIVERED</Button>
-            )}
-        </CardFooter>
+        {actionButton && (
+            <CardFooter className="p-2 bg-muted/50 border-t flex gap-2">
+                <Button variant="outline" className="flex-1"><Phone className="mr-2 h-4 w-4"/> CALL</Button>
+                {actionButton}
+            </CardFooter>
+        )}
       </Card>
     );
   };
@@ -348,6 +389,13 @@ export default function RiderDashboardPage() {
                 </TabsList>
             </nav>
         </Tabs>
+
+        <StudentIdScanDialog 
+            isOpen={isScanDialogOpen}
+            onClose={() => setIsScanDialogOpen(false)}
+            onConfirmDelivery={handleConfirmDeliveryFromDialog}
+            studentName={currentOrderForScan?.deliveryTo || ''}
+        />
     </div>
   );
 }
