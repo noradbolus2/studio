@@ -168,7 +168,7 @@ export default function VendorProductsPage() {
                                 </div>
                                 <div className="text-center">
                                     <p className="text-xs text-muted-foreground">Price</p>
-                                    <p className="text-sm font-semibold">₹{product.price.toFixed(2)}</p>
+                                    <p className="text-sm font-semibold">INR {product.price.toFixed(2)}</p>
                                 </div>
                                 <div className="text-center">
                                     <p className="text-xs text-muted-foreground">Stock</p>
@@ -232,11 +232,11 @@ export default function VendorProductsPage() {
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                             <div>
-                                <Label htmlFor="mrp">MRP (₹)*</Label>
+                                <Label htmlFor="mrp">MRP (INR)*</Label>
                                 <Input id="mrp" type="number" value={newProduct.mrp || ''} onChange={(e) => setNewProduct(p => ({...p, mrp: parseFloat(e.target.value) || 0}))} required />
                             </div>
                              <div>
-                                <Label htmlFor="price">Selling Price (₹)*</Label>
+                                <Label htmlFor="price">Selling Price (INR)*</Label>
                                 <Input id="price" type="number" value={newProduct.price || ''} onChange={(e) => setNewProduct(p => ({...p, price: parseFloat(e.target.value) || 0}))} required />
                             </div>
                             <div>
@@ -244,7 +244,7 @@ export default function VendorProductsPage() {
                                 <Input id="stock" type="number" value={newProduct.stock || ''} onChange={(e) => setNewProduct(p => ({...p, stock: parseInt(e.target.value) || 0}))} required />
                             </div>
                         </div>
-                        <p className="text-xs text-muted-foreground text-center">OSO Commission (Auto-Calculated): ₹{(newProduct.price * 0.1).toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground text-center">OSO Commission (Auto-Calculated): INR {(newProduct.price * 0.1).toFixed(2)}</p>
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
