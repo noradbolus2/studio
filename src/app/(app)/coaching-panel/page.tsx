@@ -1,3 +1,4 @@
+
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
@@ -6,7 +7,8 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { 
-    Video, CalendarDays, Users, IndianRupee, UploadCloud, PlayCircle, BarChart3, Edit
+    Video, CalendarDays, Users, IndianRupee, UploadCloud, PlayCircle, BarChart3, Edit,
+    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +21,14 @@ const teacherStats = [
     { id: "students", labelEn: "My Students", value: "1,285", icon: Users, href: "/coaching-panel/analytics" },
     { id: "earnings", labelEn: "My Earnings", value: "₹41,320", icon: IndianRupee, href: "/coaching-panel/earnings" },
 ];
+
+const mockNotifications = [
+    { id: 1, text: "Student Aniket joined your NEET 2025 Batch", icon: UserPlus, color: "text-green-500" },
+    { id: 2, text: "Your course 'Modern Physics' is trending in Lucknow", icon: TrendingUp, color: "text-blue-500" },
+    { id: 3, text: "5 students ordered your printed notes – Vendor notified", icon: Package, color: "text-orange-500" },
+    { id: 4, text: "Student dropped out after Chapter 3 – Auto Feedback Requested", icon: UserMinus, color: "text-red-500" },
+];
+
 
 export default function CoachingPanelPage() {
   const router = useRouter();
@@ -65,7 +75,6 @@ export default function CoachingPanelPage() {
         </Button>
       </header>
       
-      {/* Stat cards */}
        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {teacherStats.map(stat => (
             <Link key={stat.id} href={stat.href || "#"} legacyBehavior>
@@ -84,7 +93,6 @@ export default function CoachingPanelPage() {
         ))}
        </div>
       
-       {/* Action Buttons */}
        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
                <Link href="/coaching-panel/create-course">
@@ -105,6 +113,26 @@ export default function CoachingPanelPage() {
                </Link>
            </Button>
        </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-headline">
+            <Bell className="h-6 w-6 text-primary"/>
+            <BilingualText en="Smart Notifications" hi="स्मार्ट सूचनाएं"/>
+          </CardTitle>
+          <CardDescription>
+            <BilingualText en="Live updates about your courses and students." hi="आपके पाठ्यक्रमों और छात्रों के बारे में लाइव अपडेट।"/>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {mockNotifications.map(notification => (
+            <div key={notification.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+              <notification.icon className={`h-5 w-5 mt-1 flex-shrink-0 ${notification.color}`} />
+              <p className="text-sm text-foreground">{notification.text}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
     </div>
   );
