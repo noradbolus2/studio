@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BadgePercent, PlusCircle, Edit, Trash2, Gift } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { ArrowLeft, BadgePercent, PlusCircle, Edit, Trash2, Gift, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -28,11 +28,25 @@ const mockPromoCodes: PromoCode[] = [
   { id: "PC003", code: "DIWALI20", type: "Percentage", value: 20, status: "Expired", usageCount: 500 },
 ];
 
+interface AutoDiscount {
+  id: string;
+  description: string;
+  type: "Quantity" | "Combo";
+  status: "Active" | "Inactive";
+}
+
+const mockAutoDiscounts: AutoDiscount[] = [
+    { id: "AD001", description: "Buy 3 Pens, Get ₹5 Off", type: "Quantity", status: "Active" },
+    { id: "AD002", description: "Class 10 Kit (Maths + Science book)", type: "Combo", status: "Active" },
+    { id: "AD003", description: "Any 5 Notebooks, 10% Off", type: "Quantity", status: "Inactive" },
+];
+
 
 export default function VendorPromotionsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [promos, setPromos] = useState<PromoCode[]>(mockPromoCodes);
+  const [autoDiscounts, setAutoDiscounts] = useState<AutoDiscount[]>(mockAutoDiscounts);
   const [loyaltyEnabled, setLoyaltyEnabled] = useState(false);
 
   return (
@@ -81,6 +95,50 @@ export default function VendorPromotionsPage() {
                                 <TableCell>
                                     <Badge variant={promo.status === 'Active' ? 'default' : 'outline'} className={promo.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>
                                         {promo.status}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right space-x-1">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4"/></Button>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4"/></Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </CardContent>
+      </Card>
+      
+      {/* New Automatic Discounts Card */}
+      <Card>
+        <CardHeader className="flex-row items-center justify-between">
+            <div>
+              <CardTitle><BilingualText en="Automatic Discounts" hi="स्वचालित छूट" /></CardTitle>
+              <CardDescription><BilingualText en="Set up quantity or combo-based discounts that apply automatically." hi="मात्रा या कॉम्बो-आधारित छूट सेट करें जो स्वचालित रूप से लागू होती हैं।" /></CardDescription>
+            </div>
+            <Button onClick={() => toast({title: "Coming Soon!", description: "A dialog to create new discount rules will be added here."})}>
+                <PlusCircle className="mr-2 h-4 w-4"/> Create Rule
+            </Button>
+        </CardHeader>
+        <CardContent>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {autoDiscounts.map(discount => (
+                            <TableRow key={discount.id}>
+                                <TableCell className="font-medium">{discount.description}</TableCell>
+                                <TableCell>{discount.type}</TableCell>
+                                <TableCell>
+                                    <Badge variant={discount.status === 'Active' ? 'default' : 'outline'} className={discount.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>
+                                        {discount.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right space-x-1">
