@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { 
     Video, CalendarDays, Users, IndianRupee, UploadCloud, PlayCircle, BarChart3, Edit,
-    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package, Lightbulb
+    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package, Lightbulb, BadgePercent
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -82,24 +82,6 @@ export default function CoachingPanelPage() {
       </header>
       
        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {teacherStats.map(stat => (
-            <Link key={stat.id} href={stat.href || "#"} legacyBehavior>
-                <a className="h-full">
-                    <Card className="hover:bg-muted/50 transition-colors h-full">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelEn} /></CardTitle>
-                            <stat.icon className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stat.value}</div>
-                        </CardContent>
-                    </Card>
-                </a>
-            </Link>
-        ))}
-       </div>
-      
-       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
                <Link href="/coaching-panel/create-course">
                    <UploadCloud className="h-7 w-7"/>
@@ -118,6 +100,12 @@ export default function CoachingPanelPage() {
                    <span className="font-semibold"><BilingualText en="My Students" hi="मेरे छात्र"/></span>
                </Link>
            </Button>
+            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
+              <Link href="/coaching-panel/promotions">
+                  <BadgePercent className="h-7 w-7"/>
+                  <span className="font-semibold"><BilingualText en="Promotions" hi="प्रचार"/></span>
+              </Link>
+          </Button>
        </div>
 
       <Card>
