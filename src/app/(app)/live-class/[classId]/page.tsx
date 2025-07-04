@@ -3,35 +3,70 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft } from 'lucide-react';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft, ChevronLeft, ChevronRight, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { BilingualText } from '@/components/shared/BilingualText';
 import Whiteboard, { type WhiteboardHandle } from '@/components/live-class/Whiteboard';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { type GeneratePptSlidesOutput } from '@/ai/flows/generate-ppt-slides-flow';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 
 
 const colorPalette = ['#000000', '#EF4444', '#3B82F6', '#22C55E', '#F97316', '#8B5CF6'];
 
+type Slide = GeneratePptSlidesOutput['slides'][0];
+
 export default function LiveClassPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const classId = params.classId as string;
   const router = useRouter();
   const whiteboardRef = useRef<WhiteboardHandle>(null);
   
+  // Whiteboard state
   const [tool, setTool] = React.useState<'pen' | 'eraser'>('pen');
   const [color, setColor] = React.useState('#000000');
   const [lineWidth, setLineWidth] = React.useState(5);
 
+  // Camera state
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+
+  // New state for slide presentation mode
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [deck, setDeck] = useState<GeneratePptSlidesOutput | null>(null);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [isLoadingDeck, setIsLoadingDeck] = useState(true);
+
+  useEffect(() => {
+    const deckId = searchParams.get('deckId');
+    if (deckId) {
+        setIsPresentationMode(true);
+        setIsLoadingDeck(true);
+        try {
+            const storedDeck = localStorage.getItem(deckId);
+            if (storedDeck) {
+                setDeck(JSON.parse(storedDeck));
+            } else {
+                toast({ title: "Error", description: "Could not find the slide deck for this class.", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to load slide deck.", variant: "destructive" });
+        } finally {
+            setIsLoadingDeck(false);
+        }
+    } else {
+        setIsPresentationMode(false);
+        setIsLoadingDeck(false);
+    }
+  }, [searchParams, toast]);
 
   useEffect(() => {
     const getCameraPermission = async () => {
@@ -66,26 +101,62 @@ export default function LiveClassPage() {
   const increaseLineWidth = () => setLineWidth(prev => Math.min(prev + 2, 50));
   const decreaseLineWidth = () => setLineWidth(prev => Math.max(prev - 2, 1));
 
-  return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] bg-muted/30 rounded-lg">
-      <header className="flex items-center justify-between p-3 border-b bg-card rounded-t-lg">
-        <div className="flex items-center gap-2">
-           <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8"><ArrowLeft size={18}/></Button>
-           <div>
-              <h1 className="text-lg font-bold text-primary">Live Class: Kinematics Lecture 1</h1>
-              <p className="text-xs text-muted-foreground">Class ID: {classId}</p>
-           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-8"><Users size={16} className="mr-1.5"/> 25 Students</Button>
-          <Button variant="destructive" size="sm" className="h-8"><VideoOff size={16} className="mr-1.5"/> End Class</Button>
-        </div>
-      </header>
+  // Slide navigation handlers
+  const handleNextSlide = () => {
+    if (deck && currentSlideIndex < deck.slides.length - 1) {
+      setCurrentSlideIndex(prev => prev + 1);
+    }
+  };
+  const handlePrevSlide = () => {
+    if (currentSlideIndex > 0) {
+      setCurrentSlideIndex(prev => prev - 1);
+    }
+  };
 
-      <div className="flex flex-grow overflow-hidden">
-        {/* Main Content: Whiteboard and Toolbar */}
-        <main className="flex-grow flex flex-col p-3">
-          <div className="relative flex-grow">
+  const currentSlide: Slide | undefined = deck?.slides[currentSlideIndex];
+
+  const renderMainContent = () => {
+    if (isLoadingDeck) {
+        return <div className="flex-grow flex items-center justify-center bg-white rounded-lg shadow-inner border border-border"><LoadingSpinner/> <p className="ml-2">Loading Slides...</p></div>;
+    }
+
+    if (isPresentationMode) {
+        if (!deck) {
+            return <div className="flex-grow flex items-center justify-center bg-white rounded-lg shadow-inner border border-border text-destructive">Failed to load slide deck. Please go back.</div>;
+        }
+        return (
+            <div className="relative flex-grow">
+                <div className="w-full h-full bg-muted/50 rounded-lg p-6 flex flex-col justify-center items-center text-center shadow-inner border border-border">
+                    {currentSlide ? (
+                        <div className="animate-fade-in">
+                            <h2 className="text-3xl font-bold font-headline text-primary mb-6">{currentSlide.title}</h2>
+                            <ul className="space-y-3 text-lg text-foreground/80 list-none">
+                                {currentSlide.points.map((point, index) => (
+                                    <li key={index}>{point}</li>
+                                ))}
+                            </ul>
+                            {currentSlide.diagramSuggestion && (
+                                <div className="mt-8 p-3 bg-accent/10 border-l-4 border-accent rounded-md text-sm text-left">
+                                    <p className="font-bold flex items-center gap-2 text-accent"><Bot size={16}/> AI Diagram Suggestion:</p>
+                                    <p className="italic">"{currentSlide.diagramSuggestion}"</p>
+                                </div>
+                            )}
+                        </div>
+                    ) : <p>Slide content not available.</p>}
+                </div>
+                {/* Slide Controls */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-card border rounded-lg shadow-md">
+                   <Button variant="ghost" size="icon" onClick={handlePrevSlide} disabled={currentSlideIndex === 0} className="h-9 w-9"><ChevronLeft size={20}/></Button>
+                   <span className="text-sm font-mono px-2">{currentSlideIndex + 1} / {deck.slides.length}</span>
+                   <Button variant="ghost" size="icon" onClick={handleNextSlide} disabled={currentSlideIndex >= deck.slides.length - 1} className="h-9 w-9"><ChevronRight size={20}/></Button>
+                </div>
+            </div>
+        );
+    }
+
+    // Fallback to whiteboard
+    return (
+        <div className="relative flex-grow">
              <Whiteboard ref={whiteboardRef} tool={tool} color={color} lineWidth={lineWidth} />
              {/* Drawing Toolbar */}
              <div className="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-card border rounded-lg shadow-md">
@@ -110,7 +181,30 @@ export default function LiveClassPage() {
                </div>
                <Button variant="ghost" size="icon" onClick={clearCanvas} className="h-9 w-9 text-destructive"><Trash2 size={18}/></Button>
              </div>
-          </div>
+        </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-2rem)] bg-muted/30 rounded-lg">
+      <header className="flex items-center justify-between p-3 border-b bg-card rounded-t-lg">
+        <div className="flex items-center gap-2">
+           <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8"><ArrowLeft size={18}/></Button>
+           <div>
+              <h1 className="text-lg font-bold text-primary">{deck ? deck.deckTitle : `Live Class: ${classId}`}</h1>
+              {!deck && <p className="text-xs text-muted-foreground">Class ID: {classId}</p>}
+           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-8"><Users size={16} className="mr-1.5"/> 25 Students</Button>
+          <Button variant="destructive" size="sm" className="h-8"><VideoOff size={16} className="mr-1.5"/> End Class</Button>
+        </div>
+      </header>
+
+      <div className="flex flex-grow overflow-hidden">
+        {/* Main Content: Whiteboard or Slides */}
+        <main className="flex-grow flex flex-col p-3">
+          {renderMainContent()}
         </main>
         
         {/* Right Sidebar: Video, Chat, and Polls */}

@@ -57,6 +57,16 @@ export default function SlideDeckPage() {
     }
   };
   
+  const handleGoLive = () => {
+    toast({
+        title: "Starting Live Session...",
+        description: "Redirecting you to the live classroom with your slides."
+    });
+    // The classId for the URL will be the deckId, and we pass deckId as a query param
+    // for the live class page to know it should be in presentation mode.
+    router.push(`/live-class/${deckId}?deckId=${deckId}`);
+  };
+
   const currentSlide: Slide | undefined = deck?.slides[currentSlideIndex];
 
   if (isLoading || !deck) {
@@ -81,7 +91,7 @@ export default function SlideDeckPage() {
             <Button variant="outline" size="sm" onClick={() => router.push('/coaching-panel/smart-slide-class')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Decks
             </Button>
-             <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+             <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleGoLive}>
                 <PlayCircle className="mr-2 h-4 w-4"/> Go Live
             </Button>
         </div>
