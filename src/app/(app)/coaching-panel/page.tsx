@@ -1,3 +1,4 @@
+
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { 
     Video, CalendarDays, Users, IndianRupee, UploadCloud, PlayCircle, BarChart3, Edit,
-    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package, Lightbulb, BadgePercent
+    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package, Lightbulb, BadgePercent, PlaySquare
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -80,7 +81,7 @@ export default function CoachingPanelPage() {
         </Button>
       </header>
       
-       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
                <Link href="/coaching-panel/create-course">
                    <UploadCloud className="h-7 w-7"/>
@@ -103,6 +104,12 @@ export default function CoachingPanelPage() {
               <Link href="/coaching-panel/promotions">
                   <BadgePercent className="h-7 w-7"/>
                   <span className="font-semibold"><BilingualText en="Promotions" hi="प्रचार"/></span>
+              </Link>
+          </Button>
+          <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2 md:col-span-1 col-span-2">
+              <Link href="/coaching-panel/smart-slide-class">
+                  <PlaySquare className="h-7 w-7"/>
+                  <span className="font-semibold"><BilingualText en="Smart Slide Class" hi="स्मार्ट स्लाइड क्लास"/></span>
               </Link>
           </Button>
        </div>

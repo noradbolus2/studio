@@ -12,6 +12,8 @@ import '@/ai/tools/exam-info-tool.ts';
 import '@/ai/flows/codemate-flow.ts';
 import '@/ai/flows/pr-brand-reputation-flow.ts';
 import '@/ai/flows/generate-thumbnail-flow.ts';
+import '@/ai/flows/generate-ppt-slides-flow.ts';
+
 
 
 
