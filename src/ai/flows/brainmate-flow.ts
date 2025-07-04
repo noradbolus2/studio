@@ -107,21 +107,42 @@ const brainmateFlow = ai.defineFlow(
   async (input) => {
     try {
       const {output} = await prompt(input);
+      
       if (!output) {
-        // Return a structured error response instead of throwing
+        console.error('[Genkit Flow - brainmateFlow] AI model returned a null or undefined response.');
         return {
-            explanation: "I'm sorry, the AI model returned an empty response. Please try rephrasing your question.",
-            followUpQuestion: "Maybe try asking in a simpler way?",
+            explanation: "I'm sorry, I couldn't generate a response for that. Could you please try rephrasing your question?",
+            followUpQuestion: "Sometimes, asking in a simpler way helps me understand better.",
         };
       }
+      
+      // Validate the output structure
+      if (typeof output.explanation !== 'string' || typeof output.followUpQuestion !== 'string') {
+          console.warn('[Genkit Flow - brainmateFlow] Output structure was not as expected. Output:', JSON.stringify(output));
+          // Attempt to handle if the output is a stringified JSON
+          if (typeof output === 'string') {
+              try {
+                  const parsedOutput = JSON.parse(output);
+                  if (typeof parsedOutput.explanation === 'string' && typeof parsedOutput.followUpQuestion === 'string') {
+                      return parsedOutput as BrainmateOutput;
+                  }
+              } catch (e) {
+                 console.error('[Genkit Flow - brainmateFlow] Failed to parse string output as JSON:', e);
+              }
+          }
+          // If still not valid, return a structured error
+          return {
+              explanation: "I seem to have formulated my thoughts a bit unusually. Could you please try again?",
+              followUpQuestion: "It might help if you could ask the question again.",
+          };
+      }
+
       return output;
     } catch (error) {
-        // Log a simple message instead of the whole error object to prevent potential crashes from circular references.
-        console.error('[Genkit Flow - brainmateFlow] An error occurred during prompt execution. Returning a fallback response.');
-        // Construct a user-friendly error response that fits the schema instead of throwing
+        console.error('[Genkit Flow - brainmateFlow] A critical error occurred during prompt execution. Error:', error);
         return {
-            explanation: "Beta, abhi thoda overload ho raha hai. Please try asking again in a few moments. (My circuits are a bit busy!)",
-            followUpQuestion: "You can try rephrasing your question or asking about a different topic.",
+            explanation: "I'm facing some technical difficulties at the moment. Please try again in a few minutes.",
+            followUpQuestion: "Your patience is appreciated while my circuits cool down!",
         };
     }
   }
