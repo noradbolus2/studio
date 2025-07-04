@@ -1,4 +1,3 @@
-
 // src/app/(app)/vendor-dashboard/page.tsx
 "use client";
 
@@ -9,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { 
     Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School, Printer, ClipboardList, Gift,
-    Trophy, Star, Rocket, Shield, BadgePercent, Settings2, Languages
+    Trophy, Star, Rocket, Shield, BadgePercent, Settings2, Languages, LogOut
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -38,6 +37,7 @@ const vendorActions = [
 
 export default function VendorDashboardPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [vendorProfile, setVendorProfile] = useState<VendorProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isStoreOpen, setIsStoreOpen] = useState(true);
@@ -73,6 +73,18 @@ export default function VendorDashboardPage() {
     }
     setLoadingProfile(false);
   }, []);
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem('loggedInUser'); 
+        localStorage.removeItem('userProfileData'); 
+    }
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out from the Vendor Dashboard.",
+    });
+    router.push('/login'); 
+  };
   
   if (loadingProfile) {
     return (
@@ -114,6 +126,10 @@ export default function VendorDashboardPage() {
                     <Edit className="mr-1.5 h-3 w-3"/>
                     <span className="hidden sm:inline"><BilingualText en="Edit Info" hi="जानकारी संपादित करें" lang={currentLang} /></span>
                 </Link>
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-1.5 h-3 w-3"/>
+                <span className="hidden sm:inline"><BilingualText en="Logout" hi="लॉग आउट" lang={currentLang} /></span>
             </Button>
         </div>
       </header>

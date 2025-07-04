@@ -1,13 +1,14 @@
-
 // src/app/(app)/creator-dashboard/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent, useMemo } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, CheckCircle, XCircle, Edit, UploadCloud, Eye, ListFilter, Hourglass, Video, ArrowLeft } from "lucide-react";
+import { 
+    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, CheckCircle, XCircle, Edit, UploadCloud, Eye, ListFilter, Hourglass, Video, ArrowLeft, LogOut
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from '@/hooks/use-toast';
@@ -70,6 +71,18 @@ export default function CreatorDashboardPage() {
     setLoadingProfile(false);
   }, []);
 
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem('loggedInUser'); 
+        localStorage.removeItem('userProfileData'); 
+    }
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out from the Creator Dashboard.",
+    });
+    router.push('/login'); 
+  };
+
 
   const handleUpdateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
     setOrders(prevOrders => prevOrders.map(order => order.id === orderId ? { ...order, status: newStatus } : order));
@@ -126,12 +139,18 @@ export default function CreatorDashboardPage() {
         <p className="text-muted-foreground">
           <BilingualText en="Manage your content, orders, and earnings." hi="अपनी सामग्री, ऑर्डर और कमाई का प्रबंधन करें।" />
         </p>
-         <Button asChild variant="outline" size="sm" className="mt-2">
-            <Link href="/edit-profile?role=creator">
-                <Edit className="mr-2 h-4 w-4"/>
-                <BilingualText en="Edit Creator Info" hi="निर्माता जानकारी संपादित करें" />
-            </Link>
-        </Button>
+         <div className="flex items-center justify-center gap-2 mt-3">
+             <Button asChild variant="outline" size="sm">
+                <Link href="/edit-profile?role=creator">
+                    <Edit className="mr-2 h-4 w-4"/>
+                    <BilingualText en="Edit Creator Info" hi="निर्माता जानकारी संपादित करें" />
+                </Link>
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4"/>
+                <BilingualText en="Logout" hi="लॉग आउट"/>
+            </Button>
+         </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
