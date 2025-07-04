@@ -31,7 +31,7 @@ const VENDOR_PRODUCTS_KEY = "vendorProducts_mock";
 const initialMockProducts: Product[] = [
   { id: "PROD001", name: "Classmate Notebook - Single Line (172 Pages)", category: "Notebooks", mrp: 50, price: 45, stock: 150, status: "Active" },
   { id: "PROD002", name: "Cello Gripper Ball Pen - Blue (Pack of 5)", category: "Pens", mrp: 50, price: 50, stock: 300, status: "Active" },
-  { id: "PROD003", name: "Apsara Platinum Pencils (Box of 10)", category: "Pencils", mrp: 55, price: 50, stock: 200, status: "Active" },
+  { id: "PROD003", name: "Apsara Platinum Pencils (Box of 10)", category: "Pencils", mrp: 55, price: 50, stock: 8, status: "Active" },
   { id: "PROD004", name: "Fevicol MR Squeeze Bottle (100g)", category: "Adhesives", mrp: 35, price: 35, stock: 0, status: "Inactive" },
   { id: "UNI001", name: "Boys Shirt (Summer, White)", category: "School Uniforms", mrp: 500, price: 450, stock: 100, status: "Active", schoolName: "Delhi Public School, Noida", classTag: "6-10" },
 ];
@@ -140,7 +140,9 @@ export default function VendorProductsPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-             <Button variant="outline" className="w-full sm:w-auto"><FileUp className="mr-2 h-4 w-4"/> Bulk Import</Button>
+             <Button variant="outline" className="w-full sm:w-auto" onClick={() => toast({ title: "Feature Coming Soon!", description: "Bulk product import via CSV/Excel will be available in a future update."})}>
+                <FileUp className="mr-2 h-4 w-4"/> Bulk Import
+            </Button>
             <Button className="w-full sm:w-auto" onClick={() => setIsAddDialogOpen(true)}>
                 <PackagePlus className="mr-2 h-4 w-4" />
                 <BilingualText en="Add New Product" hi="नया उत्पाद जोड़ें" />
