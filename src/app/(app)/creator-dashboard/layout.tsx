@@ -1,3 +1,4 @@
+
 "use client"
 import {
   Sidebar,
@@ -36,9 +37,9 @@ import { useState } from "react" // Import useState
 
 const sidebarItems = [
     { href: "/creator-dashboard", icon: Home, label: "Dashboard" },
-    { href: "#", icon: Bot, label: "AI Assistant" },
+    { href: "/creator-dashboard/ai-assistant", icon: Bot, label: "AI Assistant" },
     { href: "/creator-dashboard/my-projects", icon: ClipboardList, label: "My Content" },
-    { href: "/creator-dashboard/orders/ORD78901", icon: Wallet, label: "Orders & Earnings" },
+    { href: "/creator-dashboard/earnings", icon: Wallet, label: "Earnings" },
     { href: "#", icon: CalendarCheck, label: "Mentorship Bookings" },
     { href: "#", icon: Store, label: "My Storefront" },
     { href: "#", icon: Star, label: "Reviews + Ratings" },
