@@ -22,7 +22,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import {
   PlusCircle, ArrowLeft, Edit3, BookOpen, Layers, IndianRupeeIcon, Clock, Languages, Image as ImageIcon,
-  FileText, Video, CalendarClock, Link as LinkIcon, MessageCircle, GripVertical, Pencil, Trash2, BookCopy, TestTube2, Save
+  FileText, Video, CalendarClock, Link as LinkIcon, MessageCircle, GripVertical, Pencil, Trash2, BookCopy, TestTube2, Save,
+  Settings, Users, Lock, Download, Award
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
@@ -42,6 +43,13 @@ const courseSchema = z.object({
   physical_notes_enabled: z.boolean().optional().default(false),
   physical_notes_price: z.coerce.number().optional(),
   physical_notes_pdf_name: z.string().optional(),
+  courseValidity: z.enum(["Lifetime", "Days", "Batch Only"], { required_error: "Please select course validity" }).default("Lifetime"),
+  validityDays: z.coerce.number().positive("Must be a positive number").optional(),
+  studentLimit: z.enum(["Unlimited", "Limited", "Invite Only"], { required_error: "Please select student limit" }).default("Unlimited"),
+  limitCount: z.coerce.number().positive("Must be a positive number").optional(),
+  downloadsDisabled: z.boolean().optional().default(false),
+  videoLockEnabled: z.boolean().optional().default(false),
+  certificateEnabled: z.boolean().optional().default(false),
 }).refine(data => {
     // If physical notes are enabled, a price greater than 0 must be provided.
     if (data.physical_notes_enabled && (!data.physical_notes_price || data.physical_notes_price <= 0)) {
@@ -51,6 +59,22 @@ const courseSchema = z.object({
 }, {
     message: "A price greater than 0 is required for printed notes.",
     path: ["physical_notes_price"],
+}).refine(data => {
+    if (data.courseValidity === 'Days' && (!data.validityDays || data.validityDays <= 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Number of days is required for 'Days' validity.",
+    path: ["validityDays"],
+}).refine(data => {
+    if (data.studentLimit === 'Limited' && (!data.limitCount || data.limitCount <= 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Student count is required for 'Limited' student limit.",
+    path: ["limitCount"],
 });
 
 type CourseFormData = z.infer<typeof courseSchema>;
@@ -78,6 +102,11 @@ export default function CreateCoursePage() {
     defaultValues: {
       status: "Draft",
       physical_notes_enabled: false,
+      courseValidity: "Lifetime",
+      studentLimit: "Unlimited",
+      downloadsDisabled: false,
+      videoLockEnabled: false,
+      certificateEnabled: false,
     },
   });
 
@@ -282,6 +311,97 @@ export default function CreateCoursePage() {
                     )}
                 </div>
             </Card>
+
+            <Card className="bg-muted/30 p-4">
+              <CardTitle className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Settings className="h-5 w-5"/>
+                  <BilingualText en="Settings & License Control" hi="सेटिंग्स और लाइसेंस नियंत्रण"/>
+              </CardTitle>
+              <div className="space-y-4">
+                  {/* Course Validity */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                      <div>
+                          <Label htmlFor="courseValidity" className="flex items-center gap-1.5 mb-1"><Clock className="h-4 w-4"/>Course Validity*</Label>
+                          <Controller
+                              name="courseValidity"
+                              control={control}
+                              render={({ field }) => (
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                      <SelectTrigger><SelectValue/></SelectTrigger>
+                                      <SelectContent>
+                                          <SelectItem value="Lifetime">Lifetime</SelectItem>
+                                          <SelectItem value="Days">Limited Days</SelectItem>
+                                          <SelectItem value="Batch Only">Batch Only</SelectItem>
+                                      </SelectContent>
+                                  </Select>
+                              )}
+                          />
+                          {errors.courseValidity && <p className="text-xs text-destructive mt-1">{errors.courseValidity.message}</p>}
+                      </div>
+                      {watch("courseValidity") === "Days" && (
+                          <div>
+                              <Label htmlFor="validityDays">Number of Days*</Label>
+                              <Controller
+                                  name="validityDays"
+                                  control={control}
+                                  render={({ field }) => <Input {...field} type="number" placeholder="e.g., 180" value={field.value ?? ''} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} />}
+                              />
+                              {errors.validityDays && <p className="text-xs text-destructive mt-1">{errors.validityDays.message}</p>}
+                          </div>
+                      )}
+                  </div>
+
+                  {/* Student Limit */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                      <div>
+                          <Label htmlFor="studentLimit" className="flex items-center gap-1.5 mb-1"><Users className="h-4 w-4"/>Student Limit*</Label>
+                          <Controller
+                              name="studentLimit"
+                              control={control}
+                              render={({ field }) => (
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                      <SelectTrigger><SelectValue/></SelectTrigger>
+                                      <SelectContent>
+                                          <SelectItem value="Unlimited">Unlimited</SelectItem>
+                                          <SelectItem value="Limited">Limited Number</SelectItem>
+                                          <SelectItem value="Invite Only">Invite Only</SelectItem>
+                                      </SelectContent>
+                                  </Select>
+                              )}
+                          />
+                          {errors.studentLimit && <p className="text-xs text-destructive mt-1">{errors.studentLimit.message}</p>}
+                      </div>
+                      {watch("studentLimit") === "Limited" && (
+                          <div>
+                              <Label htmlFor="limitCount">Max Students*</Label>
+                              <Controller
+                                  name="limitCount"
+                                  control={control}
+                                  render={({ field }) => <Input {...field} type="number" placeholder="e.g., 100" value={field.value ?? ''} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} />}
+                              />
+                              {errors.limitCount && <p className="text-xs text-destructive mt-1">{errors.limitCount.message}</p>}
+                          </div>
+                      )}
+                  </div>
+
+                  {/* Switches */}
+                  <div className="space-y-3 pt-4 border-t">
+                      <div className="flex items-center space-x-2">
+                          <Controller name="downloadsDisabled" control={control} render={({ field }) => <Switch id="downloadsDisabled" checked={field.value} onCheckedChange={field.onChange} />} />
+                          <Label htmlFor="downloadsDisabled" className="flex items-center gap-1.5"><Download className="h-4 w-4"/> Disable PDF/Video Downloads</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                          <Controller name="videoLockEnabled" control={control} render={({ field }) => <Switch id="videoLockEnabled" checked={field.value} onCheckedChange={field.onChange} />} />
+                          <Label htmlFor="videoLockEnabled" className="flex items-center gap-1.5"><Lock className="h-4 w-4"/> Enable Video Lock (Sequential Viewing)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                          <Controller name="certificateEnabled" control={control} render={({ field }) => <Switch id="certificateEnabled" checked={field.value} onCheckedChange={field.onChange} />} />
+                          <Label htmlFor="certificateEnabled" className="flex items-center gap-1.5"><Award className="h-4 w-4"/> Auto-Generate Certificate on Completion</Label>
+                      </div>
+                  </div>
+              </div>
+            </Card>
+
 
             <div>
                 <Label htmlFor="status"><Layers className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Status" hi="स्थिति" />*</Label>
