@@ -91,7 +91,7 @@ const riderData = {
     dataAiHint: 'delivery person avatar',
     contact: '8883XXXX78',
     rating: 4.9,
-    activeOrders: mockOrders.filter(o => o.status === 'Pending Pickup' || o.status === 'Out for Delivery').length,
+    activeOrders: initialMockOrders.filter(o => o.status === 'Pending Pickup' || o.status === 'Out for Delivery').length,
     todaysEarnings: 310,
     avgDeliveryTime: 27,
 };
@@ -107,7 +107,7 @@ export default function RiderDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [riderStatus, setRiderStatus] = useState<RiderStatus>('Online');
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>(initialMockOrders);
 
   const OrderCard = ({ order }: { order: Order }) => {
     const DeliveryIcon = deliveryTypeIcons[order.type];
