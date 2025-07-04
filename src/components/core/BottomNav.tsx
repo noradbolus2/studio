@@ -27,7 +27,7 @@ export function BottomNav() {
 
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-card/95 backdrop-blur-md border-t border-border shadow- ऊपर flex md:hidden z-50">
+    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-card/95 border-t border-border shadow- ऊपर flex md:hidden z-50">
       {itemsToDisplay.map((item) => {
         let itemIsActive = false;
         if (isClient) {

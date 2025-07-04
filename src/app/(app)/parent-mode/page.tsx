@@ -146,7 +146,7 @@ export default function ParentDashboardPage() {
   };
 
   return (
-    <div className="space-y-6 perspective-1000">
+    <div className="space-y-6">
       <header className="flex items-center justify-between py-1 sticky top-0 z-20 bg-background/80 backdrop-blur-sm -mx-4 px-4 shadow-sm border-b">
         <Button variant="ghost" size="icon" className="hover:bg-card/70 h-8 w-8" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
@@ -177,8 +177,7 @@ export default function ParentDashboardPage() {
 
       {/* OSO Brain Scan Widget */}
       <Card 
-        className="glass-card border-primary/20 shadow-lg shadow-primary/10 overflow-hidden transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in" 
-        style={{ animationDelay: '100ms' }}
+        className="border-primary/20 shadow-lg shadow-primary/10 overflow-hidden" 
       >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline text-primary">
@@ -226,8 +225,7 @@ export default function ParentDashboardPage() {
       
       {/* Parent Alerts Widget */}
       <Card 
-        className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-        style={{ animationDelay: '200ms' }}
+        className="border-border"
       >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -248,8 +246,7 @@ export default function ParentDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* OSO Mind Diary Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-          style={{ animationDelay: '300ms' }}
+          className="border-border"
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -271,8 +268,7 @@ export default function ParentDashboardPage() {
         
          {/* Goals + Motivation Tracker Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-          style={{ animationDelay: '400ms' }}
+          className="border-border"
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -294,8 +290,7 @@ export default function ParentDashboardPage() {
        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Study Summary Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-          style={{ animationDelay: '500ms' }}
+          className="border-border"
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -311,8 +306,7 @@ export default function ParentDashboardPage() {
         
         {/* Test Performance Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-          style={{ animationDelay: '600ms' }}
+          className="border-border"
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -330,8 +324,7 @@ export default function ParentDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* OSO Orders Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-          style={{ animationDelay: '700ms' }}
+          className="border-border"
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -361,8 +354,7 @@ export default function ParentDashboardPage() {
         
         {/* Downloads + Documents Widget */}
         <Card 
-          className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-          style={{ animationDelay: '800ms' }}
+          className="border-border"
         >
           <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -386,8 +378,7 @@ export default function ParentDashboardPage() {
       </div>
 
       <Card 
-        className="glass-card border-border transform-style-3d backface-hidden transition-all duration-500 hover:-translate-y-2 hover:rotate-x-[10deg] hover:shadow-2xl hover:shadow-primary/20 animate-float-in"
-        style={{ animationDelay: '900ms' }}
+        className="border-border"
       >
         <CardHeader>
           <CardTitle className="text-lg font-headline"><BilingualText en="Quick Actions" hi="त्वरित कार्रवाई" lang={currentLang}/></CardTitle>
