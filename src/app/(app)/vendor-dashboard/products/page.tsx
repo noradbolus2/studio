@@ -171,7 +171,7 @@ export default function VendorProductsPage() {
                                 </div>
                                 <div className="text-center">
                                     <p className="text-xs text-muted-foreground">Price</p>
-                                    <p className="text-sm font-semibold">₹{product.price.toFixed(2)}</p>
+                                    <p className="text-sm font-semibold">INR {product.price.toFixed(2)}</p>
                                 </div>
                                 <div className="text-center">
                                     <p className="text-xs text-muted-foreground">Stock</p>

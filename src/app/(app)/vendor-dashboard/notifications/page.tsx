@@ -22,7 +22,7 @@ interface Notification {
 const mockNotifications: Notification[] = [
   { id: "N001", titleEn: "New Order Received", titleHi: "नया ऑर्डर प्राप्त हुआ", messageEn: "Order #ORD78923 for 3 items has been placed.", messageHi: "3 आइटम के लिए ऑर्डर #ORD78923 दिया गया है।", date: "2024-07-22 10:30 AM", read: false, type: "order" },
   { id: "N002", titleEn: "Low Stock Alert", titleHi: "कम स्टॉक अलर्ट", messageEn: "Fevicol MR Squeeze Bottle (100g) is now out of stock.", messageHi: "फेविकोल एमआर स्क्वीज़ बोतल (100 ग्राम) अब स्टॉक में नहीं है।", date: "2024-07-21 05:00 PM", read: false, type: "stock" },
-  { id: "N003", titleEn: "Payment Processed", titleHi: "भुगतान संसाधित", messageEn: "Payment for order #ORD78920 (₹120) successful.", messageHi: "ऑर्डर #ORD78920 (₹120) के लिए भुगतान सफल।", date: "2024-07-20 11:00 AM", read: true, type: "order" },
+  { id: "N003", titleEn: "Payment Processed", titleHi: "भुगतान संसाधित", messageEn: "Payment for order #ORD78920 (INR 120) successful.", messageHi: "ऑर्डर #ORD78920 (INR 120) के लिए भुगतान सफल।", date: "2024-07-20 11:00 AM", read: true, type: "order" },
   { id: "N004", titleEn: "Platform Update", titleHi: "प्लेटफ़ॉर्म अपडेट", messageEn: "New features added to vendor dashboard. Check them out!", messageHi: "विक्रेता डैशबोर्ड में नई सुविधाएँ जोड़ी गईं। उन्हें देखें!", date: "2024-07-19 09:00 AM", read: true, type: "system" },
 ];
 
