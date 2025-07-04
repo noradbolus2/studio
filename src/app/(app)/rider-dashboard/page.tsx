@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
     Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic,
-    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp, Star, Trophy, Leaf
+    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp, Star, Trophy, Leaf, GitMerge
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,8 +41,8 @@ interface Order {
   pickupLocation: string;
   pickupDistance: string;
   pickupReadyBy?: string;
-  deliveryLocation: string;
   deliveryTo: string;
+  deliveryLocation: string;
   deliveryInstructions?: string;
   deliveryWindow?: string;
   deliveryOtp?: string;
@@ -54,6 +54,8 @@ interface Order {
     countdownMins: number;
     reason: string;
   };
+  clusterId?: string;
+  clusterSize?: number;
 }
 
 const VENDOR_ORDERS_KEY = "vendorOrders_mock";
@@ -79,7 +81,8 @@ const initialMockOrders: Order[] = [
       reason: "Submission today"
     }
   },
-  { id: "OSO19452", status: "Pending Pickup", type: 'Stationery', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Riya (Class 8)', deliveryLocation: 'Modern School', deliveryInstructions: 'Drop at Main Gate Reception', deliveryWindow: "9:30–11:00 AM", items: [{name: 'Notebook Pack', quantity: 5}, {name:'Pen Box', quantity:1}], totalAmount: 350 },
+  { id: "OSO19452", status: "Pending Pickup", type: 'Stationery', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Riya (Class 8)', deliveryLocation: 'Modern School, Barakhamba Road', deliveryInstructions: 'Drop at Main Gate Reception', deliveryWindow: "9:30–11:00 AM", items: [{name: 'Notebook Pack', quantity: 5}, {name:'Pen Box', quantity:1}], totalAmount: 350, clusterId: "CL-998", clusterSize: 2 },
+  { id: "OSO19453", status: "Pending Pickup", type: 'Print Order', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Karan (Class 8)', deliveryLocation: 'Modern School, Barakhamba Road', deliveryInstructions: 'Drop at Main Gate Reception', deliveryWindow: "9:30–11:00 AM", items: [{name: 'Project Report Printout', quantity: 1}], totalAmount: 50, clusterId: "CL-998", clusterSize: 2 },
   { id: "OSO19448", status: "Out for Delivery", type: 'Print Order', pickupLocation: 'PrintFast', pickupDistance: '2.5 km', deliveryTo: 'Mohan (Class 12)', deliveryLocation: 'Springdales School', deliveryInstructions: 'Reception Desk', deliveryWindow: "10:00 AM - 1:00 PM", deliveryOtp: '7432', items: [{name: 'Physics Notes Spiral', quantity: 1}], totalAmount: 150 },
   { id: "OSO19445", status: "Delivered", type: 'Kit Combo', pickupLocation: 'Hobby Hub', pickupDistance: '3.1 km', deliveryTo: 'Sneha (Class 6)', deliveryLocation: 'Amity International', items: [{name: 'Art Project Kit', quantity: 1}], totalAmount: 499 },
   { id: "OSO19440", status: "Cancelled", type: 'Stationery', pickupLocation: 'Gupta Stationery', pickupDistance: '1.5 km', deliveryTo: 'Karan (Class 9)', deliveryLocation: 'Ryan International', items: [{name: 'Geometry Box', quantity: 1}], totalAmount: 80 },
@@ -179,6 +182,25 @@ export default function RiderDashboardPage() {
         setOrders(initialMockOrders);
     }
   }, []);
+
+  const clusteredOrders = useMemo(() => {
+    const clusters: Record<string, Order[]> = {};
+    const individualOrders: Order[] = [];
+
+    orders.forEach(order => {
+        if (order.clusterId) {
+            if (!clusters[order.clusterId]) {
+                clusters[order.clusterId] = [];
+            }
+            clusters[order.clusterId].push(order);
+        } else {
+            individualOrders.push(order);
+        }
+    });
+
+    return { clusters, individualOrders };
+  }, [orders]);
+
 
   const handleUpdateStatus = (orderId: string, newStatus: Order['status']) => {
     const updatedOrders = orders.map(order => 
@@ -284,6 +306,45 @@ export default function RiderDashboardPage() {
     );
   };
   
+  const ClusterOrderCard = ({ clusterId, ordersInCluster }: { clusterId: string; ordersInCluster: Order[] }) => {
+    const pickupLocations = [...new Set(ordersInCluster.map(o => o.pickupLocation))];
+    const deliveryLocation = ordersInCluster[0].deliveryLocation;
+    const deliveryInstructions = ordersInCluster[0].deliveryInstructions;
+
+    return (
+        <Card className="shadow-lg border-l-4 border-blue-500 bg-blue-500/10">
+            <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                    <CardTitle className="text-md font-bold flex items-center gap-2">
+                        <GitMerge className="h-5 w-5 text-blue-500" />
+                        Batch Order #{clusterId}
+                    </CardTitle>
+                    <Badge className="bg-blue-500 text-white">{ordersInCluster.length} Orders</Badge>
+                </div>
+            </CardHeader>
+            <CardContent className="pb-3 space-y-2 text-sm">
+                <div>
+                    <p className="font-semibold">Pickup Points: {pickupLocations.length}</p>
+                    <ul className="list-disc list-inside text-xs text-muted-foreground">
+                        {pickupLocations.map(loc => <li key={loc}>{loc}</li>)}
+                    </ul>
+                </div>
+                 <div>
+                    <p className="font-semibold">Delivery Point: 1</p>
+                    <p className="text-xs text-muted-foreground">{deliveryLocation}</p>
+                     {deliveryInstructions && <p className="text-xs text-primary font-medium mt-1">Instructions: {deliveryInstructions}</p>}
+                </div>
+            </CardContent>
+            <CardFooter className="p-2 bg-muted/50 border-t flex gap-2">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Bike className="mr-2 h-4 w-4" /> Start Pickup Trip
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
+  
   const StatusSwitch = () => (
     <div className="flex items-center gap-1 rounded-full bg-muted p-1">
       {(['Online', 'On Break', 'Offline'] as const).map(status => {
@@ -372,7 +433,7 @@ export default function RiderDashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                                 <Image src="https://images.unsplash.com/photo-1604357209793-fca5dca89f97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXAlMjBsb2NhdGlvbnxlbnwwfHx8fDE3NTE0OTI4MTV8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Demand Heatmap" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map location points" />
+                                 <Image src="https://images.unsplash.com/photo-1694610018733-1053fcfb5289?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYXAlMjBsb2NhdGlvbiUyMHBvaW50c3xlbnwwfHx8fDE3NTE2Mzk3NzZ8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Demand Heatmap" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map location points" />
                             </div>
                             <div className="space-y-3">
                                 <div className="text-sm p-2 bg-red-500/10 rounded-md border border-red-500/20">
@@ -395,7 +456,7 @@ export default function RiderDashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                                <Image src="https://images.unsplash.com/photo-1604357209793-fca5dca89f97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXAlMjBsb2NhdGlvbnxlbnwwfHx8fDE3NTE0OTI4MTV8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Live map placeholder" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map navigation route" />
+                                <Image src="https://images.unsplash.com/photo-1612721530870-48b8c7f3a837?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWFwJTIwbmF2aWdhdGlvbiUyMHJvdXRlfGVufDB8fHx8MTc1MTYzOTc3N3ww&ixlib=rb-4.1.0&q=80&w=1080" alt="Live map placeholder" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map navigation route" />
                             </div>
                             <div className="p-3 bg-green-500/10 text-green-700 rounded-lg border border-green-500/20">
                               <h4 className="font-bold flex items-center gap-1.5"><Leaf size={16}/> Green Route Rewards™</h4>
@@ -463,9 +524,14 @@ export default function RiderDashboardPage() {
                     </header>
                     <div className="space-y-4">
                        <h3 className="font-semibold text-blue-500">Pickup Required</h3>
-                       {initialMockOrders.filter(o => o.status === 'Pending Pickup' || o.status === 'Processing' || o.status === 'Ready for Pickup').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
+                       {Object.entries(clusteredOrders.clusters).map(([clusterId, ordersInCluster]) => (
+                            <ClusterOrderCard key={clusterId} clusterId={clusterId} ordersInCluster={ordersInCluster} />
+                        ))}
+
+                       {clusteredOrders.individualOrders.filter(o => o.status === 'Pending Pickup' || o.status === 'Processing' || o.status === 'Ready for Pickup').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
+                       
                        <h3 className="font-semibold text-orange-500 pt-2">In Transit</h3>
-                       {initialMockOrders.filter(o => o.status === 'Out for Delivery').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
+                       {clusteredOrders.individualOrders.filter(o => o.status === 'Out for Delivery').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
                     </div>
                 </TabsContent>
                 

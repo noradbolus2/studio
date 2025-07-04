@@ -37,6 +37,8 @@ const mockTrackingData: TrackingStep[] = [
   { id: 'delivered', statusEn: 'Delivered to Your Location', statusHi: 'आपके स्थान पर पहुंचाया गया', icon: HomeIcon, completed: false },
 ];
 
+const mockClusteredOrderIds = ["ORD78924", "ORD78925"];
+
 
 export default function TrackOrderPage({ params: { orderId } }: { params: { orderId: string } }) {
   const router = useRouter();
@@ -59,6 +61,8 @@ export default function TrackOrderPage({ params: { orderId } }: { params: { orde
     lat: (vendorLocation.lat + deliveryLocation.lat) / 2,
     lng: (vendorLocation.lng + deliveryLocation.lng) / 2,
   }), [vendorLocation, deliveryLocation]);
+
+  const isClustered = mockClusteredOrderIds.includes(orderId);
 
 
   useEffect(() => {
@@ -153,6 +157,16 @@ export default function TrackOrderPage({ params: { orderId } }: { params: { orde
         </Button>
       </header>
       
+      {isClustered && (
+        <Card className="bg-green-500/10 border-green-500/30">
+            <CardContent className="p-4 text-center">
+                <h3 className="font-bold text-green-700">🎉 OSO Smart Delivery Applied!</h3>
+                <p className="text-sm text-muted-foreground">Your order has been clubbed with nearby deliveries.</p>
+                <p className="text-sm font-semibold">Delivery Charges: ₹0</p>
+            </CardContent>
+        </Card>
+      )}
+
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle><BilingualText en="Live Location & Route" hi="लाइव लोकेशन और मार्ग" /></CardTitle>

@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ArrowLeft, ShoppingBag, Search, Clock, Check, Package, Bike, XCircle, CheckCircle, Truck, Info, RefreshCw, Languages, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Search, Clock, Check, Package, Bike, XCircle, CheckCircle, Truck, Info, RefreshCw, Languages, AlertTriangle, GitMerge } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,14 +33,16 @@ interface Order {
   isPriority?: boolean;
   deliveryInstructions?: string;
   deliveryWindow?: string;
+  clusterId?: string; // New field for cluster ID
+  clusterSize?: number; // New field for total orders in cluster
 }
 
 const VENDOR_ORDERS_KEY = "vendorOrders_mock";
 
 const initialMockOrders: Order[] = [
   { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2, price: 45}, {id: 'geo1', productName: "Geometry Kit", quantity: 1, price: 80}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins", isPriority: true, deliveryInstructions: "Drop at Gate 2 - Ask for Mr. Tripathi (Security)", deliveryWindow: "9:30–11:00 AM" },
-  { id: "ORD78924", customerName: "Priya Singh", date: "2024-07-21", items: [{id: "art1", productName: "Color Pencils", quantity: 1, price: 150}], totalAmount: 150, status: "Processing" },
-  { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Ready for Pickup" },
+  { id: "ORD78924", customerName: "Priya Singh", date: "2024-07-21", items: [{id: "art1", productName: "Color Pencils", quantity: 1, price: 150}], totalAmount: 150, status: "Processing", clusterId: "CL-XYZ", clusterSize: 2 },
+  { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Ready for Pickup", clusterId: "CL-XYZ", clusterSize: 2 },
   { id: "ORD78926", customerName: "Sneha Reddy", date: "2024-07-19", items: [{id: "nb2", productName: "Spiral Notebook", quantity: 3, price: 70}], totalAmount: 210, status: "Dispatched" },
   { id: "ORD78927", customerName: "Vikram Kumar", date: "2024-07-18", items: [{id: "pen2", productName: "Apsara Pencils", quantity: 1, price: 50}], totalAmount: 50, status: "Completed" },
   { id: "ORD78928", customerName: "Anika Desai", date: "2024-07-17", items: [{id: "snack1", productName: "Roasted Almonds", quantity: 2, price: 90}], totalAmount: 180, status: "Cancelled" },
@@ -137,13 +139,15 @@ export default function VendorOrdersPage() {
     return (
         <Card className={cn(
             "shadow-md",
-            order.isPriority && "border-destructive bg-destructive/5 animate-pulse"
+            order.isPriority && "border-destructive bg-destructive/5 animate-pulse",
+            order.clusterId && "border-blue-500 bg-blue-500/5"
         )}>
             <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-md font-bold">#{order.id}</CardTitle>
                     <div className="flex items-center gap-2">
                       {order.isPriority && <Badge variant="destructive">URGENT</Badge>}
+                      {order.clusterId && <Badge variant="secondary" className="bg-blue-100 text-blue-800"><GitMerge size={12} className="mr-1"/> Batch #{order.clusterId.split('-')[1]}</Badge>}
                       {order.distance && <Badge variant="outline">{order.distance}</Badge>}
                     </div>
                 </div>
@@ -156,6 +160,7 @@ export default function VendorOrdersPage() {
             <CardContent className="pb-3">
                  <p className="font-semibold text-lg text-primary">INR {order.totalAmount.toFixed(2)}</p>
                  {order.deliveryTime && <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12}/> <BilingualText en="Delivery in" hi="डिलीवरी में" lang={currentLang} />: {order.deliveryTime}</p>}
+                 {order.clusterId && <p className="text-xs text-blue-600 font-semibold mt-1">Pack together with {order.clusterSize! - 1} other order(s).</p>}
             </CardContent>
             {actionButton && (
                 <CardFooter className="p-3 bg-muted/50 border-t">
