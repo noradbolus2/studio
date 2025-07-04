@@ -48,7 +48,7 @@ export default function MyTasksPage() {
                     <CardTitle>{task.title}</CardTitle>
                     <Badge variant={task.status === 'In Progress' ? 'secondary' : 'default'}>{task.status}</Badge>
                 </div>
-                <CardDescription>Deadline: {task.deadline} | Payout: ₹{task.pay}</CardDescription>
+                <CardDescription>Deadline: {task.deadline} | Payout: INR {task.pay}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                  <div>

@@ -41,10 +41,10 @@ export default function EarningsPage() {
                             <CardTitle className="text-lg">Weekly Earnings Snapshot</CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm space-y-1">
-                            <p>✔️ 5 Doubts Solved – ₹125</p>
-                            <p>✔️ 1 Voiceover – ₹40</p>
-                            <p>✔️ 2 Flashcard Sets – ₹400</p>
-                            <p className="font-bold pt-2">Total This Week: ₹565</p>
+                            <p>✔️ 5 Doubts Solved – INR 125</p>
+                            <p>✔️ 1 Voiceover – INR 40</p>
+                            <p>✔️ 2 Flashcard Sets – INR 400</p>
+                            <p className="font-bold pt-2">Total This Week: INR 565</p>
                         </CardContent>
                     </Card>
                     <p className="text-center text-sm font-semibold text-muted-foreground">Next Payout: Friday</p>
@@ -65,8 +65,8 @@ export default function EarningsPage() {
                             <BarChart data={weeklyEarningsData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="week" />
-                                <YAxis tickFormatter={(value) => `₹${value / 1000}k`} />
-                                <RechartsTooltip content={<ChartTooltipContent />} />
+                                <YAxis tickFormatter={(value) => `INR ${value / 1000}k`} />
+                                <RechartsTooltip formatter={(value: number) => `INR ${value.toLocaleString()}`} content={<ChartTooltipContent />} />
                                 <Bar dataKey="earnings" fill="hsl(var(--primary))" radius={4} />
                             </BarChart>
                         </ChartContainer>

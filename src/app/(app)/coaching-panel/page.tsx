@@ -19,7 +19,7 @@ const teacherStats = [
     { id: "courses", labelEn: "My Courses", value: "3", icon: Video, href: "/coaching-panel/create-course" },
     { id: "upcoming", labelEn: "Upcoming Classes", value: "2 Today", icon: CalendarDays, href: "/schedule-class" },
     { id: "students", labelEn: "My Students", value: "1,285", icon: Users, href: "/coaching-panel/analytics" },
-    { id: "earnings", labelEn: "My Earnings", value: "₹41,320", icon: IndianRupee, href: "/coaching-panel/earnings" },
+    { id: "earnings", labelEn: "My Earnings", value: "INR 41,320", icon: IndianRupee, href: "/coaching-panel/earnings" },
 ];
 
 const mockNotifications = [

@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/reports/page.tsx
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -48,7 +49,7 @@ export default function VendorReportsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card>
                     <CardHeader className="pb-2 flex flex-row items-center justify-between"><CardTitle className="text-sm font-medium">Revenue (Weekly)</CardTitle><IndianRupee className="h-4 w-4 text-muted-foreground"/></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">₹21,000</p></CardContent>
+                    <CardContent><p className="text-2xl font-bold">INR 21,000</p></CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="pb-2 flex flex-row items-center justify-between"><CardTitle className="text-sm font-medium">Fulfillment Rate</CardTitle><CheckCircle className="h-4 w-4 text-muted-foreground text-green-500"/></CardHeader>
@@ -73,7 +74,7 @@ export default function VendorReportsPage() {
                         <LineChart data={salesData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
-                            <YAxis tickFormatter={(value) => `₹${value/1000}k`}/>
+                            <YAxis tickFormatter={(value) => `INR ${value/1000}k`}/>
                             <RechartsTooltip content={<ChartTooltipContent />} />
                             <Line type="monotone" dataKey="sales" stroke="hsl(var(--primary))" strokeWidth={2} />
                         </LineChart>

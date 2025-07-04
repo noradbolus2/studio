@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/coaching-kits/page.tsx
 "use client";
 import { useState } from "react";
@@ -63,7 +64,7 @@ export default function CoachingKitsPage() {
                             <Badge variant="secondary">{kit.coachingCenterName}</Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">{kit.items.join(', ')}</p>
-                        <p className="font-bold text-primary mt-1">₹{kit.price}</p>
+                        <p className="font-bold text-primary mt-1">INR {kit.price}</p>
                     </div>
                     <div className="flex gap-1">
                         <Button variant="ghost" size="icon"><Edit className="h-4 w-4"/></Button>

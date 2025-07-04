@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/bundles/page.tsx
 "use client";
 import { useState } from "react";
@@ -64,7 +65,7 @@ export default function VendorBundlesPage() {
                             <Badge variant="secondary">{bundle.category}</Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">{bundle.items.join(', ')}</p>
-                        <p className="font-bold text-primary mt-1">₹{bundle.price}</p>
+                        <p className="font-bold text-primary mt-1">INR {bundle.price}</p>
                     </div>
                     <div className="flex gap-1">
                         <Button variant="ghost" size="icon"><Edit className="h-4 w-4"/></Button>

@@ -1,3 +1,4 @@
+
 // src/app/(app)/creator-dashboard/page.tsx
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -31,7 +32,7 @@ import {
 export default function CreatorDashboardPage() {
   const creatorStats = {
       avgRating: 4.9,
-      monthlyEarnings: "₹12,540",
+      monthlyEarnings: "INR 12,540",
       activeTasks: 5,
       responseRate: "98%",
   }
@@ -158,10 +159,10 @@ export default function CreatorDashboardPage() {
                 </div>
                 <div className="space-y-2 pt-4 border-t">
                     <Button variant="outline" className="w-full justify-start gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground"/> Book a 1:1 Call – ₹149
+                        <Phone className="h-4 w-4 text-muted-foreground"/> Book a 1:1 Call – INR 149
                     </Button>
                     <Button variant="outline" className="w-full justify-start gap-2">
-                        <ShoppingCart className="h-4 w-4 text-muted-foreground"/> Buy: History Flashcards – ₹99
+                        <ShoppingCart className="h-4 w-4 text-muted-foreground"/> Buy: History Flashcards – INR 99
                     </Button>
                 </div>
             </CardContent>
