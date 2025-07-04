@@ -1,4 +1,3 @@
-
 // src/app/(app)/vendor-dashboard/page.tsx
 "use client";
 
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock
+    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,10 +20,10 @@ import { Label } from '@/components/ui/label';
 const vendorActions = [
   { id: "manage_products", labelEn: "Manage Products", labelHi: "उत्पाद प्रबंधित करें", icon: UploadCloud, href: "/vendor-dashboard/products" },
   { id: "view_orders", labelEn: "View Orders", labelHi: "आदेश देखें", icon: ShoppingBag, href: "/vendor-dashboard/orders" },
+  { id: "uniforms", labelEn: "School Uniforms", labelHi: "स्कूल यूनिफ़ॉर्म", icon: School, href: "/vendor-dashboard/uniforms" },
   { id: "reports_analytics", labelEn: "Sales Reports", labelHi: "बिक्री रिपोर्ट", icon: BarChart3, href: "/vendor-dashboard/reports" },
   { id: "notifications", labelEn: "Notifications", labelHi: "सूचनाएं", icon: Bell, href: "/vendor-dashboard/notifications" },
   { id: "customer_queries", labelEn: "Customer Queries", labelHi: "ग्राहक प्रश्न", icon: MessageSquare, href: "/vendor-dashboard/queries" },
-  { id: "school_orders", labelEn: "School Orders", labelHi: "स्कूल ऑर्डर", icon: Users, href: "/vendor-dashboard/school-orders" },
 ];
 
 interface RecentOrder {
@@ -124,8 +123,8 @@ export default function VendorDashboardPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div><p className="text-2xl font-bold">₹1,250</p><p className="text-xs text-muted-foreground">Today's Earnings</p></div>
-                    <div><p className="text-2xl font-bold">₹8,700</p><p className="text-xs text-muted-foreground">This Week</p></div>
+                    <div><p className="text-2xl font-bold">INR 1,250</p><p className="text-xs text-muted-foreground">Today's Earnings</p></div>
+                    <div><p className="text-2xl font-bold">INR 8,700</p><p className="text-xs text-muted-foreground">This Week</p></div>
                  </div>
                  <Button className="w-full">Withdraw Now</Button>
                  <p className="text-xs text-center text-muted-foreground">Next Payout: Friday</p>
