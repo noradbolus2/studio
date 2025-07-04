@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,8 +16,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 const colorPalette = ['#000000', '#EF4444', '#3B82F6', '#22C55E', '#F97316', '#8B5CF6'];
 
-export default function LiveClassPage({ params }: { params: { classId: string } }) {
-  const { classId } = params;
+export default function LiveClassPage() {
+  const params = useParams();
+  const classId = params.classId as string;
   const router = useRouter();
   const whiteboardRef = useRef<WhiteboardHandle>(null);
   
