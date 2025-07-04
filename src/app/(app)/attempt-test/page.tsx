@@ -171,6 +171,13 @@ export default function AttemptTestPage() {
         console.log("AttemptTestPage: Generating test with input:", input);
         const generatedTest = await generateExamTest(input);
         console.log("AttemptTestPage: Test data received:", generatedTest);
+
+        // Check for the error payload from the flow
+        if (generatedTest.testTitle.startsWith("Error:") && generatedTest.questions.length === 0) {
+          const errorMessage = generatedTest.testTitle.replace("Error: ", "");
+          throw new Error(errorMessage);
+        }
+
         setTestData(generatedTest);
       } catch (err: any) {
         console.error("AttemptTestPage: Failed to generate test:", err);

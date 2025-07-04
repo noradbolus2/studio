@@ -140,7 +140,6 @@ const generateExamTestFlow = ai.defineFlow(
     try {
       console.log(`[Genkit Flow - generateExamTestFlow] Starting test generation for: ${input.examNameOrType}, Subject: ${input.subject || 'N/A'}, Requested Qs: ${input.numQuestions}`);
       
-      // Step 1: Generate textual content of questions, including diagram prompts
       const {output: textOutput} = await generateTextQuestionsPrompt(input);
 
       if (!textOutput || !textOutput.testTitle || !Array.isArray(textOutput.questions) || textOutput.questions.length === 0) {
@@ -148,7 +147,6 @@ const generateExamTestFlow = ai.defineFlow(
       }
       console.log(`[Genkit Flow - generateExamTestFlow] Text part generated. Title: "${textOutput.testTitle}". Number of text questions: ${textOutput.questions.length}`);
 
-      // Step 2: Iterate through questions and generate diagrams if diagramPrompt is present
       const questionsWithDiagrams = await Promise.all(
         textOutput.questions.map(async (question: any) => { 
           if (question.diagramPrompt && typeof question.diagramPrompt === 'string' && question.diagramPrompt.trim() !== "") {
@@ -177,7 +175,7 @@ const generateExamTestFlow = ai.defineFlow(
       );
       
       const finalOutput: GenerateExamTestOutput = {
-        testTitle: textOutput.testTitle, // Ensured by fallback
+        testTitle: textOutput.testTitle,
         questions: questionsWithDiagrams,
       };
 
@@ -185,11 +183,13 @@ const generateExamTestFlow = ai.defineFlow(
       return finalOutput;
     } catch (error: any) {
       const errorMessage = `Failed to generate test for "${input.examNameOrType}". The AI model may be overloaded or the topic is too specific. Please try a smaller test or a different topic.`;
-      console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred. Error: ${error?.message || 'Unknown error'}. Throwing: "${errorMessage}"`);
-      // Re-throw a user-friendly error that the UI can catch and display properly.
-      throw new Error(errorMessage);
+      console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred. Error: ${error?.message || 'Unknown error'}.`);
+      
+      return {
+        testTitle: `Error: ${errorMessage}`,
+        questions: [],
+      };
     }
   }
 );
-
     
