@@ -1,4 +1,3 @@
-
 // src/app/(app)/vendor-dashboard/reports/page.tsx
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -7,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { ArrowLeft, BarChart3, IndianRupee, Package, TrendingUp, Users, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
+import { Bar, BarChart, Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Cell } from "recharts";
 
 
 const salesData = [
