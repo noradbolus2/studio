@@ -26,6 +26,7 @@ const vendorActions = [
   { id: "print_on_demand", labelEn: "Print-on-Demand", labelHi: "प्रिंट-ऑन-डिमांड", icon: Printer, href: "/vendor-dashboard/print-on-demand" },
   { id: "school_forms", labelEn: "School Forms", labelHi: "स्कूल फॉर्म", icon: ClipboardList, href: "/vendor-dashboard/school-forms" },
   { id: "bundles", labelEn: "Study & Festival Kits", labelHi: "अध्ययन और त्योहार किट", icon: Gift, href: "/vendor-dashboard/bundles" },
+  { id: "coaching_kits", labelEn: "Coaching Kits & Packs", labelHi: "कोचिंग किट और पैक", icon: PackagePlus, href: "/vendor-dashboard/coaching-kits" },
   { id: "reports_analytics", labelEn: "Sales Reports", labelHi: "बिक्री रिपोर्ट", icon: BarChart3, href: "/vendor-dashboard/reports" },
   { id: "notifications", labelEn: "Notifications", labelHi: "सूचनाएं", icon: Bell, href: "/vendor-dashboard/notifications" },
   { id: "customer_queries", labelEn: "Customer Queries", labelHi: "ग्राहक प्रश्न", icon: MessageSquare, href: "/vendor-dashboard/queries" },
