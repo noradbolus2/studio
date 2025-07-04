@@ -81,7 +81,7 @@ export default function CoachingPanelPage() {
         </Button>
       </header>
       
-       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
                <Link href="/coaching-panel/create-course">
                    <UploadCloud className="h-7 w-7"/>

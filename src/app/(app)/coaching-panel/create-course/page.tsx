@@ -28,7 +28,8 @@ import {
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
-import { generateAiThumbnail, type GenerateThumbnailInput } from '@/ai/flows/generate-thumbnail-flow';
+import { type GenerateThumbnailInput } from '@/ai/flows/generate-thumbnail-flow';
+import { generateAiThumbnail } from '@/ai/flows/generate-thumbnail-flow';
 
 
 const courseSchema = z.object({

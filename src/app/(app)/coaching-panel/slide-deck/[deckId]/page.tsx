@@ -9,7 +9,7 @@ import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ArrowLeft, ChevronLeft, ChevronRight, Video, Mic, Upload, Save, PlayCircle, Bot, ImageIcon, Pencil } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { GeneratePptSlidesOutput } from '@/ai/flows/generate-ppt-slides-flow';
+import { type GeneratePptSlidesOutput } from '@/ai/flows/generate-ppt-slides-flow';
 import Image from 'next/image';
 
 type Slide = GeneratePptSlidesOutput['slides'][0];

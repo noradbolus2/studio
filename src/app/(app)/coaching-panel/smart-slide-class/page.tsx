@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { ArrowLeft, Upload, Bot, FileText, PlaySquare, Edit, Eye } from "lucide-react";
+import { ArrowLeft, Upload, Bot, FileText, PlaySquare, Edit, Eye, Trash2 } from "lucide-react";
 import Link from 'next/link';
 import { generatePptSlides, type GeneratePptSlidesInput, type GeneratePptSlidesOutput } from '@/ai/flows/generate-ppt-slides-flow';
 import { Input } from "@/components/ui/input";
@@ -82,6 +82,16 @@ export default function SmartSlideClassPage() {
       setIsLoading(false);
     }
   };
+
+  const handleDeleteDeck = (deckId: string) => {
+    localStorage.removeItem(deckId);
+    setSavedDecks(prev => prev.filter(d => d.id !== deckId));
+    toast({
+        title: "Deck Deleted",
+        description: "The slide deck has been removed.",
+        variant: "destructive"
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -160,7 +170,7 @@ export default function SmartSlideClassPage() {
                     </div>
                     <div className="flex gap-1">
                         <Button variant="ghost" size="icon" asChild><Link href={`/coaching-panel/slide-deck/${deck.id}`}><Eye className="h-4 w-4"/></Link></Button>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4"/></Button>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDeleteDeck(deck.id)}><Trash2 className="h-4 w-4"/></Button>
                     </div>
                 </Card>
             )) : (

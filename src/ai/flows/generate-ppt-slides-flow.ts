@@ -47,7 +47,7 @@ const prompt = ai.definePrompt({
     *   The first slide should be a Title slide.
     *   Break down the content into multiple slides, each focusing on a specific sub-topic.
     *   For each slide, create a concise 'title'.
-    *   For each slide, extract or summarize the key information into several clear 'points' (bullet points).
+    *   For each slide, extract or summarize the key information into several clear 'points' (bullet points). Each point should be a separate string in the array.
 3.  **Suggest Visuals:** If a slide's content could be enhanced with a visual, provide a simple, clear description in the 'diagramSuggestion' field. Do this for at least 1-2 key slides. For example, if explaining the water cycle, suggest "A diagram of the water cycle showing evaporation, condensation, and precipitation."
 4.  **Adhere to Schema:** Your entire output MUST be a single, valid JSON object that matches the provided output schema.
 

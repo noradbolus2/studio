@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenerateThumbnailInputSchema = z.object({
+export const GenerateThumbnailInputSchema = z.object({
   videoTitle: z.string().describe("The title of the video lecture. This text should be prominent."),
   subject: z.string().describe("The subject of the course, e.g., 'NEET 2025', 'Chemistry', 'Class 10'."),
   mood: z.enum(["Calm", "Energetic", "Exam Mode", "Motivational"]).describe("The desired mood/style for the thumbnail."),
@@ -19,7 +19,7 @@ const GenerateThumbnailInputSchema = z.object({
 });
 export type GenerateThumbnailInput = z.infer<typeof GenerateThumbnailInputSchema>;
 
-const GenerateThumbnailOutputSchema = z.object({
+export const GenerateThumbnailOutputSchema = z.object({
   imageDataUri: z.string().describe("The generated thumbnail image as a Base64 data URI."),
   promptUsed: z.string().describe("The final prompt that was sent to the image generation model.") // For debugging
 });
