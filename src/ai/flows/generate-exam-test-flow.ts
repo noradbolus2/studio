@@ -98,17 +98,12 @@ CRITICAL: The root of your JSON response MUST contain a 'testTitle' property wit
 **Key Generation Directives:**
 
 1.  **Exam Fidelity:**
-    *   **Question Count:** For major exams, you MUST generate the standard number of questions for a full test unless a smaller \`numQuestions\` is specified.
-        *   **NEET UG:** 200 questions (50 each for Physics, Chem, Botany, Zoology).
-        *   **JEE Main:** 90 questions (30 each for Physics, Chem, Maths).
-        *   **UPSC CSE Prelims GS-1:** 100 questions.
-        *   **NEET SS (e.g., Cardiology):** 100 questions for a full mock.
-        *   **CAT Sections:** VARC (24), DILR (20), QA (22).
+    *   **Question Count:** For major exams, you MUST attempt to generate the standard number of questions for a full test (e.g., NEET UG: 200, JEE Main: 90, UPSC Prelims: 100, NEET SS: 100) unless a smaller \`numQuestions\` is specified. **If generating the full count is too complex, it is better to generate a smaller, high-quality set of 15-20 questions than to fail.**
     *   **Pattern & Style:** Questions MUST mirror the latest known pattern, difficulty, and style of Previous Year Questions (PYQs) for the given \`examNameOrType\`.
 
 2.  **Super-Specialty Exam Accuracy (Critical):**
-    *   For postgraduate or super-specialty exams (e.g., "NEET SS Cardiology", "UPSC CSE Mains Optional"), questions must be of **EXPERT, SUPER-SPECIALIST DIFFICULTY**.
-    *   These should be **lengthy, tough questions** often involving clinical vignettes, case scenarios, or deep analytical skills, mirroring the cognitive demand of the actual exam.
+    *   For postgraduate or super-specialty exams (e.g., "NEET SS Cardiology", "UPSC CSE Mains Optional"), questions must be of **EXPERT, SUPER-SPECIALIST DIFFICULTY**. These should be lengthy, tough questions.
+    *   **If a super-specialty like 'NEET SS' is requested without a specific subject (like Cardiology or Neurology), you MUST assume a common specialty like 'General Medicine' or 'Cardiology' to generate relevant questions.** Do not fail due to ambiguity.
     *   **DO NOT ask foundational questions.** A "NEET SS Cardiology" question must challenge a practicing cardiologist, not an MBBS student.
 
 3.  **Content & Formatting:**
