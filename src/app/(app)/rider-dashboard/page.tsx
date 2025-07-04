@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
     Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic,
-    Zap, BatteryWarning, WifiOff, UserCheck
+    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -108,15 +108,31 @@ export default function RiderDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [riderStatus, setRiderStatus] = useState<RiderStatus>('Online');
-  const [orders, setOrders] = useState<Order[]>(initialMockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
   const [currentOrderForScan, setCurrentOrderForScan] = useState<Order | null>(null);
+
+   useEffect(() => {
+    // Load orders from localStorage
+    try {
+        const storedOrdersString = localStorage.getItem(VENDOR_ORDERS_KEY);
+        if (storedOrdersString) {
+            setOrders(JSON.parse(storedOrdersString));
+        } else {
+            setOrders(initialMockOrders); // Fallback to initial mock if nothing in storage
+        }
+    } catch(e) {
+        console.error("Failed to load orders from localStorage:", e);
+        setOrders(initialMockOrders);
+    }
+  }, []);
 
   const handleUpdateStatus = (orderId: string, newStatus: Order['status']) => {
     const updatedOrders = orders.map(order => 
         order.id === orderId ? { ...order, status: newStatus } : order
     );
     setOrders(updatedOrders);
+    localStorage.setItem(VENDOR_ORDERS_KEY, JSON.stringify(updatedOrders));
     toast({
         title: "Order Updated",
         description: `Order #${orderId} has been marked as ${newStatus}.`
@@ -260,6 +276,29 @@ export default function RiderDashboardPage() {
                     </div>
 
                     <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 font-headline text-md text-primary">
+                                <MapPin size={18} /> Delivery Hotspots
+                            </CardTitle>
+                            <CardDescription>AI-generated heat zones to help you choose where to go.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
+                                 <Image src="https://images.unsplash.com/photo-1604357209793-fca5dca89f97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXAlMjBsb2NhdGlvbnxlbnwwfHx8fDE3NTE0OTI4MTV8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Demand Heatmap" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map location points" />
+                            </div>
+                            <div className="space-y-3">
+                                <div className="text-sm p-2 bg-red-500/10 rounded-md border border-red-500/20">
+                                    <p className="font-bold text-red-700">Sector 9: High stationery demand!</p>
+                                    <p className="text-xs text-red-600">3 pending orders right now.</p>
+                                </div>
+                                 <div className="text-sm p-2 bg-blue-500/10 rounded-md border border-blue-500/20">
+                                    <p className="font-semibold text-blue-700 flex items-center gap-1.5"><TrendingUp size={16}/> Sector 3: Coaching kit deliveries rising.</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
                         <CardHeader className="pb-3">
                             <CardTitle className="flex items-center gap-2 font-headline text-md text-primary">
                                 <Zap size={18} /> Smart Assistant
@@ -317,7 +356,7 @@ export default function RiderDashboardPage() {
                     </header>
                     <div className="space-y-4">
                        <h3 className="font-semibold text-blue-500">Pickup Required</h3>
-                       {orders.filter(o => o.status === 'Pending Pickup').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
+                       {orders.filter(o => o.status === 'Pending Pickup' || o.status === 'Processing' || o.status === 'Ready for Pickup').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
                        <h3 className="font-semibold text-orange-500 pt-2">In Transit</h3>
                        {orders.filter(o => o.status === 'Out for Delivery').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
                     </div>
@@ -363,7 +402,11 @@ export default function RiderDashboardPage() {
                                 <div>
                                     <h2 className="text-lg font-bold">{riderData.name}</h2>
                                     <p className="text-sm text-muted-foreground">ID: {riderData.id}</p>
-                                    <Badge variant="outline" className="mt-1 bg-yellow-100 text-yellow-800 border-yellow-300">⭐ {riderData.rating} / 5.0</Badge>
+                                    <div className="flex items-center gap-1 mt-1">
+                                      {Array(Math.floor(riderData.rating)).fill(0).map((_, i) => <Star key={i} size={14} className="text-yellow-400 fill-yellow-400"/>)}
+                                      {riderData.rating % 1 !== 0 && <Star size={14} className="text-yellow-400 fill-yellow-400" style={{ clipPath: 'inset(0 50% 0 0)'}}/>}
+                                      <span className="text-xs font-semibold ml-1">{riderData.rating} / 5.0</span>
+                                    </div>
                                 </div>
                             </div>
                             <div className="text-sm space-y-2">
