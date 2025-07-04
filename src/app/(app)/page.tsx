@@ -14,7 +14,9 @@ import {
   Gem, // Added for premium card
   ArrowRight, // Added for premium card button
   FileSignature,
-  History
+  History,
+  Palette,
+  Gift,
 } from 'lucide-react';
 import { BrainCircuit } from '@/components/shared/LoadingSpinner';
 
@@ -43,7 +45,7 @@ const defaultUser = {
 const heroSlides = [
   { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "project help technology", href:"/services/projects" },
   { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://images.unsplash.com/photo-1646920912229-bc0d5d94e68b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXN0JTIwZGVsaXZlcnklMjBib29rc3xlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "fast delivery books", href:"/delivery" },
-  { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://images.unsplash.com/photo-1538491247542-5da27794bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhaSUyMHJvYm90JTIwdGVhY2hpbmd8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
+  { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://images.unsplash.com/photo-1538491247542-5da27794bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhaSUyMHJvYm90JTIwdGVhY2hpbmd8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
 ];
 
 const baseQuickCategories = [
@@ -65,8 +67,8 @@ const baseQuickCategories = [
 const recommendationsMock = [
   { id: 'rec_book_neet', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Objective Biology for NEET', titleHi: 'नीट के लिए वस्तुनिष्ठ जीवविज्ञान', imageUrl: 'https://images.unsplash.com/photo-1636959865743-f3999844bdff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxuZWV0JTIwYmlvbG9neSUyMGJvb2t8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "neet biology book", href: '/competitive-bookstore', priceEn: 'INR 799', priceHi: 'INR 799', relevance: ['neet', 'medical'] },
   { id: 'rec_project_volcano', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://images.unsplash.com/photo-1720210745848-5a47be4d5ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx2b2xjYW5vJTIwbW9kZWwlMjBraXR8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: 'INR 299', priceHi: 'INR 299', relevance: ['science', 'class 6', 'class 7', 'class 8'] },
-  { id: 'rec_guruji_jee', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: JEE Physics Doubts', titleHi: 'गुरुजी से पूछें: JEE भौतिकी शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://images.unsplash.com/photo-1606479067834-db5efd9f2fe9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhaSUyMGNoYXQlMjBleGFtfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क', relevance: ['jee', 'physics', 'engineering'] },
-  { id: 'rec_test_jee', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test Series', titleHi: 'JEE मुख्य मॉक टेस्ट सीरीज़', descriptionEn: 'Full Syllabus Coverage', descriptionHi: 'पूर्ण पाठ्यक्रम कवरेज', imageUrl: 'https://images.unsplash.com/photo-1665470909939-959569b20021?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8b25saW5lJTIwdGVzdCUyMGludGVyZmFjZXxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 199', priceHi: 'INR 199', relevance: ['jee', 'engineering'] },
+  { id: 'rec_guruji_jee', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: JEE Physics Doubts', titleHi: 'गुरुजी से पूछें: JEE भौतिकी शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://images.unsplash.com/photo-1606479067834-db5efd9f2fe9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhaSUyMGNoYXQlMjBleGFtfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क', relevance: ['jee', 'physics', 'engineering'] },
+  { id: 'rec_test_jee', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test Series', titleHi: 'JEE मुख्य मॉक टेस्ट सीरीज़', descriptionEn: 'Full Syllabus Coverage', descriptionHi: 'पूर्ण पाठ्यक्रम कवरेज', imageUrl: 'https://images.unsplash.com/photo-1665470909939-959569b20021?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8b25saW5lJTIwdGVzdCUyMGludGVyZmFjZXxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 199', priceHi: 'INR 199', relevance: ['jee', 'engineering'] },
   { id: 'rec_book_class10_math', typeEn: 'Book', typeHi: 'किताब', titleEn: 'NCERT Maths Class 10 Exemplar', titleHi: 'एनसीईआरटी गणित कक्षा 10 उदाहरण', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "class 10 maths book", href: '/class-6-12-books', priceEn: 'INR 150', priceHi: 'INR 150', relevance: ['class 10', 'maths', 'cbse', 'ncert'] },
 ];
 
@@ -75,6 +77,13 @@ const deliveryDeals = [
   { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, iconColor: "text-violet-500", dataAiHint:"school supplies kit", href: "/delivery" },
   { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, iconColor: "text-destructive", dataAiHint:"project materials box", href: "/delivery" },
 ];
+
+const studyFestivalKits = [
+  { id: 'kit1', titleEn: "Board Exam Kit", titleHi: "बोर्ड परीक्षा किट", descriptionEn: "Pens, pads & more", descriptionHi: "पेन, पैड और बहुत कुछ", icon: Gift, iconColor: "text-blue-500", dataAiHint:"exam preparation kit", href: "/vendor-dashboard/bundles" },
+  { id: 'kit2', titleEn: "Admission Starter", titleHi: "एडमिशन स्टार्टर", descriptionEn: "New bag, notebooks...", descriptionHi: "नया बैग, नोटबुक...", icon: PackageSearch, iconColor: "text-green-500", dataAiHint:"school supplies bag", href: "/vendor-dashboard/bundles" },
+  { id: 'kit3', titleEn: "Creative Corner", titleHi: "रचनात्मक कॉर्नर", descriptionEn: "Art supplies combo", descriptionHi: "कला आपूर्ति कॉम्बो", icon: Palette, iconColor: "text-red-500", dataAiHint:"art supplies box", href: "/vendor-dashboard/bundles" },
+];
+
 
 const studyBoosters = [
   { id: 'sb1', titleEn: "Guruji Doubt Solver", titleHi: "गुरुजी शंका समाधान", descriptionEn: "Clear concepts 24/7", descriptionHi: "अवधारणाएँ 24/7 स्पष्ट करें", icon: Lightbulb, iconColor: "text-violet-500", dataAiHint:"ai learning lightbulb", href: "/ai-guruji" },
@@ -360,7 +369,7 @@ export default function ModernHomePage() {
             )}
           >
             <MemoizedImage
-              src={slide.imageUrl || 'https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080'}
+              src={slide.imageUrl || 'https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080'}
               alt={currentLang === 'en' ? slide.titleEn : slide.titleHi}
               layout="fill"
               objectFit="cover"
@@ -535,16 +544,16 @@ export default function ModernHomePage() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Delivery Deals" hi="डिलीवरी डील्स" lang={currentLang}/></h2>
+        <h2 className="text-xl font-semibold text-foreground mb-3"><BilingualText en="Study & Festival Kits" hi="अध्ययन और त्योहार किट" lang={currentLang}/></h2>
          <ScrollArea className="w-full whitespace-nowrap pb-3">
             <div className="flex space-x-3">
-                {deliveryDeals.map((deal) => (
-                <Link href={deal.href} key={deal.id} className="block min-w-[200px] max-w-[240px] hover:opacity-90 transition-opacity">
-                    <Card className="p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card" data-ai-hint={deal.dataAiHint}>
-                        <deal.icon className={cn("h-8 w-8 shrink-0", deal.iconColor)} />
+                {studyFestivalKits.map((kit) => (
+                <Link href={kit.href} key={kit.id} className="block min-w-[200px] max-w-[240px] hover:opacity-90 transition-opacity">
+                    <Card className="p-4 rounded-lg shadow-md flex items-center gap-3 h-full glass-card" data-ai-hint={kit.dataAiHint}>
+                        <kit.icon className={cn("h-8 w-8 shrink-0", kit.iconColor)} />
                         <div>
-                        <h3 className="text-sm font-bold text-foreground"><BilingualText en={deal.titleEn} hi={deal.titleHi} lang={currentLang}/></h3>
-                        <p className="text-xs text-muted-foreground"><BilingualText en={deal.descriptionEn} hi={deal.descriptionHi} lang={currentLang}/></p>
+                        <h3 className="text-sm font-bold text-foreground"><BilingualText en={kit.titleEn} hi={kit.titleHi} lang={currentLang}/></h3>
+                        <p className="text-xs text-muted-foreground"><BilingualText en={kit.descriptionEn} hi={kit.descriptionHi} lang={currentLang}/></p>
                         </div>
                     </Card>
                 </Link>
@@ -553,7 +562,7 @@ export default function ModernHomePage() {
             <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </section>
-
+      
       <section>
         <h2 className="text-xl font-semibold text-foreground mb-3">
           <BilingualText en="Study Boosters" hi="अध्ययन बूस्टर" lang={currentLang}/>
