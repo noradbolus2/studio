@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react'; // Added this line
+import { useState } from 'react'; 
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,16 +16,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, MapPin, Tag, CreditCard, ChevronDown } from "lucide-react";
+import { Home, MapPin, Tag, CreditCard, ChevronDown, AlertCircle } from "lucide-react";
 import { BilingualText } from "../shared/BilingualText";
 import type { StationeryItem } from "./StationeryItemCard";
+import { Switch } from '../ui/switch';
+import { cn } from '@/lib/utils';
 
 interface CheckoutDialogProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: StationeryItem[];
   cartTotal: number;
-  onConfirmOrder: (details: { address: string; coupon?: string; items: StationeryItem[] }) => void;
+  onConfirmOrder: (details: { address: string; coupon?: string; items: StationeryItem[], isPriority: boolean }) => void;
 }
 
 // Mock saved addresses
@@ -40,6 +42,7 @@ export function CheckoutDialog({ isOpen, onClose, cartItems, cartTotal, onConfir
   const [couponCode, setCouponCode] = useState("");
   const [customAddress, setCustomAddress] = useState("");
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
+  const [isPriority, setIsPriority] = useState(false);
 
   const handleAddressChange = (value: string) => {
     if (value === "add_new") {
@@ -60,7 +63,7 @@ export function CheckoutDialog({ isOpen, onClose, cartItems, cartTotal, onConfir
         alert("Please select or enter a delivery address.");
         return;
     }
-    onConfirmOrder({ address: finalAddress, coupon: couponCode, items: cartItems });
+    onConfirmOrder({ address: finalAddress, coupon: couponCode, items: cartItems, isPriority });
   };
 
   return (
@@ -101,6 +104,28 @@ export function CheckoutDialog({ isOpen, onClose, cartItems, cartTotal, onConfir
                     onChange={(e) => setCustomAddress(e.target.value)}
                     className="mt-2"
                 />
+            )}
+          </div>
+
+          <div
+            className={cn(
+              'p-3 border rounded-lg transition-all',
+              isPriority ? 'border-destructive/50 bg-destructive/10' : 'bg-muted/50'
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <Label htmlFor="priority-delivery" className={cn("font-semibold flex items-center gap-1.5", isPriority && "text-destructive")}>
+                <AlertCircle size={16}/> <BilingualText en="Urgent Delivery" hi="अत्यावश्यक डिलीवरी"/>
+              </Label>
+              <Switch id="priority-delivery" checked={isPriority} onCheckedChange={setIsPriority} />
+            </div>
+            {isPriority && (
+              <p className="text-xs text-destructive mt-2">
+                <BilingualText 
+                    en="Note: This will alert the nearest rider for express delivery. A small priority fee may apply." 
+                    hi="नोट: यह एक्सप्रेस डिलीवरी के लिए निकटतम राइडर को सचेत करेगा। एक छोटा प्राथमिकता शुल्क लागू हो सकता है।" 
+                />
+              </p>
             )}
           </div>
 

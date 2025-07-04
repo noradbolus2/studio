@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
-    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck
+    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -42,10 +42,34 @@ interface Order {
   deliveryOtp?: string;
   items: OrderItem[];
   totalAmount: number;
+  isPriority?: boolean; // For urgent orders
+  priorityDetails?: {
+    bonus: number;
+    countdownMins: number;
+    reason: string;
+  };
 }
 
 const mockOrders: Order[] = [
-  { id: "OSO19451", status: "Pending Pickup", type: 'Uniform', pickupLocation: 'Sharma Stationery', pickupDistance: '1.2 km', pickupReadyBy: '12:10 PM', deliveryTo: 'Ayush (Class 10)', deliveryLocation: 'OSO Public School', deliveryGate: 'Gate 2', items: [{name: 'Class 10 Uniform Kit', quantity: 1}], totalAmount: 1250 },
+  { 
+    id: "OSO19451", 
+    status: "Pending Pickup", 
+    type: 'Stationery', 
+    pickupLocation: 'Gupta Stationery', 
+    pickupDistance: '0.5 km', 
+    pickupReadyBy: '11:55 AM', 
+    deliveryTo: 'Priya (Class 10)', 
+    deliveryLocation: 'Modern School', 
+    deliveryGate: 'Gate 2', 
+    items: [{name: 'Class 10 Biology Practical File', quantity: 1}], 
+    totalAmount: 120,
+    isPriority: true,
+    priorityDetails: {
+      bonus: 20,
+      countdownMins: 20,
+      reason: "Submission today"
+    }
+  },
   { id: "OSO19452", status: "Pending Pickup", type: 'Stationery', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Riya (Class 8)', deliveryLocation: 'Modern School', deliveryGate: 'Gate 1', items: [{name: 'Notebook Pack', quantity: 5}, {name:'Pen Box', quantity:1}], totalAmount: 350 },
   { id: "OSO19448", status: "Out for Delivery", type: 'Print Order', pickupLocation: 'PrintFast', pickupDistance: '2.5 km', deliveryTo: 'Mohan (Class 12)', deliveryLocation: 'Springdales School', deliveryGate: 'Reception', deliveryOtp: '7432', items: [{name: 'Physics Notes Spiral', quantity: 1}], totalAmount: 150 },
   { id: "OSO19445", status: "Delivered", type: 'Kit Combo', pickupLocation: 'Hobby Hub', pickupDistance: '3.1 km', deliveryTo: 'Sneha (Class 6)', deliveryLocation: 'Amity International', items: [{name: 'Art Project Kit', quantity: 1}], totalAmount: 499 },
@@ -83,17 +107,33 @@ export default function RiderDashboardPage() {
     return (
       <Card className={cn(
           "shadow-md border-l-4 transition-all", 
-          isPickup ? "border-blue-500 bg-blue-500/5" : "border-orange-500 bg-orange-500/5"
+          order.isPriority && "border-destructive bg-destructive/10 shadow-lg shadow-destructive/20 animate-pulse",
+          !order.isPriority && isPickup && "border-blue-500 bg-blue-500/5",
+          !order.isPriority && !isPickup && "border-orange-500 bg-orange-500/5"
       )}>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
             <CardTitle className="text-md font-bold flex items-center gap-2">
-                <DeliveryIcon className={cn("h-5 w-5", isPickup ? "text-blue-500" : "text-orange-500")} />
+                <DeliveryIcon className={cn("h-5 w-5", isPickup ? "text-blue-500" : "text-orange-500", order.isPriority && "text-destructive")} />
                 #{order.id}
             </CardTitle>
-            <Badge variant={isPickup ? "default" : "secondary"} className={isPickup ? "bg-blue-500 text-white" : "bg-orange-500 text-white"}>{order.status}</Badge>
+            <Badge variant={isPickup ? "default" : "secondary"} className={cn(
+                isPickup ? "bg-blue-500 text-white" : "bg-orange-500 text-white",
+                order.isPriority && "bg-destructive text-white"
+            )}>
+              {order.isPriority ? "URGENT" : order.status}
+            </Badge>
           </div>
-          <CardDescription className="text-xs">
+          {order.isPriority && order.priorityDetails && (
+            <div className="mt-2 p-2 rounded-md bg-destructive/20 text-destructive-foreground border border-destructive/30">
+                <p className="text-sm font-bold flex items-center gap-1.5"><AlertTriangle size={16}/>{order.priorityDetails.reason}</p>
+                <div className="flex justify-between items-center text-xs mt-1">
+                    <span>Deliver within: <strong>{order.priorityDetails.countdownMins} mins</strong></span>
+                    <span>Bonus: <strong>₹{order.priorityDetails.bonus}</strong></span>
+                </div>
+            </div>
+          )}
+          <CardDescription className="text-xs pt-1">
             {order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')}
           </CardDescription>
         </CardHeader>
@@ -181,9 +221,9 @@ export default function RiderDashboardPage() {
                     </header>
                     <div className="space-y-4">
                        <h3 className="font-semibold text-blue-500">Pickup Required</h3>
-                       {orders.filter(o => o.status === 'Pending Pickup').map(order => <OrderCard key={order.id} order={order} />)}
+                       {orders.filter(o => o.status === 'Pending Pickup').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
                        <h3 className="font-semibold text-orange-500 pt-2">In Transit</h3>
-                       {orders.filter(o => o.status === 'Out for Delivery').map(order => <OrderCard key={order.id} order={order} />)}
+                       {orders.filter(o => o.status === 'Out for Delivery').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
                     </div>
                 </TabsContent>
                 

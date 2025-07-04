@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ArrowLeft, ShoppingBag, Search, Clock, Check, Package, Bike, XCircle, CheckCircle, Truck, Info, RefreshCw, Languages } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Search, Clock, Check, Package, Bike, XCircle, CheckCircle, Truck, Info, RefreshCw, Languages, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,12 +30,13 @@ interface Order {
   status: "Pending" | "Processing" | "Ready for Pickup" | "Dispatched" | "Completed" | "Cancelled";
   distance?: string; // Optional e.g., "1.2 km"
   deliveryTime?: string; // Optional e.g., "35 mins"
+  isPriority?: boolean; // Added for priority orders
 }
 
 const VENDOR_ORDERS_KEY = "vendorOrders_mock";
 
 const initialMockOrders: Order[] = [
-  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2, price: 45}, {id: 'geo1', productName: "Geometry Kit", quantity: 1, price: 80}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins"},
+  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2, price: 45}, {id: 'geo1', productName: "Geometry Kit", quantity: 1, price: 80}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins", isPriority: true},
   { id: "ORD78924", customerName: "Priya Singh", date: "2024-07-21", items: [{id: "art1", productName: "Color Pencils", quantity: 1, price: 150}], totalAmount: 150, status: "Processing" },
   { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Ready for Pickup" },
   { id: "ORD78926", customerName: "Sneha Reddy", date: "2024-07-19", items: [{id: "nb2", productName: "Spiral Notebook", quantity: 3, price: 70}], totalAmount: 210, status: "Dispatched" },
@@ -91,7 +92,7 @@ export default function VendorOrdersPage() {
       (status === 'All' || order.status === status) &&
       (order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customerName.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    ).sort((a,b) => (b.isPriority ? 1 : 0) - (a.isPriority ? 1 : 0)); // Sort priority orders to the top
   };
 
   const handleUpdateStatus = (orderId: string, newStatus: Order['status']) => {
@@ -132,11 +133,17 @@ export default function VendorOrdersPage() {
     }
 
     return (
-        <Card className="shadow-md">
+        <Card className={cn(
+            "shadow-md",
+            order.isPriority && "border-destructive bg-destructive/5 animate-pulse"
+        )}>
             <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-md font-bold">#{order.id}</CardTitle>
-                    {order.distance && <Badge variant="outline">{order.distance}</Badge>}
+                    <div className="flex items-center gap-2">
+                      {order.isPriority && <Badge variant="destructive">URGENT</Badge>}
+                      {order.distance && <Badge variant="outline">{order.distance}</Badge>}
+                    </div>
                 </div>
                  <CardDescription>
                     {order.items.map(i => i.productName).join(', ')} ({order.items.length} <BilingualText en="items" hi="आइटम" lang={currentLang}/>)
