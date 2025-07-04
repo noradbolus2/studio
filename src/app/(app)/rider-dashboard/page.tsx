@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
-    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle
+    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -38,11 +38,12 @@ interface Order {
   pickupReadyBy?: string;
   deliveryLocation: string;
   deliveryTo: string;
-  deliveryGate?: string;
+  deliveryInstructions?: string;
+  deliveryWindow?: string;
   deliveryOtp?: string;
   items: OrderItem[];
   totalAmount: number;
-  isPriority?: boolean; // For urgent orders
+  isPriority?: boolean;
   priorityDetails?: {
     bonus: number;
     countdownMins: number;
@@ -59,8 +60,9 @@ const mockOrders: Order[] = [
     pickupDistance: '0.5 km', 
     pickupReadyBy: '11:55 AM', 
     deliveryTo: 'Priya (Class 10)', 
-    deliveryLocation: 'Modern School', 
-    deliveryGate: 'Gate 2', 
+    deliveryLocation: 'Modern School, Barakhamba Road', 
+    deliveryInstructions: 'Drop at Gate 2 - Ask Mr. Tripathi (Security)',
+    deliveryWindow: "9:30–11:00 AM",
     items: [{name: 'Class 10 Biology Practical File', quantity: 1}], 
     totalAmount: 120,
     isPriority: true,
@@ -70,8 +72,8 @@ const mockOrders: Order[] = [
       reason: "Submission today"
     }
   },
-  { id: "OSO19452", status: "Pending Pickup", type: 'Stationery', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Riya (Class 8)', deliveryLocation: 'Modern School', deliveryGate: 'Gate 1', items: [{name: 'Notebook Pack', quantity: 5}, {name:'Pen Box', quantity:1}], totalAmount: 350 },
-  { id: "OSO19448", status: "Out for Delivery", type: 'Print Order', pickupLocation: 'PrintFast', pickupDistance: '2.5 km', deliveryTo: 'Mohan (Class 12)', deliveryLocation: 'Springdales School', deliveryGate: 'Reception', deliveryOtp: '7432', items: [{name: 'Physics Notes Spiral', quantity: 1}], totalAmount: 150 },
+  { id: "OSO19452", status: "Pending Pickup", type: 'Stationery', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Riya (Class 8)', deliveryLocation: 'Modern School', deliveryInstructions: 'Drop at Main Gate Reception', deliveryWindow: "9:30–11:00 AM", items: [{name: 'Notebook Pack', quantity: 5}, {name:'Pen Box', quantity:1}], totalAmount: 350 },
+  { id: "OSO19448", status: "Out for Delivery", type: 'Print Order', pickupLocation: 'PrintFast', pickupDistance: '2.5 km', deliveryTo: 'Mohan (Class 12)', deliveryLocation: 'Springdales School', deliveryInstructions: 'Reception Desk', deliveryWindow: "10:00 AM - 1:00 PM", deliveryOtp: '7432', items: [{name: 'Physics Notes Spiral', quantity: 1}], totalAmount: 150 },
   { id: "OSO19445", status: "Delivered", type: 'Kit Combo', pickupLocation: 'Hobby Hub', pickupDistance: '3.1 km', deliveryTo: 'Sneha (Class 6)', deliveryLocation: 'Amity International', items: [{name: 'Art Project Kit', quantity: 1}], totalAmount: 499 },
   { id: "OSO19440", status: "Cancelled", type: 'Stationery', pickupLocation: 'Gupta Stationery', pickupDistance: '1.5 km', deliveryTo: 'Karan (Class 9)', deliveryLocation: 'Ryan International', items: [{name: 'Geometry Box', quantity: 1}], totalAmount: 80 },
 ];
@@ -144,8 +146,10 @@ export default function RiderDashboardPage() {
                     <p className="flex items-center gap-1.5"><Clock size={14}/> <strong>Ready by:</strong> {order.pickupReadyBy}</p>
                 </div>
             ) : (
-                <div>
-                    <p className="flex items-center gap-1.5"><MapPin size={14}/> <strong>Deliver to:</strong> {order.deliveryTo} @ {order.deliveryLocation} {order.deliveryGate && `(${order.deliveryGate})`}</p>
+                <div className="space-y-1">
+                    <p className="flex items-center gap-1.5"><MapPin size={14}/> <strong>Deliver to:</strong> {order.deliveryTo} @ {order.deliveryLocation}</p>
+                    {order.deliveryWindow && <p className="flex items-start gap-1.5 text-amber-600"><Clock size={14} className="mt-0.5 shrink-0"/> Delivery Window: {order.deliveryWindow}</p>}
+                    {order.deliveryInstructions && <p className="flex items-start gap-1.5 text-primary font-medium"><SchoolIconLucide size={14} className="mt-0.5 shrink-0"/> {order.deliveryInstructions}</p>}
                     {order.deliveryOtp && <p className="font-bold text-lg text-center my-2 text-primary">OTP: {order.deliveryOtp}</p>}
                 </div>
             )}
@@ -271,7 +275,9 @@ export default function RiderDashboardPage() {
                                 </div>
                             </div>
                             <div className="text-sm space-y-2">
-                                <div className="flex items-center gap-2"><Phone size={14}/> {riderData.contact} <Badge variant="outline" className="bg-green-100 text-green-800">Verified</Badge></div>
+                                <div>
+                                    <Badge variant="outline" className="bg-green-100 text-green-800 flex items-center gap-2"><Phone size={14}/> {riderData.contact} <CheckCircle size={14}/></Badge>
+                                </div>
                             </div>
                             <Button variant="outline" className="w-full" asChild><Link href="/edit-profile?role=rider"><Settings className="mr-2 h-4 w-4"/> Edit Profile & Bank Details</Link></Button>
                             <Button variant="outline" className="w-full"><HelpCircle className="mr-2 h-4 w-4"/> Help & Support</Button>

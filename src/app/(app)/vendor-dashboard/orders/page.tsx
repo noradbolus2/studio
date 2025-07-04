@@ -28,15 +28,17 @@ interface Order {
   items: OrderItem[];
   totalAmount: number;
   status: "Pending" | "Processing" | "Ready for Pickup" | "Dispatched" | "Completed" | "Cancelled";
-  distance?: string; // Optional e.g., "1.2 km"
-  deliveryTime?: string; // Optional e.g., "35 mins"
-  isPriority?: boolean; // Added for priority orders
+  distance?: string; 
+  deliveryTime?: string; 
+  isPriority?: boolean;
+  deliveryInstructions?: string;
+  deliveryWindow?: string;
 }
 
 const VENDOR_ORDERS_KEY = "vendorOrders_mock";
 
 const initialMockOrders: Order[] = [
-  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2, price: 45}, {id: 'geo1', productName: "Geometry Kit", quantity: 1, price: 80}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins", isPriority: true},
+  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2, price: 45}, {id: 'geo1', productName: "Geometry Kit", quantity: 1, price: 80}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins", isPriority: true, deliveryInstructions: "Drop at Gate 2 - Ask for Mr. Tripathi (Security)", deliveryWindow: "9:30–11:00 AM" },
   { id: "ORD78924", customerName: "Priya Singh", date: "2024-07-21", items: [{id: "art1", productName: "Color Pencils", quantity: 1, price: 150}], totalAmount: 150, status: "Processing" },
   { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Ready for Pickup" },
   { id: "ORD78926", customerName: "Sneha Reddy", date: "2024-07-19", items: [{id: "nb2", productName: "Spiral Notebook", quantity: 3, price: 70}], totalAmount: 210, status: "Dispatched" },
@@ -147,6 +149,8 @@ export default function VendorOrdersPage() {
                 </div>
                  <CardDescription>
                     {order.items.map(i => i.productName).join(', ')} ({order.items.length} <BilingualText en="items" hi="आइटम" lang={currentLang}/>)
+                    {order.deliveryWindow && <p className="text-xs text-amber-700 font-medium mt-1">Window: {order.deliveryWindow}</p>}
+                    {order.deliveryInstructions && <p className="text-xs text-primary font-medium mt-1">Instructions: {order.deliveryInstructions}</p>}
                  </CardDescription>
             </CardHeader>
             <CardContent className="pb-3">
