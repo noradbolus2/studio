@@ -11,13 +11,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
-    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide
+    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 
 
 type RiderStatus = 'Online' | 'Offline' | 'On Break';
@@ -99,6 +101,7 @@ const deliveryTypeIcons: Record<DeliveryType, React.ElementType> = {
 
 export default function RiderDashboardPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [riderStatus, setRiderStatus] = useState<RiderStatus>('Online');
   const [orders, setOrders] = useState<Order[]>(mockOrders);
 
@@ -211,6 +214,25 @@ export default function RiderDashboardPage() {
                         <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{riderData.avgDeliveryTime}<span className="text-lg"> min</span></p><p className="text-xs text-muted-foreground">Avg. Time</p></CardContent></Card>
                     </div>
 
+                    <Card className="bg-primary/5 border-primary/20">
+                      <CardHeader>
+                          <CardTitle className="flex items-center gap-2 font-headline text-primary">
+                              <Mic className="h-6 w-6" /> Guru-Bot Assistant
+                          </CardTitle>
+                          <CardDescription>Use your voice to manage deliveries.</CardDescription>
+                      </CardHeader>
+                      <CardContent className="text-center">
+                          <Button 
+                              size="icon" 
+                              className="h-20 w-20 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
+                              onClick={() => toast({ title: "Voice Assistant Activated", description: 'Listening... (Feature in development)' })}
+                          >
+                              <Mic className="h-10 w-10" />
+                          </Button>
+                          <p className="text-xs text-muted-foreground mt-2">Tap to speak. Try: "Order dikhao"</p>
+                      </CardContent>
+                    </Card>
+
                     <div className="grid grid-cols-2 gap-3">
                         <Button variant="outline" size="lg" className="h-14"><ListChecks className="mr-2"/> View Orders</Button>
                         <Button variant="outline" size="lg" className="h-14"><Map className="mr-2"/> Live Route</Button>
@@ -275,8 +297,8 @@ export default function RiderDashboardPage() {
                                 </div>
                             </div>
                             <div className="text-sm space-y-2">
-                                <div>
-                                    <Badge variant="outline" className="bg-green-100 text-green-800 flex items-center gap-2"><Phone size={14}/> {riderData.contact} <CheckCircle size={14}/></Badge>
+                                <div className="p-2 border rounded-md">
+                                    <p className="flex items-center gap-2"><Phone size={14}/> {riderData.contact} <Badge variant="outline" className="bg-green-100 text-green-800 flex items-center gap-1 text-xs"><CheckCircle size={12}/> Verified</Badge></p>
                                 </div>
                             </div>
                             <Button variant="outline" className="w-full" asChild><Link href="/edit-profile?role=rider"><Settings className="mr-2 h-4 w-4"/> Edit Profile & Bank Details</Link></Button>
