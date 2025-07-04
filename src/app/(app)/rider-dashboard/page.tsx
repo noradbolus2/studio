@@ -231,7 +231,7 @@ export default function RiderDashboardPage() {
                                 </div>
                             </div>
                             <div className="text-sm space-y-2">
-                                <p className="flex items-center gap-2"><Phone size={14}/> {riderData.contact} <Badge variant="outline" className="bg-green-100 text-green-800">Verified</Badge></p>
+                                <div className="flex items-center gap-2"><Phone size={14}/> {riderData.contact} <Badge variant="outline" className="bg-green-100 text-green-800">Verified</Badge></div>
                             </div>
                             <Button variant="outline" className="w-full" asChild><Link href="/edit-profile?role=rider"><Settings className="mr-2 h-4 w-4"/> Edit Profile & Bank Details</Link></Button>
                             <Button variant="outline" className="w-full"><HelpCircle className="mr-2 h-4 w-4"/> Help & Support</Button>
