@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/page.tsx
 "use client";
 
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School, Printer
+    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School, Printer, ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,7 @@ const vendorActions = [
   { id: "view_orders", labelEn: "View Orders", labelHi: "आदेश देखें", icon: ShoppingBag, href: "/vendor-dashboard/orders" },
   { id: "uniforms", labelEn: "School Uniforms", labelHi: "स्कूल यूनिफ़ॉर्म", icon: School, href: "/vendor-dashboard/uniforms" },
   { id: "print_on_demand", labelEn: "Print-on-Demand", labelHi: "प्रिंट-ऑन-डिमांड", icon: Printer, href: "/vendor-dashboard/print-on-demand" },
+  { id: "school_forms", labelEn: "School Forms", labelHi: "स्कूल फॉर्म", icon: ClipboardList, href: "/vendor-dashboard/school-forms" },
   { id: "reports_analytics", labelEn: "Sales Reports", labelHi: "बिक्री रिपोर्ट", icon: BarChart3, href: "/vendor-dashboard/reports" },
   { id: "notifications", labelEn: "Notifications", labelHi: "सूचनाएं", icon: Bell, href: "/vendor-dashboard/notifications" },
   { id: "customer_queries", labelEn: "Customer Queries", labelHi: "ग्राहक प्रश्न", icon: MessageSquare, href: "/vendor-dashboard/queries" },
