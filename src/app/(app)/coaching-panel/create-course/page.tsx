@@ -22,9 +22,10 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import {
   PlusCircle, ArrowLeft, Edit3, BookOpen, Layers, IndianRupeeIcon, Clock, Languages, Image as ImageIcon,
-  FileText, Video, CalendarClock, Link as LinkIcon, MessageCircle, GripVertical, Pencil, Trash2, BookCopy, TestTube2
+  FileText, Video, CalendarClock, Link as LinkIcon, MessageCircle, GripVertical, Pencil, Trash2, BookCopy, TestTube2, Save
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
 
 
 const courseSchema = z.object({
@@ -38,6 +39,18 @@ const courseSchema = z.object({
   start_date: z.date().optional(),
   end_date: z.date().optional(),
   status: z.enum(["Draft", "Published", "Pending Approval"]),
+  physical_notes_enabled: z.boolean().optional().default(false),
+  physical_notes_price: z.coerce.number().optional(),
+  physical_notes_pdf_name: z.string().optional(),
+}).refine(data => {
+    // If physical notes are enabled, a price greater than 0 must be provided.
+    if (data.physical_notes_enabled && (!data.physical_notes_price || data.physical_notes_price <= 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "A price greater than 0 is required for printed notes.",
+    path: ["physical_notes_price"],
 });
 
 type CourseFormData = z.infer<typeof courseSchema>;
@@ -57,11 +70,14 @@ export default function CreateCoursePage() {
   const { toast } = useToast();
   const [thumbnailFileName, setThumbnailFileName] = useState<string | null>(null);
   const thumbnailFileRef = useRef<HTMLInputElement>(null);
+  const [printedNotesFileName, setPrintedNotesFileName] = useState<string | null>(null);
+  const printedNotesFileRef = useRef<HTMLInputElement>(null);
 
   const { control, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<CourseFormData>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
       status: "Draft",
+      physical_notes_enabled: false,
     },
   });
 
@@ -89,6 +105,22 @@ export default function CreateCoursePage() {
       setThumbnailFileName(file.name);
       // In a real app, you would upload this file and set the URL. For now, we store the name.
       setValue("thumbnail_image_url", file.name);
+    }
+  };
+
+  const handlePrintedNotesFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type !== 'application/pdf') {
+        toast({ title: "Invalid File Type", description: "Please select a PDF file.", variant: "destructive" });
+        return;
+      }
+      if (file.size > 25 * 1024 * 1024) { // 25MB limit for PDF
+        toast({ title: "File Too Large", description: "PDF must be less than 25MB.", variant: "destructive" });
+        return;
+      }
+      setPrintedNotesFileName(file.name);
+      setValue("physical_notes_pdf_name", file.name);
     }
   };
 
@@ -214,6 +246,43 @@ export default function CreateCoursePage() {
                 </Button>
             </Card>
 
+            <Card className="bg-muted/30 p-4">
+                <CardTitle className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <BookCopy className="h-5 w-5"/>
+                    <BilingualText en="Optional: Offer Printed Notes" hi="वैकल्पिक: मुद्रित नोट्स ऑफ़र करें"/>
+                </CardTitle>
+                <CardDescription className="text-xs mb-3">
+                    Let students order a spiral-bound copy of your notes. Fulfilled by OSO vendors.
+                </CardDescription>
+                <div className="space-y-4">
+                    <div className="flex items-center space-x-2 p-2 bg-background rounded-md border">
+                        <Controller name="physical_notes_enabled" control={control} render={({ field }) => (
+                            <Switch id="physical_notes_enabled" checked={field.value} onCheckedChange={field.onChange} />
+                        )} />
+                        <Label htmlFor="physical_notes_enabled" className="text-sm font-medium cursor-pointer">
+                            <BilingualText en="Enable Printed Notes for this course" hi="इस कोर्स के लिए मुद्रित नोट्स सक्षम करें"/>
+                        </Label>
+                    </div>
+                    
+                    {watch("physical_notes_enabled") && (
+                        <div className="space-y-4 pl-4 pt-4 border-l-2 border-primary ml-2">
+                            <div>
+                                <Label htmlFor="physical_notes_price"><IndianRupeeIcon className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Price for Printed Notes (INR)" hi="मुद्रित नोट्स के लिए मूल्य (INR)" />*</Label>
+                                <Controller name="physical_notes_price" control={control} render={({ field }) => (
+                                    <Input {...field} type="number" placeholder="e.g., 199" value={field.value ?? ''} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} />
+                                )} />
+                                 {errors.physical_notes_price && <p className="text-xs text-destructive mt-1">{errors.physical_notes_price.message}</p>}
+                            </div>
+                            <div>
+                                <Label htmlFor="printed_notes_pdf"><FileText className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Upload Final PDF for Printing" hi="मुद्रण के लिए अंतिम पीडीएफ अपलोड करें" /></Label>
+                                 <Input id="printed_notes_pdf" type="file" accept=".pdf" ref={printedNotesFileRef} onChange={handlePrintedNotesFileChange} className="cursor-pointer file:mr-2 file:py-2 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"/>
+                                 {printedNotesFileName && <p className="text-xs text-muted-foreground mt-1">Selected: {printedNotesFileName}</p>}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </Card>
+
             <div>
                 <Label htmlFor="status"><Layers className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Status" hi="स्थिति" />*</Label>
                 <Controller name="status" control={control} render={({ field }) => (
@@ -233,3 +302,5 @@ export default function CreateCoursePage() {
     </div>
   );
 }
+
+    
