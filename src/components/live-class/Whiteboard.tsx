@@ -1,7 +1,7 @@
 // src/components/live-class/Whiteboard.tsx
 "use client";
 
-import React, { useRef, useEffect, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useImperativeHandle, useCallback } from 'react';
 
 interface WhiteboardProps {
   tool: 'pen' | 'eraser';
@@ -19,22 +19,51 @@ const Whiteboard = React.forwardRef<WhiteboardHandle, WhiteboardProps>(
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const isDrawing = useRef(false);
 
+    const getCoords = (event: React.MouseEvent | React.TouchEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return { offsetX: 0, offsetY: 0 };
+      
+      const rect = canvas.getBoundingClientRect();
+      
+      if ('touches' in event.nativeEvent && event.nativeEvent.touches.length > 0) {
+        return { 
+          offsetX: event.nativeEvent.touches[0].clientX - rect.left, 
+          offsetY: event.nativeEvent.touches[0].clientY - rect.top 
+        };
+      } else if ('offsetX' in event.nativeEvent) {
+          return { offsetX: event.nativeEvent.offsetX, offsetY: event.nativeEvent.offsetY };
+      }
+      return { offsetX: 0, offsetY: 0 };
+    }
+
+    // Effect for setting up canvas and handling resizes
     useEffect(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      
-      // Set canvas size to match display size
-      const { width, height } = canvas.getBoundingClientRect();
-      canvas.width = width;
-      canvas.height = height;
 
       const context = canvas.getContext('2d');
       if (!context) return;
-      context.lineCap = 'round';
-      context.lineJoin = 'round';
       contextRef.current = context;
+
+      // This function sets the canvas buffer size to match its display size.
+      const handleResize = () => {
+        const { width, height } = canvas.getBoundingClientRect();
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+          // Note: This will clear the canvas on resize. A more advanced
+          // implementation would store and redraw drawing history.
+        }
+      };
+
+      const resizeObserver = new ResizeObserver(handleResize);
+      resizeObserver.observe(canvas);
+      handleResize(); // Initial size set
+
+      return () => resizeObserver.disconnect();
     }, []);
 
+    // Effect for updating drawing properties
     useEffect(() => {
         if(contextRef.current) {
             contextRef.current.strokeStyle = color;
@@ -43,38 +72,32 @@ const Whiteboard = React.forwardRef<WhiteboardHandle, WhiteboardProps>(
         }
     }, [color, lineWidth, tool]);
 
-    const startDrawing = ({ nativeEvent }: React.MouseEvent | React.TouchEvent) => {
-      const { offsetX, offsetY } = getCoords(nativeEvent);
-      if(!contextRef.current || offsetX === undefined || offsetY === undefined) return;
-      contextRef.current.beginPath();
-      contextRef.current.moveTo(offsetX, offsetY);
+    const startDrawing = (event: React.MouseEvent | React.TouchEvent) => {
+      const context = contextRef.current;
+      if (!context) return;
+      const { offsetX, offsetY } = getCoords(event);
+      context.beginPath();
+      context.moveTo(offsetX, offsetY);
+      context.lineCap = 'round';
+      context.lineJoin = 'round';
       isDrawing.current = true;
     };
 
     const finishDrawing = () => {
-      if(!contextRef.current) return;
-      contextRef.current.closePath();
+      const context = contextRef.current;
+      if (!context) return;
+      context.closePath();
       isDrawing.current = false;
     };
 
-    const draw = ({ nativeEvent }: React.MouseEvent | React.TouchEvent) => {
+    const draw = (event: React.MouseEvent | React.TouchEvent) => {
       if (!isDrawing.current) return;
-      const { offsetX, offsetY } = getCoords(nativeEvent);
-       if(!contextRef.current || offsetX === undefined || offsetY === undefined) return;
-      contextRef.current.lineTo(offsetX, offsetY);
-      contextRef.current.stroke();
+      const context = contextRef.current;
+      if (!context) return;
+      const { offsetX, offsetY } = getCoords(event);
+      context.lineTo(offsetX, offsetY);
+      context.stroke();
     };
-
-    const getCoords = (event: MouseEvent | TouchEvent) => {
-      if(event instanceof MouseEvent) {
-        return { offsetX: event.offsetX, offsetY: event.offsetY };
-      }
-      if(event.touches && event.touches.length > 0) {
-        const rect = (event.target as HTMLElement).getBoundingClientRect();
-        return { offsetX: event.touches[0].clientX - rect.left, offsetY: event.touches[0].clientY - rect.top };
-      }
-      return {offsetX: undefined, offsetY: undefined};
-    }
 
     useImperativeHandle(ref, () => ({
       clearCanvas() {
@@ -91,6 +114,7 @@ const Whiteboard = React.forwardRef<WhiteboardHandle, WhiteboardProps>(
         ref={canvasRef}
         onMouseDown={startDrawing}
         onMouseUp={finishDrawing}
+        onMouseLeave={finishDrawing} // Added to stop drawing if mouse leaves canvas
         onMouseMove={draw}
         onTouchStart={startDrawing}
         onTouchEnd={finishDrawing}
