@@ -26,7 +26,7 @@ import { StudentIdScanDialog } from '@/components/delivery/StudentIdScanDialog';
 
 
 type RiderStatus = 'Online' | 'Offline' | 'On Break';
-type OrderStatus = 'Pending Pickup' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
+type OrderStatus = 'Pending Pickup' | 'Processing' | 'Ready for Pickup' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
 type DeliveryType = 'Stationery' | 'Uniform' | 'Print Order' | 'Kit Combo';
 
 interface OrderItem {
