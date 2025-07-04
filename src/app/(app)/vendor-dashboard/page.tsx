@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School, Printer, ClipboardList, Gift
+    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School, Printer, ClipboardList, Gift,
+    Trophy, Star, Rocket, Shield // Added for new card
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,19 +28,6 @@ const vendorActions = [
   { id: "reports_analytics", labelEn: "Sales Reports", labelHi: "बिक्री रिपोर्ट", icon: BarChart3, href: "/vendor-dashboard/reports" },
   { id: "notifications", labelEn: "Notifications", labelHi: "सूचनाएं", icon: Bell, href: "/vendor-dashboard/notifications" },
   { id: "customer_queries", labelEn: "Customer Queries", labelHi: "ग्राहक प्रश्न", icon: MessageSquare, href: "/vendor-dashboard/queries" },
-];
-
-interface RecentOrder {
-    id: string;
-    items: number;
-    amount: number;
-    status: "Pending" | "Processing" | "Shipped";
-}
-
-const mockRecentOrders: RecentOrder[] = [
-    { id: "ORD78923", items: 3, amount: 245, status: "Pending" },
-    { id: "ORD78924", items: 1, amount: 99, status: "Processing" },
-    { id: "ORD78925", items: 5, amount: 550, status: "Shipped" },
 ];
 
 
@@ -107,7 +95,6 @@ export default function VendorDashboardPage() {
         </div>
       </header>
       
-      {/* Today's Snapshot & Earnings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -134,6 +121,44 @@ export default function VendorDashboardPage() {
             </CardContent>
           </Card>
       </div>
+
+       <Card>
+        <CardHeader>
+          <CardTitle className="font-headline flex items-center gap-2">
+            <Trophy className="text-yellow-500" />
+            <BilingualText en="Store Performance & Reputation" hi="स्टोर प्रदर्शन और प्रतिष्ठा" />
+          </CardTitle>
+          <CardDescription>
+            <BilingualText en="Your current rating and earned badges." hi="आपकी वर्तमान रेटिंग और अर्जित बैज।" />
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="text-center p-2 flex-shrink-0">
+                    <p className="text-4xl font-bold text-yellow-500">4.8</p>
+                    <div className="flex justify-center">
+                        {[...Array(4)].map((_, i) => <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />)}
+                        <Star className="h-4 w-4 text-yellow-400" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">(Based on 250+ ratings)</p>
+                </div>
+                <div className="flex-grow flex flex-wrap gap-2 justify-center sm:justify-start">
+                     <Badge variant="outline" className="text-sm p-2 bg-green-500/10 text-green-700 border-green-300">
+                        <Shield className="mr-1.5 h-4 w-4"/> Trusted by 10+ Schools
+                    </Badge>
+                     <Badge variant="outline" className="text-sm p-2 bg-blue-500/10 text-blue-700 border-blue-300">
+                        <Rocket className="mr-1.5 h-4 w-4"/> Fast Dispatch Vendor
+                    </Badge>
+                     <Badge variant="outline" className="text-sm p-2 bg-purple-500/10 text-purple-700 border-purple-300">
+                        <Printer className="mr-1.5 h-4 w-4"/> Printed 10,000+ Docs
+                    </Badge>
+                     <Badge variant="outline" className="text-sm p-2 bg-yellow-500/10 text-yellow-700 border-yellow-300">
+                        <Trophy className="mr-1.5 h-4 w-4"/> Top Performer - June 2024
+                    </Badge>
+                </div>
+            </div>
+        </CardContent>
+      </Card>
 
        <Card className="bg-primary/5 border-primary/20">
         <CardHeader>
