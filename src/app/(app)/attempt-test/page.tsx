@@ -79,6 +79,7 @@ export default function AttemptTestPage() {
   const [incorrectCount, setIncorrectCount] = useState(0);
   const [unattemptedCount, setUnattemptedCount] = useState(0);
   const [results, setResults] = useState<Result[]>([]);
+  const [revealedAnswers, setRevealedAnswers] = useState<Set<number>>(new Set());
 
   const [timeLeft, setTimeLeft] = useState<number | null>(null); // in seconds
   const timerIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -180,10 +181,11 @@ export default function AttemptTestPage() {
         }
       } catch (err: any) {
         console.error("AttemptTestPage: Failed to generate test:", err);
-        setTestError(err.message || "Could not load the test. Please try again.");
+        const errorMessage = err.message || "Could not load the test. Please try again.";
+        setTestError(errorMessage);
         toast({
           title: "Error Loading Test",
-          description: err.message || "AI Guruji couldn't prepare this test right now.",
+          description: errorMessage,
           variant: "destructive",
         });
       } finally {
@@ -271,7 +273,7 @@ export default function AttemptTestPage() {
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
         <Alert variant="destructive" className="max-w-md text-center">
             <Target className="h-5 w-5"/>
-          <AlertTitle><BilingualText en="Test Error" hi="परीक्षण त्रुटि" /></AlertTitle>
+          <AlertTitle><BilingualText en="Test Generation Failed" hi="परीक्षण निर्माण विफल" /></AlertTitle>
           <AlertDescription>{testError}</AlertDescription>
         </Alert>
         <Button variant="outline" onClick={() => router.back()} className="mt-4">
@@ -421,12 +423,35 @@ export default function AttemptTestPage() {
             </RadioGroup>
           )}
           {currentQuestion.questionType === 'subjective' && (
-             <Alert>
-                <AlertTitle>Subjective Question</AlertTitle>
-                <AlertDescription>
-                    This is a subjective question. The model answer will be shown in the results after you submit the test.
-                </AlertDescription>
-            </Alert>
+             <div className="mt-4 space-y-3">
+                {revealedAnswers.has(currentQuestionIndex) ? (
+                    <div className="p-3 bg-blue-500/10 rounded-md border border-blue-500/30 space-y-3 animate-fade-in">
+                        {currentQuestion.modelAnswer && (
+                            <div>
+                                <strong className="text-blue-600 flex items-center gap-1.5 mb-1"><BookOpen size={16}/> <BilingualText en="Model Answer" hi="मॉडल उत्तर"/></strong>
+                                <p className="text-sm">{currentQuestion.modelAnswer}</p>
+                            </div>
+                        )}
+                        {currentQuestion.explanation && (
+                            <div className="pt-3 border-t">
+                                <strong className="text-yellow-600 flex items-center gap-1.5 mb-1"><Lightbulb size={16}/> <BilingualText en="Explanation" hi="स्पष्टीकरण"/></strong>
+                                <p className="text-sm">{currentQuestion.explanation}</p>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <Button
+                        variant="secondary"
+                        onClick={() => {
+                            const newRevealed = new Set(revealedAnswers);
+                            newRevealed.add(currentQuestionIndex);
+                            setRevealedAnswers(newRevealed);
+                        }}
+                    >
+                        <BilingualText en="Show Model Answer" hi="मॉडल उत्तर दिखाएं"/>
+                    </Button>
+                )}
+            </div>
           )}
         </CardContent>
         <CardFooter className="flex justify-between">
@@ -451,3 +476,4 @@ export default function AttemptTestPage() {
     </div>
   );
 }
+
