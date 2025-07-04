@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ArrowLeft, ShoppingBag, Search, Clock, Check, Package, Bike, XCircle, CheckCircle, Truck, Info, RefreshCw } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Search, Clock, Check, Package, Bike, XCircle, CheckCircle, Truck, Info, RefreshCw, Languages } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,7 +35,7 @@ interface Order {
 const VENDOR_ORDERS_KEY = "vendorOrders_mock";
 
 const initialMockOrders: Order[] = [
-  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2}, {id: 'geo1', productName: "Geometry Kit", quantity: 1}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins"},
+  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2, price: 45}, {id: 'geo1', productName: "Geometry Kit", quantity: 1, price: 80}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins"},
   { id: "ORD78924", customerName: "Priya Singh", date: "2024-07-21", items: [{id: "art1", productName: "Color Pencils", quantity: 1, price: 150}], totalAmount: 150, status: "Processing" },
   { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Ready for Pickup" },
   { id: "ORD78926", customerName: "Sneha Reddy", date: "2024-07-19", items: [{id: "nb2", productName: "Spiral Notebook", quantity: 3, price: 70}], totalAmount: 210, status: "Dispatched" },
@@ -50,6 +50,21 @@ export default function VendorOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentLang, setCurrentLang] = useState<'en' | 'hi' | 'hng'>('en');
+
+  const toggleLanguage = () => {
+    setCurrentLang(prev => {
+        if (prev === 'en') return 'hi';
+        if (prev === 'hi') return 'hng';
+        return 'en';
+    });
+  };
+
+  const getLanguageButtonText = () => {
+    if (currentLang === 'en') return 'हिन्दी';
+    if (currentLang === 'hi') return 'Hinglish';
+    return 'English';
+  };
 
   const loadOrders = () => {
     setIsLoading(true);
@@ -91,26 +106,26 @@ export default function VendorOrdersPage() {
     });
   };
 
-  const statusTabs: { value: Order['status'] | 'All', labelEn: string, labelHi: string }[] = [
-    { value: 'Pending', labelEn: 'New', labelHi: 'नया' },
-    { value: 'Processing', labelEn: 'Packing', labelHi: 'पैकिंग' },
-    { value: 'Ready for Pickup', labelEn: 'Ready', labelHi: 'तैयार' },
-    { value: 'Dispatched', labelEn: 'Dispatched', labelHi: 'प्रेषित' },
-    { value: 'Completed', labelEn: 'Completed', labelHi: 'पूर्ण' },
-    { value: 'Cancelled', labelEn: 'Issues', labelHi: 'समस्याएं' },
+  const statusTabs: { value: Order['status'] | 'All', labelEn: string, labelHi: string, labelHng: string }[] = [
+    { value: 'Pending', labelEn: 'New', labelHi: 'नया', labelHng: 'New' },
+    { value: 'Processing', labelEn: 'Packing', labelHi: 'पैकिंग', labelHng: 'Packing' },
+    { value: 'Ready for Pickup', labelEn: 'Ready', labelHi: 'तैयार', labelHng: 'Ready' },
+    { value: 'Dispatched', labelEn: 'Dispatched', labelHi: 'प्रेषित', labelHng: 'Dispatched' },
+    { value: 'Completed', labelEn: 'Completed', labelHi: 'पूर्ण', labelHng: 'Completed' },
+    { value: 'Cancelled', labelEn: 'Issues', labelHi: 'समस्याएं', labelHng: 'Issues' },
   ];
 
   const OrderCard = ({ order }: { order: Order }) => {
     let actionButton;
     switch (order.status) {
       case 'Pending':
-        actionButton = <Button className="w-full" onClick={() => handleUpdateStatus(order.id, 'Processing')}><Check className="mr-2 h-4 w-4"/> Accept Order</Button>;
+        actionButton = <Button className="w-full" onClick={() => handleUpdateStatus(order.id, 'Processing')}><Check className="mr-2 h-4 w-4"/> <BilingualText en="Accept Order" hi="ऑर्डर स्वीकार करें" hng="Order Accept Karo" lang={currentLang}/></Button>;
         break;
       case 'Processing':
-        actionButton = <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleUpdateStatus(order.id, 'Ready for Pickup')}><Package className="mr-2 h-4 w-4"/> Mark Packed</Button>;
+        actionButton = <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleUpdateStatus(order.id, 'Ready for Pickup')}><Package className="mr-2 h-4 w-4"/> <BilingualText en="Mark Packed" hi="पैक किया हुआ चिह्नित करें" hng="Packed Mark Karo" lang={currentLang}/></Button>;
         break;
       case 'Ready for Pickup':
-        actionButton = <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => handleUpdateStatus(order.id, 'Dispatched')}><Bike className="mr-2 h-4 w-4"/> Ready for Pickup</Button>;
+        actionButton = <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => handleUpdateStatus(order.id, 'Dispatched')}><Bike className="mr-2 h-4 w-4"/> <BilingualText en="Ready for Pickup" hi="पिकअप के लिए तैयार" hng="Pickup ke liye Ready" lang={currentLang}/></Button>;
         break;
       default:
         actionButton = null;
@@ -124,12 +139,12 @@ export default function VendorOrdersPage() {
                     {order.distance && <Badge variant="outline">{order.distance}</Badge>}
                 </div>
                  <CardDescription>
-                    {order.items.map(i => i.productName).join(', ')} ({order.items.length} items)
+                    {order.items.map(i => i.productName).join(', ')} ({order.items.length} <BilingualText en="items" hi="आइटम" lang={currentLang}/>)
                  </CardDescription>
             </CardHeader>
             <CardContent className="pb-3">
                  <p className="font-semibold text-lg text-primary">INR {order.totalAmount.toFixed(2)}</p>
-                 {order.deliveryTime && <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12}/> Delivery in: {order.deliveryTime}</p>}
+                 {order.deliveryTime && <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12}/> <BilingualText en="Delivery in" hi="डिलीवरी में" lang={currentLang} />: {order.deliveryTime}</p>}
             </CardContent>
             {actionButton && (
                 <CardFooter className="p-3 bg-muted/50 border-t">
@@ -145,17 +160,22 @@ export default function VendorOrdersPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold font-headline flex items-center gap-2">
           <ShoppingBag className="h-7 w-7 text-primary" />
-          <BilingualText en="Manage Orders" hi="आदेश प्रबंधित करें" />
+          <BilingualText en="Manage Orders" hi="आदेश प्रबंधित करें" lang={currentLang} />
         </h1>
-        <Button variant="outline" onClick={() => router.push('/vendor-dashboard')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          <BilingualText en="Back to Dashboard" hi="डैशबोर्ड पर वापस" />
-        </Button>
+        <div className="flex items-center gap-2">
+            <Button onClick={toggleLanguage} variant="outline" size="sm" className="h-7 px-2">
+                <Languages className="mr-1.5 h-4 w-4"/> {getLanguageButtonText()}
+            </Button>
+            <Button variant="outline" onClick={() => router.push('/vendor-dashboard')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              <BilingualText en="Back to Dashboard" hi="डैशबोर्ड पर वापस" lang={currentLang} />
+            </Button>
+        </div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle><BilingualText en="Live Order Flow" hi="लाइव ऑर्डर फ्लो" /></CardTitle>
-          <CardDescription><BilingualText en="View and process customer orders in real-time." hi="वास्तविक समय में ग्राहक आदेश देखें और संसाधित करें।" /></CardDescription>
+          <CardTitle><BilingualText en="Live Order Flow" hi="लाइव ऑर्डर फ्लो" lang={currentLang} /></CardTitle>
+          <CardDescription><BilingualText en="View and process customer orders in real-time." hi="वास्तविक समय में ग्राहक आदेश देखें और संसाधित करें।" lang={currentLang} /></CardDescription>
         </CardHeader>
         <CardContent>
            <div className="flex flex-col sm:flex-row gap-3 mb-4">
@@ -171,7 +191,7 @@ export default function VendorOrdersPage() {
             </div>
             <Button variant="outline" className="w-full sm:w-auto" onClick={loadOrders} disabled={isLoading}>
                 <RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} />
-                <BilingualText en="Refresh" hi="रिफ्रेश" />
+                <BilingualText en="Refresh" hi="रिफ्रेश" lang={currentLang} />
             </Button>
           </div>
           
@@ -179,7 +199,7 @@ export default function VendorOrdersPage() {
             <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
               {statusTabs.map(tab => (
                  <TabsTrigger key={tab.value} value={tab.value} className="text-xs sm:text-sm py-1.5 h-auto">
-                   <BilingualText en={tab.labelEn} hi={tab.labelHi}/>
+                   <BilingualText en={tab.labelEn} hi={tab.labelHi} hng={tab.labelHng} lang={currentLang}/>
                  </TabsTrigger>
               ))}
             </TabsList>
@@ -191,7 +211,7 @@ export default function VendorOrdersPage() {
                     ) : (
                       <div className="col-span-full text-center py-8 text-muted-foreground">
                         <Info className="mx-auto mb-2 h-8 w-8"/>
-                        <p><BilingualText en={`No orders in "${tab.labelEn}"`} hi={`"${tab.labelHi}" में कोई आदेश नहीं`}/></p>
+                        <p><BilingualText en={`No orders in "${tab.labelEn}"`} hi={`"${tab.labelHi}" में कोई आदेश नहीं`} lang={currentLang}/></p>
                       </div>
                     )}
                   </div>

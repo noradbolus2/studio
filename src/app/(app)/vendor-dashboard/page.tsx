@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/page.tsx
 "use client";
 
@@ -8,7 +9,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { 
     Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock, School, Printer, ClipboardList, Gift,
-    Trophy, Star, Rocket, Shield, BadgePercent, Settings2
+    Trophy, Star, Rocket, Shield, BadgePercent, Settings2, Languages
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -40,6 +41,21 @@ export default function VendorDashboardPage() {
   const [vendorProfile, setVendorProfile] = useState<VendorProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isStoreOpen, setIsStoreOpen] = useState(true);
+  const [currentLang, setCurrentLang] = useState<'en' | 'hi' | 'hng'>('en');
+
+  const toggleLanguage = () => {
+    setCurrentLang(prev => {
+        if (prev === 'en') return 'hi';
+        if (prev === 'hi') return 'hng';
+        return 'en';
+    });
+  };
+
+  const getLanguageButtonText = () => {
+    if (currentLang === 'en') return 'हिन्दी';
+    if (currentLang === 'hi') return 'Hinglish';
+    return 'English';
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -75,25 +91,28 @@ export default function VendorDashboardPage() {
             <Briefcase className="h-10 w-10 text-primary hidden sm:block" />
             <div>
               <h1 className="text-2xl font-bold font-headline text-primary text-center sm:text-left">
-                {vendorProfile?.businessName || <BilingualText en="Vendor Dashboard" hi="विक्रेता डैशबोर्ड" />}
+                {vendorProfile?.businessName || <BilingualText en="Vendor Dashboard" hi="विक्रेता डैशबोर्ड" lang={currentLang} />}
               </h1>
               <p className="text-muted-foreground text-center sm:text-left">
-                <BilingualText en="Manage your store and orders efficiently." hi="अपने स्टोर और ऑर्डर को कुशलतापूर्वक प्रबंधित करें।" />
+                <BilingualText en="Manage your store and orders efficiently." hi="अपने स्टोर और ऑर्डर को कुशलतापूर्वक प्रबंधित करें।" lang={currentLang} />
               </p>
             </div>
         </div>
         <div className="flex items-center gap-2">
             <div className="flex items-center space-x-2">
-              <Label htmlFor="store-status" className="text-sm font-medium text-muted-foreground"><BilingualText en="Store Status:" hi="स्टोर स्थिति:" /></Label>
+              <Label htmlFor="store-status" className="text-sm font-medium text-muted-foreground"><BilingualText en="Store Status:" hi="स्टोर स्थिति:" lang={currentLang} /></Label>
               <Switch id="store-status" checked={isStoreOpen} onCheckedChange={setIsStoreOpen} />
               <span className={`text-sm font-bold ${isStoreOpen ? 'text-green-600' : 'text-red-600'}`}>
-                {isStoreOpen ? <BilingualText en="Open" hi="खुला" /> : <BilingualText en="Paused" hi="रोका हुआ" />}
+                {isStoreOpen ? <BilingualText en="Open" hi="खुला" lang={currentLang} /> : <BilingualText en="Paused" hi="रोका हुआ" lang={currentLang} />}
               </span>
             </div>
+             <Button onClick={toggleLanguage} variant="outline" size="sm" className="h-7 px-2">
+                <Languages className="mr-1.5 h-4 w-4"/> {getLanguageButtonText()}
+            </Button>
              <Button asChild variant="outline" size="sm">
                 <Link href="/edit-profile?role=vendor">
                     <Edit className="mr-1.5 h-3 w-3"/>
-                    <span className="hidden sm:inline"><BilingualText en="Edit Info" hi="जानकारी संपादित करें" /></span>
+                    <span className="hidden sm:inline"><BilingualText en="Edit Info" hi="जानकारी संपादित करें" lang={currentLang} /></span>
                 </Link>
             </Button>
         </div>
@@ -102,26 +121,26 @@ export default function VendorDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-                <CardTitle className="text-lg font-headline flex items-center gap-2"><Clock className="text-primary"/> Today's Snapshot</CardTitle>
+                <CardTitle className="text-lg font-headline flex items-center gap-2"><Clock className="text-primary"/> <BilingualText en="Today's Snapshot" hi="आज का स्नैपशॉट" lang={currentLang}/></CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-center">
-                <div><p className="text-2xl font-bold">12</p><p className="text-xs text-muted-foreground">Orders Received</p></div>
-                <div><p className="text-2xl font-bold">6 <span className="text-lg">min</span></p><p className="text-xs text-muted-foreground">Avg. Dispatch Time</p></div>
-                <div><p className="text-2xl font-bold text-red-500">3</p><p className="text-xs text-muted-foreground">Items Low on Stock</p></div>
-                <div><p className="text-2xl font-bold">0</p><p className="text-xs text-muted-foreground">Returns / Issues</p></div>
+                <div><p className="text-2xl font-bold">12</p><p className="text-xs text-muted-foreground"><BilingualText en="Orders Received" hi="प्राप्त आदेश" lang={currentLang}/></p></div>
+                <div><p className="text-2xl font-bold">6 <span className="text-lg"><BilingualText en="min" hi="मिनट" lang={currentLang}/></span></p><p className="text-xs text-muted-foreground"><BilingualText en="Avg. Dispatch Time" hi="औसत प्रेषण समय" lang={currentLang}/></p></div>
+                <div><p className="text-2xl font-bold text-red-500">3</p><p className="text-xs text-muted-foreground"><BilingualText en="Items Low on Stock" hi="कम स्टॉक वाले आइटम" lang={currentLang}/></p></div>
+                <div><p className="text-2xl font-bold">0</p><p className="text-xs text-muted-foreground"><BilingualText en="Returns / Issues" hi="रिटर्न / समस्याएं" lang={currentLang}/></p></div>
             </CardContent>
           </Card>
            <Card>
             <CardHeader>
-                <CardTitle className="text-lg font-headline flex items-center gap-2"><IndianRupee className="text-green-500"/> Earnings Overview</CardTitle>
+                <CardTitle className="text-lg font-headline flex items-center gap-2"><IndianRupee className="text-green-500"/> <BilingualText en="Earnings Overview" hi="कमाई का अवलोकन" lang={currentLang}/></CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div><p className="text-2xl font-bold">INR 1,250</p><p className="text-xs text-muted-foreground">Today's Earnings</p></div>
-                    <div><p className="text-2xl font-bold">INR 8,700</p><p className="text-xs text-muted-foreground">This Week</p></div>
+                    <div><p className="text-2xl font-bold">INR 1,250</p><p className="text-xs text-muted-foreground"><BilingualText en="Today's Earnings" hi="आज की कमाई" lang={currentLang}/></p></div>
+                    <div><p className="text-2xl font-bold">INR 8,700</p><p className="text-xs text-muted-foreground"><BilingualText en="This Week" hi="इस सप्ताह" lang={currentLang}/></p></div>
                  </div>
-                 <Button className="w-full">Withdraw Now</Button>
-                 <p className="text-xs text-center text-muted-foreground">Next Payout: Friday</p>
+                 <Button className="w-full"><BilingualText en="Withdraw Now" hi="अभी निकालें" lang={currentLang}/></Button>
+                 <p className="text-xs text-center text-muted-foreground"><BilingualText en="Next Payout: Friday" hi="अगला भुगतान: शुक्रवार" lang={currentLang}/></p>
             </CardContent>
           </Card>
       </div>
@@ -130,10 +149,10 @@ export default function VendorDashboardPage() {
         <CardHeader>
           <CardTitle className="font-headline flex items-center gap-2">
             <Trophy className="text-yellow-500" />
-            <BilingualText en="Store Performance & Reputation" hi="स्टोर प्रदर्शन और प्रतिष्ठा" />
+            <BilingualText en="Store Performance & Reputation" hi="स्टोर प्रदर्शन और प्रतिष्ठा" lang={currentLang}/>
           </CardTitle>
           <CardDescription>
-            <BilingualText en="Your current rating and earned badges." hi="आपकी वर्तमान रेटिंग और अर्जित बैज।" />
+            <BilingualText en="Your current rating and earned badges." hi="आपकी वर्तमान रेटिंग और अर्जित बैज।" lang={currentLang}/>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -166,19 +185,19 @@ export default function VendorDashboardPage() {
 
        <Card className="bg-primary/5 border-primary/20">
         <CardHeader>
-            <CardTitle className="font-headline text-primary flex items-center gap-2"><Lightbulb/> AI Insights</CardTitle>
+            <CardTitle className="font-headline text-primary flex items-center gap-2"><Lightbulb/> <BilingualText en="AI Insights" hi="एआई अंतर्दृष्टि" lang={currentLang}/></CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-            <p>"90% of students nearby are buying Class 11 Practical Files – <Link href="/vendor-dashboard/products" className="font-semibold underline">Add now?</Link>"</p>
-            <p>"5 New School Orders from OSO Partner Schools – <Link href="/vendor-dashboard/school-orders" className="font-semibold underline">View now?</Link>"</p>
+            <p>"<BilingualText en="90% of students nearby are buying Class 11 Practical Files – " hi="आस-पास के 90% छात्र कक्षा 11 की प्रैक्टिकल फाइलें खरीद रहे हैं - " lang={currentLang}/><Link href="/vendor-dashboard/products" className="font-semibold underline"><BilingualText en="Add now?" hi="अभी जोड़ें?" lang={currentLang}/></Link>"</p>
+            <p>"<BilingualText en="5 New School Orders from OSO Partner Schools – " hi="OSO पार्टनर स्कूलों से 5 नए स्कूल ऑर्डर - " lang={currentLang}/><Link href="/vendor-dashboard/school-orders" className="font-semibold underline"><BilingualText en="View now?" hi="अभी देखें?" lang={currentLang}/></Link>"</p>
         </CardContent>
       </Card>
 
 
       <Card>
         <CardHeader>
-            <CardTitle className="font-headline"><BilingualText en="Quick Actions" hi="त्वरित कार्रवाइयां"/></CardTitle>
-            <CardDescription><BilingualText en="Access key vendor modules." hi="प्रमुख विक्रेता मॉड्यूल तक पहुंचें।" /></CardDescription>
+            <CardTitle className="font-headline"><BilingualText en="Quick Actions" hi="त्वरित कार्रवाइयां" lang={currentLang}/></CardTitle>
+            <CardDescription><BilingualText en="Access key vendor modules." hi="प्रमुख विक्रेता मॉड्यूल तक पहुंचें।" lang={currentLang}/></CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
              {vendorActions.map(action => (
@@ -190,7 +209,7 @@ export default function VendorDashboardPage() {
                 >
                     <Link href={action.href}>
                         <action.icon className="h-7 w-7 text-primary mb-1"/>
-                        <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                        <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} lang={currentLang} /></span>
                     </Link>
                 </Button>
             ))}
