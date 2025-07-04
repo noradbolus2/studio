@@ -51,13 +51,10 @@ export default function ManageLiveClassesPage() {
 
     const handleStartClass = (classId: string) => {
         toast({
-            title: `Starting Class ${classId}`,
-            description: "You are now live! (Simulated)"
+            title: `Starting Class...`,
+            description: "Redirecting you to the live classroom."
         });
-        // In a real app, you would update the class status to 'live'
-        const updatedClasses = myClasses.map(c => c.id === classId ? { ...c, status: 'live' as const } : c);
-        setMyClasses(updatedClasses);
-        localStorage.setItem(LIVE_CLASSES_KEY, JSON.stringify(updatedClasses));
+        router.push(`/live-class/${classId}`);
     };
 
     const sortedClasses = useMemo(() => {
@@ -89,7 +86,7 @@ export default function ManageLiveClassesPage() {
                     </Button>
                 )}
                  {cls.status === 'live' && (
-                    <Button variant="destructive" className="w-full">
+                    <Button variant="destructive" className="w-full" onClick={() => handleStartClass(cls.id)}>
                         <RadioTower className="mr-2 h-4 w-4 animate-pulse"/> Join Live Session
                     </Button>
                 )}
