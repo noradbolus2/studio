@@ -11,6 +11,8 @@ import '@/ai/flows/brainmate-flow.ts';
 import '@/ai/tools/exam-info-tool.ts';
 import '@/ai/flows/codemate-flow.ts';
 import '@/ai/flows/pr-brand-reputation-flow.ts';
+import '@/ai/flows/generate-thumbnail-flow.ts';
+
 
 
 

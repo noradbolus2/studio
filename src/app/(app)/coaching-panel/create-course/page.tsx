@@ -8,6 +8,7 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import Image from 'next/image';
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,12 +22,13 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  PlusCircle, ArrowLeft, Edit3, BookOpen, Layers, IndianRupeeIcon, Clock, Languages, Image as ImageIcon,
+  PlusCircle, ArrowLeft, Edit3, BookOpen, Layers, IndianRupeeIcon, Clock, Languages, ImageIcon,
   FileText, Video, CalendarClock, Link as LinkIcon, MessageCircle, GripVertical, Pencil, Trash2, BookCopy, TestTube2, Save,
-  Settings, Users, Lock, Download, Award
+  Settings, Users, Lock, Download, Award, Wand2, RefreshCw
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
+import { generateAiThumbnail, type GenerateThumbnailInput } from '@/ai/flows/generate-thumbnail-flow';
 
 
 const courseSchema = z.object({
@@ -110,6 +112,16 @@ export default function CreateCoursePage() {
     },
   });
 
+  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+  const [generatedThumbnail, setGeneratedThumbnail] = useState<string | null>(null);
+  const [thumbnailMood, setThumbnailMood] = useState<string>("Energetic");
+  const [teacherPhoto, setTeacherPhoto] = useState<File | null>(null);
+  const [teacherPhotoPreview, setTeacherPhotoPreview] = useState<string | null>(null);
+  const teacherPhotoRef = useRef<HTMLInputElement>(null);
+
+  const courseTitle = watch('course_title_en');
+  const courseSubject = watch('subject');
+
   const onSubmit: SubmitHandler<CourseFormData> = async (data) => {
     console.log("Course Data Submitted:", data);
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -132,7 +144,6 @@ export default function CreateCoursePage() {
         return;
       }
       setThumbnailFileName(file.name);
-      // In a real app, you would upload this file and set the URL. For now, we store the name.
       setValue("thumbnail_image_url", file.name);
     }
   };
@@ -159,6 +170,53 @@ export default function CreateCoursePage() {
         description: `${action} action clicked for "${lessonTitle}". This feature is in development.`
     });
   }
+  
+  const handleTeacherPhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({ title: "Invalid File Type", description: "Please select an image file.", variant: "destructive" });
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({ title: "File Too Large", description: "Image must be less than 2MB.", variant: "destructive" });
+        return;
+      }
+      setTeacherPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTeacherPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGenerateThumbnail = async () => {
+    if (!courseTitle || !courseSubject) {
+        toast({ title: "Missing Info", description: "Please enter a Course Title and Subject first.", variant: "destructive" });
+        return;
+    }
+    setIsGeneratingThumbnail(true);
+    setGeneratedThumbnail(null);
+    try {
+        const input: GenerateThumbnailInput = {
+            videoTitle: courseTitle,
+            subject: courseSubject,
+            mood: thumbnailMood as any,
+            teacherImageUri: teacherPhotoPreview || undefined,
+        };
+
+        const result = await generateAiThumbnail(input);
+        setGeneratedThumbnail(result.imageDataUri);
+        toast({ title: "Thumbnail Generated!", description: "Check out the AI-created thumbnail below."});
+
+    } catch (err: any) {
+        toast({ title: "Generation Failed", description: err.message || "Could not generate thumbnail.", variant: "destructive" });
+    } finally {
+        setIsGeneratingThumbnail(false);
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -273,6 +331,51 @@ export default function CreateCoursePage() {
                 <Button variant="secondary" className="w-full mt-4" onClick={() => toast({title: "Adding Chapter (Simulated)"})}>
                     <PlusCircle className="mr-2 h-4 w-4"/> <BilingualText en="Add Chapter" hi="अध्याय जोड़ें"/>
                 </Button>
+            </Card>
+
+             <Card className="bg-muted/30 p-4">
+                <CardTitle className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Wand2 className="h-5 w-5 text-primary"/>
+                  <BilingualText en="AI Thumbnail Generator™" hi="AI थंबनेल जेनरेटर™"/>
+                </CardTitle>
+                 <CardDescription className="text-xs mb-3">
+                    Generate an energetic, eye-catching thumbnail for your course with one click.
+                </CardDescription>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Mood / Style*</Label>
+                    <Select value={thumbnailMood} onValueChange={setThumbnailMood}>
+                      <SelectTrigger><SelectValue/></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Energetic">Energetic</SelectItem>
+                        <SelectItem value="Motivational">Motivational</SelectItem>
+                        <SelectItem value="Calm">Calm</SelectItem>
+                        <SelectItem value="Exam Mode">Exam Mode</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                   <div>
+                    <Label htmlFor="teacher-photo" className="flex items-center gap-1.5">
+                      <ImageIcon className="h-4 w-4"/> Add Your Face (Optional)
+                    </Label>
+                    <Input id="teacher-photo" type="file" accept="image/*" ref={teacherPhotoRef} onChange={handleTeacherPhotoChange} className="cursor-pointer file:mr-2 file:py-2 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"/>
+                     {teacherPhotoPreview && <Image src={teacherPhotoPreview} alt="Teacher preview" width={60} height={60} className="mt-2 rounded-md border p-1"/>}
+                  </div>
+                   <Button type="button" onClick={handleGenerateThumbnail} disabled={!courseTitle || !courseSubject || isGeneratingThumbnail} className="w-full">
+                    {isGeneratingThumbnail ? <LoadingSpinner/> : <Wand2 className="mr-2 h-4 w-4"/>}
+                    Generate Now
+                  </Button>
+                </div>
+                 {generatedThumbnail && (
+                  <div className="mt-4 space-y-3">
+                    <h4 className="text-sm font-semibold text-center">Generated Thumbnail:</h4>
+                    <Image src={generatedThumbnail} alt="AI Generated Thumbnail" width={1280} height={720} className="rounded-lg border-2 border-primary shadow-lg"/>
+                    <div className="flex gap-2">
+                       <Button type="button" variant="outline" size="sm" className="w-full"><Download className="mr-2 h-4 w-4"/> Download</Button>
+                       <Button type="button" variant="ghost" size="sm" className="w-full" onClick={handleGenerateThumbnail}><RefreshCw className="mr-2 h-4 w-4"/> Generate Again</Button>
+                    </div>
+                  </div>
+                )}
             </Card>
 
             <Card className="bg-muted/30 p-4">
@@ -422,5 +525,3 @@ export default function CreateCoursePage() {
     </div>
   );
 }
-
-    
