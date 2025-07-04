@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { BilingualText } from "../shared/BilingualText";
 import { Camera, CheckCircle, Loader2, UserCheck, School, User } from "lucide-react";
 import { LoadingSpinner } from '../shared/LoadingSpinner';
+import { useToast } from '@/hooks/use-toast';
 
 interface StudentInfo {
   name: string;
@@ -42,6 +43,7 @@ const mockStudentData: { [key: string]: StudentInfo } = {
 export function StudentIdScanDialog({ isOpen, onClose, onConfirmDelivery, studentName }: StudentIdScanDialogProps) {
   const [scanState, setScanState] = useState<'idle' | 'scanning' | 'scanned'>('idle');
   const [studentDetails, setStudentDetails] = useState<StudentInfo | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
@@ -78,7 +80,7 @@ export function StudentIdScanDialog({ isOpen, onClose, onConfirmDelivery, studen
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4 min-h-[250px] flex items-center justify-center">
+        <div className="py-4 min-h-[250px] flex flex-col items-center justify-center">
             {scanState === 'scanning' && (
                 <div className="flex flex-col items-center gap-3 text-center">
                     <div className="relative w-32 h-32">
@@ -103,6 +105,15 @@ export function StudentIdScanDialog({ isOpen, onClose, onConfirmDelivery, studen
                     <div className="text-muted-foreground text-sm">
                         <p className="flex items-center gap-1.5"><User size={14}/> {studentDetails.classInfo}</p>
                         <p className="flex items-center gap-1.5"><School size={14}/> {studentDetails.school}</p>
+                    </div>
+                     <div className="mt-4">
+                        <Button
+                        variant="link"
+                        className="text-xs h-auto p-0 text-muted-foreground hover:text-primary"
+                        onClick={() => toast({ title: "Parental OTP Sent (Simulated)", description: "OTP sent to the parent's registered number."})}
+                        >
+                        <BilingualText en="Student unavailable? Use Parental OTP" hi="छात्र उपलब्ध नहीं है? माता-पिता का OTP उपयोग करें" />
+                        </Button>
                     </div>
                 </div>
             )}

@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
     Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic,
-    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp, Star, Trophy
+    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp, Star, Trophy, Leaf
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -382,6 +382,25 @@ export default function RiderDashboardPage() {
                                  <div className="text-sm p-2 bg-blue-500/10 rounded-md border border-blue-500/20">
                                     <p className="font-semibold text-blue-700 flex items-center gap-1.5"><TrendingUp size={16}/> Sector 3: Coaching kit deliveries rising.</p>
                                 </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 font-headline text-md text-primary">
+                                <Map size={18} /> Live Map & Eco-Routes
+                            </CardTitle>
+                            <CardDescription>View your current route and earn Green Points!</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
+                                <Image src="https://images.unsplash.com/photo-1604357209793-fca5dca89f97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYXAlMjBsb2NhdGlvbnxlbnwwfHx8fDE3NTE0OTI4MTV8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Live map placeholder" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map navigation route" />
+                            </div>
+                            <div className="p-3 bg-green-500/10 text-green-700 rounded-lg border border-green-500/20">
+                              <h4 className="font-bold flex items-center gap-1.5"><Leaf size={16}/> Green Route Rewards™</h4>
+                              <p className="text-xs mt-1">"Take the suggested 5-min walking route for order #OSO19451 and earn 10 Green Points!"</p>
+                              <Button size="xs" variant="outline" className="mt-2 border-green-500/30 hover:bg-green-500/20 text-green-700">View Eco-Route</Button>
                             </div>
                         </CardContent>
                     </Card>
