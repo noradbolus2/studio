@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 const colorPalette = ['#000000', '#EF4444', '#3B82F6', '#22C55E', '#F97316', '#8B5CF6'];
 
 export default function LiveClassPage({ params }: { params: { classId: string } }) {
+  const { classId } = params;
   const router = useRouter();
   const whiteboardRef = useRef<WhiteboardHandle>(null);
   
@@ -40,7 +41,7 @@ export default function LiveClassPage({ params }: { params: { classId: string } 
            <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8"><ArrowLeft size={18}/></Button>
            <div>
               <h1 className="text-lg font-bold text-primary">Live Class: Kinematics Lecture 1</h1>
-              <p className="text-xs text-muted-foreground">Class ID: {params.classId}</p>
+              <p className="text-xs text-muted-foreground">Class ID: {classId}</p>
            </div>
         </div>
         <div className="flex items-center gap-2">
