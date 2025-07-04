@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
     Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic,
-    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp, Star
+    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp, Star, Trophy
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -96,6 +96,59 @@ const riderData = {
     todaysEarnings: 310,
     avgDeliveryTime: 27,
 };
+
+interface Mission {
+  id: string;
+  titleEn: string;
+  titleHi: string;
+  descriptionEn: string;
+  descriptionHi: string;
+  progress: number;
+  target: number;
+  progressUnit: string;
+  bonus: string;
+  icon: React.ElementType;
+}
+
+const mockMissions: Mission[] = [
+  {
+    id: "m1",
+    titleEn: "School Spirit",
+    titleHi: "स्कूल स्पिरिट",
+    descriptionEn: "Complete 5 orders to students of Modern School",
+    descriptionHi: "मॉडर्न स्कूल के छात्रों को 5 ऑर्डर पूरे करें",
+    progress: 2,
+    target: 5,
+    progressUnit: "orders",
+    bonus: "₹50",
+    icon: SchoolIconLucide,
+  },
+  {
+    id: "m2",
+    titleEn: "Speed Demon",
+    titleHi: "स्पीड डीमन",
+    descriptionEn: "Complete 3 orders within 1 hour",
+    descriptionHi: "1 घंटे के भीतर 3 ऑर्डर पूरे करें",
+    progress: 1,
+    target: 3,
+    progressUnit: "orders",
+    bonus: "Speed Bonus",
+    icon: Zap,
+  },
+  {
+    id: "m3",
+    titleEn: "Combo Master",
+    titleHi: "कॉम्बो मास्टर",
+    descriptionEn: "Deliver 2 Uniforms + 2 Printouts",
+    descriptionHi: "2 यूनिफॉर्म + 2 प्रिंटआउट डिलीवर करें",
+    progress: 1,
+    target: 4,
+    progressUnit: "deliveries",
+    bonus: "Combo Bonus",
+    icon: Package,
+  }
+];
+
 
 const deliveryTypeIcons: Record<DeliveryType, React.ElementType> = {
     'Stationery': Backpack,
@@ -274,6 +327,41 @@ export default function RiderDashboardPage() {
                         <Card><CardContent className="pt-4"><p className="text-2xl font-bold">₹{riderData.todaysEarnings}</p><p className="text-xs text-muted-foreground">Today's Earnings</p></CardContent></Card>
                         <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{riderData.avgDeliveryTime}<span className="text-lg"> min</span></p><p className="text-xs text-muted-foreground">Avg. Time</p></CardContent></Card>
                     </div>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 font-headline text-md text-primary">
+                                <Trophy size={18} /> Mission Mode™
+                            </CardTitle>
+                            <CardDescription>Complete daily missions for extra bonuses!</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {mockMissions.map(mission => (
+                                <div key={mission.id} className="p-3 bg-muted/50 rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        <mission.icon className="h-6 w-6 text-primary flex-shrink-0" />
+                                        <div className="flex-grow">
+                                            <p className="font-semibold text-sm">
+                                                <BilingualText en={mission.titleEn} hi={mission.titleHi} />
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                <BilingualText en={mission.descriptionEn} hi={mission.descriptionHi} />
+                                            </p>
+                                        </div>
+                                        <Badge variant="secondary" className="bg-yellow-400 text-yellow-900">
+                                            {mission.bonus}
+                                        </Badge>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <Progress value={(mission.progress / mission.target) * 100} className="h-2" />
+                                        <span className="text-xs font-mono text-muted-foreground whitespace-nowrap">
+                                            {mission.progress}/{mission.target}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
 
                     <Card>
                         <CardHeader>
