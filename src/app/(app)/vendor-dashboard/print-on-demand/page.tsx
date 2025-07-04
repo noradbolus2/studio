@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/print-on-demand/page.tsx
 "use client";
 import { useState } from "react";
@@ -70,7 +71,7 @@ export default function PrintOnDemandPage() {
                 <span className="flex items-center gap-1"><Palette size={12}/> {job.printType}</span>
                 <span className="flex items-center gap-1"><Circle size={12}/> {job.binding}</span>
             </div>
-            <p className="font-semibold text-primary pt-1">Total: ₹{job.totalCost.toFixed(2)}</p>
+            <p className="font-semibold text-primary pt-1">Total: INR {job.totalCost.toFixed(2)}</p>
         </CardContent>
         <CardFooter className="p-3 bg-muted/50 border-t">
             {job.status === "New" && (
