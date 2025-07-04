@@ -216,6 +216,21 @@ export default function BrainmatePage() {
   const handlePromptClick = (prompt: string) => {
     handleSubmit(undefined, prompt);
   };
+  
+  const handleTopicChange = (newTopic: string) => {
+    if (newTopic === currentTopic || !newTopic) return;
+
+    setCurrentTopic(newTopic);
+
+    const systemMessage: BrainmateMessage = {
+      id: `system-${Date.now()}`,
+      role: 'brainmate',
+      text: `Okay, the topic has been set to **${newTopic}**. How can I help you with this?`,
+      timestamp: new Date(),
+    };
+    
+    setMessages(prev => [...prev, systemMessage]);
+  };
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[700px] bg-background rounded-lg shadow-xl border">
@@ -234,7 +249,7 @@ export default function BrainmatePage() {
             </p>
           </div>
         </div>
-        <Select value={currentTopic} onValueChange={setCurrentTopic}>
+        <Select value={currentTopic} onValueChange={handleTopicChange}>
             <SelectTrigger className="mt-3 h-9">
                 <SelectValue placeholder="Select a topic (optional) to improve results" />
             </SelectTrigger>
@@ -330,5 +345,7 @@ export default function BrainmatePage() {
     </div>
   );
 }
+
+    
 
     
