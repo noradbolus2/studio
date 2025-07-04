@@ -121,6 +121,7 @@ export default function BrainmatePage() {
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
 
   const examplePrompts = useMemo(() => getPromptsForTopic(currentTopic), [currentTopic]);
+  const hasUserStartedConversation = useMemo(() => messages.some(msg => msg.role === 'user'), [messages]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -293,7 +294,7 @@ export default function BrainmatePage() {
             </Card>
           </div>
         ))}
-         {messages.length <= 1 && !isLoading && (
+         {!hasUserStartedConversation && !isLoading && (
             <div className="p-4 pt-0 space-y-3">
                 <p className="text-sm text-center text-muted-foreground">Or try one of these examples:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -345,6 +346,7 @@ export default function BrainmatePage() {
     </div>
   );
 }
+    
 
     
 
