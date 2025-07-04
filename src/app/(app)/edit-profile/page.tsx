@@ -19,7 +19,7 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target, ArrowLeft } from "lucide-react";
+import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target, ArrowLeft, Bike, Phone, MapPin, FileText } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
@@ -100,6 +100,11 @@ const profileSchema = z.object({
   contactPersonPhone: z.string().optional(),
   
   apiSchoolId: z.string().optional(), 
+
+  // Rider-specific fields
+  vehicleModel: z.string().optional(),
+  vehicleRegNumber: z.string().optional(),
+  drivingLicenseNumber: z.string().optional(),
 
 }).refine(data => {
   if (data.dateOfBirth) {
@@ -186,6 +191,10 @@ export default function EditProfilePage() {
       contactPersonEmail: "",
       contactPersonPhone: "",
       apiSchoolId: "",
+      // Rider
+      vehicleModel: "",
+      vehicleRegNumber: "",
+      drivingLicenseNumber: "",
     },
   });
 
@@ -468,7 +477,7 @@ export default function EditProfilePage() {
             router.push('/school-dashboard'); 
         }
 
-    } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student' || currentRole === 'teacher' || currentRole === 'platform-admin') {
+    } else if (currentRole === 'vendor' || currentRole === 'creator' || currentRole === 'parent' || currentRole === 'student' || currentRole === 'teacher' || currentRole === 'platform-admin' || currentRole === 'rider') {
         const profileKey = (currentRole === 'student' || currentRole === 'teacher' || currentRole === 'creator' || currentRole === 'platform-admin') ? 'userProfileData' : `${currentRole}ProfileData`;
         const fullProfileData = { ...data, role: currentRole }; 
         localStorage.setItem(profileKey, JSON.stringify(fullProfileData));
@@ -486,6 +495,7 @@ export default function EditProfilePage() {
         else if (currentRole === 'teacher') redirectPath = '/coaching-panel';
         else if (currentRole === 'student') redirectPath = '/'; 
         else if (currentRole === 'platform-admin') redirectPath = '/platform-admin';
+        else if (currentRole === 'rider') redirectPath = '/rider-dashboard';
         router.push(redirectPath);
     }
     
@@ -514,6 +524,7 @@ export default function EditProfilePage() {
               {currentRole === 'school' && <School className="h-7 w-7" />}
               {currentRole === 'vendor' && <Briefcase className="h-7 w-7" />}
               {(currentRole === 'creator' || currentRole === 'teacher') && <CreatorIcon className="h-7 w-7" />}
+              {currentRole === 'rider' && <Bike className="h-7 w-7" />}
               <BilingualText 
                 en={isInitialSchoolSetup ? "Register Your School" : `Edit ${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} Profile`} 
                 hi={isInitialSchoolSetup ? "अपना स्कूल पंजीकृत करें" : `${currentRole ? currentRole.charAt(0).toUpperCase() + currentRole.slice(1) : ''} प्रोफ़ाइल संपादित करें`} 
@@ -680,6 +691,34 @@ export default function EditProfilePage() {
                 <div><Label htmlFor="childSchoolName"><BilingualText en="Child's School Name" hi="बच्चे के स्कूल का नाम" /></Label><Controller name="childSchoolName" control={control} render={({ field }) => <Input id="childSchoolName" {...field} value={field.value ?? ''} />} /></div>
               </>
             )}
+            {currentRole === 'rider' && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="phoneNumber"><Phone className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Phone Number" hi="फ़ोन नंबर" /></Label>
+                    <Controller name="phoneNumber" control={control} render={({ field }) => <Input id="phoneNumber" {...field} value={field.value ?? ''} placeholder="+91 XXXXXXXXXX" />} />
+                  </div>
+                  <div>
+                    <Label htmlFor="city"><MapPin className="inline mr-1.5 h-4 w-4" /> <BilingualText en="City of Operation" hi="संचालन का शहर" /></Label>
+                    <Controller name="city" control={control} render={({ field }) => <Input id="city" {...field} value={field.value ?? ''} />} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="vehicleModel"><Bike className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Vehicle Model" hi="वाहन मॉडल" /></Label>
+                    <Controller name="vehicleModel" control={control} render={({ field }) => <Input id="vehicleModel" {...field} value={field.value ?? ''} placeholder="e.g., Hero Splendor" />} />
+                  </div>
+                  <div>
+                    <Label htmlFor="vehicleRegNumber"><Bike className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Vehicle Registration No." hi="वाहन पंजीकरण संख्या" /></Label>
+                    <Controller name="vehicleRegNumber" control={control} render={({ field }) => <Input id="vehicleRegNumber" {...field} value={field.value ?? ''} placeholder="e.g., DL12AB1234" />} />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="drivingLicenseNumber"><FileText className="inline mr-1.5 h-4 w-4" /> <BilingualText en="Driving License No." hi="ड्राइविंग लाइसेंस नंबर" /></Label>
+                  <Controller name="drivingLicenseNumber" control={control} render={({ field }) => <Input id="drivingLicenseNumber" {...field} value={field.value ?? ''} />} />
+                </div>
+              </>
+            )}
             {currentRole === 'school' && (
               <>
                 <div><Label htmlFor="schoolName"><BilingualText en="School Name" hi="स्कूल का नाम" />*</Label><Controller name="schoolName" control={control} render={({ field }) => <Input id="schoolName" {...field} value={field.value ?? ''} required />} />{errors.schoolName && <p className="text-xs text-destructive mt-1">{errors.schoolName.message}</p>}</div>
@@ -800,7 +839,7 @@ export default function EditProfilePage() {
               </>
             )}
 
-            {(currentRole === 'student' || currentRole === 'parent') && (
+            {(currentRole === 'student' || currentRole === 'parent' || currentRole === 'rider') && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div><Label htmlFor="city"><BilingualText en="City" hi="शहर" /></Label><Controller name="city" control={control} render={({ field }) => <Input id="city" {...field} value={field.value ?? ''} />} /></div>
                     <div><Label htmlFor="state"><BilingualText en="State" hi="राज्य" /></Label><Controller name="state" control={control} render={({ field }) => <Input id="state" {...field} value={field.value ?? ''} />} /></div>
@@ -833,6 +872,7 @@ export default function EditProfilePage() {
     
 
     
+
 
 
 
