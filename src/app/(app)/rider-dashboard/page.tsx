@@ -11,7 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
-    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic
+    Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic,
+    Zap, BatteryWarning, WifiOff
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Label } from '@/components/ui/label';
 
 
 type RiderStatus = 'Online' | 'Offline' | 'On Break';
@@ -53,7 +55,9 @@ interface Order {
   };
 }
 
-const mockOrders: Order[] = [
+const VENDOR_ORDERS_KEY = "vendorOrders_mock";
+
+const initialMockOrders: Order[] = [
   { 
     id: "OSO19451", 
     status: "Pending Pickup", 
@@ -214,6 +218,31 @@ export default function RiderDashboardPage() {
                         <Card><CardContent className="pt-4"><p className="text-2xl font-bold">{riderData.avgDeliveryTime}<span className="text-lg"> min</span></p><p className="text-xs text-muted-foreground">Avg. Time</p></CardContent></Card>
                     </div>
 
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 font-headline text-md text-primary">
+                                <Zap size={18} /> Smart Assistant
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <div className="flex items-center gap-3 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                                <BatteryWarning className="h-6 w-6 text-yellow-500 flex-shrink-0" />
+                                <div className="flex-grow">
+                                    <p className="text-sm font-semibold">Low Battery</p>
+                                    <p className="text-xs text-muted-foreground">Battery at 9%. Switch to low power mode?</p>
+                                </div>
+                                <Button size="xs" variant="outline" onClick={() => toast({ title: "Low Power Mode Activated (Simulated)" })}>Switch</Button>
+                            </div>
+                            <div className="flex items-center gap-3 p-2 rounded-lg bg-gray-500/10 border border-gray-500/20">
+                                <WifiOff className="h-6 w-6 text-gray-500 flex-shrink-0" />
+                                <div className="flex-grow">
+                                    <p className="text-sm font-semibold">Offline Mode Active</p>
+                                    <p className="text-xs text-muted-foreground">Data will sync when network is back.</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     <Card className="bg-primary/5 border-primary/20">
                       <CardHeader>
                           <CardTitle className="flex items-center gap-2 font-headline text-primary">
@@ -298,7 +327,7 @@ export default function RiderDashboardPage() {
                             </div>
                             <div className="text-sm space-y-2">
                                 <div className="p-2 border rounded-md">
-                                    <p className="flex items-center gap-2"><Phone size={14}/> {riderData.contact} <Badge variant="outline" className="bg-green-100 text-green-800 flex items-center gap-1 text-xs"><CheckCircle size={12}/> Verified</Badge></p>
+                                    <div className="flex items-center gap-2"><Phone size={14}/> {riderData.contact} <Badge variant="outline" className="bg-green-100 text-green-800 flex items-center gap-1 text-xs"><CheckCircle size={12}/> Verified</Badge></div>
                                 </div>
                             </div>
                             <Button variant="outline" className="w-full" asChild><Link href="/edit-profile?role=rider"><Settings className="mr-2 h-4 w-4"/> Edit Profile & Bank Details</Link></Button>
