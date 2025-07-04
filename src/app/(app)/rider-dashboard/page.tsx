@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import {
     Bike, Map, Wallet, UserCircle, ListChecks, CheckCircle, XCircle, MapPin, Clock, Phone, Package,
     Backpack, Shirt, Printer, Power, Settings, LineChart, HelpCircle, History as HistoryIcon, ShieldCheck, AlertTriangle, School as SchoolIconLucide, Mic,
-    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp
+    Zap, BatteryWarning, WifiOff, UserCheck, TrendingUp, Star
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -356,9 +356,9 @@ export default function RiderDashboardPage() {
                     </header>
                     <div className="space-y-4">
                        <h3 className="font-semibold text-blue-500">Pickup Required</h3>
-                       {orders.filter(o => o.status === 'Pending Pickup' || o.status === 'Processing' || o.status === 'Ready for Pickup').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
+                       {initialMockOrders.filter(o => o.status === 'Pending Pickup' || o.status === 'Processing' || o.status === 'Ready for Pickup').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
                        <h3 className="font-semibold text-orange-500 pt-2">In Transit</h3>
-                       {orders.filter(o => o.status === 'Out for Delivery').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
+                       {initialMockOrders.filter(o => o.status === 'Out for Delivery').sort((a,b) => (b.isPriority ? 1:0) - (a.isPriority ? 1:0)).map(order => <OrderCard key={order.id} order={order} />)}
                     </div>
                 </TabsContent>
                 
