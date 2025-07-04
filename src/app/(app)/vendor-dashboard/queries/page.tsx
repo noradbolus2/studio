@@ -1,4 +1,3 @@
-
 // src/app/(app)/vendor-dashboard/queries/page.tsx
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
