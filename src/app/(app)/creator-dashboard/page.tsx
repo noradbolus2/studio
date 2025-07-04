@@ -1,15 +1,21 @@
 // src/app/(app)/creator-dashboard/page.tsx
 "use client";
-
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
     Star,
     IndianRupee,
     ClipboardList,
-    Zap
+    Zap,
+    Store,
+    Link as LinkIcon,
+    Heart,
+    Phone,
+    ShoppingCart,
+    Edit,
+    Eye
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -126,6 +132,44 @@ export default function CreatorDashboardPage() {
                 </CardContent>
             </Card>
         </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-headline">
+                    <Store className="h-6 w-6 text-primary"/> My Public Storefront
+                </CardTitle>
+                <CardDescription>
+                    This is how your profile appears to students seeking your services.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-2 bg-muted rounded-md">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <LinkIcon className="h-4 w-4"/>
+                        <span className="font-mono">osoapp.in/@abhishekpro</span>
+                    </div>
+                    <Button variant="ghost" size="sm">Copy</Button>
+                </div>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-4 text-sm">
+                        <span className="flex items-center gap-1.5"><Star className="h-4 w-4 text-yellow-400 fill-yellow-400"/> 4.9</span>
+                        <span className="flex items-center gap-1.5"><Heart className="h-4 w-4 text-red-500 fill-red-500"/> 88 Reviews</span>
+                    </div>
+                </div>
+                <div className="space-y-2 pt-4 border-t">
+                    <Button variant="outline" className="w-full justify-start gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground"/> Book a 1:1 Call – ₹149
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start gap-2">
+                        <ShoppingCart className="h-4 w-4 text-muted-foreground"/> Buy: History Flashcards – ₹99
+                    </Button>
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+                <Button variant="ghost"><Eye className="mr-2 h-4 w-4"/> Preview as Student</Button>
+                <Button><Edit className="mr-2 h-4 w-4"/> Edit Storefront</Button>
+            </CardFooter>
+        </Card>
     </div>
   );
 }
