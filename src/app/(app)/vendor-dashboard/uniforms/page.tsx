@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/uniforms/page.tsx
 "use client";
 import { useState, useMemo, type FormEvent } from "react";
@@ -131,7 +132,7 @@ export default function VendorUniformsPage() {
                                     <div className="col-span-3 sm:col-span-2">
                                         <p className="font-medium text-sm">{uniform.type} ({uniform.gender}, {uniform.classMap}, Size: {uniform.size})</p>
                                     </div>
-                                    <div className="text-center text-sm font-semibold">₹{uniform.price}</div>
+                                    <div className="text-center text-sm font-semibold">INR {uniform.price}</div>
                                     <div className={`text-center text-sm font-bold ${uniform.stock === 0 ? 'text-destructive' : ''}`}>{uniform.stock}</div>
                                     <div className="col-span-5 sm:col-span-1 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-t-0 flex justify-end items-center gap-2">
                                         <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
@@ -193,7 +194,7 @@ export default function VendorUniformsPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <Label htmlFor="price">Price (₹)*</Label>
+                                <Label htmlFor="price">Price (INR)*</Label>
                                 <Input id="price" type="number" value={newUniform.price || ''} onChange={(e) => setNewUniform(p => ({...p, price: parseFloat(e.target.value) || 0}))} required />
                             </div>
                             <div>
