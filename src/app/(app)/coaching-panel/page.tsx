@@ -1,4 +1,3 @@
-
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
@@ -89,7 +88,7 @@ export default function CoachingPanelPage() {
                </Link>
            </Button>
             <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
-               <Link href="/schedule-class">
+               <Link href="/coaching-panel/live-classes">
                    <PlayCircle className="h-7 w-7"/>
                    <span className="font-semibold"><BilingualText en="Go Live" hi="लाइव जाएं"/></span>
                </Link>
