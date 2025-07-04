@@ -3,14 +3,16 @@
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ShoppingBag, Search, Filter, Printer, AlertCircle, CheckCircle, Truck } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { ArrowLeft, ShoppingBag, Search, Clock, Check, Package, Bike, XCircle, CheckCircle, Truck, Info, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useState, useMemo, useEffect } from "react";
 import { useToast } from '@/hooks/use-toast';
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { cn } from "@/lib/utils";
 
 interface OrderItem {
   id: string;
@@ -25,16 +27,20 @@ interface Order {
   date: string;
   items: OrderItem[];
   totalAmount: number;
-  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+  status: "Pending" | "Processing" | "Ready for Pickup" | "Dispatched" | "Completed" | "Cancelled";
+  distance?: string; // Optional e.g., "1.2 km"
+  deliveryTime?: string; // Optional e.g., "35 mins"
 }
 
 const VENDOR_ORDERS_KEY = "vendorOrders_mock";
 
 const initialMockOrders: Order[] = [
+  { id: "ORD78923", customerName: "Aarav Sharma", date: "2024-07-22", items: [{id: "nb1", productName: "Notebook", quantity: 2}, {id: 'geo1', productName: "Geometry Kit", quantity: 1}], totalAmount: 245, status: "Pending", distance: "1.2 km", deliveryTime: "35 mins"},
   { id: "ORD78924", customerName: "Priya Singh", date: "2024-07-21", items: [{id: "art1", productName: "Color Pencils", quantity: 1, price: 150}], totalAmount: 150, status: "Processing" },
-  { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Shipped" },
-  { id: "ORD78926", customerName: "Sneha Reddy", date: "2024-07-19", items: [{id: "nb2", productName: "Spiral Notebook", quantity: 3, price: 70}], totalAmount: 210, status: "Delivered" },
-  { id: "ORD78927", customerName: "Vikram Kumar", date: "2024-07-18", items: [{id: "pen2", productName: "Apsara Pencils", quantity: 1, price: 50}], totalAmount: 50, status: "Cancelled" },
+  { id: "ORD78925", customerName: "Rohan Verma", date: "2024-07-20", items: [{id: "book1", productName: "Science Book Cl 8", quantity: 1, price: 120}], totalAmount: 120, status: "Ready for Pickup" },
+  { id: "ORD78926", customerName: "Sneha Reddy", date: "2024-07-19", items: [{id: "nb2", productName: "Spiral Notebook", quantity: 3, price: 70}], totalAmount: 210, status: "Dispatched" },
+  { id: "ORD78927", customerName: "Vikram Kumar", date: "2024-07-18", items: [{id: "pen2", productName: "Apsara Pencils", quantity: 1, price: 50}], totalAmount: 50, status: "Completed" },
+  { id: "ORD78928", customerName: "Anika Desai", date: "2024-07-17", items: [{id: "snack1", productName: "Roasted Almonds", quantity: 2, price: 90}], totalAmount: 180, status: "Cancelled" },
 ];
 
 
@@ -43,28 +49,35 @@ export default function VendorOrdersPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Load orders from localStorage
+  const loadOrders = () => {
+    setIsLoading(true);
     try {
         const storedOrdersString = localStorage.getItem(VENDOR_ORDERS_KEY);
         if (storedOrdersString) {
             setOrders(JSON.parse(storedOrdersString));
         } else {
-            setOrders(initialMockOrders); // Fallback to mock if nothing in storage
+            setOrders(initialMockOrders); 
         }
     } catch(e) {
         console.error("Failed to load orders from localStorage:", e);
         setOrders(initialMockOrders);
     }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    loadOrders();
   }, []);
 
-  const filteredOrders = useMemo(() => {
+  const filteredOrders = (status: Order['status'] | 'All') => {
     return orders.filter(order => 
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+      (status === 'All' || order.status === status) &&
+      (order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }, [searchTerm, orders]);
+  };
 
   const handleUpdateStatus = (orderId: string, newStatus: Order['status']) => {
     const updatedOrders = orders.map(order => 
@@ -78,15 +91,53 @@ export default function VendorOrdersPage() {
     });
   };
 
-  const getStatusBadge = (status: Order['status']) => {
-    switch(status) {
-        case 'Pending': return <Badge variant="outline" className="bg-yellow-500/20 text-yellow-700 border-yellow-400 flex items-center gap-1"><AlertCircle size={12}/>{status}</Badge>;
-        case 'Processing': return <Badge variant="outline" className="bg-blue-500/20 text-blue-700 border-blue-400">{status}</Badge>;
-        case 'Shipped': return <Badge variant="outline" className="bg-purple-500/20 text-purple-700 border-purple-400 flex items-center gap-1"><Truck size={12}/>{status}</Badge>;
-        case 'Delivered': return <Badge variant="default" className="bg-green-500/20 text-green-700 border-green-400 flex items-center gap-1"><CheckCircle size={12}/>{status}</Badge>;
-        case 'Cancelled': return <Badge variant="destructive">{status}</Badge>;
-        default: return <Badge>{status}</Badge>;
+  const statusTabs: { value: Order['status'] | 'All', labelEn: string, labelHi: string }[] = [
+    { value: 'Pending', labelEn: 'New', labelHi: 'नया' },
+    { value: 'Processing', labelEn: 'Packing', labelHi: 'पैकिंग' },
+    { value: 'Ready for Pickup', labelEn: 'Ready', labelHi: 'तैयार' },
+    { value: 'Dispatched', labelEn: 'Dispatched', labelHi: 'प्रेषित' },
+    { value: 'Completed', labelEn: 'Completed', labelHi: 'पूर्ण' },
+    { value: 'Cancelled', labelEn: 'Issues', labelHi: 'समस्याएं' },
+  ];
+
+  const OrderCard = ({ order }: { order: Order }) => {
+    let actionButton;
+    switch (order.status) {
+      case 'Pending':
+        actionButton = <Button className="w-full" onClick={() => handleUpdateStatus(order.id, 'Processing')}><Check className="mr-2 h-4 w-4"/> Accept Order</Button>;
+        break;
+      case 'Processing':
+        actionButton = <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleUpdateStatus(order.id, 'Ready for Pickup')}><Package className="mr-2 h-4 w-4"/> Mark Packed</Button>;
+        break;
+      case 'Ready for Pickup':
+        actionButton = <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => handleUpdateStatus(order.id, 'Dispatched')}><Bike className="mr-2 h-4 w-4"/> Ready for Pickup</Button>;
+        break;
+      default:
+        actionButton = null;
     }
+
+    return (
+        <Card className="shadow-md">
+            <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                    <CardTitle className="text-md font-bold">#{order.id}</CardTitle>
+                    {order.distance && <Badge variant="outline">{order.distance}</Badge>}
+                </div>
+                 <CardDescription>
+                    {order.items.map(i => i.productName).join(', ')} ({order.items.length} items)
+                 </CardDescription>
+            </CardHeader>
+            <CardContent className="pb-3">
+                 <p className="font-semibold text-lg text-primary">INR {order.totalAmount.toFixed(2)}</p>
+                 {order.deliveryTime && <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12}/> Delivery in: {order.deliveryTime}</p>}
+            </CardContent>
+            {actionButton && (
+                <CardFooter className="p-3 bg-muted/50 border-t">
+                    {actionButton}
+                </CardFooter>
+            )}
+        </Card>
+    );
   };
 
   return (
@@ -103,8 +154,8 @@ export default function VendorOrdersPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle><BilingualText en="Incoming Orders" hi="आने वाले आदेश" /></CardTitle>
-          <CardDescription><BilingualText en="View, process, and track customer orders." hi="ग्राहक आदेश देखें, संसाधित करें और ट्रैक करें।" /></CardDescription>
+          <CardTitle><BilingualText en="Live Order Flow" hi="लाइव ऑर्डर फ्लो" /></CardTitle>
+          <CardDescription><BilingualText en="View and process customer orders in real-time." hi="वास्तविक समय में ग्राहक आदेश देखें और संसाधित करें।" /></CardDescription>
         </CardHeader>
         <CardContent>
            <div className="flex flex-col sm:flex-row gap-3 mb-4">
@@ -118,53 +169,36 @@ export default function VendorOrdersPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            {/* Add Filter for status or date range if needed */}
-            <Button variant="outline" className="w-full sm:w-auto">
-                <Filter className="mr-2 h-4 w-4" />
-                <BilingualText en="Filter Orders" hi="आदेश फ़िल्टर करें" />
+            <Button variant="outline" className="w-full sm:w-auto" onClick={loadOrders} disabled={isLoading}>
+                <RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} />
+                <BilingualText en="Refresh" hi="रिफ्रेश" />
             </Button>
           </div>
+          
+          <Tabs defaultValue="Pending">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
+              {statusTabs.map(tab => (
+                 <TabsTrigger key={tab.value} value={tab.value} className="text-xs sm:text-sm py-1.5 h-auto">
+                   <BilingualText en={tab.labelEn} hi={tab.labelHi}/>
+                 </TabsTrigger>
+              ))}
+            </TabsList>
+            {isLoading ? <div className="py-10"><LoadingSpinner/></div> : statusTabs.map(tab => (
+              <TabsContent key={tab.value} value={tab.value}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                    {filteredOrders(tab.value as Order['status']).length > 0 ? (
+                       filteredOrders(tab.value as Order['status']).map(order => <OrderCard key={order.id} order={order} />)
+                    ) : (
+                      <div className="col-span-full text-center py-8 text-muted-foreground">
+                        <Info className="mx-auto mb-2 h-8 w-8"/>
+                        <p><BilingualText en={`No orders in "${tab.labelEn}"`} hi={`"${tab.labelHi}" में कोई आदेश नहीं`}/></p>
+                      </div>
+                    )}
+                  </div>
+              </TabsContent>
+            ))}
+          </Tabs>
 
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredOrders.length > 0 ? filteredOrders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-medium">{order.id}</TableCell>
-                    <TableCell>{order.customerName}</TableCell>
-                    <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
-                    <TableCell>INR {order.totalAmount.toFixed(2)}</TableCell>
-                    <TableCell>{getStatusBadge(order.status)}</TableCell>
-                    <TableCell className="text-right space-x-1">
-                      {order.status === 'Pending' && (
-                        <Button size="xs" onClick={() => handleUpdateStatus(order.id, 'Processing')}>Accept</Button>
-                      )}
-                      {order.status === 'Processing' && (
-                        <Button size="xs" onClick={() => handleUpdateStatus(order.id, 'Shipped')}>Mark as Shipped</Button>
-                      )}
-                      <Button variant="ghost" size="icon" className="h-7 w-7"><Printer className="h-4 w-4" /></Button>
-                    </TableCell>
-                  </TableRow>
-                )) : (
-                     <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center">
-                           <BilingualText en="No orders found." hi="कोई आदेश नहीं मिला।" />
-                        </TableCell>
-                    </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
         </CardContent>
       </Card>
     </div>

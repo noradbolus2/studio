@@ -6,19 +6,17 @@ import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+    Briefcase, PackageCheck, PackagePlus, IndianRupee, ArrowRight, ListChecks, ShoppingBag, BarChart3, Bell, MessageSquare, UploadCloud, Edit, Power, Radio, Users, Lightbulb, Clock
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import type { ProfileFormData as VendorProfileFormData } from '../edit-profile/page'; 
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { Badge } from "@/components/ui/badge"; 
-
-const vendorStats = [
-  { id: "pending_orders", labelEn: "Pending Orders", labelHi: "लंबित आदेश", value: "12", icon: ListChecks, color: "text-orange-500" },
-  { id: "active_listings", labelEn: "Active Listings", labelHi: "सक्रिय लिस्टिंग", value: "150+", icon: PackageCheck, color: "text-blue-500" },
-  { id: "total_revenue", labelEn: "Monthly Revenue", labelHi: "मासिक राजस्व", value: "INR 25,600", icon: IndianRupee, color: "text-green-500" },
-];
+import { Switch } from "@/components/ui/switch";
+import { Label } from '@/components/ui/label';
 
 const vendorActions = [
   { id: "manage_products", labelEn: "Manage Products", labelHi: "उत्पाद प्रबंधित करें", icon: UploadCloud, href: "/vendor-dashboard/products" },
@@ -26,6 +24,7 @@ const vendorActions = [
   { id: "reports_analytics", labelEn: "Sales Reports", labelHi: "बिक्री रिपोर्ट", icon: BarChart3, href: "/vendor-dashboard/reports" },
   { id: "notifications", labelEn: "Notifications", labelHi: "सूचनाएं", icon: Bell, href: "/vendor-dashboard/notifications" },
   { id: "customer_queries", labelEn: "Customer Queries", labelHi: "ग्राहक प्रश्न", icon: MessageSquare, href: "/vendor-dashboard/queries" },
+  { id: "school_orders", labelEn: "School Orders", labelHi: "स्कूल ऑर्डर", icon: Users, href: "/vendor-dashboard/school-orders" },
 ];
 
 interface RecentOrder {
@@ -46,6 +45,7 @@ export default function VendorDashboardPage() {
   const router = useRouter();
   const [vendorProfile, setVendorProfile] = useState<VendorProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [isStoreOpen, setIsStoreOpen] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -63,10 +63,6 @@ export default function VendorDashboardPage() {
     }
     setLoadingProfile(false);
   }, []);
-
-  const handleActionClick = (href: string) => {
-    router.push(href);
-  };
   
   if (loadingProfile) {
     return (
@@ -80,35 +76,73 @@ export default function VendorDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <header className="text-center">
-        <Briefcase className="h-12 w-12 text-primary mx-auto mb-2" />
-        <h1 className="text-3xl font-bold font-headline text-primary">
-          {vendorProfile?.businessName || <BilingualText en="Vendor Dashboard" hi="विक्रेता डैशबोर्ड" />}
-        </h1>
-        <p className="text-muted-foreground">
-          <BilingualText en="Manage your products, orders, and earnings efficiently." hi="अपने उत्पादों, आदेशों और कमाई का कुशलतापूर्वक प्रबंधन करें।" />
-        </p>
-         <Button asChild variant="outline" size="sm" className="mt-2">
-            <Link href="/edit-profile?role=vendor">
-                <Edit className="mr-2 h-4 w-4"/>
-                <BilingualText en="Edit Vendor Info" hi="विक्रेता जानकारी संपादित करें" />
-            </Link>
-        </Button>
+      <header className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+            <Briefcase className="h-10 w-10 text-primary hidden sm:block" />
+            <div>
+              <h1 className="text-2xl font-bold font-headline text-primary text-center sm:text-left">
+                {vendorProfile?.businessName || <BilingualText en="Vendor Dashboard" hi="विक्रेता डैशबोर्ड" />}
+              </h1>
+              <p className="text-muted-foreground text-center sm:text-left">
+                <BilingualText en="Manage your store and orders efficiently." hi="अपने स्टोर और ऑर्डर को कुशलतापूर्वक प्रबंधित करें।" />
+              </p>
+            </div>
+        </div>
+        <div className="flex items-center gap-2">
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="store-status" className="text-sm font-medium text-muted-foreground"><BilingualText en="Store Status:" hi="स्टोर स्थिति:" /></Label>
+              <Switch id="store-status" checked={isStoreOpen} onCheckedChange={setIsStoreOpen} />
+              <span className={`text-sm font-bold ${isStoreOpen ? 'text-green-600' : 'text-red-600'}`}>
+                {isStoreOpen ? <BilingualText en="Open" hi="खुला" /> : <BilingualText en="Paused" hi="रोका हुआ" />}
+              </span>
+            </div>
+             <Button asChild variant="outline" size="sm">
+                <Link href="/edit-profile?role=vendor">
+                    <Edit className="mr-1.5 h-3 w-3"/>
+                    <span className="hidden sm:inline"><BilingualText en="Edit Info" hi="जानकारी संपादित करें" /></span>
+                </Link>
+            </Button>
+        </div>
       </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {vendorStats.map(stat => (
-          <Card key={stat.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium"><BilingualText en={stat.labelEn} hi={stat.labelHi} /></CardTitle>
-              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+      
+      {/* Today's Snapshot & Earnings */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+                <CardTitle className="text-lg font-headline flex items-center gap-2"><Clock className="text-primary"/> Today's Snapshot</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+            <CardContent className="grid grid-cols-2 gap-4 text-center">
+                <div><p className="text-2xl font-bold">12</p><p className="text-xs text-muted-foreground">Orders Received</p></div>
+                <div><p className="text-2xl font-bold">6 <span className="text-lg">min</span></p><p className="text-xs text-muted-foreground">Avg. Dispatch Time</p></div>
+                <div><p className="text-2xl font-bold text-red-500">3</p><p className="text-xs text-muted-foreground">Items Low on Stock</p></div>
+                <div><p className="text-2xl font-bold">0</p><p className="text-xs text-muted-foreground">Returns / Issues</p></div>
             </CardContent>
           </Card>
-        ))}
+           <Card>
+            <CardHeader>
+                <CardTitle className="text-lg font-headline flex items-center gap-2"><IndianRupee className="text-green-500"/> Earnings Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <div className="grid grid-cols-2 gap-4 text-center">
+                    <div><p className="text-2xl font-bold">₹1,250</p><p className="text-xs text-muted-foreground">Today's Earnings</p></div>
+                    <div><p className="text-2xl font-bold">₹8,700</p><p className="text-xs text-muted-foreground">This Week</p></div>
+                 </div>
+                 <Button className="w-full">Withdraw Now</Button>
+                 <p className="text-xs text-center text-muted-foreground">Next Payout: Friday</p>
+            </CardContent>
+          </Card>
       </div>
+
+       <Card className="bg-primary/5 border-primary/20">
+        <CardHeader>
+            <CardTitle className="font-headline text-primary flex items-center gap-2"><Lightbulb/> AI Insights</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+            <p>"90% of students nearby are buying Class 11 Practical Files – <Link href="/vendor-dashboard/products" className="font-semibold underline">Add now?</Link>"</p>
+            <p>"5 New School Orders from OSO Partner Schools – <Link href="/vendor-dashboard/school-orders" className="font-semibold underline">View now?</Link>"</p>
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>
@@ -121,42 +155,14 @@ export default function VendorDashboardPage() {
                     key={action.id} 
                     variant="outline" 
                     className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
-                    onClick={() => handleActionClick(action.href)}
+                    asChild
                 >
-                    <action.icon className="h-7 w-7 text-primary mb-1"/>
-                    <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                    <Link href={action.href}>
+                        <action.icon className="h-7 w-7 text-primary mb-1"/>
+                        <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                    </Link>
                 </Button>
             ))}
-        </CardContent>
-      </Card>
-
-       <Card>
-        <CardHeader>
-            <CardTitle className="font-headline"><BilingualText en="Recent Orders" hi="हाल के आदेश" /></CardTitle>
-            <CardDescription><BilingualText en="A quick look at your latest incoming orders." hi="आपके नवीनतम आने वाले आदेशों पर एक त्वरित नज़र।" /></CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-            {mockRecentOrders.length > 0 ? mockRecentOrders.map(order => (
-                <Card key={order.id} className="p-3 bg-muted/30 flex justify-between items-center">
-                    <div>
-                        <p className="text-sm font-medium text-foreground">Order #{order.id}</p>
-                        <p className="text-xs text-muted-foreground">{order.items} items - INR {order.amount.toFixed(2)}</p>
-                    </div>
-                    <Badge variant={order.status === "Shipped" ? "default" : order.status === "Processing" ? "secondary" : "outline"}
-                           className={order.status === "Shipped" ? "bg-green-500 text-white" : order.status === "Processing" ? "bg-blue-500 text-white" : ""}>
-                        {order.status}
-                    </Badge>
-                </Card>
-            )) : (
-                 <p className="text-muted-foreground text-sm text-center py-4">
-                    <BilingualText en="No recent orders." hi="कोई हालिया आदेश नहीं।" />
-                </p>
-            )}
-            <Button asChild variant="link" className="w-full justify-center p-0 mt-2">
-                 <Link href="/vendor-dashboard/orders">
-                    <BilingualText en="View All Orders" hi="सभी आदेश देखें" /> <ArrowRight className="ml-1 h-4 w-4"/>
-                 </Link>
-            </Button>
         </CardContent>
       </Card>
     </div>

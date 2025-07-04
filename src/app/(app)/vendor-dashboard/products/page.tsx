@@ -3,8 +3,8 @@
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ArrowLeft, PackagePlus, Search, Edit, Trash2, Eye } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, PackagePlus, Search, Edit, Trash2, Eye, FileUp, Camera } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -19,25 +19,21 @@ interface Product {
   name: string;
   category: string;
   price: number;
+  mrp: number;
   stock: number;
   status: "Active" | "Inactive";
   schoolName?: string;
+  classTag?: string;
 }
 
 const VENDOR_PRODUCTS_KEY = "vendorProducts_mock";
 
 const initialMockProducts: Product[] = [
-  { id: "PROD001", name: "Classmate Notebook - Single Line (172 Pages)", category: "Notebooks", price: 45, stock: 150, status: "Active" },
-  { id: "PROD002", name: "Cello Gripper Ball Pen - Blue (Pack of 5)", category: "Pens", price: 50, stock: 300, status: "Active" },
-  { id: "PROD003", name: "Apsara Platinum Pencils (Box of 10)", category: "Pencils", price: 50, stock: 200, status: "Active" },
-  { id: "PROD004", name: "Fevicol MR Squeeze Bottle (100g)", category: "Adhesives", price: 35, stock: 0, status: "Inactive" },
-  { id: "PROD005", name: "Camel Poster Colors (12 Shades)", category: "Art Supplies", price: 120, stock: 75, status: "Active" },
-  { id: "PROD006", name: "Sticky Notes (Yellow, 3x3)", category: "Adhesives", price: 25, stock: 8, status: "Active" },
-  { id: "PROD007", name: "Parker Vector Gold Roller Ball Pen", category: "Pens", price: 250, stock: 40, status: "Active" },
-  { id: "UNI001", name: "Boys Shirt (Summer, White)", category: "School Uniforms", price: 450, stock: 100, status: "Active", schoolName: "Delhi Public School, Noida" },
-  { id: "UNI002", name: "Girls Skirt (Summer, Grey)", category: "School Uniforms", price: 400, stock: 80, status: "Active", schoolName: "Delhi Public School, Noida" },
-  { id: "UNI003", name: "Unisex Blazer (Winter, Navy Blue)", category: "School Uniforms", price: 1200, stock: 50, status: "Active", schoolName: "Modern School, Barakhamba" },
-  { id: "UNI004", name: "House T-Shirt (Red)", category: "School Uniforms", price: 300, stock: 120, status: "Active", schoolName: "All Schools" },
+  { id: "PROD001", name: "Classmate Notebook - Single Line (172 Pages)", category: "Notebooks", mrp: 50, price: 45, stock: 150, status: "Active" },
+  { id: "PROD002", name: "Cello Gripper Ball Pen - Blue (Pack of 5)", category: "Pens", mrp: 50, price: 50, stock: 300, status: "Active" },
+  { id: "PROD003", name: "Apsara Platinum Pencils (Box of 10)", category: "Pencils", mrp: 55, price: 50, stock: 200, status: "Active" },
+  { id: "PROD004", name: "Fevicol MR Squeeze Bottle (100g)", category: "Adhesives", mrp: 35, price: 35, stock: 0, status: "Inactive" },
+  { id: "UNI001", name: "Boys Shirt (Summer, White)", category: "School Uniforms", mrp: 500, price: 450, stock: 100, status: "Active", schoolName: "Delhi Public School, Noida", classTag: "6-10" },
 ];
 
 export default function VendorProductsPage() {
@@ -46,7 +42,7 @@ export default function VendorProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'status'>>({ name: '', category: '', price: 0, stock: 0, schoolName: '' });
+  const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'status'>>({ name: '', category: '', mrp: 0, price: 0, stock: 0, schoolName: '', classTag: '' });
 
   useEffect(() => {
     try {
@@ -74,8 +70,8 @@ export default function VendorProductsPage() {
 
   const handleAddNewProduct = (e: FormEvent) => {
     e.preventDefault();
-    if (!newProduct.name || !newProduct.category || newProduct.price <= 0) {
-        toast({ title: "Missing Fields", description: "Please fill in Name, Category, and a valid Price.", variant: "destructive" });
+    if (!newProduct.name || !newProduct.category || newProduct.price <= 0 || newProduct.mrp < newProduct.price) {
+        toast({ title: "Invalid Data", description: "Please fill Name, Category, a valid Price, and ensure MRP is not less than selling price.", variant: "destructive" });
         return;
     }
     const productToAdd: Product = {
@@ -88,7 +84,7 @@ export default function VendorProductsPage() {
     saveProductsToStorage(updatedProducts);
     toast({ title: "Product Added!", description: `"${productToAdd.name}" has been added.`});
     setIsAddDialogOpen(false);
-    setNewProduct({ name: '', category: '', price: 0, stock: 0, schoolName: '' }); // Reset form
+    setNewProduct({ name: '', category: '', mrp: 0, price: 0, stock: 0, schoolName: '', classTag: '' }); // Reset form
   };
 
   const handleDeleteProduct = (productId: string) => {
@@ -144,6 +140,7 @@ export default function VendorProductsPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
+             <Button variant="outline" className="w-full sm:w-auto"><FileUp className="mr-2 h-4 w-4"/> Bulk Import</Button>
             <Button className="w-full sm:w-auto" onClick={() => setIsAddDialogOpen(true)}>
                 <PackagePlus className="mr-2 h-4 w-4" />
                 <BilingualText en="Add New Product" hi="नया उत्पाद जोड़ें" />
@@ -151,7 +148,7 @@ export default function VendorProductsPage() {
           </div>
 
           <Accordion type="multiple" defaultValue={Object.keys(groupedProducts)}>
-            {Object.entries(groupedProducts).map(([category, items]) => (
+            {Object.keys(groupedProducts).length > 0 ? Object.entries(groupedProducts).map(([category, items]) => (
                 <AccordionItem key={category} value={category}>
                     <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center gap-2">
@@ -161,17 +158,15 @@ export default function VendorProductsPage() {
                     </AccordionTrigger>
                     <AccordionContent className="p-2 space-y-3">
                         {items.map(product => (
-                            <Card key={product.id} className="grid grid-cols-4 items-center p-2">
-                                <div className="col-span-2">
+                            <Card key={product.id} className="grid grid-cols-5 items-center p-2">
+                                <div className="col-span-3 sm:col-span-2">
                                     <p className="font-medium text-sm">{product.name}</p>
-                                     {product.schoolName && (
-                                      <p className="text-xs text-muted-foreground">For: <span className="font-medium">{product.schoolName}</span></p>
-                                    )}
-                                    <p className="text-xs text-muted-foreground">ID: {product.id}</p>
+                                    {product.schoolName && <p className="text-xs text-muted-foreground">For: {product.schoolName}</p>}
+                                    {product.classTag && <p className="text-xs text-muted-foreground">Class: {product.classTag}</p>}
                                 </div>
                                 <div className="text-center">
                                     <p className="text-xs text-muted-foreground">Price</p>
-                                    <p className="text-sm font-semibold">INR {product.price.toFixed(2)}</p>
+                                    <p className="text-sm font-semibold">₹{product.price.toFixed(2)}</p>
                                 </div>
                                 <div className="text-center">
                                     <p className="text-xs text-muted-foreground">Stock</p>
@@ -179,12 +174,11 @@ export default function VendorProductsPage() {
                                         {product.stock}
                                     </p>
                                 </div>
-                                <div className="col-span-4 mt-2 pt-2 border-t flex justify-end items-center gap-2">
-                                     <Badge variant={product.status === "Active" ? "default" : "outline"} className={product.status === "Active" ? "bg-green-500/20 text-green-700 border-green-400" : "bg-red-500/10 text-red-700 border-red-400"}>
+                                <div className="col-span-5 sm:col-span-1 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-t-0 flex justify-end items-center gap-2">
+                                     <Badge variant={product.status === "Active" ? "default" : "outline"} className={product.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
                                        {product.status}
                                     </Badge>
-                                    <div className="flex-grow"/>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7"><Eye className="h-4 w-4" /></Button>
+                                    <div className="flex-grow sm:hidden"/>
                                     <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
                                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
                                 </div>
@@ -192,13 +186,12 @@ export default function VendorProductsPage() {
                         ))}
                     </AccordionContent>
                 </AccordionItem>
-            ))}
-          </Accordion>
-            {Object.keys(groupedProducts).length === 0 && (
+            )) : (
                  <div className="text-center py-10 text-muted-foreground">
-                    <p><BilingualText en="No products found matching your search." hi="आपकी खोज से मेल खाने वाला कोई उत्पाद नहीं मिला।" /></p>
+                    <p><BilingualText en="No products found." hi="कोई उत्पाद नहीं मिला।" /></p>
                 </div>
             )}
+          </Accordion>
         </CardContent>
       </Card>
 
@@ -207,34 +200,49 @@ export default function VendorProductsPage() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle><BilingualText en="Add New Product" hi="नया उत्पाद जोड़ें" /></DialogTitle>
-                    <DialogDescription><BilingualText en="Enter the details for the new item." hi="नए आइटम के लिए विवरण दर्ज करें।" /></DialogDescription>
+                    <DialogDescription><BilingualText en="Enter the details for the new item. Use the AI suggestions for faster entry." hi="नए आइटम के लिए विवरण दर्ज करें। तेजी से प्रविष्टि के लिए एआई सुझावों का उपयोग करें।" /></DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleAddNewProduct}>
                     <div className="space-y-4 py-3">
+                        <div className="p-2 bg-muted/50 rounded-lg flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">AI Auto-Suggest from Photo:</span>
+                             <Button type="button" variant="secondary" size="sm" onClick={() => toast({ title: "Feature Coming Soon!", description: "AI-powered product detection from photo."})}>
+                                <Camera className="mr-2 h-4 w-4"/> Snap Photo
+                            </Button>
+                        </div>
                         <div>
-                            <Label htmlFor="name">Product Name</Label>
-                            <Input id="name" value={newProduct.name} onChange={(e) => setNewProduct(p => ({...p, name: e.target.value}))} />
+                            <Label htmlFor="name">Product Name*</Label>
+                            <Input id="name" value={newProduct.name} onChange={(e) => setNewProduct(p => ({...p, name: e.target.value}))} required />
+                        </div>
+                         <div>
+                            <Label htmlFor="category">Category*</Label>
+                            <Input id="category" value={newProduct.category} onChange={(e) => setNewProduct(p => ({...p, category: e.target.value}))} required/>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="category">Category</Label>
-                                <Input id="category" value={newProduct.category} onChange={(e) => setNewProduct(p => ({...p, category: e.target.value}))} />
-                            </div>
-                            <div>
+                           <div>
                                 <Label htmlFor="schoolName">School Name (if uniform)</Label>
                                 <Input id="schoolName" value={newProduct.schoolName || ''} onChange={(e) => setNewProduct(p => ({...p, schoolName: e.target.value}))} />
                             </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <Label htmlFor="price">Price (INR)</Label>
-                                <Input id="price" type="number" value={newProduct.price || ''} onChange={(e) => setNewProduct(p => ({...p, price: parseFloat(e.target.value) || 0}))} />
-                            </div>
-                            <div>
-                                <Label htmlFor="stock">Stock Quantity</Label>
-                                <Input id="stock" type="number" value={newProduct.stock || ''} onChange={(e) => setNewProduct(p => ({...p, stock: parseInt(e.target.value) || 0}))} />
+                                <Label htmlFor="classTag">Class Tag (e.g., 6-8)</Label>
+                                <Input id="classTag" value={newProduct.classTag || ''} onChange={(e) => setNewProduct(p => ({...p, classTag: e.target.value}))} />
                             </div>
                         </div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div>
+                                <Label htmlFor="mrp">MRP (₹)*</Label>
+                                <Input id="mrp" type="number" value={newProduct.mrp || ''} onChange={(e) => setNewProduct(p => ({...p, mrp: parseFloat(e.target.value) || 0}))} required />
+                            </div>
+                             <div>
+                                <Label htmlFor="price">Selling Price (₹)*</Label>
+                                <Input id="price" type="number" value={newProduct.price || ''} onChange={(e) => setNewProduct(p => ({...p, price: parseFloat(e.target.value) || 0}))} required />
+                            </div>
+                            <div>
+                                <Label htmlFor="stock">Stock*</Label>
+                                <Input id="stock" type="number" value={newProduct.stock || ''} onChange={(e) => setNewProduct(p => ({...p, stock: parseInt(e.target.value) || 0}))} required />
+                            </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground text-center">OSO Commission (Auto-Calculated): ₹{(newProduct.price * 0.1).toFixed(2)}</p>
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
@@ -243,7 +251,6 @@ export default function VendorProductsPage() {
                 </form>
             </DialogContent>
         </Dialog>
-
     </div>
   );
 }
