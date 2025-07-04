@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from 'next/link'
+import { useState } from "react" // Import useState
 
 const sidebarItems = [
     { href: "/creator-dashboard", icon: Home, label: "Dashboard" },
@@ -44,7 +45,11 @@ const sidebarItems = [
     { href: "#", icon: Settings, label: "Settings" },
 ]
 
+const creatorRoles = ["Doubt Solver", "Flashcard Maker", "Test Designer", "Voiceover Artist"]; // Define roles
+
 export default function CreatorDashboardLayout({ children }: { children: React.ReactNode }) {
+  const [currentRole, setCurrentRole] = useState(creatorRoles[0]); // Add state for current role
+
   return (
     <SidebarProvider>
         <Sidebar>
@@ -84,13 +89,18 @@ export default function CreatorDashboardLayout({ children }: { children: React.R
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="h-9">
-                                    Work Mode: Doubt Solver
+                                    Work Mode: {currentRole}
                                     <ChevronDown className="ml-2 h-4 w-4"/>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                <DropdownMenuItem>Doubt Solver</DropdownMenuItem>
-                                <DropdownMenuItem>Flashcard Maker</DropdownMenuItem>
+                                <DropdownMenuLabel>Switch Role</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {creatorRoles.map(role => (
+                                    <DropdownMenuItem key={role} onSelect={() => setCurrentRole(role)}>
+                                        {role}
+                                    </DropdownMenuItem>
+                                ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
                         <Button variant="ghost" size="icon" className="h-9 w-9">
