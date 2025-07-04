@@ -1,3 +1,4 @@
+
 // src/app/(app)/live-class/[classId]/page.tsx
 "use client";
 
@@ -5,7 +6,7 @@ import React, { useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { BilingualText } from '@/components/shared/BilingualText';
 import Whiteboard, { type WhiteboardHandle } from '@/components/live-class/Whiteboard';
 import { cn } from '@/lib/utils';
