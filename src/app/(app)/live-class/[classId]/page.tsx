@@ -3,6 +3,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -83,8 +84,24 @@ export default function LiveClassPage() {
           </div>
         </main>
         
-        {/* Right Sidebar: Chat and Polls */}
+        {/* Right Sidebar: Video, Chat, and Polls */}
         <aside className="w-80 border-l bg-card flex flex-col">
+          <Card className="flex-shrink-0 border-0 border-b rounded-none shadow-none">
+            <CardContent className="p-2">
+              <div className="aspect-video bg-muted rounded-md relative flex items-center justify-center text-white">
+                <Image src="https://placehold.co/1600x900.png" layout="fill" objectFit="cover" alt="Teacher's Video" className="rounded-md" data-ai-hint="teacher video call" />
+                <div className="absolute bottom-2 left-2 right-2 flex justify-center items-center gap-2">
+                  <Button variant="secondary" size="icon" className="h-9 w-9 rounded-full bg-black/50 hover:bg-black/70 border-0">
+                    <MicOff size={18} />
+                  </Button>
+                  <Button variant="destructive" size="icon" className="h-9 w-9 rounded-full">
+                    <VideoOff size={18} />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="flex-grow flex flex-col border-0 rounded-none shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-md"><MessageSquare size={18}/> Live Chat</CardTitle>
