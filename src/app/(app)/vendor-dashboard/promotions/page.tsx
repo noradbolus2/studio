@@ -36,7 +36,7 @@ interface AutoDiscount {
 }
 
 const mockAutoDiscounts: AutoDiscount[] = [
-    { id: "AD001", description: "Buy 3 Pens, Get ₹5 Off", type: "Quantity", status: "Active" },
+    { id: "AD001", description: "Buy 3 Pens, Get INR 5 Off", type: "Quantity", status: "Active" },
     { id: "AD002", description: "Class 10 Kit (Maths + Science book)", type: "Combo", status: "Active" },
     { id: "AD003", description: "Any 5 Notebooks, 10% Off", type: "Quantity", status: "Inactive" },
 ];
@@ -90,7 +90,7 @@ export default function VendorPromotionsPage() {
                             <TableRow key={promo.id}>
                                 <TableCell className="font-mono font-semibold">{promo.code}</TableCell>
                                 <TableCell>{promo.type}</TableCell>
-                                <TableCell>{promo.type === "Percentage" ? `${promo.value}%` : `₹${promo.value}`}</TableCell>
+                                <TableCell>{promo.type === "Percentage" ? `${promo.value}%` : `INR ${promo.value}`}</TableCell>
                                 <TableCell>{promo.usageCount}</TableCell>
                                 <TableCell>
                                     <Badge variant={promo.status === 'Active' ? 'default' : 'outline'} className={promo.status === 'Active' ? 'bg-green-100 text-green-800' : ''}>
