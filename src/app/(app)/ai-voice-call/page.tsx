@@ -51,9 +51,9 @@ export default function AiVoiceCallPage() {
         audioRef.current.src = response.audioDataUri;
         await audioRef.current.play();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("TTS Error:", error);
-      toast({ title: "Audio Error", description: "Could not play AI voice.", variant: "destructive" });
+      toast({ title: "Audio Error", description: error.message || "Could not play AI voice.", variant: "destructive" });
     } finally {
       setIsAudioPlaying(false);
     }
