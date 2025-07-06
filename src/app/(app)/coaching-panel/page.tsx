@@ -1,3 +1,4 @@
+
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
@@ -19,7 +20,8 @@ import {
     Briefcase,
     MessageSquare,
     Link as LinkIcon,
-    Users
+    Users,
+    Lightbulb
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -126,6 +128,17 @@ export default function CoachingPanelPage() {
                         <Button variant="outline" asChild><Link href="/coaching-panel/create-course"><UploadCloud className="mr-2"/> Upload New PPT</Link></Button>
                     </CardFooter>
                 </Card>
+
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardHeader>
+                      <CardTitle className="font-headline text-primary flex items-center gap-2"><Lightbulb/> <BilingualText en="AI Insights" hi="एआई अंतर्दृष्टि" /></CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                      <p>"<BilingualText en="Students are struggling with 'Rotational Motion'. Consider scheduling a " hi="छात्र 'घूर्णी गति' में संघर्ष कर रहे हैं। एक " /><Link href="/coaching-panel/live-classes" className="font-semibold underline"><BilingualText en="doubt-solving session?" hi="शंका-समाधान सत्र?" /></Link>"</p>
+                      <p>"<BilingualText en="Your 'Modern Physics' notes are trending. Why not create a " hi="आपके 'आधुनिक भौतिकी' नोट्स ट्रेंड कर रहे हैं। क्यों न एक " /><Link href="/coaching-panel/create-course" className="font-semibold underline"><BilingualText en="premium study kit?" hi="प्रीमियम अध्ययन किट?" /></Link>"</p>
+                  </CardContent>
+                </Card>
+
                 {/* Quick Action Panel */}
                 <Card className="shadow-md rounded-2xl">
                     <CardHeader><CardTitle className="font-headline">Quick Actions</CardTitle></CardHeader>
