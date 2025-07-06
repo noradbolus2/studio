@@ -5,10 +5,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Phone, PhoneOff, Mic, MicOff, AlertTriangle } from 'lucide-react';
+import { Phone, PhoneOff, Mic, MicOff, AlertTriangle, MessageCircle } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { textToSpeech, type TextToSpeechOutput } from '@/ai/flows/text-to-speech-flow';
+import { textToSpeech } from '@/ai/flows/text-to-speech-flow';
+// New import
+import { chatWithOsoBuddy } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -17,7 +19,6 @@ type TranscriptEntry = {
   speaker: 'AI' | 'User';
   text: string;
 };
-type ScriptStage = 'initial_greeting' | 'ask_order_issue' | 'provide_eta' | 'ask_human' | 'transferring' | 'end_call';
 
 export default function AiVoiceCallPage() {
   const router = useRouter();
@@ -27,33 +28,10 @@ export default function AiVoiceCallPage() {
   const [callDuration, setCallDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const [currentStage, setCurrentStage] = useState<ScriptStage>('initial_greeting');
+  const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
+  const [isAiThinking, setIsAiThinking] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const script: Record<ScriptStage, { text: string; userOptions?: { text: string; nextStage: ScriptStage }[] }> = {
-    initial_greeting: {
-      text: "Hi! I'm OSO Buddy. How can I help you today?",
-      userOptions: [
-        { text: "My order is late.", nextStage: 'provide_eta' },
-        { text: "I want to talk to a human.", nextStage: 'transferring' },
-      ],
-    },
-    provide_eta: {
-      text: "I see your order #ORD123 is delayed due to high traffic. The new estimated time of arrival is 11 minutes. Is there anything else I can help with?",
-      userOptions: [
-        { text: "No, that's all.", nextStage: 'end_call' },
-        { text: "I need more help.", nextStage: 'transferring' },
-      ],
-    },
-    transferring: {
-      text: "Sure, please hold while I connect you to a live agent.",
-    },
-    end_call: {
-      text: "Thank you for calling OSO Support. Goodbye!",
-    },
-    ask_order_issue: { text: '' }, // Not used directly
-  };
 
   const playAiSpeech = useCallback(async (text: string) => {
     setIsAudioPlaying(true);
@@ -70,28 +48,48 @@ export default function AiVoiceCallPage() {
       setIsAudioPlaying(false);
     }
   }, [toast]);
+  
+  const getAiResponse = useCallback(async (userInput: string) => {
+    setIsAiThinking(true);
+    setSuggestedReplies([]);
+    const history = transcript.map(entry => ({
+        role: entry.speaker === 'AI' ? 'model' : 'user',
+        text: entry.text,
+    }));
+    
+    try {
+      const response = await chatWithOsoBuddy({ userInput, history });
+      setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
+      playAiSpeech(response.aiResponse);
 
-  const advanceScript = useCallback((stage: ScriptStage) => {
-    const currentScript = script[stage];
-    if (currentScript) {
-      setTranscript(prev => [...prev, { speaker: 'AI', text: currentScript.text }]);
-      playAiSpeech(currentScript.text);
-      
-      if (stage === 'end_call' || stage === 'transferring') {
+      if (response.suggestedReplies.length > 0) {
+        setSuggestedReplies(response.suggestedReplies);
+      } else {
         setTimeout(() => setCallStatus('ended'), 2000);
       }
+
+    } catch (error: any) {
+        toast({ title: "Conversation Error", description: error.message || "The AI is unable to respond right now.", variant: "destructive" });
+        const errorEntry = { speaker: 'AI' as const, text: "I'm sorry, I'm having technical difficulties. Please hang up and try again later."};
+        setTranscript(prev => [...prev, errorEntry]);
+        playAiSpeech(errorEntry.text);
+        setSuggestedReplies([]);
+    } finally {
+        setIsAiThinking(false);
     }
-    setCurrentStage(stage);
-  }, [playAiSpeech]);
+  }, [transcript, playAiSpeech, toast]);
+
 
   useEffect(() => {
+    // Initial connection simulation and greeting
     const timer = setTimeout(() => {
       setCallStatus('active');
-      advanceScript('initial_greeting');
-    }, 2000); // Simulate connection time
+      getAiResponse(''); // Initial empty input to get greeting
+    }, 2000); 
 
     return () => clearTimeout(timer);
-  }, [advanceScript]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -103,12 +101,9 @@ export default function AiVoiceCallPage() {
     return () => clearInterval(interval);
   }, [callStatus]);
   
-  const handleUserResponse = (nextStage: ScriptStage) => {
-      const userText = script[currentStage]?.userOptions?.find(opt => opt.nextStage === nextStage)?.text;
-      if (userText) {
-          setTranscript(prev => [...prev, { speaker: 'User', text: userText }]);
-      }
-      advanceScript(nextStage);
+  const handleUserResponse = (responseText: string) => {
+      setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
+      getAiResponse(responseText);
   };
 
   const formatDuration = (seconds: number) => {
@@ -137,18 +132,26 @@ export default function AiVoiceCallPage() {
                     <span className="font-semibold">{entry.speaker}:</span> {entry.text}
                 </p>
             ))}
+            {isAiThinking && (
+                 <p className="text-sm text-cyan-300 italic">OSO Buddy is thinking...</p>
+            )}
         </div>
 
-        {callStatus === 'active' && (
+        {callStatus === 'active' && !isAiThinking && (
           <div className="w-full space-y-3">
-            {script[currentStage]?.userOptions?.map((option, index) => (
-                <Button key={index} variant="outline" className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600" onClick={() => handleUserResponse(option.nextStage)} disabled={isAudioPlaying}>
-                    {option.text}
+            {suggestedReplies.map((reply, index) => (
+                <Button key={index} variant="outline" className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 justify-start text-left h-auto py-2.5" onClick={() => handleUserResponse(reply)} disabled={isAudioPlaying || isAiThinking}>
+                    <MessageCircle className="h-4 w-4 mr-2 shrink-0"/>
+                    <span className="flex-grow">{reply}</span>
                 </Button>
             ))}
-            {currentStage === 'transferring' && <div className="text-center p-4"><LoadingSpinner /> <p className="mt-2 text-sm text-gray-400">Connecting to agent...</p></div>}
           </div>
         )}
+        
+        {callStatus === 'active' && isAiThinking && (
+            <div className="text-center p-4"><LoadingSpinner /> <p className="mt-2 text-sm text-gray-400">OSO Buddy is responding...</p></div>
+        )}
+
 
         <div className="flex justify-center items-center gap-6 mt-8">
             <Button variant="ghost" className="rounded-full h-16 w-16 bg-gray-700/80 hover:bg-gray-700" onClick={() => setIsMuted(!isMuted)}>
