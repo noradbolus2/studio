@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -21,7 +20,7 @@ const quotes = [
   { en: "Bad mood? Out of pages? Order OSO and chill!", hi: "मूड खराब है? पेज खत्म हो गए? OSO से ऑर्डर करो और चिल करो!", hng: "Mood kharab? Page khatam? Order OSO and chill!" },
   { en: "Shop closed? Download the OSO App... the future is open!", hi: "दुकान बंद है? OSO ऐप डाउनलोड करो... भविष्य खुला है!", hng: "Dukaan band? OSO App download kar... future open hai!" },
   // Power Motivation
-  { en: "Don't think, just start... OSO will get everything ready!", hi: "सोचो मत, शुरू करो... OSO सब कुछ तैयार कर देगा!", hng: "Soch mat, start kar... OSO sab ready kar dega!" },
+  { en: "Soch mat, start kar... OSO sab ready kar dega!", hi: "सोचो मत, शुरू करो... OSO सब कुछ तैयार कर देगा!", hng: "Soch mat, start kar... OSO sab ready kar dega!" },
   { en: "Every second is important — OSO works every second!", hi: "हर सेकंड महत्वपूर्ण है - OSO हर सेकंड काम करता है!", hng: "Har second important hai — OSO har second me kaam karta hai!" },
   { en: "Want to be great? First, get your pen, notes, and willpower ready!", hi: "महान बनना है? पहले, अपना पेन, नोट्स और इच्छाशक्ति तैयार रखो!", hng: "Bada banna hai? Pehle pen, notes aur willpower ready rakh!" },
   { en: "Invest a little in OSO for your future!", hi: "अपने भविष्य के लिए OSO में थोड़ा निवेश करें!", hng: "Apne future ke liye thoda OSO bhi invest kar!" },
@@ -53,11 +52,11 @@ export function DynamicQuoteCard({ lang }: { lang: 'en' | 'hi' | 'hng' }) {
   const currentQuote = quotes[currentQuoteIndex];
 
   return (
-    <Card className="bg-amber-100/50 dark:bg-amber-900/20 border-amber-500/30">
+    <Card className="gradient-border">
       <CardContent className="p-3 flex items-center gap-3">
-        <Lightbulb className="h-6 w-6 text-amber-500 flex-shrink-0" />
+        <Lightbulb className="h-6 w-6 text-primary flex-shrink-0" />
         <p className={cn(
-            "text-sm font-medium text-amber-800 dark:text-amber-200 transition-opacity duration-500",
+            "text-sm font-medium text-foreground/90 transition-opacity duration-500",
             isFading ? 'opacity-0' : 'opacity-100'
           )}>
           <BilingualText en={currentQuote.en} hi={currentQuote.hi} hng={currentQuote.hng} lang={lang} />
