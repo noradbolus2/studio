@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, BarChart3, Trophy } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, BarChart3, Trophy, LifeBuoy } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -444,6 +444,12 @@ export default function ProfilePage() {
                     <BilingualText en="Manage Linked Accounts" hi="जुड़े हुए खाते प्रबंधित करें" />
                 </Link>
             </Button>
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+                <Link href="/help">
+                    <LifeBuoy className="h-5 w-5 text-muted-foreground" />
+                    <BilingualText en="Help & Support" hi="सहायता और समर्थन" />
+                </Link>
+            </Button>
         </CardContent>
       </Card>
       
@@ -454,4 +460,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
