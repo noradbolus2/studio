@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { LifeBuoy, ArrowLeft, Package, BookOpen, CreditCard, Bot, Send, MessageSquare } from "lucide-react";
+import { LifeBuoy, ArrowLeft, Package, BookOpen, CreditCard, Bot, Send, MessageSquare, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
@@ -34,6 +34,13 @@ export default function HelpPage() {
             description: `You selected "${category}". A real chat would start now.`,
         });
     }
+
+    const handleCallSupport = () => {
+        toast({
+            title: "Calling AI Support (Simulated)",
+            description: "In a real app, this would initiate a voice call.",
+        });
+    };
 
     return (
         <div className="space-y-6">
@@ -85,6 +92,24 @@ export default function HelpPage() {
                             <Send className="mr-2 h-4 w-4" /> Start Chat
                         </Button>
                     </div>
+                </CardContent>
+            </Card>
+
+            <Card className="shadow-lg bg-gradient-to-r from-green-500/10 to-primary/10">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 font-headline text-green-600">
+                        <Phone className="h-6 w-6"/>
+                        <BilingualText en="AI Voice Support" hi="एआई वॉयस सपोर्ट"/>
+                    </CardTitle>
+                    <CardDescription>
+                        <BilingualText en="For urgent issues, call us directly. Our AI agent will assist you instantly." hi="अत्यावश्यक मुद्दों के लिए, हमें सीधे कॉल करें। हमारा एआई एजेंट आपकी तुरंत सहायता करेगा।"/>
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={handleCallSupport}>
+                        <Phone className="mr-2 h-4 w-4"/>
+                        <BilingualText en="Call OSO Support Now" hi="OSO सपोर्ट को अभी कॉल करें"/>
+                    </Button>
                 </CardContent>
             </Card>
 
