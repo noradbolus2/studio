@@ -60,45 +60,45 @@ const heroSlides = [
 ];
 
 const baseQuickCategories = [
-  { id: 'oso_library', labelEn: 'OSO Library', labelHi: 'OSO पुस्तकालय', icon: Library, href: '/class-6-12-books', color: 'text-violet-600', bgColor: 'bg-violet-100/70 hover:bg-violet-200/70', keywords: ["book", "library", "ncert", "textbook", "syllabus", "class", "exam book", "competitive", "preparation"] },
-  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["project", "model", "assignment", "homework"] },
-  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["stationery", "pen", "notebook", "delivery"] },
-  { id: 'brainmate', labelEn: 'Brainmate', labelHi: 'ब्रेनमेट', icon: BrainCircuit, href: '/brainmate', color: 'text-violet-600', bgColor: 'bg-violet-100/70 hover:bg-violet-200/70', keywords: ["brainmate", "concept", "explain", "ai"] },
-  { id: 'revision_vault', labelEn: 'Revision Vault', labelHi: 'रिवीजन वॉल्ट', icon: History, href: '/study/revision-vault', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["revision", "vault", "doubts", "marked", "history"] },
-  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["mind", "mood", "diary", "stress"] },
-  { id: 'handwriting_notes', labelEn: 'Handwriting', labelHi: 'हस्तलेखन', icon: FileSignature, href: '/handwriting-notes', color: 'text-violet-600', bgColor: 'bg-violet-100/70 hover:bg-violet-200/70', keywords: ["handwriting", "notes", "writing", "script"] },
-  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["test", "mock", "exam", "neet", "jee", "upsc", "cat", "competitive"] },
-  { id: 'brain_scan', labelEn: 'Aura Map', labelHi: 'ऑरा मैप', icon: Brain, href: '/brain-scan-report', color: 'text-violet-600', bgColor: 'bg-violet-100/70 hover:bg-violet-200/70', keywords: ["brain", "focus", "stress", "attention", "aura"] },
-  { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["peer", "circle", "connect", "group"] },
-  { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-violet-600', bgColor: 'bg-violet-100/70 hover:bg-violet-200/70', keywords: ["college", "admission", "predictor", "university"] },
-  { id: 'study_dashboard', labelEn: 'Study Dashboard', labelHi: 'अध्ययन डैशबोर्ड', icon: ClipboardList, href: '/study-dashboard', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["study", "dashboard", "notes", "offline", "tracker", "progress"] },
-  { id: 'schedule_class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Video, href: '/live-classes/all', color: 'text-amber-600', bgColor: 'bg-amber-100/70 hover:bg-amber-200/70', keywords: ["class", "live", "schedule", "online class"] },
+  { id: 'oso_library', labelEn: 'OSO Library', labelHi: 'OSO पुस्तकालय', icon: Library, href: '/class-6-12-books', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["book", "library", "ncert", "textbook", "syllabus", "class", "exam book", "competitive", "preparation"] },
+  { id: 'projects', labelEn: 'Projects', labelHi: 'प्रोजेक्ट', icon: FlaskConical, href: '/services/projects', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["project", "model", "assignment", "homework"] },
+  { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
+  { id: 'brainmate', labelEn: 'Brainmate', labelHi: 'ब्रेनमेट', icon: BrainCircuit, href: '/brainmate', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["brainmate", "concept", "explain", "ai"] },
+  { id: 'revision_vault', labelEn: 'Revision Vault', labelHi: 'रिवीजन वॉल्ट', icon: History, href: '/study/revision-vault', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["revision", "vault", "doubts", "marked", "history"] },
+  { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["mind", "mood", "diary", "stress"] },
+  { id: 'handwriting_notes', labelEn: 'Handwriting', labelHi: 'हस्तलेखन', icon: FileSignature, href: '/handwriting-notes', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["handwriting", "notes", "writing", "script"] },
+  { id: 'test_series', labelEn: 'Test Series', labelHi: 'टेस्ट सीरीज़', icon: Target, href: '/test-series', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["test", "mock", "exam", "neet", "jee", "upsc", "cat", "competitive"] },
+  { id: 'brain_scan', labelEn: 'Aura Map', labelHi: 'ऑरा मैप', icon: Brain, href: '/brain-scan-report', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["brain", "focus", "stress", "attention", "aura"] },
+  { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["peer", "circle", "connect", "group"] },
+  { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["college", "admission", "predictor", "university"] },
+  { id: 'study_dashboard', labelEn: 'Study Dashboard', labelHi: 'अध्ययन डैशबोर्ड', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["study", "dashboard", "notes", "offline", "tracker", "progress"] },
+  { id: 'schedule_class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Video, href: '/live-classes/all', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["class", "live", "schedule", "online class"] },
 ];
 
 const recommendationsMock = [
   { id: 'rec_book_neet', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Objective Biology for NEET', titleHi: 'नीट के लिए वस्तुनिष्ठ जीवविज्ञान', imageUrl: 'https://images.unsplash.com/photo-1636959865743-f3999844bdff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxuZWV0JTIwYmlvbG9neSUyMGJvb2t8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "neet biology book", href: '/competitive-bookstore', priceEn: 'INR 799', priceHi: 'INR 799', relevance: ['neet', 'medical'] },
   { id: 'rec_project_volcano', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://images.unsplash.com/photo-1720210745848-5a47be4d5ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx2b2xjYW5vJTIwbW9kZWwlMjBraXR8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "volcano model kit", href: '/services/projects', priceEn: 'INR 299', priceHi: 'INR 299', relevance: ['science', 'class 6', 'class 7', 'class 8'] },
-  { id: 'rec_guruji_jee', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: JEE Physics Doubts', titleHi: 'गुरुजी से पूछें: JEE भौतिकी शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://images.unsplash.com/photo-1606479067834-db5efd9f2fe9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhaSUyMGNoYXQlMjBleGFtfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib-rb-4.1.0&q=80&w=1080', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क', relevance: ['jee', 'physics', 'engineering'] },
+  { id: 'rec_guruji_jee', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: JEE Physics Doubts', titleHi: 'गुरुजी से पूछें: JEE भौतिकी शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://images.unsplash.com/photo-1606479067834-db5efd9f2fe9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhaSUyMGNoYXQlMjBleGFtfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क', relevance: ['jee', 'physics', 'engineering'] },
   { id: 'rec_test_jee', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test Series', titleHi: 'JEE मुख्य मॉक टेस्ट सीरीज़', descriptionEn: 'Full Syllabus Coverage', descriptionHi: 'पूर्ण पाठ्यक्रम कवरेज', imageUrl: 'https://images.unsplash.com/photo-1665470909939-959569b20021?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8b25saW5lJTIwdGVzdCUyMGludGVyZmFjZXxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 199', priceHi: 'INR 199', relevance: ['jee', 'engineering'] },
   { id: 'rec_book_class10_math', typeEn: 'Book', typeHi: 'किताब', titleEn: 'NCERT Maths Class 10 Exemplar', titleHi: 'एनसीईआरटी गणित कक्षा 10 उदाहरण', imageUrl: 'https://placehold.co/150x200.png', dataAiHint: "class 10 maths book", href: '/class-6-12-books', priceEn: 'INR 150', priceHi: 'INR 150', relevance: ['class 10', 'maths', 'cbse', 'ncert'] },
 ];
 
 const deliveryDeals = [
-  { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, iconColor: "text-amber-500", dataAiHint:"charts diagram", href: "/delivery" },
-  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, iconColor: "text-violet-500", dataAiHint:"school supplies kit", href: "/delivery" },
+  { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, iconColor: "text-accent-foreground", dataAiHint:"charts diagram", href: "/delivery" },
+  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, iconColor: "text-primary", dataAiHint:"school supplies kit", href: "/delivery" },
   { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, iconColor: "text-destructive", dataAiHint:"project materials box", href: "/delivery" },
 ];
 
 const studyFestivalKits = [
-  { id: 'kit1', titleEn: "Board Exam Kit", titleHi: "बोर्ड परीक्षा किट", descriptionEn: "Pens, pads & more", descriptionHi: "पेन, पैड और बहुत कुछ", icon: Gift, iconColor: "text-blue-500", dataAiHint:"exam preparation kit", href: "/vendor-dashboard/bundles" },
-  { id: 'kit2', titleEn: "Admission Starter", titleHi: "एडमिशन स्टार्टर", descriptionEn: "New bag, notebooks...", descriptionHi: "नया बैग, नोटबुक...", icon: PackageSearch, iconColor: "text-green-500", dataAiHint:"school supplies bag", href: "/vendor-dashboard/bundles" },
-  { id: 'kit3', titleEn: "Creative Corner", titleHi: "रचनात्मक कॉर्नर", descriptionEn: "Art supplies combo", descriptionHi: "कला आपूर्ति कॉम्बो", icon: Palette, iconColor: "text-red-500", dataAiHint:"art supplies box", href: "/vendor-dashboard/bundles" },
+  { id: 'kit1', titleEn: "Board Exam Kit", titleHi: "बोर्ड परीक्षा किट", descriptionEn: "Pens, pads & more", descriptionHi: "पेन, पैड और बहुत कुछ", icon: Gift, iconColor: "text-primary", dataAiHint:"exam preparation kit", href: "/vendor-dashboard/bundles" },
+  { id: 'kit2', titleEn: "Admission Starter", titleHi: "एडमिशन स्टार्टर", descriptionEn: "New bag, notebooks...", descriptionHi: "नया बैग, नोटबुक...", icon: PackageSearch, iconColor: "text-success", dataAiHint:"school supplies bag", href: "/vendor-dashboard/bundles" },
+  { id: 'kit3', titleEn: "Creative Corner", titleHi: "रचनात्मक कॉर्नर", descriptionEn: "Art supplies combo", descriptionHi: "कला आपूर्ति कॉम्बो", icon: Palette, iconColor: "text-destructive", dataAiHint:"art supplies box", href: "/vendor-dashboard/bundles" },
 ];
 
 
 const studyBoosters = [
-  { id: 'sb1', titleEn: "Guruji Doubt Solver", titleHi: "गुरुजी शंका समाधान", descriptionEn: "Clear concepts 24/7", descriptionHi: "अवधारणाएँ 24/7 स्पष्ट करें", icon: Lightbulb, iconColor: "text-violet-500", dataAiHint:"ai learning lightbulb", href: "/ai-guruji" },
-  { id: 'sb2', titleEn: "Quick Revision Notes", titleHi: "त्वरित रिवीजन नोट्स", descriptionEn: "Key topics summarized", descriptionHi: "मुख्य विषय सारांशित", icon: ClipboardList, iconColor: "text-green-500", dataAiHint:"notes study checklist", href: "/study/my-notes" },
+  { id: 'sb1', titleEn: "Guruji Doubt Solver", titleHi: "गुरुजी शंका समाधान", descriptionEn: "Clear concepts 24/7", descriptionHi: "अवधारणाएँ 24/7 स्पष्ट करें", icon: Lightbulb, iconColor: "text-primary", dataAiHint:"ai learning lightbulb", href: "/ai-guruji" },
+  { id: 'sb2', titleEn: "Quick Revision Notes", titleHi: "त्वरित रिवीजन नोट्स", descriptionEn: "Key topics summarized", descriptionHi: "मुख्य विषय सारांशित", icon: ClipboardList, iconColor: "text-success", dataAiHint:"notes study checklist", href: "/study/my-notes" },
   { id: 'sb3', titleEn: "Focus Zone Music", titleHi: "फोकस ज़ोन संगीत", descriptionEn: "Beats for deep study", descriptionHi: "गहन अध्ययन के लिए बीट्स", icon: Music2, iconColor: "text-secondary-foreground", dataAiHint:"headphones music study", href: "/study/focus-music" },
 ];
 
@@ -329,7 +329,7 @@ export default function ModernHomePage() {
       <header className="space-y-3 sticky top-0 bg-background/90 z-40 py-3 -mx-4 px-4 shadow-sm border-b border-border">
         <div className="flex items-center justify-between">
          <Button variant="ghost" onClick={() => setIsLocationModalOpen(true)} className="flex items-center gap-1.5 text-sm text-muted-foreground p-1 h-auto hover:bg-card">
-            <MapPin className="h-5 w-5 text-amber-500" />
+            <MapPin className="h-5 w-5 text-primary" />
             <span className="font-medium truncate max-w-[180px] sm:max-w-[220px] text-left text-foreground">{location}</span>
             <ChevronRight className="h-4 w-4 opacity-70 shrink-0" />
           </Button>
@@ -340,7 +340,7 @@ export default function ModernHomePage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-                  <Avatar className="h-8 w-8 border-2 border-amber-400">
+                  <Avatar className="h-8 w-8 border-2 border-primary">
                     <AvatarImage src={displayAvatar || 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080'} alt={displayName} data-ai-hint={displayAvatarHint || 'student avatar'} />
                     <AvatarFallback>{displayName.substring(0,1)}</AvatarFallback>
                   </Avatar>
@@ -389,7 +389,7 @@ export default function ModernHomePage() {
             <Input
               type="search"
               placeholder={currentLang === 'en' ? "Search for books, projects, stationery..." : currentLang === 'hi' ? "किताबें, प्रोजेक्ट, स्टेशनरी खोजें..." : "Search books, projects, stationery..."}
-              className="pl-10 h-12 text-base border-border focus:border-violet-500 focus:ring-violet-500 rounded-lg shadow-sm bg-input placeholder:text-muted-foreground"
+              className="pl-10 h-12 text-base border-border focus:border-primary focus:ring-primary rounded-lg shadow-sm bg-input placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -399,13 +399,13 @@ export default function ModernHomePage() {
               }}
             />
           </div>
-          <Button onClick={handleSearchSubmit} size="icon" className="h-12 w-12 flex-shrink-0 rounded-lg bg-violet-600 hover:bg-violet-700 text-primary-foreground" aria-label={currentLang === 'en' ? "Search" : "खोजें"}>
+          <Button onClick={handleSearchSubmit} size="icon" className="h-12 w-12 flex-shrink-0 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground" aria-label={currentLang === 'en' ? "Search" : "खोजें"}>
             <SearchIcon className="h-5 w-5" />
           </Button>
         </div>
          <div className="flex justify-around items-center pt-1 text-xs text-muted-foreground">
             {searchIcons.map(item => (
-                <Link href={item.href} key={item.labelEn} className="flex flex-col items-center gap-1 hover:text-amber-500 transition-colors">
+                <Link href={item.href} key={item.labelEn} className="flex flex-col items-center gap-1 hover:text-primary transition-colors">
                     <item.icon className="h-5 w-5"/>
                     <span><BilingualText en={item.labelEn} hi={item.labelHi} lang={currentLang} separator=" "/></span>
                 </Link>
@@ -438,7 +438,7 @@ export default function ModernHomePage() {
               <div>
                 <h2 className="text-2xl font-bold mb-1 drop-shadow-lg"><BilingualText en={slide.titleEn} hi={slide.titleHi} lang={currentLang} /></h2>
                 <p className="text-sm drop-shadow-md"><BilingualText en={slide.descriptionEn} hi={slide.descriptionHi} lang={currentLang} /></p>
-                 <Button variant="default" size="sm" className="mt-3 bg-amber-500 text-amber-foreground hover:bg-amber-600 shadow-md">
+                 <Button variant="default" size="sm" className="mt-3 bg-accent text-accent-foreground hover:bg-accent/90 shadow-md">
                    <BilingualText en="Explore Now" hi="अभी एक्सप्लोर करें" lang={currentLang} />
                  </Button>
               </div>
@@ -450,7 +450,7 @@ export default function ModernHomePage() {
             <button
               key={index}
               onClick={() => jumpToSlide(index)}
-              className={cn("h-2 w-2 rounded-full transition-all", currentSlide === index ? "w-4 bg-amber-400" : "bg-foreground/50 hover:bg-foreground/75")}
+              className={cn("h-2 w-2 rounded-full transition-all", currentSlide === index ? "w-4 bg-accent" : "bg-foreground/50 hover:bg-foreground/75")}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
@@ -460,7 +460,7 @@ export default function ModernHomePage() {
       <section>
         <div className="flex justify-between items-center mb-3">
             <h2 className="text-xl font-semibold text-foreground"><BilingualText en="Live Classes" hi="लाइव कक्षाएं" lang={currentLang}/></h2>
-            <Link href="/live-classes/all" className="text-sm text-amber-600 hover:underline">
+            <Link href="/live-classes/all" className="text-sm text-primary hover:underline">
                 <BilingualText en="View All" hi="सभी देखें" lang={currentLang}/> <ChevronRight className="inline h-4 w-4"/>
             </Link>
         </div>
@@ -480,7 +480,7 @@ export default function ModernHomePage() {
         {personalizedLiveClasses.upcoming.length > 0 && (
              <div className="mb-4">
                 <h3 className="text-md font-medium text-foreground mb-2 flex items-center">
-                    <Timer size={18} className="mr-1.5 text-amber-500"/> <BilingualText en="Upcoming Classes" hi="आगामी कक्षाएं" lang={currentLang}/>
+                    <Timer size={18} className="mr-1.5 text-accent"/> <BilingualText en="Upcoming Classes" hi="आगामी कक्षाएं" lang={currentLang}/>
                 </h3>
                 <ScrollArea className="w-full whitespace-nowrap pb-2.5">
                     <div className="flex space-x-4">
@@ -493,7 +493,7 @@ export default function ModernHomePage() {
         {personalizedLiveClasses.recorded.length > 0 && (
             <div>
                 <h3 className="text-md font-medium text-foreground mb-2 flex items-center">
-                     <PlaySquare size={18} className="mr-1.5 text-amber-500"/> <BilingualText en="Recently Completed" hi="हाल ही में संपन्न" lang={currentLang}/>
+                     <PlaySquare size={18} className="mr-1.5 text-primary"/> <BilingualText en="Recently Completed" hi="हाल ही में संपन्न" lang={currentLang}/>
                 </h3>
                  <ScrollArea className="w-full whitespace-nowrap pb-2.5">
                     <div className="flex space-x-4">
@@ -517,10 +517,10 @@ export default function ModernHomePage() {
               <Card className={cn(
                 "text-center p-3 rounded-xl shadow-sm hover:shadow-lg transition-all h-full flex flex-col justify-center items-center relative overflow-hidden",
                 category.bgColor,
-                category.isRecommended && "border-2 border-yellow-400 shadow-yellow-400/30"
+                category.isRecommended && "border-2 border-accent shadow-accent/20"
               )}>
                 {category.isRecommended && (
-                    <Badge className="absolute top-1 right-1 text-xs px-1.5 py-0.5 bg-yellow-400 text-yellow-900 border-yellow-500">
+                    <Badge className="absolute top-1 right-1 text-xs px-1.5 py-0.5 bg-accent text-accent-foreground border-accent">
                        <BilingualText en="For You" hi="आपके लिए" lang={currentLang}/>
                     </Badge>
                 )}
@@ -533,17 +533,17 @@ export default function ModernHomePage() {
       </section>
 
       <section>
-        <Card className="bg-gradient-to-r from-violet-500/20 via-card to-violet-500/20 border-violet-500/30 shadow-lg hover:shadow-violet-500/20 transition-all">
+        <Card className="bg-gradient-to-r from-primary/20 via-card to-primary/20 border-primary/30 shadow-lg hover:shadow-primary/20 transition-all">
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                    <CardTitle className="text-xl font-headline text-violet-600">
+                    <CardTitle className="text-xl font-headline text-primary">
                         <BilingualText en="Unlock OSO Premium" hi="OSO प्रीमियम अनलॉक करें" />
                     </CardTitle>
-                    <CardDescription className="text-violet-900/80 dark:text-violet-100/80">
+                    <CardDescription className="text-primary/80 dark:text-primary/80">
                         <BilingualText en="Get unlimited access to all features." hi="सभी सुविधाओं तक असीमित पहुंच प्राप्त करें।" />
                     </CardDescription>
                 </div>
-                <Gem className="h-10 w-10 text-violet-500 opacity-80" />
+                <Gem className="h-10 w-10 text-primary opacity-80" />
             </CardHeader>
             <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -551,7 +551,7 @@ export default function ModernHomePage() {
                 </p>
             </CardContent>
             <CardFooter>
-                 <Button asChild className="w-full bg-violet-600 hover:bg-violet-700 text-violet-50">
+                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Link href="/subscribe">
                         <BilingualText en="View Premium Plans" hi="प्रीमियम योजनाएं देखें" /> <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -581,7 +581,7 @@ export default function ModernHomePage() {
                   </div>
                   <CardContent className="p-2.5 flex-grow flex flex-col justify-between">
                     <div>
-                        <p className="text-xs font-semibold text-amber-600 truncate"><BilingualText en={item.typeEn} hi={item.typeHi} lang={currentLang}/></p>
+                        <p className="text-xs font-semibold text-primary truncate"><BilingualText en={item.typeEn} hi={item.typeHi} lang={currentLang}/></p>
                         <h3 className="text-sm font-medium text-foreground leading-tight h-10 overflow-hidden mb-1"><BilingualText en={item.titleEn} hi={item.titleHi} lang={currentLang}/></h3>
                         { (item.descriptionEn || item.descriptionHi) && <p className="text-xs text-muted-foreground truncate"><BilingualText en={item.descriptionEn!} hi={item.descriptionHi!} lang={currentLang}/></p>}
                     </div>
@@ -654,8 +654,8 @@ export default function ModernHomePage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <Button variant="outline" onClick={handleUseCurrentLocation} className="w-full justify-start gap-2 hover:bg-amber-100/50 border-border">
-              <LocateFixed className="h-4 w-4 text-amber-500" /> <BilingualText en="Use My Current Location" hi="मेरे वर्तमान स्थान का उपयोग करें" lang={currentLang}/>
+            <Button variant="outline" onClick={handleUseCurrentLocation} className="w-full justify-start gap-2 hover:bg-accent/10 border-border">
+              <LocateFixed className="h-4 w-4 text-accent" /> <BilingualText en="Use My Current Location" hi="मेरे वर्तमान स्थान का उपयोग करें" lang={currentLang}/>
             </Button>
             <div className="relative">
               <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -669,8 +669,8 @@ export default function ModernHomePage() {
             <RadioGroup value={selectedTempLocation} onValueChange={setSelectedTempLocation}>
               <ScrollArea className="h-[200px] w-full rounded-md border border-border p-2 bg-background/50">
                 {filteredLocations.length > 0 ? filteredLocations.map((loc) => (
-                  <div key={loc.id} className="flex items-center space-x-2 p-2 hover:bg-amber-100/50 rounded-md">
-                    <RadioGroupItem value={loc.name} id={loc.id} className="border-amber-500 data-[state=checked]:border-amber-600 data-[state=checked]:text-amber-600" />
+                  <div key={loc.id} className="flex items-center space-x-2 p-2 hover:bg-accent/10 rounded-md">
+                    <RadioGroupItem value={loc.name} id={loc.id} className="border-primary data-[state=checked]:border-primary data-[state=checked]:text-primary" />
                     <Label htmlFor={loc.id} className="font-normal cursor-pointer flex-1">
                       {loc.name}
                       <span className="text-xs text-muted-foreground ml-1">({loc.type})</span>
@@ -689,7 +689,7 @@ export default function ModernHomePage() {
             <DialogClose asChild>
               <Button type="button" variant="outline" className="border-border hover:bg-muted/20"><BilingualText en="Cancel" hi="रद्द करें" lang={currentLang}/></Button>
             </DialogClose>
-            <Button type="button" onClick={handleLocationConfirm} className="bg-amber-500 text-amber-foreground hover:bg-amber-600"><BilingualText en="Confirm Location" hi="स्थान की पुष्टि करें" lang={currentLang}/></Button>
+            <Button type="button" onClick={handleLocationConfirm} className="bg-primary text-primary-foreground hover:bg-primary/90"><BilingualText en="Confirm Location" hi="स्थान की पुष्टि करें" lang={currentLang}/></Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
