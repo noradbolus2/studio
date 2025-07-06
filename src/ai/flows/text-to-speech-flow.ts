@@ -97,7 +97,7 @@ const textToSpeechFlow = ai.defineFlow(
     } catch (error: any) {
         console.error("[TTS Flow] Error generating speech:", error.message);
         if (error.message && error.message.includes("429")) {
-            throw new Error("I'm sorry, my voice is tired from talking so much! The daily limit for speech generation has been reached. Please try again tomorrow.");
+            throw new Error("Audio Error: The daily free limit for AI voice generation has been reached. Please try again tomorrow.");
         }
         throw new Error("I'm having trouble with my voice right now. Please try again in a moment.");
     }
