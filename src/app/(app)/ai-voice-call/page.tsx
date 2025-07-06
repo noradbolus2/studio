@@ -37,11 +37,24 @@ export default function AiVoiceCallPage() {
   const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
   const [isAiThinking, setIsAiThinking] = useState(false);
   
-  // New state for speech recognition
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const toggleListening = useCallback(() => {
+    if (!recognitionRef.current) {
+      console.warn("Speech recognition not initialized.");
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      if (!isAudioPlaying && !isAiThinking) {
+        recognitionRef.current.start();
+      }
+    }
+  }, [isListening, isAudioPlaying, isAiThinking]);
 
   const playAiSpeech = useCallback(async (text: string) => {
     setIsAudioPlaying(true);
@@ -134,18 +147,6 @@ export default function AiVoiceCallPage() {
       }
     }
   }, [toast, handleUserResponse]);
-  
-  const toggleListening = () => {
-    if (!recognitionRef.current) return;
-    if (isListening) {
-      recognitionRef.current.stop();
-    } else {
-      if (!isAudioPlaying && !isAiThinking) {
-        recognitionRef.current.start();
-      }
-    }
-  };
-
 
   useEffect(() => {
     // Initial connection simulation and greeting
@@ -153,21 +154,34 @@ export default function AiVoiceCallPage() {
       setCallStatus('active');
       getAiResponse(''); // Initial empty input to get greeting
     }, 2000); 
+    
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
-    // Setup audio player event listener
+  // This effect manages the audio element and the "2-way" conversation flow
+  useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
-    const onAudioEnd = () => setIsAudioPlaying(false);
+    
+    const onAudioEnd = () => {
+      setIsAudioPlaying(false);
+      // Automatically start listening again after AI finishes speaking
+      if (callStatus === 'active') {
+        toggleListening();
+      }
+    };
+
     audio.addEventListener('ended', onAudioEnd);
 
     return () => {
-        clearTimeout(timer);
         if (audioRef.current) {
             audioRef.current.removeEventListener('ended', onAudioEnd);
+            audioRef.current.pause(); // Ensure audio stops on component unmount
         }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [callStatus, toggleListening]); // Re-run if callStatus or toggleListening changes
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
