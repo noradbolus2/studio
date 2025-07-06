@@ -60,7 +60,7 @@ export default function AiVoiceCallPage() {
     try {
       const response = await chatWithOsoBuddy({ userInput, history });
       setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
-      playAiSpeech(response.aiResponse);
+      await playAiSpeech(response.aiResponse);
 
       if (response.suggestedReplies.length > 0) {
         setSuggestedReplies(response.suggestedReplies);
@@ -72,7 +72,7 @@ export default function AiVoiceCallPage() {
         toast({ title: "Conversation Error", description: error.message || "The AI is unable to respond right now.", variant: "destructive" });
         const errorEntry = { speaker: 'AI' as const, text: "I'm sorry, I'm having technical difficulties. Please hang up and try again later."};
         setTranscript(prev => [...prev, errorEntry]);
-        playAiSpeech(errorEntry.text);
+        await playAiSpeech(errorEntry.text);
         setSuggestedReplies([]);
     } finally {
         setIsAiThinking(false);
