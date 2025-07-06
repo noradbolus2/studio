@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,8 +40,10 @@ const mockTrackingData: TrackingStep[] = [
 const mockClusteredOrderIds = ["ORD78924", "ORD78925"];
 
 
-export default function TrackOrderPage({ params: { orderId } }: { params: { orderId: string } }) {
+export default function TrackOrderPage() {
   const router = useRouter();
+  const params = useParams();
+  const orderId = params.orderId as string;
 
   const [isLoading, setIsLoading] = useState(true);
   const [trackingSteps, setTrackingSteps] = useState<TrackingStep[]>([]);

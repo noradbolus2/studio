@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,8 +26,10 @@ interface Note {
 
 const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
 
-export default function EditNotePage({ params: { noteId } }: { params: { noteId: string } }) {
+export default function EditNotePage() {
   const router = useRouter();
+  const params = useParams();
+  const noteId = params.noteId as string;
 
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
