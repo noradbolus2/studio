@@ -1,38 +1,70 @@
-
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { 
-    Video, CalendarDays, Users, IndianRupee, UploadCloud, PlayCircle, BarChart3, Edit,
-    Bell, UserPlus, LogOut as UserMinus, TrendingUp, Package, Lightbulb, BadgePercent, PlaySquare
+    CalendarDays,
+    FileText as SlidesIcon,
+    UploadCloud,
+    Edit,
+    Star,
+    IndianRupee,
+    BookOpen,
+    PlayCircle,
+    Wand2,
+    Briefcase,
+    MessageSquare,
+    Link as LinkIcon,
+    Users
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ProfileFormData } from '../edit-profile/page';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
-const teacherStats = [
-    { id: "courses", labelEn: "My Courses", value: "3", icon: Video, href: "/coaching-panel/create-course" },
-    { id: "upcoming", labelEn: "Upcoming Classes", value: "2 Today", icon: CalendarDays, href: "/schedule-class" },
-    { id: "students", labelEn: "My Students", value: "1,285", icon: Users, href: "/coaching-panel/analytics" },
-    { id: "earnings", labelEn: "My Earnings", value: "INR 41,320", icon: IndianRupee, href: "/coaching-panel/earnings" },
+const teacherStats = {
+  activeCourse: "Physics 12",
+  nextClassTime: "Today @ 4:00 PM",
+  studyKitsCount: 5,
+  monthlyEarnings: "₹13,800",
+  avgRating: 4.8,
+  ratingCount: 122,
+};
+
+const nextClassDetails = {
+    topic: "Human Circulatory System",
+    slidesCount: 8,
+};
+
+const latestKit = {
+    name: "Organic Chemistry Short Notes",
+    sales: 740,
+};
+
+const earningsDetails = {
+    lastClass: 499,
+    voicePack: 99,
+    kitDownload: 199,
+};
+
+const recentReviews = [
+    "Sir slides se class lena bahut easy lagta hai!",
+    "Loved your Science crash kit.",
 ];
 
-const mockNotifications = [
-    { id: 1, text: "Student Aniket joined your NEET 2025 Batch", icon: UserPlus, color: "text-green-500" },
-    { id: 2, text: "Your course 'Modern Physics' is trending in Lucknow", icon: TrendingUp, color: "text-blue-500" },
-    { id: 3, text: "5 students ordered your printed notes – Vendor notified", icon: Package, color: "text-orange-500" },
-    { id: 4, text: "Student dropped out after Chapter 3 – Auto Feedback Requested", icon: UserMinus, color: "text-red-500" },
-];
-
-const mockAiSuggestions = [
-    "Avg. student watch time is dropping. Consider uploading shorter revision videos.",
-    "Add chapter-wise mock tests to 'NEET Chemistry 2025' to improve engagement.",
-    "Offer 'Class 10 Foundation' as a low-cost add-on to attract more students."
+const quickActions = [
+  { id: "gen_slide", labelEn: "Generate Slide", labelHi: "स्लाइड बनाएं", buttonTextEn: "Text to PPT", buttonTextHi: "टेक्स्ट से पीपीटी", icon: Wand2, href: "/coaching-panel/smart-slide-class" },
+  { id: "start_class", labelEn: "Start Class", labelHi: "कक्षा शुरू करें", buttonTextEn: "Go Live Now", buttonTextHi: "अभी लाइव जाएं", icon: PlayCircle, href: "/coaching-panel/live-classes" },
+  { id: "upload_notes", labelEn: "Upload Notes", labelHi: "नोट्स अपलोड करें", buttonTextEn: "Add Material", buttonTextHi: "सामग्री जोड़ें", icon: UploadCloud, href: "/coaching-panel/create-course" },
+  { id: "create_kit", labelEn: "Create Kit", labelHi: "किट बनाएं", buttonTextEn: "Build Study Kit", buttonTextHi: "स्टडी किट बनाएं", icon: Briefcase, href: "/coaching-panel/create-course" },
+  { id: "bookings", labelEn: "1:1 Booking", labelHi: "1:1 बुकिंग", buttonTextEn: "Manage Sessions", buttonTextHi: "सत्र प्रबंधित करें", icon: Users, href: "#" },
 ];
 
 
@@ -68,90 +100,120 @@ export default function CoachingPanelPage() {
   const teacherName = teacherProfile?.creatorName || teacherProfile?.fullName || "Teacher";
 
   return (
-    <div className="space-y-8">
-      <header className="text-center relative">
+    <div className="space-y-6">
+      <header>
         <h1 className="text-3xl font-bold font-headline text-primary">
           👋 <BilingualText en={`Welcome, ${teacherName}!`} hi={`स्वागत है, ${teacherName}!`} />
         </h1>
-        <Button asChild variant="link" size="sm" className="mt-1 text-accent">
-            <Link href={`/edit-profile?role=teacher`}>
-                <Edit className="mr-1.5 h-3 w-3"/>
-                <BilingualText en="Edit Profile" hi="प्रोफ़ाइल संपादित करें" />
-            </Link>
-        </Button>
+        <p className="text-muted-foreground">Here's your dashboard overview for today.</p>
       </header>
       
-       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-           <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
-               <Link href="/coaching-panel/create-course">
-                   <UploadCloud className="h-7 w-7"/>
-                   <span className="font-semibold"><BilingualText en="Upload New Content" hi="नई सामग्री अपलोड करें"/></span>
-               </Link>
-           </Button>
-            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
-               <Link href="/coaching-panel/live-classes">
-                   <PlayCircle className="h-7 w-7"/>
-                   <span className="font-semibold"><BilingualText en="Go Live" hi="लाइव जाएं"/></span>
-               </Link>
-           </Button>
-            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
-               <Link href="/coaching-panel/analytics">
-                   <BarChart3 className="h-7 w-7"/>
-                   <span className="font-semibold"><BilingualText en="My Students" hi="मेरे छात्र"/></span>
-               </Link>
-           </Button>
-            <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2">
-              <Link href="/coaching-panel/promotions">
-                  <BadgePercent className="h-7 w-7"/>
-                  <span className="font-semibold"><BilingualText en="Promotions" hi="प्रचार"/></span>
-              </Link>
-          </Button>
-          <Button asChild size="lg" className="h-auto py-4 flex flex-col gap-2 md:col-span-1 col-span-2">
-              <Link href="/coaching-panel/smart-slide-class">
-                  <PlaySquare className="h-7 w-7"/>
-                  <span className="font-semibold"><BilingualText en="Smart Slide Class" hi="स्मार्ट स्लाइड क्लास"/></span>
-              </Link>
-          </Button>
+       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                {/* Next Class Overview */}
+                <Card className="shadow-lg rounded-2xl">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline"><CalendarDays className="text-primary"/> Next Scheduled Class</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <p className="text-lg font-semibold">{nextClassDetails.topic}</p>
+                        <p className="text-sm text-muted-foreground">Time: {teacherStats.nextClassTime}</p>
+                        <p className="text-sm text-muted-foreground">Slides: {nextClassDetails.slidesCount} Slides Loaded (<Link href="#" className="text-primary underline">View Deck</Link>)</p>
+                    </CardContent>
+                    <CardFooter className="gap-2">
+                        <Button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white"><PlayCircle className="mr-2"/> Join Class</Button>
+                        <Button variant="outline" asChild><Link href="/coaching-panel/smart-slide-class"><Wand2 className="mr-2"/> Edit Slides</Link></Button>
+                        <Button variant="outline" asChild><Link href="/coaching-panel/create-course"><UploadCloud className="mr-2"/> Upload New PPT</Link></Button>
+                    </CardFooter>
+                </Card>
+                {/* Quick Action Panel */}
+                <Card className="shadow-md rounded-2xl">
+                    <CardHeader><CardTitle className="font-headline">Quick Actions</CardTitle></CardHeader>
+                    <CardContent>
+                         <Table>
+                            <TableBody>
+                                {quickActions.map(action => (
+                                <TableRow key={action.id}>
+                                    <TableCell className="font-medium flex items-center gap-2"><action.icon className="text-primary"/> <BilingualText en={action.labelEn} hi={action.labelHi}/></TableCell>
+                                    <TableCell className="text-right">
+                                        <Button asChild className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                                            <Link href={action.href}><BilingualText en={action.buttonTextEn} hi={action.buttonTextHi}/></Link>
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+                {/* Smart Slide Generator */}
+                <Card className="shadow-md rounded-2xl">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline text-sm"><Wand2 className="text-primary"/> Smart Slide Generator</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <div>
+                            <Label htmlFor="slide-topic" className="text-xs">Topic</Label>
+                            <Input id="slide-topic" placeholder="e.g., Reflection of Light" />
+                        </div>
+                        <div>
+                            <Label htmlFor="slide-notes" className="text-xs">Input Notes</Label>
+                            <Textarea id="slide-notes" placeholder="Paste or type bullet points..." rows={3}/>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="gap-2">
+                         <Button asChild className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white"><Link href="/coaching-panel/smart-slide-class"><Wand2 className="mr-2"/> Generate</Link></Button>
+                         <Button asChild variant="outline"><Link href="/coaching-panel/smart-slide-class"><Edit className="mr-2"/> Open Editor</Link></Button>
+                    </CardFooter>
+                </Card>
+                {/* Study Kit Status */}
+                <Card className="shadow-md rounded-2xl">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline text-sm"><Briefcase className="text-primary"/> Study Kit Status</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1 text-sm">
+                        <p><strong>Total Kits Uploaded:</strong> {teacherStats.studyKitsCount}</p>
+                        <p><strong>Last Kit:</strong> "{latestKit.name}"</p>
+                        <p><strong>Sales This Month:</strong> ₹{latestKit.sales}</p>
+                    </CardContent>
+                    <CardFooter className="gap-2">
+                        <Button variant="outline" className="flex-1">View My Storefront</Button>
+                        <Button asChild className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white"><Link href="/coaching-panel/create-course">+</Link></Button>
+                    </CardFooter>
+                </Card>
+                {/* Earnings Snapshot */}
+                <Card className="shadow-md rounded-2xl">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline text-sm"><IndianRupee className="text-primary"/> Earnings Snapshot</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1 text-sm">
+                        <p><strong>This Month:</strong> {teacherStats.monthlyEarnings}</p>
+                        <p><strong>Last Class:</strong> ₹{earningsDetails.lastClass}</p>
+                        <p><strong>Voice Pack Sale:</strong> ₹{earningsDetails.voicePack}</p>
+                        <p><strong>Kit Download:</strong> ₹{earningsDetails.kitDownload}</p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button asChild variant="outline" className="w-full"><Link href="/coaching-panel/earnings">Full Earnings Report</Link></Button>
+                    </CardFooter>
+                </Card>
+                 {/* Ratings + Reviews */}
+                <Card className="shadow-md rounded-2xl">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline text-sm"><Star className="text-primary"/> Ratings + Reviews</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-sm">
+                        <p><strong>Avg. Rating:</strong> {teacherStats.avgRating} from {teacherStats.ratingCount} Students</p>
+                        <blockquote className="border-l-2 pl-2 italic">“{recentReviews[0]}”</blockquote>
+                        <blockquote className="border-l-2 pl-2 italic">“{recentReviews[1]}”</blockquote>
+                    </CardContent>
+                    <CardFooter>
+                        <Button asChild variant="outline" className="w-full"><Link href="/coaching-panel/promotions">See All Feedback</Link></Button>
+                    </CardFooter>
+                </Card>
+            </div>
        </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
-            <Bell className="h-6 w-6 text-primary"/>
-            <BilingualText en="Smart Notifications" hi="स्मार्ट सूचनाएं"/>
-          </CardTitle>
-          <CardDescription>
-            <BilingualText en="Live updates about your courses and students." hi="आपके पाठ्यक्रमों और छात्रों के बारे में लाइव अपडेट।"/>
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {mockNotifications.map(notification => (
-            <div key={notification.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-              <notification.icon className={`h-5 w-5 mt-1 flex-shrink-0 ${notification.color}`} />
-              <p className="text-sm text-foreground">{notification.text}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-      
-      <Card className="bg-primary/5 border-primary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline text-primary">
-            <Lightbulb className="h-6 w-6"/>
-            <BilingualText en="GURU Mode™ AI Insights" hi="गुरु मोड™ एआई अंतर्दृष्टि"/>
-          </CardTitle>
-          <CardDescription>
-            <BilingualText en="Data-based tips to improve your course performance." hi="अपने पाठ्यक्रम के प्रदर्शन को बेहतर बनाने के लिए डेटा-आधारित सुझाव।"/>
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {mockAiSuggestions.map((suggestion, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-primary/20">
-              <p className="text-sm text-foreground">{suggestion}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
 
     </div>
   );
