@@ -5,11 +5,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Phone, PhoneOff, Mic, MicOff, AlertTriangle, MessageCircle } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, AlertTriangle, MessageCircle } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { textToSpeech } from '@/ai/flows/text-to-speech-flow';
-// New import
 import { chatWithOsoBuddy } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -20,17 +19,28 @@ type TranscriptEntry = {
   text: string;
 };
 
+// Add SpeechRecognition type declaration for window object
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 export default function AiVoiceCallPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [callStatus, setCallStatus] = useState<CallStatus>('connecting');
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [callDuration, setCallDuration] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
   const [isAiThinking, setIsAiThinking] = useState(false);
   
+  // New state for speech recognition
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const playAiSpeech = useCallback(async (text: string) => {
@@ -78,6 +88,56 @@ export default function AiVoiceCallPage() {
         setIsAiThinking(false);
     }
   }, [transcript, playAiSpeech, toast]);
+  
+  const handleUserResponse = useCallback((responseText: string) => {
+      setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
+      getAiResponse(responseText);
+  }, [getAiResponse]);
+
+  // Setup Speech Recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        const recognition = recognitionRef.current;
+        recognition.continuous = false;
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+          setIsListening(true);
+          toast({ title: "Listening...", description: "Please speak now." });
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          toast({ title: "Mic Error", description: `Could not recognize speech: ${event.error}`, variant: "destructive" });
+          setIsListening(false);
+        };
+
+        recognition.onresult = (event: any) => {
+          const transcriptResult = event.results[0][0].transcript;
+          handleUserResponse(transcriptResult);
+        };
+      } else {
+        toast({ title: "Mic Not Supported", description: "Your browser does not support speech recognition.", variant: "destructive" });
+      }
+    }
+  }, [toast, handleUserResponse]);
+  
+  const toggleListening = () => {
+    if (!recognitionRef.current) return;
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
 
 
   useEffect(() => {
@@ -101,10 +161,6 @@ export default function AiVoiceCallPage() {
     return () => clearInterval(interval);
   }, [callStatus]);
   
-  const handleUserResponse = (responseText: string) => {
-      setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
-      getAiResponse(responseText);
-  };
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -137,7 +193,7 @@ export default function AiVoiceCallPage() {
             )}
         </div>
 
-        {callStatus === 'active' && !isAiThinking && (
+        {callStatus === 'active' && !isAiThinking && !isListening && (
           <div className="w-full space-y-3">
             {suggestedReplies.map((reply, index) => (
                 <Button key={index} variant="outline" className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 justify-start text-left h-auto py-2.5" onClick={() => handleUserResponse(reply)} disabled={isAudioPlaying || isAiThinking}>
@@ -148,14 +204,29 @@ export default function AiVoiceCallPage() {
           </div>
         )}
         
-        {callStatus === 'active' && isAiThinking && (
+        {callStatus === 'active' && isAiThinking && !isListening && (
             <div className="text-center p-4"><LoadingSpinner /> <p className="mt-2 text-sm text-gray-400">OSO Buddy is responding...</p></div>
+        )}
+        
+        {callStatus === 'active' && isListening && (
+            <div className="text-center p-4 space-y-2">
+                <LoadingSpinner />
+                <p className="text-sm text-cyan-400 animate-pulse">Listening...</p>
+            </div>
         )}
 
 
         <div className="flex justify-center items-center gap-6 mt-8">
-            <Button variant="ghost" className="rounded-full h-16 w-16 bg-gray-700/80 hover:bg-gray-700" onClick={() => setIsMuted(!isMuted)}>
-                {isMuted ? <MicOff size={28}/> : <Mic size={28}/>}
+            <Button 
+                variant="ghost" 
+                className={cn(
+                    "rounded-full h-16 w-16 bg-gray-700/80 hover:bg-gray-700",
+                    isListening && "bg-cyan-500/80 hover:bg-cyan-500 animate-pulse"
+                )} 
+                onClick={toggleListening}
+                disabled={isAiThinking || isAudioPlaying}
+            >
+                {isListening ? <MicOff size={28}/> : <Mic size={28}/>}
             </Button>
             <Button variant="destructive" className="rounded-full h-16 w-16" onClick={() => setCallStatus('ended')}>
                 <PhoneOff size={28} />
