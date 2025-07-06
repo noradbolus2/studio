@@ -45,7 +45,7 @@ export function DynamicQuoteCard({ lang }: { lang: 'en' | 'hi' | 'hng' }) {
         setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
         setIsFading(false);
       }, 500); // Wait for fade out to complete
-    }, 5000); // Change quote every 5 seconds
+    }, 30000); // Change quote every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
