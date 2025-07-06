@@ -11,7 +11,7 @@ const ptSans = PT_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'OSO App',
+  title: 'OSO: One Student One App',
   description: 'One Student One App - Study tools and instant delivery for students in India.',
 };
 
