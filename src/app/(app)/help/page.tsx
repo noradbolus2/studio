@@ -36,10 +36,7 @@ export default function HelpPage() {
     }
 
     const handleCallSupport = () => {
-        toast({
-            title: "Calling AI Support (Simulated)",
-            description: "In a real app, this would initiate a voice call.",
-        });
+      router.push('/ai-voice-call');
     };
 
     return (
