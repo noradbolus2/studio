@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { PhoneOff, Mic, MicOff, AlertTriangle, MessageCircle } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, MessageCircle } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { textToSpeech } from '@/ai/flows/text-to-speech-flow';
