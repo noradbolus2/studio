@@ -48,8 +48,13 @@ export default function AiVoiceCallPage() {
     try {
       const response = await textToSpeech(text);
       if (audioRef.current && response.audioDataUri) {
-        audioRef.current.src = response.audioDataUri;
-        await audioRef.current.play();
+        await new Promise<void>((resolve, reject) => {
+          audioRef.current!.src = response.audioDataUri;
+          audioRef.current!.oncanplaythrough = () => {
+             audioRef.current!.play().then(resolve).catch(reject);
+          };
+          audioRef.current!.onerror = reject;
+        });
       }
     } catch (error: any) {
       console.error("TTS Error:", error);
@@ -135,7 +140,9 @@ export default function AiVoiceCallPage() {
     if (isListening) {
       recognitionRef.current.stop();
     } else {
-      recognitionRef.current.start();
+      if (!isAudioPlaying && !isAiThinking) {
+        recognitionRef.current.start();
+      }
     }
   };
 
@@ -147,7 +154,18 @@ export default function AiVoiceCallPage() {
       getAiResponse(''); // Initial empty input to get greeting
     }, 2000); 
 
-    return () => clearTimeout(timer);
+    // Setup audio player event listener
+    const audio = new Audio();
+    audioRef.current = audio;
+    const onAudioEnd = () => setIsAudioPlaying(false);
+    audio.addEventListener('ended', onAudioEnd);
+
+    return () => {
+        clearTimeout(timer);
+        if (audioRef.current) {
+            audioRef.current.removeEventListener('ended', onAudioEnd);
+        }
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
