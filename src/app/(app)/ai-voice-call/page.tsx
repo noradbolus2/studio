@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -88,10 +87,9 @@ export default function AiVoiceCallPage() {
         }
         return await res.blob();
     } catch (err: any) {
-        if (err instanceof TypeError) { 
-            throw new Error("Could not connect to the local voice server. Please ensure it is running and try again.");
-        }
-        throw err; 
+        // Any error during the fetch is likely a connection issue.
+        // The original error message (e.g., "Failed to fetch") is not very user-friendly.
+        throw new Error("Could not connect to the local voice server. Please ensure it is running and try again.");
     }
   };
 
