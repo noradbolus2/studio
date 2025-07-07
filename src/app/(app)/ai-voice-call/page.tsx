@@ -10,7 +10,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { chatWithOsoBuddy } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useVoicePlayer } from '@/hooks/use-voice-player'; // Import the new hook
+import { useVoicePlayer } from '@/hooks/use-voice-player';
 
 type CallStatus = 'connecting' | 'active' | 'ended';
 type TranscriptEntry = {
@@ -37,12 +37,9 @@ export default function AiVoiceCallPage() {
   
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
-  const [playbackEnded, setPlaybackEnded] = useState(false); // New state to break dependency cycle
+  const [playbackEnded, setPlaybackEnded] = useState(false);
 
-  // Custom hook for voice playback is now defined before toggleListening
   const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(() => {
-    // This callback is executed when audio playback ends.
-    // Instead of calling toggleListening directly, we set a state to trigger an effect.
     if (callStatus === 'active') {
       setPlaybackEnded(true);
     }
@@ -56,23 +53,20 @@ export default function AiVoiceCallPage() {
     if (isListening) {
       recognitionRef.current.stop();
     } else {
-      // isAudioPlaying is now defined and accessible here
       if (!isAudioPlaying && !isAiThinking) {
         recognitionRef.current.start();
       }
     }
   }, [isListening, isAudioPlaying, isAiThinking]);
 
-  // This effect handles the logic that should run after playback ends.
   useEffect(() => {
     if (playbackEnded) {
       toggleListening();
-      setPlaybackEnded(false); // Reset the trigger
+      setPlaybackEnded(false);
     }
   }, [playbackEnded, toggleListening]);
 
-
-  const fetchTTSBlob = async (text: string): Promise<Blob> => {
+  const fetchTTSBlob = useCallback(async (text: string): Promise<Blob> => {
     try {
         const res = await fetch("http://localhost:5003/tts", {
             method: "POST",
@@ -87,13 +81,11 @@ export default function AiVoiceCallPage() {
         }
         return await res.blob();
     } catch (err: any) {
-        // Any error during the fetch is likely a connection issue.
-        // The original error message (e.g., "Failed to fetch") is not very user-friendly.
         throw new Error("Could not connect to the local voice server. Please ensure it is running and try again.");
     }
-  };
+  }, []);
 
-  const fetchAndPlayAiSpeech = async (text: string) => {
+  const fetchAndPlayAiSpeech = useCallback(async (text: string) => {
     try {
       const audioBlob = await fetchTTSBlob(text);
       await playVoice(audioBlob);
@@ -101,7 +93,7 @@ export default function AiVoiceCallPage() {
       console.error("TTS Error:", error);
       toast({ title: "Audio Error", description: error.message || "Could not play AI voice.", variant: "destructive" });
     }
-  };
+  }, [fetchTTSBlob, playVoice, toast]);
   
   const getAiResponse = useCallback(async (userInput: string) => {
     setIsAiThinking(true);
@@ -131,7 +123,7 @@ export default function AiVoiceCallPage() {
     } finally {
         setIsAiThinking(false);
     }
-  }, [transcript, toast, playVoice]);
+  }, [transcript, toast, fetchAndPlayAiSpeech]);
   
   const handleUserResponse = useCallback((responseText: string) => {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
@@ -174,16 +166,30 @@ export default function AiVoiceCallPage() {
     }
   }, [toast, handleUserResponse]);
 
+  // This effect runs only once on mount to simulate connection and fetch the initial greeting.
   useEffect(() => {
-    // Initial connection simulation and greeting
-    const timer = setTimeout(() => {
-      setCallStatus('active');
-      getAiResponse(''); // Initial empty input to get greeting
-    }, 2000); 
+    const initialGreeting = async () => {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setCallStatus('active');
+        // Manually call the initial fetch logic without involving the full `getAiResponse` to avoid loops.
+        setIsAiThinking(true);
+        try {
+            const response = await chatWithOsoBuddy({ userInput: '', history: [] });
+            setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
+            await fetchAndPlayAiSpeech(response.aiResponse);
+            if (response.suggestedReplies.length > 0) {
+                setSuggestedReplies(response.suggestedReplies);
+            }
+        } catch (error: any) {
+            toast({ title: "Initial Greeting Failed", description: "Could not connect to OSO Buddy.", variant: "destructive" });
+        } finally {
+            setIsAiThinking(false);
+        }
+    };
     
-    return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    initialGreeting();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAndPlayAiSpeech, toast]); // Dependency array is minimal and stable.
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
