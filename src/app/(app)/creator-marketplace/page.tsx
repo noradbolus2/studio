@@ -2,7 +2,7 @@
 // src/app/(app)/creator-marketplace/page.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
