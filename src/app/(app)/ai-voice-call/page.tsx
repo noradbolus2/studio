@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -8,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PhoneOff, Mic, MicOff, MessageCircle } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { textToSpeech } from '@/ai/flows/text-to-speech-flow';
 import { chatWithOsoBuddy } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -56,13 +54,43 @@ export default function AiVoiceCallPage() {
     }
   }, [isListening, isAudioPlaying, isAiThinking]);
 
+  const fetchTTSAsDataURI = async (text: string): Promise<string> => {
+    try {
+        const res = await fetch("http://localhost:5003/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
+        });
+        if (!res.ok) {
+            if (res.status === 429) {
+                 throw new Error("The daily free limit for AI voice generation has been reached. Please try again tomorrow.");
+            }
+            throw new Error(`TTS server responded with status ${res.status}. Make sure the local voice server is running.`);
+        }
+        const audioBlob = await res.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result as string);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(audioBlob);
+        });
+    } catch (err: any) {
+        if (err instanceof TypeError) { 
+            throw new Error("Could not connect to the local voice server. Please ensure it is running and try again.");
+        }
+        throw err; 
+    }
+  };
+
   const playAiSpeech = useCallback(async (text: string) => {
     setIsAudioPlaying(true);
     try {
-      const response = await textToSpeech(text);
-      if (audioRef.current && response.audioDataUri) {
+      const audioDataUri = await fetchTTSAsDataURI(text);
+      if (audioRef.current && audioDataUri) {
         await new Promise<void>((resolve, reject) => {
-          audioRef.current!.src = response.audioDataUri;
+          audioRef.current!.src = audioDataUri;
           audioRef.current!.oncanplaythrough = () => {
              audioRef.current!.play().then(resolve).catch(reject);
           };
