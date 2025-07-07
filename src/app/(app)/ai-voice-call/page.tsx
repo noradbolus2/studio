@@ -38,6 +38,16 @@ export default function AiVoiceCallPage() {
   
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const [playbackEnded, setPlaybackEnded] = useState(false); // New state to break dependency cycle
+
+  // Custom hook for voice playback is now defined before toggleListening
+  const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(() => {
+    // This callback is executed when audio playback ends.
+    // Instead of calling toggleListening directly, we set a state to trigger an effect.
+    if (callStatus === 'active') {
+      setPlaybackEnded(true);
+    }
+  });
 
   const toggleListening = useCallback(() => {
     if (!recognitionRef.current) {
@@ -47,20 +57,21 @@ export default function AiVoiceCallPage() {
     if (isListening) {
       recognitionRef.current.stop();
     } else {
+      // isAudioPlaying is now defined and accessible here
       if (!isAudioPlaying && !isAiThinking) {
         recognitionRef.current.start();
       }
     }
   }, [isListening, isAudioPlaying, isAiThinking]);
 
-  // Custom hook for voice playback
-  const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(() => {
-    // This callback is executed when audio playback ends.
-    // Automatically start listening again after AI finishes speaking
-    if (callStatus === 'active') {
+  // This effect handles the logic that should run after playback ends.
+  useEffect(() => {
+    if (playbackEnded) {
       toggleListening();
+      setPlaybackEnded(false); // Reset the trigger
     }
-  });
+  }, [playbackEnded, toggleListening]);
+
 
   const fetchTTSBlob = async (text: string): Promise<Blob> => {
     try {
@@ -122,7 +133,7 @@ export default function AiVoiceCallPage() {
     } finally {
         setIsAiThinking(false);
     }
-  }, [transcript, toast, playVoice]); // fetchAndPlayAiSpeech simplified to playVoice dependency
+  }, [transcript, toast, playVoice]);
   
   const handleUserResponse = useCallback((responseText: string) => {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
