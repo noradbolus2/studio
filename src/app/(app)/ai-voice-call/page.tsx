@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -10,6 +11,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { chatWithOsoBuddy } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useVoicePlayer } from '@/hooks/use-voice-player'; // Import the new hook
 
 type CallStatus = 'connecting' | 'active' | 'ended';
 type TranscriptEntry = {
@@ -31,14 +33,11 @@ export default function AiVoiceCallPage() {
   const [callStatus, setCallStatus] = useState<CallStatus>('connecting');
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [callDuration, setCallDuration] = useState(0);
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [suggestedReplies, setSuggestedReplies] = useState<string[]>([]);
   const [isAiThinking, setIsAiThinking] = useState(false);
   
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const toggleListening = useCallback(() => {
     if (!recognitionRef.current) {
@@ -54,7 +53,16 @@ export default function AiVoiceCallPage() {
     }
   }, [isListening, isAudioPlaying, isAiThinking]);
 
-  const fetchTTSAsDataURI = async (text: string): Promise<string> => {
+  // Custom hook for voice playback
+  const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(() => {
+    // This callback is executed when audio playback ends.
+    // Automatically start listening again after AI finishes speaking
+    if (callStatus === 'active') {
+      toggleListening();
+    }
+  });
+
+  const fetchTTSBlob = async (text: string): Promise<Blob> => {
     try {
         const res = await fetch("http://localhost:5003/tts", {
             method: "POST",
@@ -62,20 +70,12 @@ export default function AiVoiceCallPage() {
             body: JSON.stringify({ text })
         });
         if (!res.ok) {
-            if (res.status === 429) {
+             if (res.status === 429) {
                  throw new Error("The daily free limit for AI voice generation has been reached. Please try again tomorrow.");
             }
             throw new Error(`TTS server responded with status ${res.status}. Make sure the local voice server is running.`);
         }
-        const audioBlob = await res.blob();
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                resolve(reader.result as string);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(audioBlob);
-        });
+        return await res.blob();
     } catch (err: any) {
         if (err instanceof TypeError) { 
             throw new Error("Could not connect to the local voice server. Please ensure it is running and try again.");
@@ -84,26 +84,15 @@ export default function AiVoiceCallPage() {
     }
   };
 
-  const playAiSpeech = useCallback(async (text: string) => {
-    setIsAudioPlaying(true);
+  const fetchAndPlayAiSpeech = async (text: string) => {
     try {
-      const audioDataUri = await fetchTTSAsDataURI(text);
-      if (audioRef.current && audioDataUri) {
-        await new Promise<void>((resolve, reject) => {
-          audioRef.current!.src = audioDataUri;
-          audioRef.current!.oncanplaythrough = () => {
-             audioRef.current!.play().then(resolve).catch(reject);
-          };
-          audioRef.current!.onerror = reject;
-        });
-      }
+      const audioBlob = await fetchTTSBlob(text);
+      await playVoice(audioBlob);
     } catch (error: any) {
       console.error("TTS Error:", error);
       toast({ title: "Audio Error", description: error.message || "Could not play AI voice.", variant: "destructive" });
-    } finally {
-      setIsAudioPlaying(false);
     }
-  }, [toast]);
+  };
   
   const getAiResponse = useCallback(async (userInput: string) => {
     setIsAiThinking(true);
@@ -116,7 +105,7 @@ export default function AiVoiceCallPage() {
     try {
       const response = await chatWithOsoBuddy({ userInput, history });
       setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
-      await playAiSpeech(response.aiResponse);
+      await fetchAndPlayAiSpeech(response.aiResponse);
 
       if (response.suggestedReplies.length > 0) {
         setSuggestedReplies(response.suggestedReplies);
@@ -128,12 +117,12 @@ export default function AiVoiceCallPage() {
         toast({ title: "Conversation Error", description: error.message || "The AI is unable to respond right now.", variant: "destructive" });
         const errorEntry = { speaker: 'AI' as const, text: "I'm sorry, I'm having technical difficulties. Please hang up and try again later."};
         setTranscript(prev => [...prev, errorEntry]);
-        await playAiSpeech(errorEntry.text);
+        await fetchAndPlayAiSpeech(errorEntry.text);
         setSuggestedReplies([]);
     } finally {
         setIsAiThinking(false);
     }
-  }, [transcript, playAiSpeech, toast]);
+  }, [transcript, toast, playVoice]); // fetchAndPlayAiSpeech simplified to playVoice dependency
   
   const handleUserResponse = useCallback((responseText: string) => {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
@@ -185,31 +174,7 @@ export default function AiVoiceCallPage() {
     
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
-
-  // This effect manages the audio element and the "2-way" conversation flow
-  useEffect(() => {
-    const audio = new Audio();
-    audioRef.current = audio;
-    
-    const onAudioEnd = () => {
-      setIsAudioPlaying(false);
-      // Automatically start listening again after AI finishes speaking
-      if (callStatus === 'active') {
-        toggleListening();
-      }
-    };
-
-    audio.addEventListener('ended', onAudioEnd);
-
-    return () => {
-        if (audioRef.current) {
-            audioRef.current.removeEventListener('ended', onAudioEnd);
-            audioRef.current.pause(); // Ensure audio stops on component unmount
-        }
-    };
-  }, [callStatus, toggleListening]); // Re-run if callStatus or toggleListening changes
-
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -220,6 +185,11 @@ export default function AiVoiceCallPage() {
     }
     return () => clearInterval(interval);
   }, [callStatus]);
+
+  const endCall = () => {
+    stopVoice();
+    setCallStatus('ended');
+  }
   
 
   const formatDuration = (seconds: number) => {
@@ -230,7 +200,6 @@ export default function AiVoiceCallPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-      <audio ref={audioRef} hidden />
       <div className="w-full max-w-sm flex flex-col items-center">
         <Avatar className="h-28 w-28 mb-4 border-4 border-primary/50">
           <AvatarImage src="https://placehold.co/100x100.png" alt="OSO Buddy" data-ai-hint="friendly robot mascot" />
@@ -288,7 +257,7 @@ export default function AiVoiceCallPage() {
             >
                 {isListening ? <MicOff size={28}/> : <Mic size={28}/>}
             </Button>
-            <Button variant="destructive" className="rounded-full h-16 w-16" onClick={() => setCallStatus('ended')}>
+            <Button variant="destructive" className="rounded-full h-16 w-16" onClick={endCall}>
                 <PhoneOff size={28} />
             </Button>
         </div>
