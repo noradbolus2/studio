@@ -20,8 +20,8 @@ const helpCategories = [
 ];
 
 const liveAgents = [
-    { name: "Shivani", department: "Tech Support", available: true, avatarHint: "female support" },
-    { name: "Rahul", department: "Delivery Support", available: false, avatarHint: "male support" },
+    { name: "Shivani", department: "Tech Support", available: true, avatarUrl: "https://images.unsplash.com/photo-1616740795230-f63547d8f10c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmZW1hbGUlMjBzdXBwb3J0fGVufDB8fHx8MTc1MTg3ODU0OHww&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "female support" },
+    { name: "Rahul", department: "Delivery Support", available: false, avatarUrl: "https://images.unsplash.com/photo-1683498073270-888cec8e7abb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYWxlJTIwc3VwcG9ydHxlbnwwfHx8fDE3NTE4Nzg1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080", avatarHint: "male support" },
 ];
 
 export default function HelpPage() {
@@ -55,7 +55,7 @@ export default function HelpPage() {
             <Card className="shadow-lg">
                 <CardHeader className="text-center items-center bg-muted/30">
                      <Avatar className="h-16 w-16 mb-2 border-2 border-primary">
-                        <AvatarImage src="https://placehold.co/100x100.png" alt="OSO Buddy" data-ai-hint="friendly robot mascot" />
+                        <AvatarImage src="https://images.unsplash.com/photo-1659018966820-de07c94e0d01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZnJpZW5kbHklMjByb2JvdCUyMG1hc2NvdHxlbnwwfHx8fDE3NTE4Nzg1NDh8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="OSO Buddy" data-ai-hint="friendly robot mascot" />
                         <AvatarFallback>🤖</AvatarFallback>
                     </Avatar>
                     <CardTitle className="font-headline text-xl text-primary">OSO Buddy</CardTitle>
@@ -120,7 +120,7 @@ export default function HelpPage() {
                          <div key={agent.name} className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
                             <div className="flex items-center gap-3">
                                 <Avatar className="h-9 w-9">
-                                    <AvatarImage src={`https://placehold.co/40x40.png`} alt={agent.name} data-ai-hint={agent.avatarHint} />
+                                    <AvatarImage src={agent.avatarUrl} alt={agent.name} data-ai-hint={agent.avatarHint} />
                                     <AvatarFallback>{agent.name.substring(0,1)}</AvatarFallback>
                                 </Avatar>
                                 <div>
