@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview A flow for converting text to speech using Google's TTS model.
+ * @fileOverview A flow for converting text to speech using a self-hosted TTS model.
  *
  * - textToSpeech - Converts a string of text into playable audio data.
  * - TextToSpeechInput - The input type for the function.
@@ -9,9 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { googleAI } from '@genkit-ai/googleai';
 import { z } from 'genkit';
-import wav from 'wav';
 
 // Simple in-memory cache for TTS results to reduce API calls
 const ttsCache = new Map<string, string>();
@@ -28,31 +26,6 @@ export async function textToSpeech(text: TextToSpeechInput): Promise<TextToSpeec
   return textToSpeechFlow(text);
 }
 
-// Helper function to convert PCM buffer to WAV Base64 string
-async function toWav(
-  pcmData: Buffer,
-  channels = 1,
-  rate = 24000,
-  sampleWidth = 2
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const writer = new wav.Writer({
-      channels,
-      sampleRate: rate,
-      bitDepth: sampleWidth * 8,
-    });
-
-    const bufs: Buffer[] = [];
-    writer.on('error', reject);
-    writer.on('data', (d) => bufs.push(d));
-    writer.on('end', () => resolve(Buffer.concat(bufs).toString('base64')));
-
-    writer.write(pcmData);
-    writer.end();
-  });
-}
-
-
 const textToSpeechFlow = ai.defineFlow(
   {
     name: 'textToSpeechFlow',
@@ -68,38 +41,30 @@ const textToSpeechFlow = ai.defineFlow(
     console.log('[TTS Flow] Cache miss. Generating speech for:', text.substring(0, 20) + '...');
 
     try {
-        const { media } = await ai.generate({
-          model: googleAI.model('gemini-2.5-flash-preview-tts'),
-          config: {
-            responseModalities: ['AUDIO'],
-            speechConfig: {
-              voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: 'Algenib' },
-              },
-            },
-          },
-          prompt: text,
-        });
+      const response = await fetch('http://localhost:5003/tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
 
-        if (!media || !media.url) {
-          throw new Error('TTS media generation failed. No media returned.');
-        }
+      if (!response.ok) {
+        throw new Error(`TTS server responded with status: ${response.status}`);
+      }
+      
+      const audioBuffer = await response.arrayBuffer();
+      const wavBase64 = Buffer.from(audioBuffer).toString('base64');
+      const audioDataUri = `data:audio/wav;base64,${wavBase64}`;
 
-        const pcmData = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
-        const wavBase64 = await toWav(pcmData);
-        const audioDataUri = `data:audio/wav;base64,${wavBase64}`;
+      // Store result in cache
+      ttsCache.set(text, audioDataUri);
 
-        // Store result in cache
-        ttsCache.set(text, audioDataUri);
-
-        return { audioDataUri };
+      return { audioDataUri };
 
     } catch (error: any) {
-        console.error("[TTS Flow] Error generating speech:", error.message);
-        if (error.message && error.message.includes("429")) {
-            throw new Error("Audio Error: The daily free limit for AI voice generation has been reached. Please try again tomorrow.");
-        }
-        throw new Error("I'm having trouble with my voice right now. Please try again in a moment.");
+        console.error("[TTS Flow] Error generating speech from local server:", error.message);
+        throw new Error("I'm having trouble with my voice right now. Please make sure the local voice server is running and try again.");
     }
   }
 );
