@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Filter, ShoppingCart, Sparkles, Award, Palette, Code2, FlaskConical, Edit3, ArrowLeft } from 'lucide-react';
+import { Users, Search, Filter, ShoppingCart, Sparkles, Award, Palette, Code2, FlaskConical, Edit3, ArrowLeft, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,7 @@ interface CreatorProject {
   titleHi: string;
   creatorNameEn: string;
   creatorNameHi: string;
-  creatorAvatarUrl?: string; // Optional
+  creatorAvatarUrl?: string; 
   dataAiHintAvatar?: string;
   categoryEn: string;
   categoryHi: string;
@@ -29,12 +29,13 @@ interface CreatorProject {
   subjectHi?: string;
   descriptionEn: string;
   descriptionHi: string;
-  imageUrl?: string; // Optional
+  imageUrl?: string; 
   dataAiHintImage: string;
   priceDigital?: number;
   pricePhysicalKit?: number;
   rating?: number; 
   reviewCount?: number;
+  estimatedTime?: string;
 }
 
 const mockCreatorProjects: CreatorProject[] = [
@@ -59,6 +60,7 @@ const mockCreatorProjects: CreatorProject[] = [
     pricePhysicalKit: 799, 
     rating: 4.5,
     reviewCount: 15,
+    estimatedTime: '5 hours',
   },
   {
     id: 'cp2',
@@ -75,11 +77,12 @@ const mockCreatorProjects: CreatorProject[] = [
     subjectHi: 'विज्ञान, भूगोल',
     descriptionEn: 'Complete kit with all materials and instructions to build an impressive erupting volcano model. Safe and educational.',
     descriptionHi: 'एक प्रभावशाली विस्फोट करने वाला ज्वालामुखी मॉडल बनाने के लिए सभी सामग्रियों और निर्देशों के साथ पूर्ण किट। सुरक्षित और शैक्षिक।',
-    imageUrl: 'https://images.unsplash.com/photo-1637515944864-426524797cdc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx2b2xjYW5vJTIwbW9kZWwlMjBraXR8ZW58MHx8fHwxNzUxODc1NzkzfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1637515944864-426524797cdc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx2b2xjYW5vJTIwbW9kZWwlMjBraXR8ZW58MHx8fHwxNzUxODc1NzkzfDA&ixlib.rb-4.1.0&q=80&w=1080',
     dataAiHintImage: 'volcano model kit',
     pricePhysicalKit: 349,
     rating: 4.8,
     reviewCount: 28,
+    estimatedTime: '3 hours',
   },
   {
     id: 'cp3',
@@ -91,7 +94,7 @@ const mockCreatorProjects: CreatorProject[] = [
     dataAiHintAvatar: 'creator avatar',
     categoryEn: 'Art & Craft',
     categoryHi: 'कला और शिल्प',
-    classLevel: '7-9',
+    classLevel: '6-8',
     subjectEn: 'History, Art',
     subjectHi: 'इतिहास, कला',
     descriptionEn: 'Create a detailed diorama of an Indus Valley Civilization settlement. Includes guide and material suggestions.',
@@ -101,6 +104,7 @@ const mockCreatorProjects: CreatorProject[] = [
     priceDigital: 199, 
     rating: 4.2,
     reviewCount: 9,
+    estimatedTime: '4 hours',
   },
 ];
 
@@ -112,9 +116,12 @@ const projectCategories = [
     { id: 'research_essay', nameEn: 'Research/Essay', nameHi: 'शोध/निबंध', icon: Edit3 },
 ];
 
+const classLevels = ['All Levels', '6-8', '9-12'];
+
 export default function CreatorMarketplacePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedClassLevel, setSelectedClassLevel] = useState('All Levels');
   const { toast } = useToast();
   const router = useRouter();
 
@@ -125,10 +132,11 @@ export default function CreatorMarketplacePage() {
     });
   };
 
-  const filteredProjects = mockCreatorProjects.filter(project =>
+  const filteredProjects = useMemo(() => mockCreatorProjects.filter(project =>
     (project.titleEn.toLowerCase().includes(searchTerm.toLowerCase()) || project.titleHi.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedCategory === 'all' || project.categoryEn.toLowerCase().replace(' & ', '_').replace(' ', '_') === selectedCategory)
-  );
+    (selectedCategory === 'all' || project.categoryEn.toLowerCase().replace(' & ', '_').replace(' ', '_') === selectedCategory) &&
+    (selectedClassLevel === 'All Levels' || project.classLevel === selectedClassLevel)
+  ), [searchTerm, selectedCategory, selectedClassLevel]);
 
   return (
     <div className="space-y-6">
@@ -160,7 +168,7 @@ export default function CreatorMarketplacePage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="h-11">
               <SelectValue placeholder={<BilingualText en="Select Category" hi="श्रेणी चुनें" />} />
@@ -171,6 +179,16 @@ export default function CreatorMarketplacePage() {
                     <cat.icon className="inline h-4 w-4 mr-2 opacity-70" />
                     <BilingualText en={cat.nameEn} hi={cat.nameHi} />
                 </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedClassLevel} onValueChange={setSelectedClassLevel}>
+            <SelectTrigger className="h-11">
+              <SelectValue placeholder={<BilingualText en="Select Class Level" hi="कक्षा स्तर चुनें" />} />
+            </SelectTrigger>
+            <SelectContent>
+              {classLevels.map(level => (
+                <SelectItem key={level} value={level}>{level}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -220,14 +238,17 @@ export default function CreatorMarketplacePage() {
                   <BilingualText en={project.descriptionEn} hi={project.descriptionHi} />
                 </CardDescription>
                 
-                <div className="flex items-center gap-1 pt-1">
-                  {project.rating && Array(5).fill(0).map((_, i) => (
-                    <Sparkles key={i} size={14} className={i < Math.floor(project.rating!) ? "text-accent fill-accent" : "text-muted-foreground/50"} />
-                  ))}
-                  {project.reviewCount && <span className="text-xs text-muted-foreground">({project.reviewCount} reviews)</span>}
+                <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-1">
+                      {project.rating && Array(5).fill(0).map((_, i) => (
+                        <Sparkles key={i} size={14} className={i < Math.floor(project.rating!) ? "text-accent fill-accent" : "text-muted-foreground/50"} />
+                      ))}
+                      {project.reviewCount && <span className="text-xs text-muted-foreground">({project.reviewCount} reviews)</span>}
+                    </div>
+                     {project.estimatedTime && <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12}/>{project.estimatedTime}</span>}
                 </div>
 
-                <div className="pt-1">
+                <div className="pt-2 border-t mt-2">
                     {project.priceDigital && <p className="text-sm font-semibold"><BilingualText en="Digital Guide: " hi="डिजिटल गाइड: "/> INR {project.priceDigital}</p>}
                     {project.pricePhysicalKit && <p className="text-sm font-semibold"><BilingualText en="Physical Kit: " hi="फिजिकल किट: "/> INR {project.pricePhysicalKit}</p>}
                     {!project.priceDigital && !project.pricePhysicalKit && <p className="text-sm font-semibold"><BilingualText en="Custom Pricing" hi="कस्टम मूल्य निर्धारण"/></p>}
