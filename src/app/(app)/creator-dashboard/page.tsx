@@ -70,11 +70,20 @@ export default function CreatorDashboardPage() {
   }, []);
 
   const handleCopyLink = () => {
-    const link = `osoapp.in/@${creatorProfile?.creatorName?.replace(/\s+/g, '').toLowerCase() || 'creator'}`;
+    const link = `https://osoapp.in/@${creatorProfile?.creatorName?.replace(/\s+/g, '').toLowerCase() || 'creator'}`;
     navigator.clipboard.writeText(link);
     toast({
       title: "Link Copied!",
       description: "Your storefront link has been copied to the clipboard.",
+    });
+  };
+
+  const handlePreview = () => {
+    const url = `https://osoapp.in/@${creatorProfile?.creatorName?.replace(/\s+/g, '').toLowerCase() || 'creator'}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    toast({
+      title: "Opening Preview",
+      description: "Opening your public storefront in a new tab.",
     });
   };
 
@@ -204,7 +213,7 @@ export default function CreatorDashboardPage() {
                 </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-                <Button variant="ghost" onClick={() => toast({ title: "Feature coming soon!" })}><Eye className="mr-2 h-4 w-4"/> Preview as Student</Button>
+                <Button variant="ghost" onClick={handlePreview}><Eye className="mr-2 h-4 w-4"/> Preview as Student</Button>
                  <Button asChild>
                     <Link href="/edit-profile?role=creator">
                         <Edit className="mr-2 h-4 w-4"/> Edit Storefront
