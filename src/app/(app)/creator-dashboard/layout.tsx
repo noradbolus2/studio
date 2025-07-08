@@ -1,4 +1,3 @@
-
 "use client"
 import {
   Sidebar,
@@ -143,9 +142,11 @@ export default function CreatorDashboardLayout({ children }: { children: React.R
                 </header>
                  {/* CTA Button */}
                 <div className="p-3 border-b">
-                    <Button className="w-full">
-                        <CirclePlus className="mr-2 h-4 w-4"/>
-                        Start New Task
+                    <Button className="w-full" asChild>
+                        <Link href="/creator-dashboard/my-projects">
+                            <CirclePlus className="mr-2 h-4 w-4"/>
+                            Start New Task
+                        </Link>
                     </Button>
                 </div>
                 {/* Main Content */}

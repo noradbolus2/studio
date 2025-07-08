@@ -1,6 +1,7 @@
-
 // src/app/(app)/creator-dashboard/page.tsx
 "use client";
+
+import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -12,51 +13,97 @@ import {
     Zap,
     Store,
     Link as LinkIcon,
-    Heart,
-    Phone,
-    ShoppingCart,
     Edit,
-    Eye
+    Eye,
+    Bot,
+    Wallet
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import type { ProfileFormData } from '../edit-profile/page';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { useToast } from "@/hooks/use-toast";
+
+const creatorStats = {
+  avgRating: 4.9,
+  monthlyEarnings: "INR 12,540",
+  activeTasks: 5,
+  responseRate: "98%",
+};
+
+const taskOverviewData = [
+  { task: "Doubts", pending: 2, inProgress: 1, completed: 6 },
+  { task: "Flashcards", pending: 1, inProgress: 0, completed: 3 },
+  { task: "Voiceovers", pending: 0, inProgress: 0, completed: 4 },
+  { task: "MCQs", pending: 1, inProgress: 1, completed: 7 },
+];
+
+const quickActions = [
+    { id: "my_tasks", labelEn: "My Active Tasks", labelHi: "मेरे सक्रिय कार्य", icon: ClipboardList, href: "/creator-dashboard/my-projects" },
+    { id: "earnings", labelEn: "Earnings Report", labelHi: "कमाई रिपोर्ट", icon: Wallet, href: "/creator-dashboard/earnings" },
+    { id: "ai_assistant", labelEn: "AI Assistant", labelHi: "एआई सहायक", icon: Bot, href: "/creator-dashboard/ai-assistant" },
+    { id: "storefront", labelEn: "Edit Storefront", labelHi: "स्टोरफ्रंट संपादित करें", icon: Store, href: "/edit-profile?role=creator" },
+];
+
 
 export default function CreatorDashboardPage() {
-  const creatorStats = {
-      avgRating: 4.9,
-      monthlyEarnings: "INR 12,540",
-      activeTasks: 5,
-      responseRate: "98%",
+  const router = useRouter();
+  const { toast } = useToast();
+  const [creatorProfile, setCreatorProfile] = useState<ProfileFormData | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedProfileString = localStorage.getItem('userProfileData');
+      if (storedProfileString) {
+        try {
+          const parsedProfile = JSON.parse(storedProfileString) as ProfileFormData;
+          if (parsedProfile.role === 'creator' || parsedProfile.role === 'teacher') {
+            setCreatorProfile(parsedProfile);
+          }
+        } catch (e) { console.error("Failed to parse creator profile", e); }
+      }
+    }
+    setLoadingProfile(false);
+  }, []);
+
+  const handleCopyLink = () => {
+    const link = `osoapp.in/@${creatorProfile?.creatorName?.replace(/\s+/g, '').toLowerCase() || 'creator'}`;
+    navigator.clipboard.writeText(link);
+    toast({
+      title: "Link Copied!",
+      description: "Your storefront link has been copied to the clipboard.",
+    });
+  };
+
+  if (loadingProfile) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+        <LoadingSpinner size={48} />
+        <p className="ml-4 text-muted-foreground">Loading Creator Dashboard...</p>
+      </div>
+    );
   }
 
-  const taskOverviewData = [
-    { task: "Doubts", pending: 2, inProgress: 1, completed: 6 },
-    { task: "Flashcards", pending: 1, inProgress: 0, completed: 3 },
-    { task: "Voiceovers", pending: 0, inProgress: 0, completed: 4 },
-    { task: "MCQs", pending: 1, inProgress: 1, completed: 7 },
-  ];
+  const creatorName = creatorProfile?.creatorName || "Creator";
+  const creatorExpertise = creatorProfile?.expertise?.split(',').map(e => e.trim()) || ["Doubt Solver", "Flashcard Maker"];
 
   return (
     <div className="space-y-6">
        <Card className="bg-primary/5 border-primary/20">
             <CardHeader className="flex flex-row items-center gap-4">
                 <Avatar className="h-16 w-16 border-2 border-primary">
-                    <AvatarImage src="https://placehold.co/80x80.png" alt="Abhishek Verma" data-ai-hint="male professional"/>
-                    <AvatarFallback>AV</AvatarFallback>
+                    <AvatarImage src={creatorProfile?.avatarUrl || "https://placehold.co/80x80.png"} alt={creatorName} data-ai-hint={creatorProfile?.dataAiHint || "creator avatar"}/>
+                    <AvatarFallback>{creatorName.substring(0,2).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
-                    <CardTitle className="text-2xl font-bold">👋 Welcome Back, Abhishek Verma</CardTitle>
-                    <CardDescription className="flex items-center gap-2 mt-1">
-                       <Badge variant="secondary">Doubt Solver</Badge>
-                       <Badge variant="secondary">Flashcard Maker</Badge>
+                    <CardTitle className="text-2xl font-bold">👋 Welcome Back, {creatorName}</CardTitle>
+                    <CardDescription className="flex flex-wrap items-center gap-2 mt-1">
+                       {creatorExpertise.map(exp => (
+                           <Badge key={exp} variant="secondary">{exp}</Badge>
+                       ))}
                        <Badge variant="default" className="bg-green-100 text-green-800">Active</Badge>
                     </CardDescription>
                 </div>
@@ -120,16 +167,20 @@ export default function CreatorDashboardPage() {
                 </CardContent>
             </Card>
 
-            <Card>
+             <Card>
                 <CardHeader>
                     <CardTitle>Quick Actions</CardTitle>
                     <CardDescription>Your most common actions.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
-                    <Button>Start New Task</Button>
-                    <Button variant="secondary">Submit Completed Work</Button>
-                    <Button variant="outline">View Earnings Report</Button>
-                    <Button variant="ghost">Switch Role</Button>
+                    {quickActions.map(action => (
+                         <Button key={action.id} asChild variant="outline" className="justify-start gap-3">
+                            <Link href={action.href}>
+                                <action.icon className="h-5 w-5 text-muted-foreground"/>
+                                <BilingualText en={action.labelEn} hi={action.labelHi}/>
+                            </Link>
+                         </Button>
+                    ))}
                 </CardContent>
             </Card>
         </div>
@@ -143,32 +194,22 @@ export default function CreatorDashboardPage() {
                     This is how your profile appears to students seeking your services.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
                 <div className="flex items-center justify-between p-2 bg-muted rounded-md">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <LinkIcon className="h-4 w-4"/>
-                        <span className="font-mono">osoapp.in/@abhishekpro</span>
+                        <span className="font-mono">osoapp.in/@{creatorProfile?.creatorName?.replace(/\s+/g, '').toLowerCase() || 'creator'}</span>
                     </div>
-                    <Button variant="ghost" size="sm">Copy</Button>
-                </div>
-                <div className="space-y-2">
-                    <div className="flex items-center gap-4 text-sm">
-                        <span className="flex items-center gap-1.5"><Star className="h-4 w-4 text-yellow-400 fill-yellow-400"/> 4.9</span>
-                        <span className="flex items-center gap-1.5"><Heart className="h-4 w-4 text-red-500 fill-red-500"/> 88 Reviews</span>
-                    </div>
-                </div>
-                <div className="space-y-2 pt-4 border-t">
-                    <Button variant="outline" className="w-full justify-start gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground"/> Book a 1:1 Call – INR 149
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start gap-2">
-                        <ShoppingCart className="h-4 w-4 text-muted-foreground"/> Buy: History Flashcards – INR 99
-                    </Button>
+                    <Button variant="ghost" size="sm" onClick={handleCopyLink}>Copy</Button>
                 </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-                <Button variant="ghost"><Eye className="mr-2 h-4 w-4"/> Preview as Student</Button>
-                <Button><Edit className="mr-2 h-4 w-4"/> Edit Storefront</Button>
+                <Button variant="ghost" onClick={() => toast({ title: "Feature coming soon!" })}><Eye className="mr-2 h-4 w-4"/> Preview as Student</Button>
+                 <Button asChild>
+                    <Link href="/edit-profile?role=creator">
+                        <Edit className="mr-2 h-4 w-4"/> Edit Storefront
+                    </Link>
+                </Button>
             </CardFooter>
         </Card>
     </div>
