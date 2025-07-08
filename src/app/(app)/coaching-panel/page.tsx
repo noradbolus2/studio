@@ -118,29 +118,37 @@ export default function CoachingPanelPage() {
                   <CardContent className="space-y-2 text-sm">
                       <p>
                         "
-                        {teacherProfile?.expertise ? (
-                          <BilingualText en={`Students are searching for '${teacherProfile.expertise}' practice tests. Consider scheduling a `} hi={`छात्र '${teacherProfile.expertise}' प्रैक्टिस टेस्ट खोज रहे हैं। एक `} />
+                        {teacherProfile?.examTarget && teacherProfile.expertise ? (
+                            <BilingualText 
+                                en={`Based on your focus on '${teacherProfile.expertise}' for the '${teacherProfile.examTarget}' exam, we've noticed high student interest in practice tests for this combination. Consider scheduling a `} 
+                                hi={`'${teacherProfile.examTarget}' परीक्षा के लिए '${teacherProfile.expertise}' पर आपके फोकस के आधार पर, हमने इस संयोजन के लिए प्रैक्टिस टेस्ट में छात्रों की उच्च रुचि देखी है। एक `} 
+                            />
                         ) : (
-                          <BilingualText en="Students are struggling with 'Rotational Motion'. Consider scheduling a " hi="छात्र 'घूर्णी गति' में संघर्ष कर रहे हैं। एक " />
+                            <BilingualText 
+                                en="Students are struggling with 'Rotational Motion'. Consider scheduling a " 
+                                hi="छात्र 'घूर्णी गति' में संघर्ष कर रहे हैं। एक " 
+                            />
                         )}
                         <Link href="/coaching-panel/live-classes" className="font-semibold underline">
-                          {teacherProfile?.expertise ? (
-                            <BilingualText en="live class?" hi="लाइव क्लास शेड्यूल करें?" />
-                          ) : (
-                            <BilingualText en="doubt-solving session?" hi="शंका-समाधान सत्र?" />
-                          )}
+                            <BilingualText en="live class on this topic?" hi="इस विषय पर लाइव क्लास शेड्यूल करें?" />
                         </Link>
                         "
                       </p>
                       <p>
                         "
-                        {teacherProfile?.examTarget ? (
-                          <BilingualText en={`Your '${teacherProfile.examTarget}' notes are trending. Why not create a `} hi={`आपके '${teacherProfile.examTarget}' नोट्स ट्रेंड कर रहे हैं। क्यों न एक `} />
+                        {teacherProfile?.examTarget && teacherProfile.expertise ? (
+                            <BilingualText 
+                                en={`Your expertise in '${teacherProfile.expertise}' is in demand. Creating a premium study kit or a detailed slide deck for '${teacherProfile.examTarget}' could be highly beneficial for students. `} 
+                                hi={`'${teacherProfile.expertise}' में आपकी विशेषज्ञता की मांग है। '${teacherProfile.examTarget}' के लिए एक प्रीमियम अध्ययन किट या विस्तृत स्लाइड डेक बनाना छात्रों के लिए अत्यधिक फायदेमंद हो सकता है। `}
+                            />
                         ) : (
-                          <BilingualText en="Your 'Modern Physics' notes are trending. Why not create a " hi="आपके 'आधुनिक भौतिकी' नोट्स ट्रेंड कर रहे हैं। क्यों न एक " />
+                            <BilingualText 
+                                en="Your 'Modern Physics' notes are trending. Why not create a " 
+                                hi="आपके 'आधुनिक भौतिकी' नोट्स ट्रेंड कर रहे हैं। क्यों न एक " 
+                            />
                         )}
                         <Link href="/coaching-panel/create-course" className="font-semibold underline">
-                          <BilingualText en="premium study kit?" hi="प्रीमियम अध्ययन किट?" />
+                            <BilingualText en="Create New Content?" hi="नई सामग्री बनाएं?" />
                         </Link>
                         "
                       </p>
