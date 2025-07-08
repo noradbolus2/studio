@@ -1,4 +1,3 @@
-
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
@@ -32,34 +31,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
 const teacherStats = {
-  activeCourse: "Physics 12",
-  nextClassTime: "Today @ 4:00 PM",
+  activeCourse: "Physics 12", // This can be made dynamic later
+  nextClassTime: "Today @ 4:00 PM", // This can be made dynamic later
   studyKitsCount: 5,
   monthlyEarnings: "₹13,800",
   avgRating: 4.8,
   ratingCount: 122,
 };
 
-const nextClassDetails = {
-    topic: "Human Circulatory System",
-    slidesCount: 8,
-};
-
-const latestKit = {
-    name: "Organic Chemistry Short Notes",
-    sales: 740,
-};
-
-const earningsDetails = {
-    lastClass: 499,
-    voicePack: 99,
-    kitDownload: 199,
-};
-
-const recentReviews = [
-    "Sir slides se class lena bahut easy lagta hai!",
-    "Loved your Science crash kit.",
-];
+// Removed hardcoded nextClassDetails
 
 const quickActions = [
   { id: "gen_slide", labelEn: "Generate Slide", labelHi: "स्लाइड बनाएं", buttonTextEn: "Text to PPT", buttonTextHi: "टेक्स्ट से पीपीटी", icon: Wand2, href: "/coaching-panel/smart-slide-class" },
@@ -100,6 +80,8 @@ export default function CoachingPanelPage() {
   }
 
   const teacherName = teacherProfile?.creatorName || teacherProfile?.fullName || "Teacher";
+  const nextClassTopic = teacherProfile?.examTarget ? `${teacherProfile.examTarget}: ${teacherProfile.expertise}` : "Your Next Topic";
+  const latestKitSales = teacherStats.studyKitsCount * 148; // Mock calculation
 
   return (
     <div className="space-y-6">
@@ -118,9 +100,9 @@ export default function CoachingPanelPage() {
                         <CardTitle className="flex items-center gap-2 font-headline"><CalendarDays className="text-primary"/> Next Scheduled Class</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        <p className="text-lg font-semibold">{nextClassDetails.topic}</p>
+                        <p className="text-lg font-semibold">{nextClassTopic}</p>
                         <p className="text-sm text-muted-foreground">Time: {teacherStats.nextClassTime}</p>
-                        <p className="text-sm text-muted-foreground">Slides: {nextClassDetails.slidesCount} Slides Loaded (<Link href="#" className="text-primary underline">View Deck</Link>)</p>
+                        <p className="text-sm text-muted-foreground">Slides: 8 Slides Loaded (<Link href="#" className="text-primary underline">View Deck</Link>)</p>
                     </CardContent>
                     <CardFooter className="gap-2">
                         <Button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white"><PlayCircle className="mr-2"/> Join Class</Button>
@@ -188,8 +170,8 @@ export default function CoachingPanelPage() {
                     </CardHeader>
                     <CardContent className="space-y-1 text-sm">
                         <p><strong>Total Kits Uploaded:</strong> {teacherStats.studyKitsCount}</p>
-                        <p><strong>Last Kit:</strong> "{latestKit.name}"</p>
-                        <p><strong>Sales This Month:</strong> ₹{latestKit.sales}</p>
+                        <p><strong>Last Kit:</strong> "Organic Chemistry Short Notes"</p>
+                        <p><strong>Sales This Month:</strong> ₹{latestKitSales}</p>
                     </CardContent>
                     <CardFooter className="gap-2">
                         <Button variant="outline" className="flex-1">View My Storefront</Button>
@@ -203,9 +185,9 @@ export default function CoachingPanelPage() {
                     </CardHeader>
                     <CardContent className="space-y-1 text-sm">
                         <p><strong>This Month:</strong> {teacherStats.monthlyEarnings}</p>
-                        <p><strong>Last Class:</strong> ₹{earningsDetails.lastClass}</p>
-                        <p><strong>Voice Pack Sale:</strong> ₹{earningsDetails.voicePack}</p>
-                        <p><strong>Kit Download:</strong> ₹{earningsDetails.kitDownload}</p>
+                        <p><strong>Last Class:</strong> ₹499</p>
+                        <p><strong>Voice Pack Sale:</strong> ₹99</p>
+                        <p><strong>Kit Download:</strong> ₹199</p>
                     </CardContent>
                     <CardFooter>
                         <Button asChild variant="outline" className="w-full"><Link href="/coaching-panel/earnings">Full Earnings Report</Link></Button>
@@ -218,8 +200,8 @@ export default function CoachingPanelPage() {
                     </CardHeader>
                     <CardContent className="space-y-2 text-sm">
                         <p><strong>Avg. Rating:</strong> {teacherStats.avgRating} from {teacherStats.ratingCount} Students</p>
-                        <blockquote className="border-l-2 pl-2 italic">“{recentReviews[0]}”</blockquote>
-                        <blockquote className="border-l-2 pl-2 italic">“{recentReviews[1]}”</blockquote>
+                        <blockquote className="border-l-2 pl-2 italic">“Sir slides se class lena bahut easy lagta hai!”</blockquote>
+                        <blockquote className="border-l-2 pl-2 italic">“Loved your Science crash kit.”</blockquote>
                     </CardContent>
                     <CardFooter>
                         <Button asChild variant="outline" className="w-full"><Link href="/coaching-panel/promotions">See All Feedback</Link></Button>
