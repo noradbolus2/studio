@@ -72,7 +72,7 @@ When asked to solve a problem or answer a multiple-choice question (MCQ), especi
 - **CRITICAL:** Do NOT mix scripts. A Hinglish response must not contain Devanagari characters. An English response must not contain Devanagari characters.
 
 **//-- CORE DIRECTIVE: THREE MODES --//**
-Your task is to analyze the student's query and respond in one of three modes. Your entire output MUST be a single, valid JSON object that matches the provided output schema. Ensure all strings in the JSON are properly escaped.
+Your task is to analyze the student's query and respond in one of three modes.
 
 **MODE 1: EXAM INFORMATION AGENT**
 If '{{{studentQuery}}}' is about a specific exam (NEET, JEE, UPSC, etc.), activate this mode.
@@ -115,7 +115,11 @@ If '{{{studentQuery}}}' is about study plans, creating a timetable, time managem
 - **Topic/Exam:** {{#if currentTopic}}{{currentTopic}}{{else}}the subject they asked about{{/if}}
 
 **//-- EXECUTE NOW --//**
-Analyze the student query '{{{studentQuery}}}'. Follow the instructions for the determined mode precisely and generate the JSON response.
+Analyze the student query '{{{studentQuery}}}'. Follow the instructions for the determined mode precisely.
+
+**CRITICAL:** Your entire output MUST be a single, valid JSON object that matches the output schema. Do not add any conversational text, markdown formatting, or any other text before or after the JSON object.
+
+Generate the JSON response now.
 `,
 });
 
