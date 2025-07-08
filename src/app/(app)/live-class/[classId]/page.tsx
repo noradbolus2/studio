@@ -23,9 +23,8 @@ const colorPalette = ['#000000', '#EF4444', '#3B82F6', '#22C55E', '#F97316', '#8
 type Slide = GeneratePptSlidesOutput['slides'][0];
 
 export default function LiveClassPage() {
-  const params = useParams();
+  const { classId } = useParams() as { classId: string };
   const searchParams = useSearchParams();
-  const classId = params.classId as string;
   const router = useRouter();
   const whiteboardRef = useRef<WhiteboardHandle>(null);
   

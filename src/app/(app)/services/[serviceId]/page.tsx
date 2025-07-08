@@ -116,10 +116,8 @@ function getNumericClassFromStringForProjects(classNameString?: string): string 
 
 export default function ServicePage() {
   const router = useRouter();
-  const params = useParams();
+  const { serviceId } = useParams() as { serviceId: string };
   const { toast } = useToast();
-
-  const serviceId = params.serviceId as string;
 
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -179,7 +177,7 @@ export default function ServicePage() {
             guruji: { name: "Guruji", type: "chat_interface", description: "Your personal study assistant.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "monk teaching", initialGreetingEn: "Namaste! How can I help you today on this page?"}},
             stationery: { name: "Stationery", type: "product_listing", description: "Order pens, notebooks, and more.", data: { redirectTo: "/delivery", category: "stationery_essentials", avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"stationery bag" }},
             studysnacks: { name: "Study Snacks", type: "product_listing", description: "Healthy snacks delivered for study sessions.", data: { redirectTo: "/delivery", category: "study_snacks", avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"apple fruit"}},
-            projects: { name: "Projects Assistant", type: "interactive_assignment_project_help", description: "Get help with school projects and assignments.", data: { avatarUrl: "https://images.unsplash.com/photo-1710828777420-7e415632d428?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx0b29scyUyMHByb2plY3R8ZW58MHx8fHwxNzUxNDkxMTM4fDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint:"tools project" }},
+            projects: { name: "Projects Assistant", type: "interactive_assignment_project_help", description: "Get help with school projects and assignments.", data: { avatarUrl: "https://images.unsplash.com/photo-1710828777420-7e415632d428?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx0b29scyUyMHByb2plY3R8ZW58MHx8fHwxNzUxNDkxMTM4fDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint:"tools project" }},
             assignments: { name: "Assignments Assistant", type: "interactive_assignment_project_help", description: "Assistance for completing your assignments.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint:"writing assignment" }},
             testseries: { name: "Test Series", type: "test_recommendation_interface", description: "Get personalized test recommendations from Guruji.", data: { avatarUrl: "https://placehold.co/100x100.png", dataAiHint: "guru exam"}},
             uniforms: {
@@ -345,7 +343,7 @@ export default function ServicePage() {
     };
 
     try {
-        const result = await getTestSeriesRecommendations(mockStudentInput);
+        const result = await getTestSeriesRecommendations(dynamicStudentInput);
         setTestRecommendations(result);
     } catch (err: any) {
         console.error("Error getting test recommendations:", err);
@@ -637,6 +635,9 @@ export default function ServicePage() {
                                     </div>
                                 </div>
                             )}
+                             {testRecommendations.recommendedTests.length === 0 && (
+                                <p className="text-sm text-muted-foreground text-center py-3">Guruji didn't find specific tests for you right now, but gave some general advice. Keep learning!</p>
+                             )}
                         </div>
                     )}
                 </CardContent>

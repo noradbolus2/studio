@@ -41,8 +41,7 @@ const mockOrderDetails: Record<string, ProjectOrderDetail> = {
 
 export default function CreatorOrderDetailPage() {
   const router = useRouter();
-  const params = useParams();
-  const orderId = params.orderId as string;
+  const { orderId } = useParams() as { orderId: string };
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
