@@ -116,8 +116,34 @@ export default function CoachingPanelPage() {
                       <CardTitle className="font-headline text-primary flex items-center gap-2"><Lightbulb/> <BilingualText en="AI Insights" hi="एआई अंतर्दृष्टि" /></CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm">
-                      <p>"<BilingualText en="Students are struggling with 'Rotational Motion'. Consider scheduling a " hi="छात्र 'घूर्णी गति' में संघर्ष कर रहे हैं। एक " /><Link href="/coaching-panel/live-classes" className="font-semibold underline"><BilingualText en="doubt-solving session?" hi="शंका-समाधान सत्र?" /></Link>"</p>
-                      <p>"<BilingualText en="Your 'Modern Physics' notes are trending. Why not create a " hi="आपके 'आधुनिक भौतिकी' नोट्स ट्रेंड कर रहे हैं। क्यों न एक " /><Link href="/coaching-panel/create-course" className="font-semibold underline"><BilingualText en="premium study kit?" hi="प्रीमियम अध्ययन किट?" /></Link>"</p>
+                      <p>
+                        "
+                        {teacherProfile?.expertise ? (
+                          <BilingualText en={`Students are searching for '${teacherProfile.expertise}' practice tests. Consider scheduling a `} hi={`छात्र '${teacherProfile.expertise}' प्रैक्टिस टेस्ट खोज रहे हैं। एक `} />
+                        ) : (
+                          <BilingualText en="Students are struggling with 'Rotational Motion'. Consider scheduling a " hi="छात्र 'घूर्णी गति' में संघर्ष कर रहे हैं। एक " />
+                        )}
+                        <Link href="/coaching-panel/live-classes" className="font-semibold underline">
+                          {teacherProfile?.expertise ? (
+                            <BilingualText en="live class?" hi="लाइव क्लास शेड्यूल करें?" />
+                          ) : (
+                            <BilingualText en="doubt-solving session?" hi="शंका-समाधान सत्र?" />
+                          )}
+                        </Link>
+                        "
+                      </p>
+                      <p>
+                        "
+                        {teacherProfile?.examTarget ? (
+                          <BilingualText en={`Your '${teacherProfile.examTarget}' notes are trending. Why not create a `} hi={`आपके '${teacherProfile.examTarget}' नोट्स ट्रेंड कर रहे हैं। क्यों न एक `} />
+                        ) : (
+                          <BilingualText en="Your 'Modern Physics' notes are trending. Why not create a " hi="आपके 'आधुनिक भौतिकी' नोट्स ट्रेंड कर रहे हैं। क्यों न एक " />
+                        )}
+                        <Link href="/coaching-panel/create-course" className="font-semibold underline">
+                          <BilingualText en="premium study kit?" hi="प्रीमियम अध्ययन किट?" />
+                        </Link>
+                        "
+                      </p>
                   </CardContent>
                 </Card>
 
