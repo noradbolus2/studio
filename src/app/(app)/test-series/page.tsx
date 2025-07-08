@@ -1,3 +1,4 @@
+
 "use client"; 
 
 import { useState, useEffect } from 'react'; 
@@ -5,7 +6,7 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Target, BrainCircuit, Rocket, FileText, ArrowLeft, ShoppingCart } from "lucide-react"; 
+import { Target, BrainCircuit, Rocket, FileText, ArrowLeft, ShoppingCart, Share2 } from "lucide-react"; 
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { getTestSeriesRecommendations, type TestSeriesRecommendationInput, type TestSeriesRecommendationOutput } from '@/ai/flows/test-series-recommendation-flow';
@@ -126,7 +127,7 @@ const testCategories = [
   { id: 'hotel_mgmt_state_ihm', nameEn: 'State IHM Entrances', nameHi: 'राज्य आईएचएम प्रवेश', descriptionEn: "State level Institute of Hotel Management entrances.", descriptionHi: "राज्य स्तरीय होटल प्रबंधन संस्थान प्रवेश।" },
   // Agriculture & Veterinary Science
   { id: 'agri_vet_icar_aieea', nameEn: 'ICAR AIEEA (UG, PG, PhD)', nameHi: 'आईसीएआर एआईईईए (यूजी, पीजी, पीएचडी)', descriptionEn: "Indian Council of Agricultural Research All India Entrance Examination.", descriptionHi: "भारतीय कृषि अनुसंधान परिषद अखिल भारतीय प्रवेश परीक्षा।" },
-  { id: 'agri_vet_state_agri_uni', nameEn: 'State Agriculture University Entrances', nameHi: 'राज्य कृषि विश्वविद्यालय प्रवेश', descriptionEn: "Entrance exams for State Agriculture Universities.", descriptionHi: "राज्य कृषि विश्वविद्यालयों के लिए प्रवेश परीक्षाएँ।" },
+  { id: 'agri_vet_state_agri_uni', nameEn: 'State Agriculture University Entrances', nameHi: 'राज्य कृषि विश्वविद्यालयों के लिए प्रवेश', descriptionEn: "Entrance exams for State Agriculture Universities.", descriptionHi: "राज्य कृषि विश्वविद्यालयों के लिए प्रवेश परीक्षाएँ।" },
   // Teaching
   { id: 'teaching_ctet', nameEn: 'CTET', nameHi: 'सीटीईटी', descriptionEn: "Central Teacher Eligibility Test.", descriptionHi: "केंद्रीय शिक्षक पात्रता परीक्षा।" },
   { id: 'teaching_state_tet', nameEn: 'State TETs', nameHi: 'राज्य टीईटी', descriptionEn: "State Teacher Eligibility Tests.", descriptionHi: "राज्य शिक्षक पात्रता परीक्षाएँ।" },
@@ -548,18 +549,27 @@ export default function TestSeriesPage() {
               <CardContent className="flex-grow">
                 <p className="text-lg font-bold text-accent">{test.price}</p>
               </CardContent>
-              <CardFooter>
-                 <Button 
+              <CardFooter className="flex flex-col sm:flex-row gap-2">
+                <Button 
                     size="sm" 
                     className="w-full bg-primary/90 hover:bg-primary text-primary-foreground"
                     onClick={() => toast({ title: "Purchase Action", description: "This would normally lead to a payment gateway for the test pack."})}
+                >
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    <BilingualText 
+                    en="Buy Test Pack"
+                    hi="टेस्ट पैक खरीदें" 
+                />
+                </Button>
+                 <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => toast({ title: "Sharing to Classroom...", description: "This will integrate with Google Classroom to create an assignment."})}
                   >
-                     <ShoppingCart className="mr-2 h-4 w-4" />
-                     <BilingualText 
-                        en="Buy Test Pack"
-                        hi="टेस्ट पैक खरीदें" 
-                    />
-                  </Button>
+                    <Share2 className="mr-2 h-4 w-4" />
+                    <BilingualText en="Share to Classroom" hi="कक्षा में साझा करें" />
+                </Button>
               </CardFooter>
             </Card>
           ))}
@@ -635,3 +645,4 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
