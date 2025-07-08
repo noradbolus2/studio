@@ -168,6 +168,18 @@ export default function RiderDashboardPage() {
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
   const [currentOrderForScan, setCurrentOrderForScan] = useState<Order | null>(null);
 
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem('loggedInUser'); 
+        localStorage.removeItem('userProfileData'); 
+    }
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out from the Rider Dashboard.",
+    });
+    router.push('/login'); 
+  };
+
    useEffect(() => {
     // Load orders from localStorage
     try {
@@ -589,7 +601,7 @@ export default function RiderDashboardPage() {
                             </div>
                             <Button variant="outline" className="w-full" asChild><Link href="/edit-profile?role=rider"><Settings className="mr-2 h-4 w-4"/> Edit Profile & Bank Details</Link></Button>
                             <Button variant="outline" className="w-full"><HelpCircle className="mr-2 h-4 w-4"/> Help & Support</Button>
-                             <Button variant="destructive" className="w-full"><Power className="mr-2 h-4 w-4"/> Logout</Button>
+                             <Button variant="destructive" className="w-full" onClick={handleLogout}><Power className="mr-2 h-4 w-4"/> Logout</Button>
                         </CardContent>
                     </Card>
                 </TabsContent>

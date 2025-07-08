@@ -33,7 +33,9 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from 'next/link'
-import { useState } from "react" // Import useState
+import { useState } from "react"
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 const sidebarItems = [
     { href: "/creator-dashboard", icon: Home, label: "Dashboard" },
@@ -49,7 +51,21 @@ const sidebarItems = [
 const creatorRoles = ["Doubt Solver", "Flashcard Maker", "Test Designer", "Voiceover Artist"]; // Define roles
 
 export default function CreatorDashboardLayout({ children }: { children: React.ReactNode }) {
-  const [currentRole, setCurrentRole] = useState(creatorRoles[0]); // Add state for current role
+  const [currentRole, setCurrentRole] = useState(creatorRoles[0]);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem('loggedInUser'); 
+        localStorage.removeItem('userProfileData'); 
+    }
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out from the Creator Dashboard.",
+    });
+    router.push('/login'); 
+  };
 
   return (
     <SidebarProvider>
@@ -120,7 +136,7 @@ export default function CreatorDashboardLayout({ children }: { children: React.R
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>Profile</DropdownMenuItem>
-                                <DropdownMenuItem>Logout</DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
