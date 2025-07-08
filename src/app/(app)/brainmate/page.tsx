@@ -166,19 +166,29 @@ export default function BrainmatePage() {
       text: trimmedInput,
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, userMessage]);
+    
+    // Add new user message to the current message list to form history
+    const currentMessages = [...messages, userMessage];
+    setMessages(currentMessages);
     
     if(!queryOverride) {
         setInputValue('');
     }
     
     setIsLoading(true);
+    
+    // Create history from all messages in state
+    const historyForPrompt = currentMessages.slice(1).map(msg => ({ // slice(1) to exclude initial greeting
+        role: msg.role === 'brainmate' ? 'model' : 'user',
+        text: msg.text,
+    }));
 
     const brainmateInput: BrainmateInput = {
       studentQuery: trimmedInput,
       studentClass: profileData?.className,
       studentBoard: profileData?.board,
       currentTopic: currentTopic,
+      history: historyForPrompt,
     };
 
     try {
@@ -347,8 +357,3 @@ export default function BrainmatePage() {
   );
 }
     
-
-    
-
-    
-
