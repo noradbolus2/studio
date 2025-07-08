@@ -433,7 +433,7 @@ export default function RiderDashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                                 <Image src="https://images.unsplash.com/photo-1694610018733-1053fcfb5289?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYXAlMjBsb2NhdGlvbiUyMHBvaW50c3xlbnwwfHx8fDE3NTE2Mzk3NzZ8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Demand Heatmap" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map location points" />
+                                 <Image src="https://images.unsplash.com/photo-1694610018733-1053fcfb5289?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYXAlMjBsb2NhdGlvbiUyMHBvaW50c3xlbnwwfHx8fDE3NTE5MzQwODd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Demand Heatmap" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map location points" />
                             </div>
                             <div className="space-y-3">
                                 <div className="text-sm p-2 bg-red-500/10 rounded-md border border-red-500/20">
@@ -456,7 +456,7 @@ export default function RiderDashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                                <Image src="https://images.unsplash.com/photo-1612721530870-48b8c7f3a837?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWFwJTIwbmF2aWdhdGlvbiUyMHJvdXRlfGVufDB8fHx8MTc1MTYzOTc3N3ww&ixlib=rb-4.1.0&q=80&w=1080" alt="Live map placeholder" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map navigation route" />
+                                <Image src="https://images.unsplash.com/photo-1621421770492-272ae6d7882a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYXAlMjBuYXZpZ2F0aW9uJTIwcm91dGV8ZW58MHx8fHwxNzUxOTM0MDg3fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Live map placeholder" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map navigation route" />
                             </div>
                             <div className="p-3 bg-green-500/10 text-green-700 rounded-lg border border-green-500/20">
                               <h4 className="font-bold flex items-center gap-1.5"><Leaf size={16}/> Green Route Rewards™</h4>
