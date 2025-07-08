@@ -21,12 +21,12 @@ export default {
       fontFamily: {
         sans: ["var(--font-pt-sans)", ...fontFamily.sans],
         code: ['monospace', 'monospace'],
-        handwriting: ['Kalam', 'cursive'],
-        'handwriting-caveat': ['Caveat', 'cursive'],
-        'handwriting-dancing': ['Dancing Script', 'cursive'],
-        'handwriting-patrick': ['Patrick Hand', 'cursive'],
-        'handwriting-gochi': ['Gochi Hand', 'cursive'],
-        'handwriting-indie': ['Indie Flower', 'cursive'],
+        handwriting: ['var(--font-kalam)', 'cursive'],
+        'handwriting-caveat': ['var(--font-caveat)', 'cursive'],
+        'handwriting-dancing': ['var(--font-dancing-script)', 'cursive'],
+        'handwriting-patrick': ['var(--font-patrick-hand)', 'cursive'],
+        'handwriting-gochi': ['var(--font-gochi-hand)', 'cursive'],
+        'handwriting-indie': ['var(--font-indie-flower)', 'cursive'],
         headline: ["var(--font-pt-sans)", ...fontFamily.sans],
       },
       colors: {

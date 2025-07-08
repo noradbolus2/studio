@@ -2,17 +2,64 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { PT_Sans } from 'next/font/google';
+import { PT_Sans, Kalam, Caveat, Dancing_Script, Patrick_Hand, Gochi_Hand, Indie_Flower } from 'next/font/google';
 
+// Configure all fonts using next/font
 const ptSans = PT_Sans({
   subsets: ['latin'],
+  display: 'swap',
   weight: ['400', '700'],
   variable: '--font-pt-sans',
 });
 
+const kalam = Kalam({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '700'],
+  variable: '--font-kalam',
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '700'],
+  variable: '--font-caveat',
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '700'],
+  variable: '--font-dancing-script',
+});
+
+const patrickHand = Patrick_Hand({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400'],
+  variable: '--font-patrick-hand',
+});
+
+const gochiHand = Gochi_Hand({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400'],
+  variable: '--font-gochi-hand',
+});
+
+const indieFlower = Indie_Flower({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400'],
+  variable: '--font-indie-flower',
+});
+
 export const metadata: Metadata = {
-  title: 'OSO: One Student One App',
-  description: 'One Student One App - Study tools and instant delivery for students in India.',
+  title: {
+    default: "OSO App: Learn & Deliver",
+    template: "%s | OSO App",
+  },
+  description: 'Your all-in-one app for learning, study tools, and instant stationery delivery for students in India.',
 };
 
 export default function RootLayout({
@@ -21,13 +68,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Caveat&family=Dancing+Script&family=Gochi+Hand&family=Indie+Flower&family=Kalam&family=Patrick+Hand&display=swap" rel="stylesheet" />
-      </head>
-      <body className={`${ptSans.variable} font-sans antialiased`}>
+    <html lang="en" className={`${ptSans.variable} ${kalam.variable} ${caveat.variable} ${dancingScript.variable} ${patrickHand.variable} ${gochiHand.variable} ${indieFlower.variable} light`}>
+      <head />
+      <body className={`font-sans antialiased`}>
         {children}
         <Toaster />
       </body>
