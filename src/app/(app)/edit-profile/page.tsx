@@ -25,7 +25,52 @@ import { Switch } from "@/components/ui/switch";
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const vendorCategories = ["Stationery", "Books", "Uniforms", "Electronics", "Snacks", "Project Kits", "Other"];
 const creatorExpertiseAreas = ["Science Projects", "Art & Craft", "Coding & AI", "Robotics", "Essay Writing", "Video Content", "Tutoring", "Other"];
-const teacherSubjects = ["Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "AI/ML", "Art & Craft", "General Knowledge", "Entrepreneurship", "Other"]; 
+
+const allTeacherSubjects = ["Maths", "Science", "Physics", "Chemistry", "Biology", "English", "Hindi", "Social Studies", "History", "Geography", "Civics", "Economics", "Computer Science", "AI/ML", "Art & Craft", "General Knowledge", "Entrepreneurship", "Other", "Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Ophthalmology", "ENT", "Psychiatry", "Dermatology", "Radiology", "Orthopedics", "Anesthesiology", "Verbal Ability & Reading Comprehension", "Data Interpretation & Logical Reasoning", "Quantitative Aptitude", "Legal Reasoning", "Logical Reasoning", "Quantitative Techniques", "Polity & Governance", "Environment & Ecology", "CSAT (Aptitude)", "General Ability Test (English, GK, Physics, Chemistry, General Science)", "Accountancy", "Business Studies", "Sociology", "Psychology"];
+
+const examSubjectMapping: Record<string, string[]> = {
+    // Engineering
+    "JEE Main": ["Physics", "Chemistry", "Mathematics"],
+    "JEE Advanced": ["Physics", "Chemistry", "Mathematics"],
+    "BITSAT": ["Physics", "Chemistry", "Mathematics", "English", "Logical Reasoning"],
+    "VITEEE": ["Physics", "Chemistry", "Mathematics", "Aptitude", "English"],
+    "SRMJEEE": ["Physics", "Chemistry", "Mathematics", "English", "Aptitude"],
+    // Medical
+    "NEET UG (MBBS, BDS, AYUSH, B.V.Sc)": ["Physics", "Chemistry", "Biology (Botany & Zoology)"],
+    "NEET PG (MD, MS, PG Diploma)": ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Ophthalmology", "ENT", "Psychiatry", "Dermatology", "Radiology", "Orthopedics", "Anesthesiology"],
+    "INI CET (AIIMS, JIPMER, PGIMER, NIMHANS)": ["Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "General Medicine", "General Surgery", "Obstetrics & Gynaecology", "Pediatrics", "Ophthalmology", "ENT", "Psychiatry", "Dermatology", "Radiology", "Orthopedics", "Anesthesiology"],
+    "NEET SS (DM, MCh)": ["General Medicine", "General Surgery", "Pediatrics", "Cardiology", "Neurology", "Gastroenterology", "Urology", "Cardiothoracic Surgery"],
+    // Management
+    "CAT": ["Verbal Ability & Reading Comprehension", "Data Interpretation & Logical Reasoning", "Quantitative Aptitude"],
+    "XAT": ["Verbal & Logical Ability", "Decision Making", "Quantitative Ability & Data Interpretation", "General Knowledge"],
+    // Law
+    "CLAT (UG & PG)": ["English", "Current Affairs", "Legal Reasoning", "Logical Reasoning", "Quantitative Techniques"],
+    // UPSC & Govt
+    "UPSC CSE (IAS, IPS, IFS, IRS etc.)": ["History", "Geography", "Polity & Governance", "Economy", "Science & Technology", "Environment & Ecology", "Current Affairs", "CSAT (Aptitude)"],
+    "SSC CGL": ["General Intelligence & Reasoning", "General Awareness", "Quantitative Aptitude", "English Comprehension"],
+    "IBPS PO": ["Reasoning Ability", "Quantitative Aptitude", "English Language", "General Awareness", "Computer Aptitude"],
+    // Defence
+    "NDA & NA": ["Mathematics", "General Ability Test (English, GK, Physics, Chemistry, General Science)"],
+    "CDS": ["English", "General Knowledge", "Elementary Mathematics"],
+    // University
+    "CUET UG": ["Language", "Physics", "Chemistry", "Mathematics", "Biology", "History", "Geography", "Political Science", "Economics", "Accountancy", "Business Studies", "General Test"],
+    // School Boards (simplified)
+    "Class 12 Science": ["Physics", "Chemistry", "Mathematics", "Biology", "English", "Computer Science"],
+    "Class 12 Commerce": ["Accountancy", "Business Studies", "Economics", "Mathematics", "English"],
+    "Class 12 Arts": ["History", "Geography", "Political Science", "Sociology", "Psychology", "Economics", "English"],
+    "Class 11 Science": ["Physics", "Chemistry", "Mathematics", "Biology", "English", "Computer Science"],
+    "Class 11 Commerce": ["Accountancy", "Business Studies", "Economics", "Mathematics", "English"],
+    "Class 11 Arts": ["History", "Geography", "Political Science", "Sociology", "Psychology", "Economics", "English"],
+    "Class 10": ["Mathematics", "Science", "Social Studies", "English", "Hindi", "Computer Science"],
+    "Class 9": ["Mathematics", "Science", "Social Studies", "English", "Hindi"],
+    "Class 8": ["Mathematics", "Science", "Social Studies", "English", "Hindi"],
+    "Class 7": ["Mathematics", "Science", "Social Studies", "English", "Hindi"],
+    "Class 6": ["Mathematics", "Science", "Social Studies", "English", "Hindi"],
+    "Nursery": ["Pre-Primary Skills"], "LKG": ["Pre-Primary Skills"], "UKG": ["Pre-Primary Skills"],
+    "Other (Not Listed)": allTeacherSubjects,
+    "General": allTeacherSubjects
+};
+
 
 const DEFAULT_SCHOOL_ID = "defaultSchool"; 
 
@@ -148,6 +193,7 @@ export default function EditProfilePage() {
   const [isInitialSchoolSetup, setIsInitialSchoolSetup] = useState(false);
   const [schoolProfile, setSchoolProfile] = useState<ProfileFormData | null>(null); 
   const [isSchoolOsoConnected, setIsSchoolOsoConnected] = useState<string>('no');
+  const [availableSubjects, setAvailableSubjects] = useState<string[]>(allTeacherSubjects);
 
 
   const { control, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting: isRhfSubmitting } } = useForm<ProfileFormData>({
@@ -206,6 +252,23 @@ export default function EditProfilePage() {
 
   const watchedAvatarUrl = watch("avatarUrl");
   const watchedClassName = watch("className");
+  const watchedExamTarget = watch('examTarget');
+  const watchedExpertise = watch('expertise');
+
+  useEffect(() => {
+    if (watchedExamTarget && examSubjectMapping[watchedExamTarget]) {
+        const newSubjects = examSubjectMapping[watchedExamTarget];
+        setAvailableSubjects(newSubjects);
+        // If the currently selected subject is not in the new list, reset it.
+        if (watchedExpertise && !newSubjects.includes(watchedExpertise)) {
+            setValue('expertise', ''); // Reset the value in react-hook-form
+        }
+    } else {
+        // Fallback to the full generic list if no specific mapping is found
+        setAvailableSubjects(allTeacherSubjects);
+    }
+  }, [watchedExamTarget, watchedExpertise, setValue]);
+
 
   useEffect(() => {
     setInitialDataLoading(true);
@@ -771,25 +834,6 @@ export default function EditProfilePage() {
                 {currentRole === 'teacher' && (
                   <>
                     <div>
-                      <Label htmlFor="expertise"><BilingualText en="Primary Teaching Subject" hi="प्राथमिक शिक्षण विषय" />*</Label>
-                      <Controller
-                        name="expertise"
-                        control={control}
-                        rules={{ required: "Primary teaching subject is required" }}
-                        render={({ field }) => (
-                          <Select onValueChange={field.onChange} value={field.value ?? ''}>
-                            <SelectTrigger id="expertise">
-                              <SelectValue placeholder={<BilingualText en="Select Primary Subject" hi="प्राथमिक विषय चुनें" />} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {teacherSubjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                      {errors.expertise && <p className="text-xs text-destructive mt-1">{errors.expertise.message}</p>}
-                    </div>
-                    <div>
                         <Label htmlFor="examTarget" className="flex items-center gap-1.5"><Target className="h-4 w-4"/> <BilingualText en="Primary Exam Focus" hi="प्राथमिक परीक्षा लक्ष्य" /></Label>
                         <Controller 
                             name="examTarget" 
@@ -807,6 +851,25 @@ export default function EditProfilePage() {
                                 </Select>
                             )} 
                         />
+                    </div>
+                    <div>
+                      <Label htmlFor="expertise"><BilingualText en="Primary Teaching Subject" hi="प्राथमिक शिक्षण विषय" />*</Label>
+                      <Controller
+                        name="expertise"
+                        control={control}
+                        rules={{ required: "Primary teaching subject is required" }}
+                        render={({ field }) => (
+                          <Select onValueChange={field.onChange} value={field.value ?? ''} disabled={!watchedExamTarget}>
+                            <SelectTrigger id="expertise">
+                              <SelectValue placeholder={!watchedExamTarget ? "First, select Exam Focus" : "Select Primary Subject"} />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[250px]">
+                              {availableSubjects.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errors.expertise && <p className="text-xs text-destructive mt-1">{errors.expertise.message}</p>}
                     </div>
                     <div className="flex items-center space-x-2 pt-2">
                         <Controller name="availability_for_doubts" control={control} render={({ field }) => (
@@ -872,6 +935,7 @@ export default function EditProfilePage() {
     
 
     
+
 
 
 
