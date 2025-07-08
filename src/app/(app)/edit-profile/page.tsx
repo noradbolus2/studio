@@ -19,8 +19,9 @@ import { BilingualText } from "@/components/shared/BilingualText";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target, ArrowLeft, Bike, Phone, MapPin, FileText } from "lucide-react";
+import { User, Save, UploadCloud, School, Briefcase, Sparkles as CreatorIcon, Users as ParentIcon, Edit3, KeyRound, ShieldCheck, Target, ArrowLeft, Bike, Phone, MapPin, FileText, Wand2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { generateBio } from '@/ai/flows/generate-bio-flow';
 
 const schoolDesignations = ["Principal", "Vice Principal", "Coordinator", "Teacher", "Accountant", "Admin Staff", "Librarian", "IT Support", "Other"];
 const vendorCategories = ["Stationery", "Books", "Uniforms", "Electronics", "Snacks", "Project Kits", "Other"];
@@ -194,6 +195,7 @@ export default function EditProfilePage() {
   const [schoolProfile, setSchoolProfile] = useState<ProfileFormData | null>(null); 
   const [isSchoolOsoConnected, setIsSchoolOsoConnected] = useState<string>('no');
   const [availableSubjects, setAvailableSubjects] = useState<string[]>(allTeacherSubjects);
+  const [isGeneratingBio, setIsGeneratingBio] = useState(false);
 
 
   const { control, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting: isRhfSubmitting } } = useForm<ProfileFormData>({
@@ -254,6 +256,7 @@ export default function EditProfilePage() {
   const watchedClassName = watch("className");
   const watchedExamTarget = watch('examTarget');
   const watchedExpertise = watch('expertise');
+  const watchedCreatorName = watch('creatorName');
 
   useEffect(() => {
     if (watchedExamTarget && examSubjectMapping[watchedExamTarget]) {
@@ -404,6 +407,46 @@ export default function EditProfilePage() {
     setIsSchoolOsoConnected(value);
     if (value === 'no') {
       setValue('schoolId', ''); 
+    }
+  };
+  
+  const handleGenerateBio = async () => {
+    const creatorName = watch('creatorName');
+    const examTarget = watch('examTarget');
+    const subject = watch('expertise');
+
+    if (!creatorName || !examTarget || !subject) {
+      toast({
+        title: "Information Missing",
+        description: "Please enter your name and select an exam and subject first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingBio(true);
+    try {
+      const result = await generateBio({
+        fullName: creatorName,
+        examTarget: examTarget,
+        subject: subject
+      });
+      if (result.bio) {
+        setValue('bio', result.bio);
+        toast({
+          title: "Bio Generated!",
+          description: "AI has created a bio for you. Feel free to edit it.",
+        });
+      }
+    } catch (error) {
+      console.error("Bio generation failed:", error);
+      toast({
+        title: "Error",
+        description: "Could not generate a bio at this time.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingBio(false);
     }
   };
 
@@ -888,7 +931,18 @@ export default function EditProfilePage() {
                 )}
 
 
-                <div><Label htmlFor="bio"><BilingualText en="Bio / About Me (max 300 chars)" hi="बायो / मेरे बारे में (अधिकतम 300 अक्षर)" /></Label><Controller name="bio" control={control} render={({ field }) => <Textarea id="bio" {...field} value={field.value ?? ''} placeholder="Tell students/users about your experience and style." className="min-h-[100px]" maxLength={300} />} />{errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio.message}</p>}</div>
+                <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <Label htmlFor="bio" className="flex items-center gap-1.5"><Edit3 className="h-4 w-4"/> <BilingualText en="Bio / About Me" hi="बायो / मेरे बारे में"/> (max 300 chars)</Label>
+                      <Button type="button" variant="outline" size="sm" onClick={handleGenerateBio} disabled={isGeneratingBio || !watchedCreatorName || !watchedExamTarget || !watchedExpertise}>
+                        {isGeneratingBio ? <LoadingSpinner size={16}/> : <Wand2 className="h-4 w-4" />}
+                        <span className="ml-2 hidden sm:inline">Auto-generate</span>
+                      </Button>
+                    </div>
+                    <Controller name="bio" control={control} render={({ field }) => <Textarea id="bio" {...field} value={field.value ?? ''} placeholder="Tell students/users about your experience and style." className="min-h-[100px]" maxLength={300} />} />
+                    {errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio.message}</p>}
+                </div>
+
                 <div><Label htmlFor="portfolioUrl"><BilingualText en="YouTube/Portfolio URL (Optional)" hi="यूट्यूब/पोर्टफोलियो यूआरएल (वैकल्पिक)" /></Label><Controller name="portfolioUrl" control={control} render={({ field }) => <Input id="portfolioUrl" type="url" {...field} value={field.value ?? ''} placeholder="https://youtube.com/yourchannel" />} />{errors.portfolioUrl && <p className="text-xs text-destructive mt-1">{errors.portfolioUrl.message}</p>}</div>
                 
                 <Card className="bg-muted/50 p-4">
@@ -926,17 +980,3 @@ export default function EditProfilePage() {
     </div>
   );
 }
-    
-
-    
-
-
-
-    
-
-    
-
-
-
-
-
