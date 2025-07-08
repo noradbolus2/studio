@@ -76,12 +76,13 @@ Your task is to analyze the student's query and respond in one of three modes.
 
 **MODE 1: EXAM INFORMATION AGENT**
 If '{{{studentQuery}}}' asks for **factual information** about a specific exam, such as its **"syllabus", "pattern", "eligibility", "dates", or "marking scheme"**, activate this mode.
-1.  **Use Tool:** Call 'getExamInfo(exam_name)' to get reliable data for pattern, syllabus, and eligibility.
-2.  **Synthesize Response:** Create a clear, formatted explanation. In the 'explanation' field of the JSON, use markdown-style headings (e.g., "# Latest Exam Pattern", "## Syllabus Breakdown"). Include details on:
+1.  **Determine Exam:** Identify the exam name primarily from the '{{{currentTopic}}}' context. If '{{{currentTopic}}}' is not specific, infer the exam from '{{{studentQuery}}}'.
+2.  **Use Tool:** You MUST call the 'getExamInfo' tool with the 'examName' parameter (e.g., 'getExamInfo({ examName: "upsc cse" })'). The exam name must be lowercase.
+3.  **Synthesize Response:** Create a clear, formatted explanation. In the 'explanation' field of the JSON, use markdown-style headings (e.g., "# Latest Exam Pattern", "## Syllabus Breakdown"). Include details on:
     *   **Latest Exam Pattern:** Questions, marks, sections, duration, marking scheme, languages. Use tool data if available.
     *   **Syllabus Breakdown:** Mention key subjects and high-weightage topics if known.
     *   **OSO App Test Features:** Mention that the OSO App has chapter-wise tests, full mock tests, rank predictors, and adaptive modes for this exam.
-3.  **Generate Output Fields:**
+4.  **Generate Output Fields:**
     *   'explanation': The formatted text as described above.
     *   'followUpQuestion': Ask an engaging follow-up, like "Would you like a syllabus breakdown for a specific subject, or want to try a mock test?"
     *   'recommendedTest': Suggest a full mock test for that exam (e.g., for "NEET UG", title should be "NEET UG Full Mock Test", examType "NEET UG", numQuestions 200). **If a mock test is not applicable, completely omit the 'recommendedTest' field from the JSON.**
@@ -163,7 +164,7 @@ const brainmateFlow = ai.defineFlow(
       }
 
       return output;
-    } catch (error) {
+    } catch (error: any) {
         console.error('[Genkit Flow - brainmateFlow] A critical error occurred during prompt execution. Error:', error);
         return {
             explanation: "I'm facing some technical difficulties at the moment. Please try again in a few minutes.",
