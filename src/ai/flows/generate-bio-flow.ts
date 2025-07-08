@@ -11,14 +11,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateBioInputSchema = z.object({
+const GenerateBioInputSchema = z.object({
   fullName: z.string().describe("The teacher's full name."),
   examTarget: z.string().describe('The primary exam the teacher focuses on (e.g., "NEET UG", "JEE Main").'),
   subject: z.string().describe('The primary subject the teacher specializes in (e.g., "Physics", "Organic Chemistry").')
 });
 export type GenerateBioInput = z.infer<typeof GenerateBioInputSchema>;
 
-export const GenerateBioOutputSchema = z.object({
+const GenerateBioOutputSchema = z.object({
   bio: z.string().describe("A professionally written, engaging bio for the teacher, under 300 characters."),
 });
 export type GenerateBioOutput = z.infer<typeof GenerateBioOutputSchema>;
