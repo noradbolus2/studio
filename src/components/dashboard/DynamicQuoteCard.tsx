@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -44,7 +45,7 @@ export function DynamicQuoteCard({ lang }: { lang: 'en' | 'hi' | 'hng' }) {
         setCurrentQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
         setIsFading(false);
       }, 500); // Wait for fade out to complete
-    }, 30000); // Change quote every 30 seconds
+    }, 7000); // Change quote every 7 seconds
 
     return () => clearInterval(interval);
   }, []);
