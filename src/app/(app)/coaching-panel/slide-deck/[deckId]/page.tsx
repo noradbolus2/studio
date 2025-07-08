@@ -16,10 +16,8 @@ type Slide = GeneratePptSlidesOutput['slides'][0];
 
 export default function SlideDeckPage() {
   const router = useRouter();
-  const params = useParams();
+  const { deckId } = useParams() as { deckId: string };
   const { toast } = useToast();
-
-  const deckId = params.deckId as string;
 
   const [deck, setDeck] = useState<GeneratePptSlidesOutput | null>(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
