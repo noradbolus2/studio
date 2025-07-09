@@ -1,4 +1,3 @@
-
 "use client"; // Required for hooks like useEffect and useRouter
 
 import { useEffect, useState } from 'react';
@@ -39,7 +38,7 @@ export default function AppLayout({
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
       <main className="flex-grow pb-20 md:pb-0">
         <div className="container mx-auto max-w-3xl px-4 py-8">
             {children}
