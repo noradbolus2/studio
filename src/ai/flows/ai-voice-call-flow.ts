@@ -38,7 +38,7 @@ export async function chatWithOsoVaani(input: OsoVaaniInput): Promise<OsoVaaniOu
   // If it's the very first turn, provide a greeting.
   if (!input.userInput && (!input.history || input.history.length === 0)) {
       return {
-          aiResponse: "Namaste! Main OSO Vaani, aapki 24/7 AI teacher hoon. Koi concept samajhna hai ya koi doubt hai? Just poochho!",
+          aiResponse: "Namaste! Main OSO Vaani. Aaj kaunsa concept samjhaun?",
           suggestedReplies: ["What is Photosynthesis?", "Explain Newton's Laws", "How does gravity work?"],
       };
   }
