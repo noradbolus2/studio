@@ -1,16 +1,17 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { PhoneOff, Mic, MicOff, MessageCircle } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, MessageCircle, Send } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { chatWithOsoVaani, type OsoVaaniInput, type OsoVaaniOutput } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 
 type CallStatus = 'connecting' | 'active' | 'ended';
 type TranscriptEntry = {
@@ -41,6 +42,8 @@ export default function AiVoiceCallPage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const utteranceIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const [textInputValue, setTextInputValue] = useState('');
 
   // Effect to load and update the list of available TTS voices
   useEffect(() => {
@@ -48,14 +51,15 @@ export default function AiVoiceCallPage() {
         const availableVoices = window.speechSynthesis.getVoices();
         if(availableVoices.length > 0) {
             setVoices(availableVoices);
+            window.speechSynthesis.onvoiceschanged = null;
         }
     };
 
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        // Initial load can be empty, listen for the event
         getVoices();
-        // The 'voiceschanged' event is crucial for some browsers
-        window.speechSynthesis.onvoiceschanged = getVoices;
+        if (voices.length === 0) {
+            window.speechSynthesis.onvoiceschanged = getVoices;
+        }
     }
 
     return () => {
@@ -63,7 +67,7 @@ export default function AiVoiceCallPage() {
             window.speechSynthesis.onvoiceschanged = null;
         }
     };
-  }, []);
+  }, [voices.length]);
 
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active' && !(window.speechSynthesis && window.speechSynthesis.speaking)) {
@@ -84,7 +88,6 @@ export default function AiVoiceCallPage() {
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        // This is a more robust way to get voices, as they load asynchronously.
         const allVoices = window.speechSynthesis.getVoices();
         let preferredVoice = allVoices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
         if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-IN'));
@@ -107,15 +110,13 @@ export default function AiVoiceCallPage() {
         };
         
         utterance.onerror = (event) => {
-            // The "interrupted" error is common when a new speech request is made
-            // before the previous one finishes. We can safely ignore it.
             if (event.error === 'interrupted') {
                 console.warn("Browser TTS was interrupted, likely by a new speech request.");
                 setIsSpeaking(false);
                 if (utteranceIntervalRef.current) {
                     clearInterval(utteranceIntervalRef.current);
                 }
-                return; // Don't show a toast for this non-critical interruption.
+                return;
             }
 
             console.error("Browser TTS Error:", event.error);
@@ -129,7 +130,6 @@ export default function AiVoiceCallPage() {
 
         window.speechSynthesis.speak(utterance);
         
-        // Watchdog to prevent speech cutoff on some browsers (like Chrome)
         utteranceIntervalRef.current = setInterval(() => {
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.pause();
@@ -165,8 +165,15 @@ export default function AiVoiceCallPage() {
       }
 
     } catch (error: any) {
-        toast({ title: "Conversation Error", description: error.message || "The AI is unable to respond right now.", variant: "destructive" });
-        const errorEntry = { speaker: 'AI' as const, text: "I'm sorry, I'm having technical difficulties. Please hang up and try again later."};
+        let errorMessage = "I'm sorry, I'm having technical difficulties. Please try again later.";
+        const errorString = error.message?.toLowerCase() || '';
+
+        if (errorString.includes('503') || errorString.includes('overloaded')) {
+            errorMessage = "My circuits are a bit busy right now. Please ask me again in a few seconds!";
+        }
+        
+        toast({ title: "Conversation Error", description: errorMessage, variant: "destructive" });
+        const errorEntry = { speaker: 'AI' as const, text: errorMessage};
         setTranscript(prev => [...prev, errorEntry]);
         playBrowserSpeech(errorEntry.text);
         setSuggestedReplies([]);
@@ -179,6 +186,14 @@ export default function AiVoiceCallPage() {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
       getAiResponse(responseText);
   }, [getAiResponse]);
+
+  const handleTextSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (textInputValue.trim() && !isAiThinking && !isSpeaking) {
+        handleUserResponse(textInputValue.trim());
+        setTextInputValue('');
+    }
+  };
 
   // Setup Speech Recognition
   useEffect(() => {
@@ -331,6 +346,26 @@ export default function AiVoiceCallPage() {
                 <p className="text-sm text-cyan-400 animate-pulse">Listening...</p>
             </div>
         )}
+
+        {callStatus === 'active' && (
+            <form onSubmit={handleTextSubmit} className="w-full mt-6 flex items-center gap-2">
+                <Input
+                    placeholder="Type your message..."
+                    className="bg-gray-800 border-gray-600 focus:ring-primary text-white"
+                    value={textInputValue}
+                    onChange={(e) => setTextInputValue(e.target.value)}
+                    disabled={isAiThinking || isSpeaking || isListening}
+                />
+                <Button 
+                    type="submit" 
+                    size="icon" 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0"
+                    disabled={!textInputValue.trim() || isAiThinking || isSpeaking || isListening}
+                >
+                    <Send size={20} />
+                </Button>
+            </form>
+         )}
 
 
         <div className="flex justify-center items-center gap-6 mt-8">
