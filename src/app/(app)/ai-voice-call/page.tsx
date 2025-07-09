@@ -5,14 +5,16 @@ import { useState, useEffect, useRef, useCallback, type FormEvent, type ChangeEv
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { PhoneOff, Mic, MicOff, MessageCircle, Send, Paperclip, XCircle, FileText, Image as ImageIcon } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, MessageCircle, Send, Paperclip, XCircle, FileText, Image as ImageIcon, Languages } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { chatWithOsoVaani, type OsoVaaniInput, type OsoVaaniOutput } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import type { ProfileFormData } from '../edit-profile/page'; 
+import type { ProfileFormData } from '../edit-profile/page';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 type CallStatus = 'connecting' | 'active' | 'ended';
 type TranscriptEntry = {
@@ -41,6 +43,27 @@ declare global {
   }
 }
 
+const languageOptions = [
+    { value: 'en', label: 'English' },
+    { value: 'hi', label: 'हिन्दी (Hindi)' },
+    { value: 'hng', label: 'Hinglish' },
+    { value: 'bho', label: 'भोजपुरी (Bhojpuri)' },
+    { value: 'mr', label: 'मराठी (Marathi)' },
+    { value: 'gu', label: 'ગુજરાતી (Gujarati)' },
+    { value: 'ta', label: 'தமிழ் (Tamil)' },
+    { value: 'te', label: 'తెలుగు (Telugu)' },
+    { value: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
+    { value: 'hry', label: 'Haryanvi' },
+    { value: 'rjs', label: 'Rajasthani' },
+];
+
+const langCodeToBrowserLang: Record<string, string> = {
+    en: 'en-IN', hi: 'hi-IN', hng: 'hi-IN',
+    bho: 'hi-IN', mr: 'mr-IN', gu: 'gu-IN',
+    ta: 'ta-IN', te: 'te-IN', kn: 'kn-IN',
+    hry: 'hi-IN', rjs: 'hi-IN'
+};
+
 export default function AiVoiceCallPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -59,6 +82,8 @@ export default function AiVoiceCallPage() {
   const [textInputValue, setTextInputValue] = useState('');
   const [attachmentPreview, setAttachmentPreview] = useState<AttachmentPreview | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('hng');
+
 
   const getVoices = useCallback(() => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -89,7 +114,7 @@ export default function AiVoiceCallPage() {
     }
   }, [isListening, isAiThinking, callStatus]);
 
-  const playBrowserSpeech = useCallback((text: string) => {
+  const playBrowserSpeech = useCallback((text: string, langCode: string = 'hng') => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
         if (utteranceIntervalRef.current) {
             clearInterval(utteranceIntervalRef.current);
@@ -97,17 +122,18 @@ export default function AiVoiceCallPage() {
         window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
+        const targetBrowserLang = langCodeToBrowserLang[langCode] || 'en-IN';
         
         let allVoices = getVoices();
         
-        let preferredVoice = allVoices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
-        if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-IN'));
+        let preferredVoice = allVoices.find(v => v.lang === targetBrowserLang && v.name.includes('Google'));
+        if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith(targetBrowserLang.split('-')[0]));
         if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-'));
 
         if (preferredVoice) {
             utterance.voice = preferredVoice;
         } else {
-            console.warn("Preferred Hindi/English voice not found. Using browser default.");
+            console.warn(`Voice for lang '${targetBrowserLang}' not found. Using browser default.`);
         }
 
         utterance.onstart = () => setIsSpeaking(true);
@@ -180,6 +206,7 @@ export default function AiVoiceCallPage() {
     const inputForFlow: OsoVaaniInput = { 
         userInput, 
         history,
+        preferredLanguage: selectedLanguage,
         studentClass: profileContext.className,
         studentBoard: profileContext.board,
         studentStream: profileContext.stream,
@@ -200,7 +227,7 @@ export default function AiVoiceCallPage() {
     try {
       const response = await chatWithOsoVaani(inputForFlow);
       setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
-      playBrowserSpeech(response.aiResponse);
+      playBrowserSpeech(response.aiResponse, response.respondedInLanguage);
 
       if (response.suggestedReplies.length > 0) {
         setSuggestedReplies(response.suggestedReplies);
@@ -224,7 +251,7 @@ export default function AiVoiceCallPage() {
     } finally {
         setIsAiThinking(false);
     }
-  }, [transcript, toast, playBrowserSpeech]);
+  }, [transcript, toast, playBrowserSpeech, selectedLanguage]);
   
   const handleUserSpeechResponse = useCallback((responseText: string) => {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
@@ -295,7 +322,7 @@ export default function AiVoiceCallPage() {
         recognitionRef.current = new SpeechRecognition();
         const recognition = recognitionRef.current;
         recognition.continuous = false;
-        recognition.lang = 'en-IN';
+        recognition.lang = langCodeToBrowserLang[selectedLanguage] || 'en-IN'; // Dynamic lang for speech reco
         recognition.interimResults = false;
 
         recognition.onstart = () => setIsListening(true);
@@ -316,27 +343,14 @@ export default function AiVoiceCallPage() {
         toast({ title: "Mic Not Supported", description: "Your browser does not support speech recognition.", variant: "destructive" });
       }
     }
-  }, [toast, handleUserSpeechResponse]);
+  }, [toast, handleUserSpeechResponse, selectedLanguage]); // Re-init if language changes
 
   // This effect runs only once on mount to simulate connection and fetch the initial greeting.
   useEffect(() => {
     const initialGreeting = async () => {
         await new Promise(resolve => setTimeout(resolve, 1500));
         setCallStatus('active');
-        // Initial call will be made from getAiResponse which is triggered by button or speech
-        setIsAiThinking(true);
-        try {
-            const response = await chatWithOsoVaani({ userInput: '', history: [] });
-            setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
-            playBrowserSpeech(response.aiResponse);
-            if (response.suggestedReplies.length > 0) {
-                setSuggestedReplies(response.suggestedReplies);
-            }
-        } catch (error: any) {
-            toast({ title: "Initial Greeting Failed", description: "Could not connect to OSO Vaani.", variant: "destructive" });
-        } finally {
-            setIsAiThinking(false);
-        }
+        getAiResponse('', null); // Fetch initial greeting from AI
     };
     
     initialGreeting();
@@ -397,6 +411,19 @@ export default function AiVoiceCallPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
       <div className="w-full max-w-sm flex flex-col items-center">
+        <div className="absolute top-4 left-4 w-40 z-10">
+          <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+              <SelectTrigger className="bg-gray-700/80 border-gray-600 text-white h-9">
+                  <Languages className="h-4 w-4 mr-2"/>
+                  <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                  {languageOptions.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+              </SelectContent>
+          </Select>
+        </div>
         <Avatar className="h-28 w-28 mb-4 border-4 border-primary/50">
           <AvatarImage src="https://placehold.co/100x100.png" alt="OSO Vaani" data-ai-hint="friendly female teacher" />
           <AvatarFallback>V</AvatarFallback>

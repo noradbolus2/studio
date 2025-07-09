@@ -11,6 +11,8 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
+const languageCodeSchema = z.enum(['en', 'hi', 'hng', 'bho', 'ta', 'te', 'gu', 'rjs', 'hry', 'mr', 'kn']);
+
 const OsoVaaniInputSchema = z.object({
   userInput: z.string().describe("The user's most recent utterance or selected option."),
   history: z
@@ -22,6 +24,7 @@ const OsoVaaniInputSchema = z.object({
     )
     .optional()
     .describe('The recent conversation history.'),
+  preferredLanguage: languageCodeSchema.optional().describe("The user's preferred language for the response. Defaults to 'hng' (Hinglish)."),
   attachmentDataUri: z.string().optional().describe("Optional: A Base64 data URI of an attached image file. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
   attachmentInfo: z.object({
     name: z.string().describe("Name of the attached file."),
@@ -36,7 +39,8 @@ const OsoVaaniInputSchema = z.object({
 export type OsoVaaniInput = z.infer<typeof OsoVaaniInputSchema>;
 
 const OsoVaaniOutputSchema = z.object({
-  aiResponse: z.string().describe("OSO Vaani's next response in the conversation."),
+  aiResponse: z.string().describe("OSO Vaani's next response in the conversation, strictly in the requested language."),
+  respondedInLanguage: languageCodeSchema.describe("The language code of the response."),
   suggestedReplies: z
     .array(z.string())
     .max(3)
@@ -45,11 +49,26 @@ const OsoVaaniOutputSchema = z.object({
 export type OsoVaaniOutput = z.infer<typeof OsoVaaniOutputSchema>;
 
 export async function chatWithOsoVaani(input: OsoVaaniInput): Promise<OsoVaaniOutput> {
-  // If it's the very first turn, provide a greeting.
+  // If it's the very first turn, provide a greeting in the selected language.
   if (!input.userInput && (!input.history || input.history.length === 0) && !input.attachmentInfo) {
+      const lang = input.preferredLanguage || 'hng';
+      let greeting = "Namaste! Main OSO Vaani. Aaj kaunsa concept samjhaun?"; // Hinglish default
+      let replies = ["What is Photosynthesis?", "Explain Newton's Laws", "How does gravity work?"];
+
+      switch(lang) {
+        case 'en': 
+            greeting = "Hello! I'm OSO Vaani. What concept can I explain for you today?";
+            break;
+        case 'hi':
+            greeting = "नमस्ते! मैं ओएसओ वाणी हूँ। आज कौन सा कॉन्सेप्ट समझाऊँ?";
+            replies = ["प्रकाश संश्लेषण क्या है?", "न्यूटन के नियम समझाएं", "गुरुत्वाकर्षण कैसे काम करता है?"];
+            break;
+        // Other regional greetings can be added here if needed.
+      }
       return {
-          aiResponse: "Namaste! Main OSO Vaani. Aaj kaunsa concept samjhaun?",
-          suggestedReplies: ["What is Photosynthesis?", "Explain Newton's Laws", "How does gravity work?"],
+          aiResponse: greeting,
+          suggestedReplies: replies,
+          respondedInLanguage: lang,
       };
   }
   return osoVaaniFlow(input);
@@ -59,18 +78,37 @@ const prompt = ai.definePrompt({
     name: 'osoVaaniPrompt',
     input: { schema: OsoVaaniInputSchema },
     output: {schema: OsoVaaniOutputSchema},
-    prompt: `You are OSO Vaani, a unique AI mentor and friend. Your primary role is to be a supportive guide for students. You speak in a clear, encouraging, and slightly informal Hinglish, suitable for a voice conversation.
+    prompt: `You are OSO Vaani, a unique AI mentor and friend. You are a master of languages and can fluently converse in many Indian languages.
+
+    **//-- CRITICAL: LANGUAGE INSTRUCTION --//**
+    The user has specified a preferred language with the code '{{{preferredLanguage}}}'. Your entire response MUST be in this language.
+    Language Code Mappings:
+    - en: English
+    - hi: Hindi (Devanagari script)
+    - hng: Hinglish (Roman script)
+    - bho: Bhojpuri (Devanagari script)
+    - ta: Tamil
+    - te: Telugu
+    - gu: Gujarati
+    - rjs: Rajasthani (Marwari, in Devanagari script)
+    - hry: Haryanvi (in Devanagari script)
+    - mr: Marathi
+    - kn: Kannada
+    
+    If 'preferredLanguage' is not provided, default to 'hng' (Hinglish).
+    Your entire 'aiResponse' and the strings in 'suggestedReplies' MUST be in the requested language and script.
+    The 'respondedInLanguage' field MUST be set to '{{{preferredLanguage}}}'.
 
     **//-- CRITICAL SAFETY PROTOCOL: EMERGENCY DETECTION --//**
     This is your most important instruction. You are NOT a medical professional.
     1.  **DETECT EMERGENCY:** If the user's message contains any indication of a severe medical or mental health crisis (e.g., keywords like "suicide", "can't go on", "want to die", "kill myself", "not breathing", "chest pain", "can't cope", "overwhelmed with sadness", "hopeless"), you MUST activate Emergency Protocol.
     2.  **ACTIVATE EMERGENCY PROTOCOL:**
-        *   **Immediately state your limitation:** Start your response with a clear statement like: "This sounds serious. I am an AI and not a medical expert, but I want to help you get the support you need right away."
-        *   **Provide a Helpline:** Your very next sentence MUST provide a real helpline number. Say: "Please call a helpline like Aasra at 9820466726 or the National Emergency Number 112 right now."
+        *   **Immediately state your limitation:** Start your response with a clear statement like: "This sounds serious. I am an AI and not a medical expert, but I want to help you get the support you need right away." (Translate this message to the user's preferred language).
+        *   **Provide a Helpline:** Your very next sentence MUST provide a real helpline number. Say: "Please call a helpline like Aasra at 9820466726 or the National Emergency Number 112 right now." (Provide the numbers as digits).
         *   **Urge Action:** Strongly encourage them to talk to a trusted adult, parent, or professional immediately.
         *   **Do NOT offer advice:** Do NOT give any personal advice, diagnosis, or attempt to solve the problem yourself. Your only job is to direct them to professional help.
         *   **Keep it brief and direct.**
-        *   Your suggested replies in this case should be things like "Call 112 Now", "Talk to a Counselor", "Tell a Parent/Guardian".
+        *   Your suggested replies in this case should be things like "Call 112 Now", "Talk to a Counselor", "Tell a Parent/Guardian" (translated appropriately).
 
     **//-- MENTOR ROLE (NON-EMERGENCY) --//**
     If there is NO emergency, you are a patient, insightful, and brilliant mentor.
@@ -86,18 +124,7 @@ const prompt = ai.definePrompt({
     {{#if studentBoard}}- Board: {{studentBoard}}{{/if}}
     {{#if studentStream}}- Stream: {{studentStream}}{{/if}}
     {{#if studentExamTarget}}- Primary Exam Target: {{studentExamTarget}}{{/if}}
-    For instance, if the student is preparing for NEET and asks about a Biology concept, tailor your examples to the NEET UG level. If they are in Class 10, keep the explanation at that level.
     
-    **//-- Example Interactions --//**
-
-    **1. Concept Explanation (Mentor Role)**
-    User: "Photosynthesis kya hota hai?"
-    AI: { "aiResponse": "Great question! Photosynthesis woh process hai jisse plants apna khana banate hain. Woh sunlight, water, aur carbon dioxide use karke glucose, yaani energy, banate hain. Simple bhasha mein, yeh plants ka 'kitchen' hai. Samajh aaya?", "suggestedReplies": ["Haan, samajh gaya", "Chlorophyll ka kya role hai?", "Thoda aur detail mein batao"] }
-    
-    **2. Emergency Detection (Doctor Role - SAFETY PROTOCOL)**
-    User: "I can't take this pressure anymore, I want to end it."
-    AI: { "aiResponse": "This sounds very serious. I am an AI and not a medical expert, but I want to help you get the support you need right away. Please call a helpline like Aasra at 9820466726 or the National Emergency Number 112 right now. It's really important that you talk to a professional or a trusted adult immediately.", "suggestedReplies": ["Call 112 Now", "Talk to a Counselor", "Tell a Parent/Guardian"] }
-
     **//-- Current Conversation --//**
     Remember the last few things said to keep the conversation natural.
     
@@ -127,7 +154,7 @@ const prompt = ai.definePrompt({
     {{/if}}
     {{/if}}
 
-    Generate your response now. Your entire output must be a single JSON object with "aiResponse" and "suggestedReplies" fields. The replies should help continue the learning conversation or provide emergency actions.
+    Generate your response now. Your entire output must be a single JSON object with "aiResponse", "respondedInLanguage", and "suggestedReplies" fields.
     `,
 });
 
@@ -143,6 +170,7 @@ const osoVaaniFlow = ai.defineFlow(
         return {
             aiResponse: "Happy to help! Keep learning. Goodbye!",
             suggestedReplies: [],
+            respondedInLanguage: input.preferredLanguage || 'hng',
         };
     }
     
@@ -152,7 +180,8 @@ const osoVaaniFlow = ai.defineFlow(
         if (!output) {
           return {
             aiResponse: "I'm sorry, I'm having a little trouble right now. Could you please repeat that?",
-            suggestedReplies: ["Please repeat the concept.", "Can you explain differently?"]
+            suggestedReplies: ["Please repeat the concept.", "Can you explain differently?"],
+            respondedInLanguage: input.preferredLanguage || 'hng',
           }
         }
         return output;
@@ -168,7 +197,8 @@ const osoVaaniFlow = ai.defineFlow(
         
         return {
             aiResponse: errorMessage,
-            suggestedReplies: ["Can you try again?", "Ask something else."]
+            suggestedReplies: ["Can you try again?", "Ask something else."],
+            respondedInLanguage: input.preferredLanguage || 'hng',
         };
     }
   }
