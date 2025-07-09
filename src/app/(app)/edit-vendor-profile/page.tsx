@@ -16,8 +16,8 @@ export default function EditVendorProfileRedirectPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Create a mutable copy of searchParams safely.
-    const newParams = new URLSearchParams(Array.from(searchParams.entries()));
+    // Create a mutable copy of searchParams safely by using its `toString()` method.
+    const newParams = new URLSearchParams(searchParams.toString());
     newParams.set('role', 'vendor');
 
     // Redirect to the consolidated edit profile page
