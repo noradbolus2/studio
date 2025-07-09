@@ -39,35 +39,15 @@ export default function AiVoiceCallPage() {
   
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
-  const [playbackEnded, setPlaybackEnded] = useState(false);
 
-  const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(() => {
-    if (callStatus === 'active') {
-      setPlaybackEnded(true);
+  const startListening = useCallback(() => {
+    if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active') {
+      recognitionRef.current.start();
     }
-  });
+  }, [isListening, isAiThinking, callStatus]);
 
-  const toggleListening = useCallback(() => {
-    if (!recognitionRef.current) {
-      console.warn("Speech recognition not initialized.");
-      return;
-    }
-    if (isListening) {
-      recognitionRef.current.stop();
-    } else {
-      if (!isAudioPlaying && !isAiThinking) {
-        recognitionRef.current.start();
-      }
-    }
-  }, [isListening, isAudioPlaying, isAiThinking]);
+  const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(startListening);
 
-  useEffect(() => {
-    if (playbackEnded) {
-      toggleListening();
-      setPlaybackEnded(false);
-    }
-  }, [playbackEnded, toggleListening]);
-  
   // Helper to convert data URI to Blob
   const dataURIToBlob = (dataURI: string): Blob => {
     const splitDataURI = dataURI.split(',');
@@ -186,7 +166,7 @@ export default function AiVoiceCallPage() {
     
     initialGreeting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAndPlayAiSpeech, toast]); // Dependency array is minimal and stable.
+  }, [fetchAndPlayAiSpeech, toast]); 
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -197,6 +177,16 @@ export default function AiVoiceCallPage() {
     }
     return () => clearInterval(interval);
   }, [callStatus]);
+  
+  const handleManualMicToggle = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+    } else {
+      if (!isAudioPlaying && !isAiThinking) {
+        startListening();
+      }
+    }
+  };
 
   const endCall = () => {
     stopVoice();
@@ -206,7 +196,6 @@ export default function AiVoiceCallPage() {
     setCallStatus('ended');
   }
   
-
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
@@ -267,7 +256,7 @@ export default function AiVoiceCallPage() {
                     "rounded-full h-16 w-16 bg-gray-700/80 hover:bg-gray-700",
                     isListening && "bg-cyan-500/80 hover:bg-cyan-500 animate-pulse"
                 )} 
-                onClick={toggleListening}
+                onClick={handleManualMicToggle}
                 disabled={isAiThinking || isAudioPlaying}
             >
                 {isListening ? <MicOff size={28}/> : <Mic size={28}/>}
