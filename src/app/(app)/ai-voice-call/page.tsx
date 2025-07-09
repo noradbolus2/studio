@@ -40,17 +40,22 @@ export default function AiVoiceCallPage() {
 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const utteranceIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Effect to load and update the list of available TTS voices
   useEffect(() => {
-    const handleVoicesChanged = () => {
-      setVoices(window.speechSynthesis.getVoices());
+    const getVoices = () => {
+        const availableVoices = window.speechSynthesis.getVoices();
+        if(availableVoices.length > 0) {
+            setVoices(availableVoices);
+        }
     };
 
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        // Initial load might be empty, onvoiceschanged will populate it
-        setVoices(window.speechSynthesis.getVoices());
-        window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+        // Initial load
+        getVoices();
+        // The 'voiceschanged' event is crucial for some browsers
+        window.speechSynthesis.onvoiceschanged = getVoices;
     }
 
     return () => {
@@ -72,11 +77,13 @@ export default function AiVoiceCallPage() {
 
   const playBrowserSpeech = useCallback((text: string) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel(); // Stop any currently speaking utterance
+        if (utteranceIntervalRef.current) {
+            clearInterval(utteranceIntervalRef.current);
+        }
+        window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        // Use the state-managed list of voices
         let preferredVoice = voices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
         if (!preferredVoice) preferredVoice = voices.find(v => v.lang.startsWith('en-IN'));
         if (!preferredVoice) preferredVoice = voices.find(v => v.lang.startsWith('en-'));
@@ -91,17 +98,34 @@ export default function AiVoiceCallPage() {
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => {
             setIsSpeaking(false);
+            if (utteranceIntervalRef.current) {
+                clearInterval(utteranceIntervalRef.current);
+            }
             startListening();
         };
         
         utterance.onerror = (event) => {
             console.error("Browser TTS Error:", event.error);
-            toast({ title: "Voice Error", description: `The browser's built-in voice failed: ${event.error}`, variant: "destructive" });
+            toast({ title: "Voice Error", description: `The browser's built-in voice failed.`, variant: "destructive" });
             setIsSpeaking(false);
+             if (utteranceIntervalRef.current) {
+                clearInterval(utteranceIntervalRef.current);
+            }
             startListening();
         };
 
         window.speechSynthesis.speak(utterance);
+        
+        // Watchdog to prevent speech cutoff
+        utteranceIntervalRef.current = setInterval(() => {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.pause();
+                window.speechSynthesis.resume();
+            } else if (utteranceIntervalRef.current) {
+                clearInterval(utteranceIntervalRef.current);
+            }
+        }, 14000);
+
     } else {
         toast({ title: "Audio Error", description: "Your browser does not support voice synthesis.", variant: "destructive" });
         startListening();
@@ -195,6 +219,17 @@ export default function AiVoiceCallPage() {
     };
     
     initialGreeting();
+
+    // Cleanup on unmount
+    return () => {
+        if (utteranceIntervalRef.current) {
+            clearInterval(utteranceIntervalRef.current);
+        }
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+    };
+    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
@@ -225,6 +260,9 @@ export default function AiVoiceCallPage() {
     setIsSpeaking(false);
     if(recognitionRef.current && isListening) {
         recognitionRef.current.stop();
+    }
+     if (utteranceIntervalRef.current) {
+        clearInterval(utteranceIntervalRef.current);
     }
     setCallStatus('ended');
   }
