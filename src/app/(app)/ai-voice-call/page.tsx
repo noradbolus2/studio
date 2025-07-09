@@ -52,7 +52,7 @@ export default function AiVoiceCallPage() {
     };
 
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        // Initial load
+        // Initial load can be empty, listen for the event
         getVoices();
         // The 'voiceschanged' event is crucial for some browsers
         window.speechSynthesis.onvoiceschanged = getVoices;
@@ -84,9 +84,11 @@ export default function AiVoiceCallPage() {
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        let preferredVoice = voices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
-        if (!preferredVoice) preferredVoice = voices.find(v => v.lang.startsWith('en-IN'));
-        if (!preferredVoice) preferredVoice = voices.find(v => v.lang.startsWith('en-'));
+        // This is a more robust way to get voices, as they load asynchronously.
+        const allVoices = window.speechSynthesis.getVoices();
+        let preferredVoice = allVoices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
+        if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-IN'));
+        if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-'));
 
 
         if (preferredVoice) {
@@ -105,8 +107,19 @@ export default function AiVoiceCallPage() {
         };
         
         utterance.onerror = (event) => {
+            // The "interrupted" error is common when a new speech request is made
+            // before the previous one finishes. We can safely ignore it.
+            if (event.error === 'interrupted') {
+                console.warn("Browser TTS was interrupted, likely by a new speech request.");
+                setIsSpeaking(false);
+                if (utteranceIntervalRef.current) {
+                    clearInterval(utteranceIntervalRef.current);
+                }
+                return; // Don't show a toast for this non-critical interruption.
+            }
+
             console.error("Browser TTS Error:", event.error);
-            toast({ title: "Voice Error", description: `The browser's built-in voice failed.`, variant: "destructive" });
+            toast({ title: "Voice Error", description: `The browser's built-in voice failed: ${event.error}`, variant: "destructive" });
             setIsSpeaking(false);
              if (utteranceIntervalRef.current) {
                 clearInterval(utteranceIntervalRef.current);
@@ -116,7 +129,7 @@ export default function AiVoiceCallPage() {
 
         window.speechSynthesis.speak(utterance);
         
-        // Watchdog to prevent speech cutoff
+        // Watchdog to prevent speech cutoff on some browsers (like Chrome)
         utteranceIntervalRef.current = setInterval(() => {
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.pause();
@@ -130,7 +143,7 @@ export default function AiVoiceCallPage() {
         toast({ title: "Audio Error", description: "Your browser does not support voice synthesis.", variant: "destructive" });
         startListening();
     }
-  }, [startListening, toast, voices]);
+  }, [startListening, toast]);
   
   const getAiResponse = useCallback(async (userInput: string) => {
     setIsAiThinking(true);
@@ -345,5 +358,3 @@ export default function AiVoiceCallPage() {
     </div>
   );
 }
-
-    
