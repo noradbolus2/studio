@@ -83,7 +83,9 @@ export default function AiVoiceCallPage() {
       const audioBlob = dataURIToBlob(audioDataUri);
       await playVoice(audioBlob);
     } catch (error: any) {
-      console.warn("AI TTS Error, attempting browser fallback:", error.message);
+       console.warn("AI TTS Error, attempting browser fallback:", error.message);
+
+       toast({ title: "Using Fallback Voice", description: error.message, variant: "default" });
 
       // Fallback to browser's built-in TTS
       if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -159,7 +161,7 @@ export default function AiVoiceCallPage() {
 
         recognition.onstart = () => {
           setIsListening(true);
-          toast({ title: "Listening...", description: "Please speak now." });
+          // Toast removed for a smoother experience. The UI indicator is sufficient.
         };
 
         recognition.onend = () => {
@@ -168,7 +170,12 @@ export default function AiVoiceCallPage() {
 
         recognition.onerror = (event: any) => {
           console.error('Speech recognition error:', event.error);
-          toast({ title: "Mic Error", description: `Could not recognize speech: ${event.error}`, variant: "destructive" });
+           // Handle common non-critical errors silently
+          if (event.error === 'no-speech' || event.error === 'aborted') {
+            // User didn't speak or the mic was stopped. This is normal.
+          } else {
+            toast({ title: "Mic Error", description: `Could not recognize speech: ${event.error}`, variant: "destructive" });
+          }
           setIsListening(false);
         };
 
