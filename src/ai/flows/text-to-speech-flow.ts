@@ -65,33 +65,42 @@ const generateSpeechFlow = ai.defineFlow(
     outputSchema: GenerateSpeechOutputSchema,
   },
   async (input) => {
-    const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Algenib' },
+    try {
+      const { media } = await ai.generate({
+        model: googleAI.model('gemini-2.5-flash-preview-tts'),
+        config: {
+          responseModalities: ['AUDIO'],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Algenib' },
+            },
           },
         },
-      },
-      prompt: input.text,
-    });
+        prompt: input.text,
+      });
 
-    if (!media?.url) {
-      throw new Error('No audio media was returned from the AI model.');
+      if (!media?.url) {
+        throw new Error('No audio media was returned from the AI model.');
+      }
+
+      // The media URL is a data URI: data:audio/pcm;rate=24000;channels=1;encoding=linear16;base64,...
+      const audioBuffer = Buffer.from(
+        media.url.substring(media.url.indexOf(',') + 1),
+        'base64'
+      );
+      
+      const wavBase64 = await toWav(audioBuffer);
+      
+      return {
+        audioDataUri: 'data:audio/wav;base64,' + wavBase64,
+      };
+    } catch (error: any) {
+        // Check for specific quota error from Google AI
+        if (error.message && (error.message.includes('429') || error.message.toLowerCase().includes('quota'))) {
+            throw new Error("The daily free limit for AI voice generation has been reached. Please check your plan and billing details, or try again tomorrow.");
+        }
+        // Rethrow other errors
+        throw error;
     }
-
-    // The media URL is a data URI: data:audio/pcm;rate=24000;channels=1;encoding=linear16;base64,...
-    const audioBuffer = Buffer.from(
-      media.url.substring(media.url.indexOf(',') + 1),
-      'base64'
-    );
-    
-    const wavBase64 = await toWav(audioBuffer);
-    
-    return {
-      audioDataUri: 'data:audio/wav;base64,' + wavBase64,
-    };
   }
 );
