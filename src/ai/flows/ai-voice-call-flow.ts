@@ -22,6 +22,12 @@ const OsoVaaniInputSchema = z.object({
     )
     .optional()
     .describe('The recent conversation history.'),
+  attachmentDataUri: z.string().optional().describe("Optional: A Base64 data URI of an attached image file. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
+  attachmentInfo: z.object({
+    name: z.string().describe("Name of the attached file."),
+    type: z.string().describe("MIME type of the attached file."),
+    isImage: z.boolean().describe("True if the attachment is an image, false otherwise."),
+  }).optional().describe("Optional: Information about the attached file."),
 });
 export type OsoVaaniInput = z.infer<typeof OsoVaaniInputSchema>;
 
@@ -36,7 +42,7 @@ export type OsoVaaniOutput = z.infer<typeof OsoVaaniOutputSchema>;
 
 export async function chatWithOsoVaani(input: OsoVaaniInput): Promise<OsoVaaniOutput> {
   // If it's the very first turn, provide a greeting.
-  if (!input.userInput && (!input.history || input.history.length === 0)) {
+  if (!input.userInput && (!input.history || input.history.length === 0) && !input.attachmentInfo) {
       return {
           aiResponse: "Namaste! Main OSO Vaani. Aaj kaunsa concept samjhaun?",
           suggestedReplies: ["What is Photosynthesis?", "Explain Newton's Laws", "How does gravity work?"],
@@ -82,6 +88,21 @@ const prompt = ai.definePrompt({
     {{/if}}
 
     User's latest input: "{{userInput}}"
+
+    {{#if attachmentInfo}}
+    The user has also provided an attachment.
+    File Name: {{attachmentInfo.name}}
+    File Type: {{attachmentInfo.type}}
+    {{#if attachmentInfo.isImage}}
+    {{#if attachmentDataUri}}
+    Attached Image:
+    {{media url=attachmentDataUri}}
+    Analyze this image in the context of the user's query and explain the concept. For example, if it's a math problem, solve it step-by-step. If it's a diagram, explain its parts and function.
+    {{/if}}
+    {{else}}
+    (A document is attached. Refer to its name and type if relevant to the user's query.)
+    {{/if}}
+    {{/if}}
 
     Generate your response now. Your entire output must be a single JSON object with "aiResponse" and "suggestedReplies" fields. The replies should help continue the learning conversation.
     `,

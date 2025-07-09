@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback, type FormEvent } from 'react';
+import { useState, useEffect, useRef, useCallback, type FormEvent, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { PhoneOff, Mic, MicOff, MessageCircle, Send } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, MessageCircle, Send, Paperclip, XCircle, FileText, Image as ImageIcon } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { chatWithOsoVaani, type OsoVaaniInput, type OsoVaaniOutput } from '@/ai/flows/ai-voice-call-flow';
@@ -18,6 +18,19 @@ type TranscriptEntry = {
   speaker: 'AI' | 'User';
   text: string;
 };
+
+interface AttachmentPreview {
+  name: string;
+  type: string;
+  dataUri: string | null;
+  isImage: boolean;
+}
+
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+const ALLOWED_DOC_TYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+const ALLOWED_FILE_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOC_TYPES];
 
 // Add SpeechRecognition type declaration for window object
 declare global {
@@ -44,30 +57,30 @@ export default function AiVoiceCallPage() {
   const utteranceIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   const [textInputValue, setTextInputValue] = useState('');
+  const [attachmentPreview, setAttachmentPreview] = useState<AttachmentPreview | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Effect to load and update the list of available TTS voices
-  useEffect(() => {
-    const getVoices = () => {
-        const availableVoices = window.speechSynthesis.getVoices();
-        if(availableVoices.length > 0) {
-            setVoices(availableVoices);
-            window.speechSynthesis.onvoiceschanged = null;
-        }
-    };
-
+  const getVoices = useCallback(() => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        getVoices();
-        if (voices.length === 0) {
-            window.speechSynthesis.onvoiceschanged = getVoices;
+        const availableVoices = window.speechSynthesis.getVoices();
+        if (availableVoices.length > 0) {
+            setVoices(availableVoices);
         }
     }
+  }, []);
 
+  useEffect(() => {
+    getVoices();
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = getVoices;
+    }
     return () => {
         if (typeof window !== 'undefined' && window.speechSynthesis) {
             window.speechSynthesis.onvoiceschanged = null;
         }
     };
-  }, [voices.length]);
+  }, [getVoices]);
+
 
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active' && !(window.speechSynthesis && window.speechSynthesis.speaking)) {
@@ -88,11 +101,15 @@ export default function AiVoiceCallPage() {
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        const allVoices = window.speechSynthesis.getVoices();
+        let allVoices = window.speechSynthesis.getVoices();
+        if (allVoices.length === 0) {
+            getVoices(); 
+            allVoices = window.speechSynthesis.getVoices();
+        }
+        
         let preferredVoice = allVoices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
         if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-IN'));
         if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-'));
-
 
         if (preferredVoice) {
             utterance.voice = preferredVoice;
@@ -112,10 +129,6 @@ export default function AiVoiceCallPage() {
         utterance.onerror = (event) => {
             if (event.error === 'interrupted') {
                 console.warn("Browser TTS was interrupted, likely by a new speech request.");
-                setIsSpeaking(false);
-                if (utteranceIntervalRef.current) {
-                    clearInterval(utteranceIntervalRef.current);
-                }
                 return;
             }
 
@@ -143,9 +156,9 @@ export default function AiVoiceCallPage() {
         toast({ title: "Audio Error", description: "Your browser does not support voice synthesis.", variant: "destructive" });
         startListening();
     }
-  }, [startListening, toast]);
+  }, [startListening, toast, getVoices]);
   
-  const getAiResponse = useCallback(async (userInput: string) => {
+  const getAiResponse = useCallback(async (userInput: string, attachment: AttachmentPreview | null) => {
     setIsAiThinking(true);
     setSuggestedReplies([]);
     const history = transcript.map(entry => ({
@@ -153,8 +166,20 @@ export default function AiVoiceCallPage() {
         text: entry.text,
     }));
     
+    const inputForFlow: OsoVaaniInput = { userInput, history };
+    if (attachment) {
+        inputForFlow.attachmentInfo = {
+            name: attachment.name,
+            type: attachment.type,
+            isImage: attachment.isImage,
+        };
+        if (attachment.isImage && attachment.dataUri) {
+            inputForFlow.attachmentDataUri = attachment.dataUri;
+        }
+    }
+    
     try {
-      const response = await chatWithOsoVaani({ userInput, history } as OsoVaaniInput);
+      const response = await chatWithOsoVaani(inputForFlow);
       setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
       playBrowserSpeech(response.aiResponse);
 
@@ -182,18 +207,66 @@ export default function AiVoiceCallPage() {
     }
   }, [transcript, toast, playBrowserSpeech]);
   
-  const handleUserResponse = useCallback((responseText: string) => {
+  const handleUserSpeechResponse = useCallback((responseText: string) => {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
-      getAiResponse(responseText);
+      getAiResponse(responseText, null); // Speech input does not carry attachments
   }, [getAiResponse]);
+
+  const removeAttachment = useCallback(() => {
+    setAttachmentPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, []);
 
   const handleTextSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (textInputValue.trim() && !isAiThinking && !isSpeaking) {
-        handleUserResponse(textInputValue.trim());
-        setTextInputValue('');
+    const trimmedInput = textInputValue.trim();
+    if ((!trimmedInput && !attachmentPreview) || isAiThinking || isSpeaking || isListening) return;
+    
+    setTranscript(prev => [...prev, { speaker: 'User', text: trimmedInput }]);
+    getAiResponse(trimmedInput, attachmentPreview);
+    
+    setTextInputValue('');
+    removeAttachment();
+  };
+
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        toast({ title: "File Too Large", description: `Please select a file smaller than ${MAX_FILE_SIZE_MB}MB.`, variant: "destructive"});
+        setAttachmentPreview(null);
+        if(fileInputRef.current) fileInputRef.current.value = ""; 
+        return;
+      }
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        toast({ title: "Invalid File Type", description: "Please select an image (JPG, PNG, GIF, WebP) or document (PDF, DOC, DOCX, TXT).", variant: "destructive"});
+        setAttachmentPreview(null);
+        if(fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
+
+      reader.onloadend = () => {
+        setAttachmentPreview({
+          name: file.name,
+          type: file.type,
+          dataUri: isImage ? reader.result as string : null, 
+          isImage: isImage,
+        });
+      };
+      reader.onerror = () => {
+        toast({ title: "Error Reading File", description: "Could not read the selected file.", variant: "destructive"});
+        setAttachmentPreview(null);
+        if(fileInputRef.current) fileInputRef.current.value = "";
+      };
+      reader.readAsDataURL(file); 
     }
   };
+
 
   // Setup Speech Recognition
   useEffect(() => {
@@ -218,13 +291,13 @@ export default function AiVoiceCallPage() {
 
         recognition.onresult = (event: any) => {
           const transcriptResult = event.results[0][0].transcript;
-          handleUserResponse(transcriptResult);
+          handleUserSpeechResponse(transcriptResult);
         };
       } else {
         toast({ title: "Mic Not Supported", description: "Your browser does not support speech recognition.", variant: "destructive" });
       }
     }
-  }, [toast, handleUserResponse]);
+  }, [toast, handleUserSpeechResponse]);
 
   // This effect runs only once on mount to simulate connection and fetch the initial greeting.
   useEffect(() => {
@@ -328,7 +401,7 @@ export default function AiVoiceCallPage() {
         {callStatus === 'active' && !isAiThinking && !isListening && (
           <div className="w-full space-y-3">
             {suggestedReplies.map((reply, index) => (
-                <Button key={index} variant="outline" className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 justify-start text-left h-auto py-2.5" onClick={() => handleUserResponse(reply)} disabled={isSpeaking || isAiThinking}>
+                <Button key={index} variant="outline" className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 justify-start text-left h-auto py-2.5" onClick={() => handleUserSpeechResponse(reply)} disabled={isSpeaking || isAiThinking}>
                     <MessageCircle className="h-4 w-4 mr-2 shrink-0"/>
                     <span className="flex-grow">{reply}</span>
                 </Button>
@@ -348,7 +421,26 @@ export default function AiVoiceCallPage() {
         )}
 
         {callStatus === 'active' && (
-            <form onSubmit={handleTextSubmit} className="w-full mt-6 flex items-center gap-2">
+          <div className="w-full mt-6 space-y-2">
+            {attachmentPreview && (
+                <div className="p-2 border border-gray-600 rounded-md flex justify-between items-center bg-gray-800/50">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                    {attachmentPreview.isImage ? 
+                        <ImageIcon className="h-4 w-4 text-cyan-400 shrink-0" /> : 
+                        <FileText className="h-4 w-4 text-cyan-400 shrink-0" />
+                    }
+                    <span className="text-xs text-gray-300 truncate">{attachmentPreview.name}</span>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={removeAttachment} className="h-6 w-6 text-gray-400 hover:text-destructive">
+                    <XCircle size={16} />
+                    </Button>
+                </div>
+            )}
+            <form onSubmit={handleTextSubmit} className="w-full flex items-center gap-2">
+                <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" accept={ALLOWED_FILE_TYPES.join(',')}/>
+                <Button type="button" size="icon" variant="ghost" className="text-cyan-400 hover:bg-gray-700 flex-shrink-0" onClick={() => fileInputRef.current?.click()}>
+                    <Paperclip size={20}/>
+                </Button>
                 <Input
                     placeholder="Type your message..."
                     className="bg-gray-800 border-gray-600 focus:ring-primary text-white"
@@ -360,11 +452,12 @@ export default function AiVoiceCallPage() {
                     type="submit" 
                     size="icon" 
                     className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0"
-                    disabled={!textInputValue.trim() || isAiThinking || isSpeaking || isListening}
+                    disabled={(!textInputValue.trim() && !attachmentPreview) || isAiThinking || isSpeaking || isListening}
                 >
                     <Send size={20} />
                 </Button>
             </form>
+          </div>
          )}
 
 
