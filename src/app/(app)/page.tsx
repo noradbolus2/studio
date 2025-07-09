@@ -49,13 +49,13 @@ import { DynamicQuoteCard } from '@/components/dashboard/DynamicQuoteCard';
 // Mock data
 const defaultUser = {
   name: 'Abhishek Verma',
-  avatarUrl: 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080',
+  avatarUrl: 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib-rb-4.1.0&q=80&w=1080',
   dataAiHint: 'student avatar'
 };
 
 const heroSlides = [
   { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "project help technology", href:"/creator-marketplace" },
-  { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://images.unsplash.com/photo-1646920912229-bc0d5d94e68b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXN0JTIwZGVsaXZlcnklMjBib29rc3xlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "fast delivery books", href:"/delivery" },
+  { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://images.unsplash.com/photo-1646920912229-bc0d5d94e68b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXN0JTIwZGVsaXZlcnklMjBib29rc3xlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "fast delivery books", href:"/delivery" },
   { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://images.unsplash.com/photo-1538491247542-5da27794bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhaSUyMHJvYm90JTIwdGVhY2hpbmd8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
 ];
 
@@ -64,6 +64,7 @@ const baseQuickCategories = [
   { id: 'projects', labelEn: 'Creator Projects', labelHi: 'निर्माता प्रोजेक्ट', icon: Users, href: '/creator-marketplace', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["project", "model", "assignment", "homework", "creator", "marketplace"] },
   { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
   { id: 'brainmate', labelEn: 'Brainmate', labelHi: 'ब्रेनमेट', icon: BrainCircuit, href: '/brainmate', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["brainmate", "concept", "explain", "ai"] },
+  { id: 'oso_buddy', labelEn: 'OSO Buddy', labelHi: 'OSO बडी', icon: Bot, href: '/ai-voice-call', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["buddy", "support", "call", "voice", "help"] },
   { id: 'revision_vault', labelEn: 'Revision Vault', labelHi: 'रिवीजन वॉल्ट', icon: History, href: '/study/revision-vault', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["revision", "vault", "doubts", "marked", "history"] },
   { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["mind", "mood", "diary", "stress"] },
   { id: 'handwriting_notes', labelEn: 'Handwriting', labelHi: 'हस्तलेखन', icon: FileSignature, href: '/handwriting-notes', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["handwriting", "notes", "writing", "script"] },
