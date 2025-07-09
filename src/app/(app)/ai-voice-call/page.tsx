@@ -40,6 +40,23 @@ export default function AiVoiceCallPage() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        const loadVoices = () => {
+            setVoices(window.speechSynthesis.getVoices());
+        };
+        // Voices list is loaded asynchronously.
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices(); // For browsers that load it immediately.
+
+        return () => {
+            window.speechSynthesis.onvoiceschanged = null;
+        };
+    }
+  }, []);
+
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active') {
       recognitionRef.current.start();
@@ -68,9 +85,37 @@ export default function AiVoiceCallPage() {
       await playVoice(audioBlob);
     } catch (error: any) {
       console.error("TTS Error:", error);
-      toast({ title: "Audio Error", description: error.message || "Could not play AI voice.", variant: "destructive" });
+      toast({ 
+          title: "Using Fallback Voice", 
+          description: "AI voice limit reached. Switching to standard browser voice.", 
+          variant: "default" 
+      });
+
+      // Fallback to browser's built-in TTS
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          
+          let preferredVoice = voices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
+          if (!preferredVoice) preferredVoice = voices.find(v => v.lang === 'en-IN');
+          if (preferredVoice) utterance.voice = preferredVoice;
+
+          utterance.onend = () => {
+              startListening();
+          };
+          
+          utterance.onerror = (event) => {
+              console.error("Browser TTS Error:", event.error);
+              toast({ title: "Fallback Voice Error", description: "Browser's built-in voice also failed.", variant: "destructive" });
+              startListening();
+          };
+
+          window.speechSynthesis.speak(utterance);
+      } else {
+          toast({ title: "Audio Error", description: "Could not play AI voice and no fallback is available.", variant: "destructive" });
+          startListening();
+      }
     }
-  }, [playVoice, toast]);
+  }, [playVoice, toast, startListening, voices]);
   
   const getAiResponse = useCallback(async (userInput: string) => {
     setIsAiThinking(true);
