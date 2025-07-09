@@ -12,6 +12,7 @@ import { chatWithOsoVaani, type OsoVaaniInput, type OsoVaaniOutput } from '@/ai/
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import type { ProfileFormData } from '../edit-profile/page'; 
 
 type CallStatus = 'connecting' | 'active' | 'ended';
 type TranscriptEntry = {
@@ -53,7 +54,6 @@ export default function AiVoiceCallPage() {
   const recognitionRef = useRef<any>(null);
 
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const utteranceIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   const [textInputValue, setTextInputValue] = useState('');
@@ -62,15 +62,12 @@ export default function AiVoiceCallPage() {
 
   const getVoices = useCallback(() => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        const availableVoices = window.speechSynthesis.getVoices();
-        if (availableVoices.length > 0) {
-            setVoices(availableVoices);
-        }
+        return window.speechSynthesis.getVoices();
     }
+    return [];
   }, []);
 
   useEffect(() => {
-    getVoices();
     if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.onvoiceschanged = getVoices;
     }
@@ -101,11 +98,7 @@ export default function AiVoiceCallPage() {
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        let allVoices = window.speechSynthesis.getVoices();
-        if (allVoices.length === 0) {
-            getVoices(); 
-            allVoices = window.speechSynthesis.getVoices();
-        }
+        let allVoices = getVoices();
         
         let preferredVoice = allVoices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
         if (!preferredVoice) preferredVoice = allVoices.find(v => v.lang.startsWith('en-IN'));
@@ -166,7 +159,33 @@ export default function AiVoiceCallPage() {
         text: entry.text,
     }));
     
-    const inputForFlow: OsoVaaniInput = { userInput, history };
+    let profileContext: Partial<ProfileFormData> = {};
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem('userProfileData');
+      if (storedProfile) {
+        try {
+          const parsedProfile = JSON.parse(storedProfile) as ProfileFormData;
+          profileContext = {
+            className: parsedProfile.className,
+            board: parsedProfile.board,
+            stream: parsedProfile.stream,
+            examTarget: parsedProfile.examTarget,
+          };
+        } catch (err) {
+          console.warn("Could not parse profile data from localStorage for Vaani context:", err);
+        }
+      }
+    }
+    
+    const inputForFlow: OsoVaaniInput = { 
+        userInput, 
+        history,
+        studentClass: profileContext.className,
+        studentBoard: profileContext.board,
+        studentStream: profileContext.stream,
+        studentExamTarget: profileContext.examTarget,
+    };
+    
     if (attachment) {
         inputForFlow.attachmentInfo = {
             name: attachment.name,
@@ -304,6 +323,7 @@ export default function AiVoiceCallPage() {
     const initialGreeting = async () => {
         await new Promise(resolve => setTimeout(resolve, 1500));
         setCallStatus('active');
+        // Initial call will be made from getAiResponse which is triggered by button or speech
         setIsAiThinking(true);
         try {
             const response = await chatWithOsoVaani({ userInput: '', history: [] });

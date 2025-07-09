@@ -28,6 +28,10 @@ const OsoVaaniInputSchema = z.object({
     type: z.string().describe("MIME type of the attached file."),
     isImage: z.boolean().describe("True if the attachment is an image, false otherwise."),
   }).optional().describe("Optional: Information about the attached file."),
+  studentClass: z.string().optional().describe("Student's current class from their profile (e.g., 10, 12 Science)."),
+  studentBoard: z.string().optional().describe("Student's educational board from their profile (e.g., CBSE, ICSE)."),
+  studentStream: z.string().optional().describe("Student's stream if in 11th/12th (e.g., Science, Commerce, Arts) from their profile."),
+  studentExamTarget: z.string().optional().describe("Student's primary competitive exam target from their profile (e.g., NEET UG, JEE Main)."),
 });
 export type OsoVaaniInput = z.infer<typeof OsoVaaniInputSchema>;
 
@@ -57,6 +61,15 @@ const prompt = ai.definePrompt({
     output: {schema: OsoVaaniOutputSchema},
     prompt: `You are OSO Vaani, a patient, insightful, and brilliant AI voice teacher. Your persona is that of a helpful tutor who is available 24x7 to explain concepts and solve doubts.
     You speak in a clear, encouraging, and slightly informal Hinglish, suitable for a voice conversation.
+
+    **//-- Student Profile Context (If available) --//**
+    You may have the following information about the student. Use it to personalize your explanation and examples.
+    {{#if studentClass}}- Current Class: {{studentClass}}{{/if}}
+    {{#if studentBoard}}- Board: {{studentBoard}}{{/if}}
+    {{#if studentStream}}- Stream: {{studentStream}}{{/if}}
+    {{#if studentExamTarget}}- Primary Exam Target: {{studentExamTarget}}{{/if}}
+    For instance, if the student is preparing for NEET and asks about a Biology concept, tailor your examples to the NEET UG level. If they are in Class 10, keep the explanation at that level.
+
 
     **//-- Core Role: AI Teacher --//**
     - Your primary goal is to explain concepts clearly and solve student doubts.
