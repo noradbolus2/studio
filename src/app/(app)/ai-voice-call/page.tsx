@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -7,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PhoneOff, Mic, MicOff, MessageCircle } from 'lucide-react';
 import { BilingualText } from '@/components/shared/BilingualText';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { chatWithOsoBuddy } from '@/ai/flows/ai-voice-call-flow';
+import { chatWithOsoVaani, type OsoVaaniInput, type OsoVaaniOutput } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useVoicePlayer } from '@/hooks/use-voice-player';
@@ -100,7 +101,7 @@ export default function AiVoiceCallPage() {
     }));
     
     try {
-      const response = await chatWithOsoBuddy({ userInput, history });
+      const response = await chatWithOsoVaani({ userInput, history } as OsoVaaniInput);
       setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
       await fetchAndPlayAiSpeech(response.aiResponse);
 
@@ -170,14 +171,14 @@ export default function AiVoiceCallPage() {
         // Manually call the initial fetch logic without involving the full `getAiResponse` to avoid loops.
         setIsAiThinking(true);
         try {
-            const response = await chatWithOsoBuddy({ userInput: '', history: [] });
+            const response = await chatWithOsoVaani({ userInput: '', history: [] });
             setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
             await fetchAndPlayAiSpeech(response.aiResponse);
             if (response.suggestedReplies.length > 0) {
                 setSuggestedReplies(response.suggestedReplies);
             }
         } catch (error: any) {
-            toast({ title: "Initial Greeting Failed", description: "Could not connect to OSO Buddy.", variant: "destructive" });
+            toast({ title: "Initial Greeting Failed", description: "Could not connect to OSO Vaani.", variant: "destructive" });
         } finally {
             setIsAiThinking(false);
         }
@@ -213,10 +214,10 @@ export default function AiVoiceCallPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
       <div className="w-full max-w-sm flex flex-col items-center">
         <Avatar className="h-28 w-28 mb-4 border-4 border-primary/50">
-          <AvatarImage src="https://placehold.co/100x100.png" alt="OSO Buddy" data-ai-hint="friendly robot mascot" />
-          <AvatarFallback>🤖</AvatarFallback>
+          <AvatarImage src="https://placehold.co/100x100.png" alt="OSO Vaani" data-ai-hint="friendly female teacher" />
+          <AvatarFallback>V</AvatarFallback>
         </Avatar>
-        <h2 className="text-2xl font-bold">OSO Buddy</h2>
+        <h2 className="text-2xl font-bold">OSO Vaani</h2>
         
         {callStatus === 'connecting' && <p className="text-gray-400 mt-1">Connecting...</p>}
         {callStatus === 'active' && <p className="text-green-400 mt-1 font-mono">{formatDuration(callDuration)}</p>}
@@ -229,7 +230,7 @@ export default function AiVoiceCallPage() {
                 </p>
             ))}
             {isAiThinking && (
-                 <p className="text-sm text-cyan-300 italic">OSO Buddy is thinking...</p>
+                 <p className="text-sm text-cyan-300 italic">OSO Vaani is thinking...</p>
             )}
         </div>
 
@@ -245,7 +246,7 @@ export default function AiVoiceCallPage() {
         )}
         
         {callStatus === 'active' && isAiThinking && !isListening && (
-            <div className="text-center p-4"><LoadingSpinner /> <p className="mt-2 text-sm text-gray-400">OSO Buddy is responding...</p></div>
+            <div className="text-center p-4"><LoadingSpinner /> <p className="mt-2 text-sm text-gray-400">OSO Vaani is responding...</p></div>
         )}
         
         {callStatus === 'active' && isListening && (
