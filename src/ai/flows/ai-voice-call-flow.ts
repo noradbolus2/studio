@@ -9,7 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const OsoVaaniInputSchema = z.object({
   userInput: z.string().describe("The user's most recent utterance or selected option."),
@@ -102,14 +102,30 @@ const osoVaaniFlow = ai.defineFlow(
         };
     }
     
-    const { output } = await prompt(input);
-    
-    if (!output) {
-      return {
-        aiResponse: "I'm sorry, I'm having a little trouble right now. Could you please repeat that?",
-        suggestedReplies: ["Please repeat the concept.", "Can you explain differently?"]
-      }
+    try {
+        const { output } = await prompt(input);
+        
+        if (!output) {
+          return {
+            aiResponse: "I'm sorry, I'm having a little trouble right now. Could you please repeat that?",
+            suggestedReplies: ["Please repeat the concept.", "Can you explain differently?"]
+          }
+        }
+        return output;
+    } catch (error: any) {
+        console.error('[Genkit Flow - osoVaaniFlow] Error during prompt execution:', error);
+        
+        let errorMessage = "I'm sorry, I'm having technical difficulties. Please try again in a moment.";
+        const errorString = error.message?.toLowerCase() || '';
+
+        if (errorString.includes('503') || errorString.includes('overloaded')) {
+            errorMessage = "My circuits are a bit busy right now. Please ask me again in a few seconds!";
+        }
+        
+        return {
+            aiResponse: errorMessage,
+            suggestedReplies: ["Can you try again?", "Ask something else."]
+        };
     }
-    return output;
   }
 );
