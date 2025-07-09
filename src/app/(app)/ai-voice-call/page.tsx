@@ -498,8 +498,8 @@ export default function AiVoiceCallPage() {
             </Button>
         </div>
         {callStatus === 'ended' && (
-             <Button variant="outline" className="mt-8" onClick={() => router.push('/help')}>
-                Back to Help Center
+             <Button variant="outline" className="mt-8" onClick={() => router.push('/')}>
+                Back to Home
             </Button>
         )}
       </div>
