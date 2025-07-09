@@ -24,7 +24,7 @@ const dataURIToBlob = (dataURI: string): Blob => {
 };
 
 export default function OSOBuddyVoiceTestPage() {
-  const [text, setText] = useState("नमस्ते, क्या मैं आपकी मदद कर सकता हूँ?");
+  const [text, setText] = useState("Hello student! Aaj hum Newton ka 3rd law samjhenge. Har action ka equal and opposite reaction hota hai.");
   const { playVoice, isPlaying } = useVoicePlayer();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
