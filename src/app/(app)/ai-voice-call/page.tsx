@@ -83,12 +83,7 @@ export default function AiVoiceCallPage() {
       const audioBlob = dataURIToBlob(audioDataUri);
       await playVoice(audioBlob);
     } catch (error: any) {
-      console.error("TTS Error:", error);
-      toast({ 
-          title: "Using Fallback Voice", 
-          description: error.message || "AI voice limit reached. Switching to standard browser voice.", 
-          variant: "default" 
-      });
+      console.warn("AI TTS Error, attempting browser fallback:", error.message);
 
       // Fallback to browser's built-in TTS
       if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -110,7 +105,7 @@ export default function AiVoiceCallPage() {
 
           window.speechSynthesis.speak(utterance);
       } else {
-          toast({ title: "Audio Error", description: "Could not play AI voice and no fallback is available.", variant: "destructive" });
+          toast({ title: "Audio Error", description: "Could not play AI voice and no browser fallback is available.", variant: "destructive" });
           startListening();
       }
     }
