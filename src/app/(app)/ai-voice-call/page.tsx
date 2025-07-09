@@ -39,6 +39,26 @@ export default function AiVoiceCallPage() {
   const recognitionRef = useRef<any>(null);
 
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  // Effect to load and update the list of available TTS voices
+  useEffect(() => {
+    const handleVoicesChanged = () => {
+      setVoices(window.speechSynthesis.getVoices());
+    };
+
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        // Initial load might be empty, onvoiceschanged will populate it
+        setVoices(window.speechSynthesis.getVoices());
+        window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+    }
+
+    return () => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = null;
+        }
+    };
+  }, []);
 
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active' && !(window.speechSynthesis && window.speechSynthesis.speaking)) {
@@ -56,10 +76,11 @@ export default function AiVoiceCallPage() {
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        // Get voices directly each time to avoid race conditions on page load
-        const availableVoices = window.speechSynthesis.getVoices();
-        let preferredVoice = availableVoices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
-        if (!preferredVoice) preferredVoice = availableVoices.find(v => v.lang === 'en-IN');
+        // Use the state-managed list of voices
+        let preferredVoice = voices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
+        if (!preferredVoice) preferredVoice = voices.find(v => v.lang.startsWith('en-IN'));
+        if (!preferredVoice) preferredVoice = voices.find(v => v.lang.startsWith('en-'));
+
 
         if (preferredVoice) {
             utterance.voice = preferredVoice;
@@ -75,7 +96,7 @@ export default function AiVoiceCallPage() {
         
         utterance.onerror = (event) => {
             console.error("Browser TTS Error:", event.error);
-            toast({ title: "Voice Error", description: "The browser's built-in voice failed.", variant: "destructive" });
+            toast({ title: "Voice Error", description: `The browser's built-in voice failed: ${event.error}`, variant: "destructive" });
             setIsSpeaking(false);
             startListening();
         };
@@ -85,7 +106,7 @@ export default function AiVoiceCallPage() {
         toast({ title: "Audio Error", description: "Your browser does not support voice synthesis.", variant: "destructive" });
         startListening();
     }
-  }, [startListening, toast]);
+  }, [startListening, toast, voices]);
   
   const getAiResponse = useCallback(async (userInput: string) => {
     setIsAiThinking(true);
@@ -286,3 +307,5 @@ export default function AiVoiceCallPage() {
     </div>
   );
 }
+
+    
