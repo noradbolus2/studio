@@ -200,6 +200,9 @@ export default function AiVoiceCallPage() {
 
   const endCall = () => {
     stopVoice();
+    if(recognitionRef.current && isListening) {
+        recognitionRef.current.stop();
+    }
     setCallStatus('ended');
   }
   
