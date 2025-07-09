@@ -38,22 +38,7 @@ export default function AiVoiceCallPage() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-        const loadVoices = () => {
-            setVoices(window.speechSynthesis.getVoices());
-        };
-        window.speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices();
-
-        return () => {
-            window.speechSynthesis.onvoiceschanged = null;
-        };
-    }
-  }, []);
 
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active' && !(window.speechSynthesis && window.speechSynthesis.speaking)) {
@@ -67,13 +52,20 @@ export default function AiVoiceCallPage() {
 
   const playBrowserSpeech = useCallback((text: string) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // Stop any currently speaking utterance
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        let preferredVoice = voices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
-        if (!preferredVoice) preferredVoice = voices.find(v => v.lang === 'en-IN');
-        if (preferredVoice) utterance.voice = preferredVoice;
+        // Get voices directly each time to avoid race conditions on page load
+        const availableVoices = window.speechSynthesis.getVoices();
+        let preferredVoice = availableVoices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
+        if (!preferredVoice) preferredVoice = availableVoices.find(v => v.lang === 'en-IN');
+
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        } else {
+            console.warn("Preferred Hindi/English voice not found. Using browser default.");
+        }
 
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => {
@@ -93,7 +85,7 @@ export default function AiVoiceCallPage() {
         toast({ title: "Audio Error", description: "Your browser does not support voice synthesis.", variant: "destructive" });
         startListening();
     }
-  }, [voices, startListening, toast]);
+  }, [startListening, toast]);
   
   const getAiResponse = useCallback(async (userInput: string) => {
     setIsAiThinking(true);
@@ -182,7 +174,8 @@ export default function AiVoiceCallPage() {
     };
     
     initialGreeting();
-  }, [playBrowserSpeech, toast]); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
