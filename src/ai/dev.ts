@@ -15,4 +15,6 @@ import '@/ai/flows/generate-thumbnail-flow.ts';
 import '@/ai/flows/generate-ppt-slides-flow.ts';
 import '@/ai/flows/ai-voice-call-flow.ts';
 import '@/ai/flows/generate-bio-flow.ts';
+import '@/ai/flows/text-to-speech-flow.ts';
+
 
