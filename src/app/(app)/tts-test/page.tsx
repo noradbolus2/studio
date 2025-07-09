@@ -1,9 +1,8 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { generateSpeech } from "@/ai/flows/text-to-speech-flow";
-import { useVoicePlayer } from "@/hooks/use-voice-player";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,9 +24,22 @@ const dataURIToBlob = (dataURI: string): Blob => {
 
 export default function OSOBuddyVoiceTestPage() {
   const [text, setText] = useState("Hello student! Aaj hum Newton ka 3rd law samjhenge. Har action ka equal and opposite reaction hota hai.");
-  const { playVoice, isPlaying } = useVoicePlayer();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Setup audio element on component mount
+    audioRef.current = new Audio();
+    audioRef.current.onended = () => setIsPlaying(false);
+
+    // Cleanup on unmount
+    return () => {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
+  }, []);
 
   const handleClick = async () => {
     if (!text.trim()) {
@@ -35,10 +47,25 @@ export default function OSOBuddyVoiceTestPage() {
       return;
     }
     setIsLoading(true);
+    setIsPlaying(false);
+
     try {
+      // 1. This is equivalent to your fetch() call.
+      // It calls our internal Genkit backend flow to generate speech.
       const { audioDataUri } = await generateSpeech({ text });
+
+      // 2. This is equivalent to .then(res => res.blob()).
+      // We convert the returned data URI into a playable Blob.
       const audioBlob = dataURIToBlob(audioDataUri);
-      await playVoice(audioBlob);
+      
+      // 3. This is equivalent to your .then(blob => ...) logic.
+      // We create an object URL and play the audio.
+      if (audioRef.current) {
+        const audioURL = URL.createObjectURL(audioBlob);
+        audioRef.current.src = audioURL;
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
     } catch (err: any) {
       console.error("TTS failed:", err);
       toast({ title: "TTS Error", description: err.message, variant: "destructive" });
