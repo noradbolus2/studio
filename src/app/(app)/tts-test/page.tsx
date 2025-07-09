@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { useState } from "react";
-import { fetchTTS } from "@/utils/fetchTTS";
+import { generateSpeech } from "@/ai/flows/text-to-speech-flow";
 import { useVoicePlayer } from "@/hooks/use-voice-player";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Volume2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+
+// Helper to convert data URI to Blob
+const dataURIToBlob = (dataURI: string): Blob => {
+  const splitDataURI = dataURI.split(',');
+  const byteString = atob(splitDataURI[1]);
+  const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
+  const ia = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ia], { type: mimeString });
+};
 
 export default function OSOBuddyVoiceTestPage() {
   const [text, setText] = useState("नमस्ते, क्या मैं आपकी मदद कर सकता हूँ?");
@@ -23,7 +36,8 @@ export default function OSOBuddyVoiceTestPage() {
     }
     setIsLoading(true);
     try {
-      const audioBlob = await fetchTTS(text);
+      const { audioDataUri } = await generateSpeech({ text });
+      const audioBlob = dataURIToBlob(audioDataUri);
       await playVoice(audioBlob);
     } catch (err: any) {
       console.error("TTS failed:", err);

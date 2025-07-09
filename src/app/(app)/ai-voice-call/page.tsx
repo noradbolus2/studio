@@ -28,6 +28,18 @@ declare global {
   }
 }
 
+// Helper to convert data URI to Blob
+const dataURIToBlob = (dataURI: string): Blob => {
+  const splitDataURI = dataURI.split(',');
+  const byteString = atob(splitDataURI[1]);
+  const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
+  const ia = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ia], { type: mimeString });
+};
+
 export default function AiVoiceCallPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -65,19 +77,6 @@ export default function AiVoiceCallPage() {
 
   const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(startListening);
 
-  // Helper to convert data URI to Blob
-  const dataURIToBlob = (dataURI: string): Blob => {
-    const splitDataURI = dataURI.split(',');
-    const byteString = atob(splitDataURI[1]);
-    const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
-    const ia = new Uint8Array(byteString.length);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ia], { type: mimeString });
-  };
-
-
   const fetchAndPlayAiSpeech = useCallback(async (text: string) => {
     try {
       const { audioDataUri } = await generateSpeech({ text });
@@ -87,7 +86,7 @@ export default function AiVoiceCallPage() {
       console.error("TTS Error:", error);
       toast({ 
           title: "Using Fallback Voice", 
-          description: "AI voice limit reached. Switching to standard browser voice.", 
+          description: error.message || "AI voice limit reached. Switching to standard browser voice.", 
           variant: "default" 
       });
 
@@ -211,7 +210,7 @@ export default function AiVoiceCallPage() {
     
     initialGreeting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAndPlayAiSpeech, toast]); 
+  }, []); 
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
