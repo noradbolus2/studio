@@ -1,3 +1,7 @@
+// This file is no longer needed as the app now uses the browser's built-in SpeechSynthesis API directly
+// for the AI Voice Call feature.
+// Keeping this file might be useful if other parts of the app need to generate downloadable audio files,
+// but for the voice call, direct browser synthesis is more efficient.
 'use server';
 /**
  * @fileOverview A Genkit flow for generating audio from text (Text-to-Speech).

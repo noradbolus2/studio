@@ -11,8 +11,6 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { chatWithOsoVaani, type OsoVaaniInput, type OsoVaaniOutput } from '@/ai/flows/ai-voice-call-flow';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useVoicePlayer } from '@/hooks/use-voice-player';
-import { generateSpeech } from '@/ai/flows/text-to-speech-flow';
 
 type CallStatus = 'connecting' | 'active' | 'ended';
 type TranscriptEntry = {
@@ -28,18 +26,6 @@ declare global {
   }
 }
 
-// Helper to convert data URI to Blob
-const dataURIToBlob = (dataURI: string): Blob => {
-  const splitDataURI = dataURI.split(',');
-  const byteString = atob(splitDataURI[1]);
-  const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
-  const ia = new Uint8Array(byteString.length);
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-  return new Blob([ia], { type: mimeString });
-};
-
 export default function AiVoiceCallPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -53,15 +39,15 @@ export default function AiVoiceCallPage() {
   const recognitionRef = useRef<any>(null);
 
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
         const loadVoices = () => {
             setVoices(window.speechSynthesis.getVoices());
         };
-        // Voices list is loaded asynchronously.
         window.speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices(); // For browsers that load it immediately.
+        loadVoices();
 
         return () => {
             window.speechSynthesis.onvoiceschanged = null;
@@ -70,45 +56,44 @@ export default function AiVoiceCallPage() {
   }, []);
 
   const startListening = useCallback(() => {
-    if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active') {
-      recognitionRef.current.start();
+    if (recognitionRef.current && !isListening && !isAiThinking && callStatus === 'active' && !(window.speechSynthesis && window.speechSynthesis.speaking)) {
+      try {
+        recognitionRef.current.start();
+      } catch (e) {
+        console.warn("Speech recognition couldn't start, possibly already active.", e);
+      }
     }
   }, [isListening, isAiThinking, callStatus]);
 
-  const { playVoice, stopVoice, isPlaying: isAudioPlaying } = useVoicePlayer(startListening);
+  const playBrowserSpeech = useCallback((text: string) => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        let preferredVoice = voices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
+        if (!preferredVoice) preferredVoice = voices.find(v => v.lang === 'en-IN');
+        if (preferredVoice) utterance.voice = preferredVoice;
 
-  const fetchAndPlayAiSpeech = useCallback(async (text: string) => {
-    try {
-      const { audioDataUri } = await generateSpeech({ text });
-      const audioBlob = dataURIToBlob(audioDataUri);
-      await playVoice(audioBlob);
-    } catch (error: any) {
-       console.warn("AI TTS Error, attempting browser fallback:", error.message);
-       // Fallback to browser's built-in TTS
-      if (typeof window !== 'undefined' && window.speechSynthesis) {
-          const utterance = new SpeechSynthesisUtterance(text);
-          
-          let preferredVoice = voices.find(v => v.lang === 'hi-IN' && v.name.includes('Google'));
-          if (!preferredVoice) preferredVoice = voices.find(v => v.lang === 'en-IN');
-          if (preferredVoice) utterance.voice = preferredVoice;
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => {
+            setIsSpeaking(false);
+            startListening();
+        };
+        
+        utterance.onerror = (event) => {
+            console.error("Browser TTS Error:", event.error);
+            toast({ title: "Voice Error", description: "The browser's built-in voice failed.", variant: "destructive" });
+            setIsSpeaking(false);
+            startListening();
+        };
 
-          utterance.onend = () => {
-              startListening();
-          };
-          
-          utterance.onerror = (event) => {
-              console.error("Browser TTS Error:", event.error);
-              toast({ title: "Fallback Voice Error", description: "Browser's built-in voice also failed.", variant: "destructive" });
-              startListening();
-          };
-
-          window.speechSynthesis.speak(utterance);
-      } else {
-          toast({ title: "Audio Error", description: "Could not play AI voice and no browser fallback is available.", variant: "destructive" });
-          startListening();
-      }
+        window.speechSynthesis.speak(utterance);
+    } else {
+        toast({ title: "Audio Error", description: "Your browser does not support voice synthesis.", variant: "destructive" });
+        startListening();
     }
-  }, [playVoice, toast, startListening, voices]);
+  }, [voices, startListening, toast]);
   
   const getAiResponse = useCallback(async (userInput: string) => {
     setIsAiThinking(true);
@@ -121,7 +106,7 @@ export default function AiVoiceCallPage() {
     try {
       const response = await chatWithOsoVaani({ userInput, history } as OsoVaaniInput);
       setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
-      await fetchAndPlayAiSpeech(response.aiResponse);
+      playBrowserSpeech(response.aiResponse);
 
       if (response.suggestedReplies.length > 0) {
         setSuggestedReplies(response.suggestedReplies);
@@ -133,12 +118,12 @@ export default function AiVoiceCallPage() {
         toast({ title: "Conversation Error", description: error.message || "The AI is unable to respond right now.", variant: "destructive" });
         const errorEntry = { speaker: 'AI' as const, text: "I'm sorry, I'm having technical difficulties. Please hang up and try again later."};
         setTranscript(prev => [...prev, errorEntry]);
-        await fetchAndPlayAiSpeech(errorEntry.text);
+        playBrowserSpeech(errorEntry.text);
         setSuggestedReplies([]);
     } finally {
         setIsAiThinking(false);
     }
-  }, [transcript, toast, fetchAndPlayAiSpeech]);
+  }, [transcript, toast, playBrowserSpeech]);
   
   const handleUserResponse = useCallback((responseText: string) => {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
@@ -156,19 +141,11 @@ export default function AiVoiceCallPage() {
         recognition.lang = 'en-IN';
         recognition.interimResults = false;
 
-        recognition.onstart = () => {
-          setIsListening(true);
-        };
-
-        recognition.onend = () => {
-          setIsListening(false);
-        };
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
 
         recognition.onerror = (event: any) => {
-          console.error('Speech recognition error:', event.error);
-           if (event.error === 'no-speech' || event.error === 'aborted') {
-            // User didn't speak or the mic was stopped. This is normal.
-          } else {
+          if (event.error !== 'no-speech' && event.error !== 'aborted') {
             toast({ title: "Mic Error", description: `Could not recognize speech: ${event.error}`, variant: "destructive" });
           }
           setIsListening(false);
@@ -187,14 +164,13 @@ export default function AiVoiceCallPage() {
   // This effect runs only once on mount to simulate connection and fetch the initial greeting.
   useEffect(() => {
     const initialGreeting = async () => {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         setCallStatus('active');
-        // Manually call the initial fetch logic without involving the full `getAiResponse` to avoid loops.
         setIsAiThinking(true);
         try {
             const response = await chatWithOsoVaani({ userInput: '', history: [] });
             setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
-            await fetchAndPlayAiSpeech(response.aiResponse);
+            playBrowserSpeech(response.aiResponse);
             if (response.suggestedReplies.length > 0) {
                 setSuggestedReplies(response.suggestedReplies);
             }
@@ -206,8 +182,7 @@ export default function AiVoiceCallPage() {
     };
     
     initialGreeting();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
+  }, [playBrowserSpeech, toast]); 
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -223,14 +198,17 @@ export default function AiVoiceCallPage() {
     if (isListening) {
       recognitionRef.current?.stop();
     } else {
-      if (!isAudioPlaying && !isAiThinking) {
+      if (!isSpeaking && !isAiThinking) {
         startListening();
       }
     }
   };
 
   const endCall = () => {
-    stopVoice();
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
     if(recognitionRef.current && isListening) {
         recognitionRef.current.stop();
     }
@@ -270,7 +248,7 @@ export default function AiVoiceCallPage() {
         {callStatus === 'active' && !isAiThinking && !isListening && (
           <div className="w-full space-y-3">
             {suggestedReplies.map((reply, index) => (
-                <Button key={index} variant="outline" className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 justify-start text-left h-auto py-2.5" onClick={() => handleUserResponse(reply)} disabled={isAudioPlaying || isAiThinking}>
+                <Button key={index} variant="outline" className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 justify-start text-left h-auto py-2.5" onClick={() => handleUserResponse(reply)} disabled={isSpeaking || isAiThinking}>
                     <MessageCircle className="h-4 w-4 mr-2 shrink-0"/>
                     <span className="flex-grow">{reply}</span>
                 </Button>
@@ -298,7 +276,7 @@ export default function AiVoiceCallPage() {
                     isListening && "bg-cyan-500/80 hover:bg-cyan-500 animate-pulse"
                 )} 
                 onClick={handleManualMicToggle}
-                disabled={isAiThinking || isAudioPlaying}
+                disabled={isAiThinking || isSpeaking}
             >
                 {isListening ? <MicOff size={28}/> : <Mic size={28}/>}
             </Button>
