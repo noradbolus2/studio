@@ -83,6 +83,7 @@ export default function AiVoiceCallPage() {
   const [attachmentPreview, setAttachmentPreview] = useState<AttachmentPreview | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedLanguage, setSelectedLanguage] = useState('hng');
+  const isInitialMount = useRef(true);
 
 
   const getVoices = useCallback(() => {
@@ -177,10 +178,12 @@ export default function AiVoiceCallPage() {
     }
   }, [startListening, toast, getVoices]);
   
-  const getAiResponse = useCallback(async (userInput: string, attachment: AttachmentPreview | null) => {
+  const getAiResponse = useCallback(async (userInput: string, attachment: AttachmentPreview | null, shouldReset: boolean = false) => {
     setIsAiThinking(true);
     setSuggestedReplies([]);
-    const history = transcript.map(entry => ({
+    
+    // If resetting, history is empty. Otherwise, use current transcript.
+    const history = shouldReset ? [] : transcript.map(entry => ({
         role: entry.speaker === 'AI' ? 'model' : 'user',
         text: entry.text,
     }));
@@ -226,7 +229,10 @@ export default function AiVoiceCallPage() {
     
     try {
       const response = await chatWithOsoVaani(inputForFlow);
-      setTranscript(prev => [...prev, { speaker: 'AI', text: response.aiResponse }]);
+      const newAiEntry = { speaker: 'AI' as const, text: response.aiResponse };
+      // If resetting, replace transcript. Otherwise, append.
+      setTranscript(prev => shouldReset ? [newAiEntry] : [...prev, newAiEntry]);
+
       playBrowserSpeech(response.aiResponse, response.respondedInLanguage);
 
       if (response.suggestedReplies.length > 0) {
@@ -255,7 +261,7 @@ export default function AiVoiceCallPage() {
   
   const handleUserSpeechResponse = useCallback((responseText: string) => {
       setTranscript(prev => [...prev, { speaker: 'User', text: responseText }]);
-      getAiResponse(responseText, null); // Speech input does not carry attachments
+      getAiResponse(responseText, null); // Subsequent turns don't reset
   }, [getAiResponse]);
 
   const removeAttachment = useCallback(() => {
@@ -271,7 +277,7 @@ export default function AiVoiceCallPage() {
     if ((!trimmedInput && !attachmentPreview) || isAiThinking || isSpeaking || isListening) return;
     
     setTranscript(prev => [...prev, { speaker: 'User', text: trimmedInput }]);
-    getAiResponse(trimmedInput, attachmentPreview);
+    getAiResponse(trimmedInput, attachmentPreview); // Subsequent turns don't reset
     
     setTextInputValue('');
     removeAttachment();
@@ -319,6 +325,9 @@ export default function AiVoiceCallPage() {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
+        if(recognitionRef.current) {
+          recognitionRef.current.stop();
+        }
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
 
@@ -341,7 +350,6 @@ export default function AiVoiceCallPage() {
           handleUserSpeechResponse(transcriptResult);
         };
         
-        // Cleanup function to stop recognition when the component unmounts or dependencies change.
         return () => {
           recognition.stop();
         };
@@ -350,30 +358,31 @@ export default function AiVoiceCallPage() {
         toast({ title: "Mic Not Supported", description: "Your browser does not support speech recognition.", variant: "destructive" });
       }
     }
-  }, [toast, handleUserSpeechResponse, selectedLanguage]); // Re-init if language changes
+  }, [toast, handleUserSpeechResponse, selectedLanguage]);
 
-  // This effect runs only once on mount to simulate connection and fetch the initial greeting.
+  // This effect now handles both initial greeting and language change resets.
   useEffect(() => {
-    const initialGreeting = async () => {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setCallStatus('active');
-        getAiResponse('', null); // Fetch initial greeting from AI
+    const startOrResetConversation = () => {
+      // Cancel any ongoing speech.
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      setIsSpeaking(false);
+      recognitionRef.current?.stop();
+      setCallStatus('active');
+      getAiResponse('', null, true); // Reset the conversation
     };
-    
-    initialGreeting();
 
-    // Cleanup on unmount
-    return () => {
-        if (utteranceIntervalRef.current) {
-            clearInterval(utteranceIntervalRef.current);
-        }
-        if (typeof window !== 'undefined' && window.speechSynthesis) {
-            window.speechSynthesis.cancel();
-        }
-    };
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      const timer = setTimeout(startOrResetConversation, 1500); // Simulate connection
+      return () => clearTimeout(timer);
+    } else {
+      startOrResetConversation(); // Reset immediately on language change
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLanguage]); 
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -540,3 +549,4 @@ export default function AiVoiceCallPage() {
     </div>
   );
 }
+
