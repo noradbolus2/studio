@@ -58,9 +58,15 @@ export const useVoicePlayer = (onPlaybackEnd?: () => void) => {
       const url = URL.createObjectURL(blob);
       audioRef.current.src = url;
       await audioRef.current.play();
-    } catch (error) {
-      console.error("Error playing voice:", error);
-      setIsPlaying(false); // Ensure state is correct on error
+    } catch (error: any) {
+      // This is a common error when a new play request interrupts an old one.
+      // We can safely ignore it in this context.
+      if (error.name === 'AbortError') {
+        console.log('Audio playback was interrupted by a new request. This is expected.');
+      } else {
+        console.error("Error playing voice:", error);
+        setIsPlaying(false); // Ensure state is correct on other errors
+      }
     }
   }, []);
   
