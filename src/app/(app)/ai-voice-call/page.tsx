@@ -319,8 +319,9 @@ export default function AiVoiceCallPage() {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
-        recognitionRef.current = new SpeechRecognition();
-        const recognition = recognitionRef.current;
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+
         recognition.continuous = false;
         recognition.lang = langCodeToBrowserLang[selectedLanguage] || 'en-IN'; // Dynamic lang for speech reco
         recognition.interimResults = false;
@@ -339,6 +340,12 @@ export default function AiVoiceCallPage() {
           const transcriptResult = event.results[0][0].transcript;
           handleUserSpeechResponse(transcriptResult);
         };
+        
+        // Cleanup function to stop recognition when the component unmounts or dependencies change.
+        return () => {
+          recognition.stop();
+        };
+
       } else {
         toast({ title: "Mic Not Supported", description: "Your browser does not support speech recognition.", variant: "destructive" });
       }
