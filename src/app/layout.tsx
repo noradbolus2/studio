@@ -69,7 +69,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${ptSans.variable} ${kalam.variable} ${caveat.variable} ${dancingScript.variable} ${patrickHand.variable} ${gochiHand.variable} ${indieFlower.variable} light`}>
-      <head />
+      <head>
+        <style>
+          {`
+            :root {
+              --primary: 225 87% 50%;
+              --background: 0 0% 98%;
+              --accent: 50 100% 50%;
+            }
+          `}
+        </style>
+      </head>
       <body className={`font-sans antialiased`}>
         {children}
         <Toaster />
