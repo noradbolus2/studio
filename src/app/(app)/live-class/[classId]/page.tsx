@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft, ChevronLeft, ChevronRight, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -22,8 +22,8 @@ const colorPalette = ['#000000', '#EF4444', '#3B82F6', '#22C55E', '#F97316', '#8
 
 type Slide = GeneratePptSlidesOutput['slides'][0];
 
-export default function LiveClassPage() {
-  const { classId } = useParams() as { classId: string };
+export default function LiveClassPage({ params }: { params: { classId: string } }) {
+  const { classId } = params;
   const searchParams = useSearchParams();
   const router = useRouter();
   const whiteboardRef = useRef<WhiteboardHandle>(null);
