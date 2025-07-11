@@ -54,7 +54,7 @@ const defaultUser = {
 };
 
 const heroSlides = [
-  { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "project help technology", href:"/creator-marketplace" },
+  { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "project help technology", href:"/creator-marketplace" },
   { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://images.unsplash.com/photo-1646920912229-bc0d5d94e68b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXN0JTIwZGVsaXZlcnklMjBib29rc3xlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "fast delivery books", href:"/delivery" },
   { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://images.unsplash.com/photo-1538491247542-5da27794bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhaSUyMHJvYm90JTIwdGVhY2hpbmd8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
 ];
@@ -687,9 +687,7 @@ export default function ModernHomePage() {
             </RadioGroup>
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
-            <DialogClose asChild>
-              <Button type="button" variant="outline" className="border-border hover:bg-muted/20"><BilingualText en="Cancel" hi="रद्द करें" lang={currentLang}/></Button>
-            </DialogClose>
+            <DialogClose asChild><Button type="button" variant="outline" className="border-border hover:bg-muted/20"><BilingualText en="Cancel" hi="रद्द करें" lang={currentLang}/></Button></DialogClose>
             <Button type="button" onClick={handleLocationConfirm} className="bg-primary text-primary-foreground hover:bg-primary/90"><BilingualText en="Confirm Location" hi="स्थान की पुष्टि करें" lang={currentLang}/></Button>
           </DialogFooter>
         </DialogContent>
@@ -699,4 +697,3 @@ export default function ModernHomePage() {
   );
 }
 
-    
