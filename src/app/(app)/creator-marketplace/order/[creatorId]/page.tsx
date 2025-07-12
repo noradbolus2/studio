@@ -13,13 +13,16 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { enhanceProjectDescription } from '@/ai/flows/enhance-project-description-flow';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+
 
 // Mock data for the creator being hired
 const mockCreator = {
   id: 'creator1',
   nameEn: 'Priya\'s Projects',
   nameHi: 'प्रिया के प्रोजेक्ट्स',
-  avatarUrl: 'https://images.unsplash.com/photo-1694638278223-4c3907aa2354?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmZW1hbGUlMjBjcmVhdG9yfGVufDB8fHx8MTc1MjMwNjc0N3ww&ixlib=rb-4.1.0&q=80&w=1080',
+  avatarUrl: 'https://images.unsplash.com/photo-1694638278223-4c3907aa2354?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmZW1hbGUlMjBjcmVhdG9yfGVufDB8fHx8MTc1MjMwNjc0N3ww&lib=rb-4.1.0&q=80&w=1080',
   dataAiHint: 'female creator',
   baseFee: 250, // Example base fee
   videoFee: 99, // Example video fee
@@ -45,6 +48,7 @@ export default function OrderCreatorPage() {
   const [wantsMaterials, setWantsMaterials] = useState(true);
   const [deliveryAddress, setDeliveryAddress] = useState('123, Learning Lane, Student City, 110011');
   const [materialSearch, setMaterialSearch] = useState('');
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
   const filteredMaterials = mockMaterials.filter(m => m.name.toLowerCase().includes(materialSearch.toLowerCase()));
   
@@ -62,14 +66,21 @@ export default function OrderCreatorPage() {
     router.push('/delivery'); // Redirect to a confirmation/tracking page
   }
   
-  const handleEnhanceDescription = () => {
+  const handleEnhanceDescription = async () => {
       if (!projectDescription.trim()) {
         toast({ title: "Please write a short description first.", variant: "destructive" });
         return;
       }
-      toast({ title: "AI Enhancement (Simulated)", description: "Enhancing your description with more details."});
-      const enhancedText = projectDescription + "\n\n--- AI Enhanced Details ---\n- The model should be approximately 1ft tall and 1.5ft wide.\n- Please use eco-friendly materials where possible.\n- A step-by-step guide for final assembly should be included.\n- The base should be sturdy and painted dark brown.";
-      setProjectDescription(enhancedText);
+      setIsEnhancing(true);
+      try {
+        const result = await enhanceProjectDescription(projectDescription);
+        setProjectDescription(result.enhancedDescription);
+        toast({ title: "Description Enhanced!", description: "AI has added more details to your request."});
+      } catch (error: any) {
+        toast({ title: "AI Enhancement Failed", description: error.message || "Could not enhance description.", variant: "destructive" });
+      } finally {
+        setIsEnhancing(false);
+      }
   };
 
 
@@ -107,8 +118,9 @@ export default function OrderCreatorPage() {
         <CardHeader>
             <div className="flex justify-between items-center">
                 <CardTitle className="flex items-center gap-2"><Edit3 size={20}/> Project Details</CardTitle>
-                <Button type="button" variant="outline" size="sm" onClick={handleEnhanceDescription}>
-                    <Wand2 className="mr-2 h-4 w-4"/> Enhance with AI
+                <Button type="button" variant="outline" size="sm" onClick={handleEnhanceDescription} disabled={isEnhancing}>
+                    {isEnhancing ? <LoadingSpinner size={16}/> : <Wand2 className="mr-2 h-4 w-4"/>}
+                    Enhance with AI
                 </Button>
             </div>
         </CardHeader>
