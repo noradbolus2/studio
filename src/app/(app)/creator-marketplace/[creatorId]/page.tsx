@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -32,18 +33,18 @@ const mockCreatorProfile: CreatorProfile = {
   nameEn: 'Priya\'s Projects',
   nameHi: 'प्रिया के प्रोजेक्ट्स',
   expertise: ['Science Models', 'Dioramas', 'Art & Craft'],
-  avatarUrl: 'https://images.unsplash.com/photo-1616740795230-f63547d8f10c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmZW1hbGUlMjBzdXBwb3J0fGVufDB8fHx8MTc1MTg3ODU0OHww&ixlib-rb-4.1.0&q=80&w=1080',
+  avatarUrl: 'https://images.unsplash.com/photo-1694638278223-4c3907aa2354?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmZW1hbGUlMjBjcmVhdG9yfGVufDB8fHx8MTc1MjMwNjc0N3ww&ixlib=rb-4.1.0&q=80&w=1080',
   dataAiHint: 'female creator',
   rating: 4.9,
   reviewCount: 42,
   completedProjects: 55,
   bio: "Experienced in creating detailed and accurate science models for students from Class 6 to 10. I focus on making learning fun and tangible. All projects are built with care and precision to help you get the best grades!",
-  handwritingSampleUrl: 'https://placehold.co/600x200.png',
+  handwritingSampleUrl: 'https://images.unsplash.com/photo-1605141311642-215cc21e68eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuZWF0JTIwaGFuZHdyaXRpbmclMjBzYW1wbGV8ZW58MHx8fHwxNzUyMzA2NzQ4fDA&ixlib=rb-4.1.0&q=80&w=1080',
   dataAiHintHandwriting: 'neat handwriting sample',
   portfolio: [
-    { id: 'p1', title: 'Volcano Model', imageUrl: 'https://images.unsplash.com/photo-1637515944864-426524797cdc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx2b2xjYW5vJTIwbW9kZWwlMjBraXR8ZW58MHx8fHwxNzUxODc1NzkzfDA&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: 'volcano model' },
-    { id: 'p2', title: 'Solar System Diorama', imageUrl: 'https://placehold.co/300x200.png', dataAiHint: 'solar system model' },
-    { id: 'p3', title: 'Cell Structure Chart', imageUrl: 'https://placehold.co/300x200.png', dataAiHint: 'cell diagram chart' },
+    { id: 'p1', title: 'Volcano Model', imageUrl: 'https://images.unsplash.com/photo-1642668463269-2c10e2db6c7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx2b2xjYW5vJTIwbW9kZWx8ZW58MHx8fHwxNzUyMzA2NzQ3fDA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'volcano model' },
+    { id: 'p2', title: 'Solar System Diorama', imageUrl: 'https://images.unsplash.com/photo-1684996141218-01d297b7c7fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzb2xhciUyMHN5c3RlbSUyMG1vZGVsfGVufDB8fHx8MTc1MjMwNjc0OHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'solar system model' },
+    { id: 'p3', title: 'Cell Structure Chart', imageUrl: 'https://images.unsplash.com/photo-1738082956220-a1f20a8632ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjZWxsJTIwZGlhZ3JhbSUyMGNoYXJ0fGVufDB8fHx8MTc1MjMwNjc0OHww&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: 'cell diagram chart' },
   ],
   reviews: [
     { id: 'r1', studentName: 'Aarav S.', rating: 5, comment: 'Amazing work on the hydraulic lift project! Got full marks.' },
