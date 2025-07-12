@@ -26,7 +26,8 @@ import {
     Crown,
     Zap,
     XCircle,
-    CalendarCheck2
+    CalendarCheck2,
+    ChevronLeft
 } from "lucide-react"; 
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -303,9 +304,11 @@ export default function StudyDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header>
+      <header className="flex items-center justify-between">
         <h1 className="text-3xl font-bold font-headline flex items-center gap-2"><Activity className="h-8 w-8 text-primary" /><BilingualText en="My Study Dashboard" hi="मेरा अध्ययन डैशबोर्ड" /></h1>
-        <p className="text-muted-foreground"><BilingualText en="Track your progress and stay on top of your courses." hi="अपनी प्रगति को ट्रैक करें और अपने पाठ्यक्रमों में शीर्ष पर रहें।" /></p>
+         <Button variant="outline" size="sm" onClick={() => router.back()}>
+            <ChevronLeft className="mr-1 h-4 w-4"/> Back
+        </Button>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

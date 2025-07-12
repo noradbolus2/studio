@@ -2,9 +2,15 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { PT_Sans, Kalam, Caveat, Dancing_Script, Patrick_Hand, Gochi_Hand, Indie_Flower } from 'next/font/google';
+import { Inter, PT_Sans, Kalam, Caveat, Dancing_Script, Patrick_Hand, Gochi_Hand, Indie_Flower } from 'next/font/google';
 
 // Configure all fonts using next/font
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
 const ptSans = PT_Sans({
   subsets: ['latin'],
   display: 'swap',
@@ -54,6 +60,7 @@ const indieFlower = Indie_Flower({
   variable: '--font-indie-flower',
 });
 
+
 export const metadata: Metadata = {
   title: {
     default: "OSO App: Learn & Deliver",
@@ -68,18 +75,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${ptSans.variable} ${kalam.variable} ${caveat.variable} ${dancingScript.variable} ${patrickHand.variable} ${gochiHand.variable} ${indieFlower.variable} light`}>
-      <head>
-        <style>
-          {`
-            :root {
-              --primary: 225 87% 50%;
-              --background: 0 0% 98%;
-              --accent: 50 100% 50%;
-            }
-          `}
-        </style>
-      </head>
+    <html lang="en" className={`${inter.variable} ${ptSans.variable} ${kalam.variable} ${caveat.variable} ${dancingScript.variable} ${patrickHand.variable} ${gochiHand.variable} ${indieFlower.variable} light`}>
+      <head/>
       <body className={`font-sans antialiased`}>
         {children}
         <Toaster />

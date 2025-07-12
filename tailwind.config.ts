@@ -19,7 +19,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-pt-sans)", ...fontFamily.sans],
+        sans: ["var(--font-inter)", ...fontFamily.sans],
         code: ['monospace', 'monospace'],
         handwriting: ['var(--font-kalam)', 'cursive'],
         'handwriting-caveat': ['var(--font-caveat)', 'cursive'],

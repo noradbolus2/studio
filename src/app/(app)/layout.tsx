@@ -1,3 +1,4 @@
+
 "use client"; // Required for hooks like useEffect and useRouter
 
 import { useEffect, useState } from 'react';
@@ -14,11 +15,24 @@ export default function AppLayout({
   const pathname = usePathname();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+  // Define paths that should not have the app layout (e.g., full-screen dashboards)
+  const noAppLayoutPaths = [
+    '/rider-dashboard',
+    '/school-dashboard',
+    '/vendor-dashboard',
+    '/creator-dashboard',
+    '/coaching-panel',
+    '/platform-admin',
+    '/ai-voice-call',
+    '/live-class',
+  ];
+
+  const showAppLayout = !noAppLayoutPaths.some(path => pathname.startsWith(path));
+
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser');
     if (!loggedInUser) {
-      // Allow access to login page even if it were part of (app) group, though it's not currently
-      if (pathname !== '/login') { // Make sure we are not already on login page to avoid loop
+      if (pathname !== '/login') { 
          router.push('/login');
       } else {
         setIsCheckingAuth(false);
@@ -36,11 +50,16 @@ export default function AppLayout({
       </div>
     );
   }
+  
+  // If the path is one of the full-screen dashboards, render children without the app layout wrapper
+  if (!showAppLayout) {
+    return <>{children}</>;
+  }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
-      <main className="flex-grow pb-20 md:pb-0">
-        <div className="container mx-auto max-w-3xl px-4 py-8">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <main className="flex-grow pb-20 md:pb-4">
+        <div className="container mx-auto max-w-3xl px-4 py-4 sm:py-6">
             {children}
         </div>
       </main>

@@ -86,7 +86,7 @@ const recommendationsMock = [
 
 const deliveryDeals = [
   { id: 'deal1', titleEn: "Charts in 20 mins!", titleHi: "20 मिनट में चार्ट!", descriptionEn: "All sizes & types", descriptionHi: "सभी आकार और प्रकार", icon: FileText, iconColor: "text-accent-foreground", dataAiHint:"charts diagram", href: "/delivery" },
-  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और भी बहुत कुछ", icon: PackageSearch, iconColor: "text-primary", dataAiHint:"school supplies kit", href: "/delivery" },
+  { id: 'deal2', titleEn: "INR 10 Off School Kits", titleHi: "स्कूल किट पर INR 10 की छूट", descriptionEn: "Notebooks, Pens & More", descriptionHi: "नोटबुक, पेन और बहुत कुछ", icon: PackageSearch, iconColor: "text-primary", dataAiHint:"school supplies kit", href: "/delivery" },
   { id: 'deal3', titleEn: "Project Emergency?", titleHi: "प्रोजेक्ट इमरजेंसी?", descriptionEn: "Materials in a Jiffy!", descriptionHi: "सामान झटपट!", icon: Brain, iconColor: "text-destructive", dataAiHint:"project materials box", href: "/delivery" },
 ];
 
@@ -696,4 +696,3 @@ export default function ModernHomePage() {
     </div>
   );
 }
-

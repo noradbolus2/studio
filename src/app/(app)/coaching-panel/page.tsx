@@ -1,3 +1,4 @@
+
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
@@ -8,19 +9,18 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { 
     CalendarDays,
-    FileText as SlidesIcon,
     UploadCloud,
     Edit,
     Star,
     IndianRupee,
-    BookOpen,
     PlayCircle,
     Wand2,
     Briefcase,
-    MessageSquare,
-    Link as LinkIcon,
-    Users,
-    Lightbulb
+    Lightbulb,
+    LogOut,
+    PlusCircle,
+    BarChart3,
+    BadgePercent
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,29 +29,31 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+
 
 const teacherStats = {
-  activeCourse: "Physics 12", // This can be made dynamic later
-  nextClassTime: "Today @ 4:00 PM", // This can be made dynamic later
+  activeCourse: "Physics 12",
+  nextClassTime: "Today @ 4:00 PM",
   studyKitsCount: 5,
   monthlyEarnings: "₹13,800",
   avgRating: 4.8,
   ratingCount: 122,
 };
 
-// Removed hardcoded nextClassDetails
-
 const quickActions = [
-  { id: "gen_slide", labelEn: "Generate Slide", labelHi: "स्लाइड बनाएं", buttonTextEn: "Text to PPT", buttonTextHi: "टेक्स्ट से पीपीटी", icon: Wand2, href: "/coaching-panel/smart-slide-class" },
-  { id: "start_class", labelEn: "Start Class", labelHi: "कक्षा शुरू करें", buttonTextEn: "Go Live Now", buttonTextHi: "अभी लाइव जाएं", icon: PlayCircle, href: "/coaching-panel/live-classes" },
-  { id: "upload_notes", labelEn: "Upload Notes", labelHi: "नोट्स अपलोड करें", buttonTextEn: "Add Material", buttonTextHi: "सामग्री जोड़ें", icon: UploadCloud, href: "/coaching-panel/create-course" },
-  { id: "create_kit", labelEn: "Create Kit", labelHi: "किट बनाएं", buttonTextEn: "Build Study Kit", buttonTextHi: "स्टडी किट बनाएं", icon: Briefcase, href: "/coaching-panel/create-course" },
-  { id: "bookings", labelEn: "1:1 Booking", labelHi: "1:1 बुकिंग", buttonTextEn: "Manage Sessions", buttonTextHi: "सत्र प्रबंधित करें", icon: Users, href: "#" },
+  { id: "create_course", labelEn: "Create New Course", labelHi: "नया कोर्स बनाएं", icon: PlusCircle, href: "/coaching-panel/create-course" },
+  { id: "manage_classes", labelEn: "Manage Live Classes", labelHi: "लाइव कक्षाएं प्रबंधित करें", icon: CalendarDays, href: "/coaching-panel/live-classes" },
+  { id: "student_analytics", labelEn: "Student Analytics", labelHi: "छात्र एनालिटिक्स", icon: BarChart3, href: "/coaching-panel/analytics" },
+  { id: "earnings", labelEn: "Earnings & Payouts", labelHi: "कमाई और भुगतान", icon: IndianRupee, href: "/coaching-panel/earnings" },
+  { id: "promotions", labelEn: "Promotions", labelHi: "प्रचार", icon: BadgePercent, href: "/coaching-panel/promotions" },
+  { id: "edit_profile", labelEn: "Edit My Profile", labelHi: "मेरी प्रोफ़ाइल संपादित करें", icon: Edit, href: "/edit-profile?role=teacher" },
 ];
 
 
 export default function CoachingPanelPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [teacherProfile, setTeacherProfile] = useState<ProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -70,6 +72,18 @@ export default function CoachingPanelPage() {
     setLoadingProfile(false);
   }, []);
 
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem('loggedInUser'); 
+        localStorage.removeItem('userProfileData'); 
+    }
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out from the Coaching Panel.",
+    });
+    router.push('/login');
+  };
+
   if (loadingProfile) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
@@ -81,33 +95,35 @@ export default function CoachingPanelPage() {
 
   const teacherName = teacherProfile?.creatorName || teacherProfile?.fullName || "Teacher";
   const nextClassTopic = teacherProfile?.examTarget ? `${teacherProfile.examTarget}: ${teacherProfile.expertise}` : "Your Next Topic";
-  const latestKitSales = teacherStats.studyKitsCount * 148; // Mock calculation
-
+  
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold font-headline text-primary">
-          👋 <BilingualText en={`Welcome, ${teacherName}!`} hi={`स्वागत है, ${teacherName}!`} />
-        </h1>
-        <p className="text-muted-foreground">Here's your dashboard overview for today.</p>
+    <div className="space-y-6 min-h-screen bg-muted/30 p-4 sm:p-6 md:p-8">
+      <header className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+            <h1 className="text-3xl font-bold font-headline text-primary">
+            👋 <BilingualText en={`Welcome, ${teacherName}!`} hi={`स्वागत है, ${teacherName}!`} />
+            </h1>
+            <p className="text-muted-foreground">Here's your dashboard overview for today.</p>
+        </div>
+        <Button variant="ghost" onClick={handleLogout} className="text-muted-foreground">
+            <LogOut className="mr-2 h-4 w-4"/> Logout
+        </Button>
       </header>
       
        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                {/* Next Class Overview */}
-                <Card className="shadow-lg rounded-2xl">
+                
+                <Card className="shadow-lg rounded-xl">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 font-headline"><CalendarDays className="text-primary"/> Next Scheduled Class</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         <p className="text-lg font-semibold">{nextClassTopic}</p>
                         <p className="text-sm text-muted-foreground">Time: {teacherStats.nextClassTime}</p>
-                        <p className="text-sm text-muted-foreground">Slides: 8 Slides Loaded (<Link href="#" className="text-primary underline">View Deck</Link>)</p>
                     </CardContent>
                     <CardFooter className="gap-2">
-                        <Button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white"><PlayCircle className="mr-2"/> Join Class</Button>
-                        <Button variant="outline" asChild><Link href="/coaching-panel/smart-slide-class"><Wand2 className="mr-2"/> Edit Slides</Link></Button>
-                        <Button variant="outline" asChild><Link href="/coaching-panel/create-course"><UploadCloud className="mr-2"/> Upload New PPT</Link></Button>
+                        <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white"><PlayCircle className="mr-2"/> Join Class</Button>
+                        <Button variant="outline" asChild><Link href="/coaching-panel/smart-slide-class"><Wand2 className="mr-2"/> AI Slides</Link></Button>
                     </CardFooter>
                 </Card>
 
@@ -120,8 +136,8 @@ export default function CoachingPanelPage() {
                         "
                         {teacherProfile?.examTarget && teacherProfile.expertise ? (
                             <BilingualText 
-                                en={`Based on your focus on '${teacherProfile.expertise}' for the '${teacherProfile.examTarget}' exam, we've noticed high student interest in practice tests for this combination. Consider scheduling a `} 
-                                hi={`'${teacherProfile.examTarget}' परीक्षा के लिए '${teacherProfile.expertise}' पर आपके फोकस के आधार पर, हमने इस संयोजन के लिए प्रैक्टिस टेस्ट में छात्रों की उच्च रुचि देखी है। एक `} 
+                                en={`Based on your focus on '${teacherProfile.expertise}' for '${teacherProfile.examTarget}', we've noticed high student interest in practice tests. Consider `} 
+                                hi={`'${teacherProfile.examTarget}' के लिए '${teacherProfile.expertise}' पर आपके फोकस के आधार पर, हमने प्रैक्टिस टेस्ट में छात्रों की उच्च रुचि देखी है। `} 
                             />
                         ) : (
                             <BilingualText 
@@ -130,112 +146,52 @@ export default function CoachingPanelPage() {
                             />
                         )}
                         <Link href="/coaching-panel/live-classes" className="font-semibold underline">
-                            <BilingualText en="live class on this topic?" hi="इस विषय पर लाइव क्लास शेड्यूल करें?" />
-                        </Link>
-                        "
-                      </p>
-                      <p>
-                        "
-                        {teacherProfile?.examTarget && teacherProfile.expertise ? (
-                            <BilingualText 
-                                en={`Your expertise in '${teacherProfile.expertise}' is in demand. Creating a premium study kit or a detailed slide deck for '${teacherProfile.examTarget}' could be highly beneficial for students. `} 
-                                hi={`'${teacherProfile.expertise}' में आपकी विशेषज्ञता की मांग है। '${teacherProfile.examTarget}' के लिए एक प्रीमियम अध्ययन किट या विस्तृत स्लाइड डेक बनाना छात्रों के लिए अत्यधिक फायदेमंद हो सकता है। `}
-                            />
-                        ) : (
-                            <BilingualText 
-                                en="Your 'Modern Physics' notes are trending. Why not create a " 
-                                hi="आपके 'आधुनिक भौतिकी' नोट्स ट्रेंड कर रहे हैं। क्यों न एक " 
-                            />
-                        )}
-                        <Link href="/coaching-panel/create-course" className="font-semibold underline">
-                            <BilingualText en="Create New Content?" hi="नई सामग्री बनाएं?" />
+                            <BilingualText en="scheduling a live class?" hi="लाइव क्लास शेड्यूल करें?" />
                         </Link>
                         "
                       </p>
                   </CardContent>
                 </Card>
 
-                {/* Quick Action Panel */}
-                <Card className="shadow-md rounded-2xl">
+                <Card className="shadow-md rounded-xl">
                     <CardHeader><CardTitle className="font-headline">Quick Actions</CardTitle></CardHeader>
-                    <CardContent>
-                         <Table>
-                            <TableBody>
-                                {quickActions.map(action => (
-                                <TableRow key={action.id}>
-                                    <TableCell className="font-medium flex items-center gap-2"><action.icon className="text-primary"/> <BilingualText en={action.labelEn} hi={action.labelHi}/></TableCell>
-                                    <TableCell className="text-right">
-                                        <Button asChild className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                                            <Link href={action.href}><BilingualText en={action.buttonTextEn} hi={action.buttonTextHi}/></Link>
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                    <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {quickActions.map(action => (
+                            <Button
+                                key={action.id}
+                                variant="outline"
+                                className="h-auto py-4 flex flex-col items-center justify-center text-center gap-2 hover:bg-primary/5 hover:border-primary"
+                                asChild
+                            >
+                                <Link href={action.href}>
+                                    <action.icon className="h-7 w-7 text-primary mb-1"/>
+                                    <span className="text-xs font-medium"><BilingualText en={action.labelEn} hi={action.labelHi} /></span>
+                                </Link>
+                            </Button>
+                        ))}
                     </CardContent>
                 </Card>
             </div>
             <div className="lg:col-span-1 space-y-6">
-                {/* Smart Slide Generator */}
-                <Card className="shadow-md rounded-2xl">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 font-headline text-sm"><Wand2 className="text-primary"/> Smart Slide Generator</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div>
-                            <Label htmlFor="slide-topic" className="text-xs">Topic</Label>
-                            <Input id="slide-topic" placeholder="e.g., Reflection of Light" />
-                        </div>
-                        <div>
-                            <Label htmlFor="slide-notes" className="text-xs">Input Notes</Label>
-                            <Textarea id="slide-notes" placeholder="Paste or type bullet points..." rows={3}/>
-                        </div>
-                    </CardContent>
-                    <CardFooter className="gap-2">
-                         <Button asChild className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white"><Link href="/coaching-panel/smart-slide-class"><Wand2 className="mr-2"/> Generate</Link></Button>
-                         <Button asChild variant="outline"><Link href="/coaching-panel/smart-slide-class"><Edit className="mr-2"/> Open Editor</Link></Button>
-                    </CardFooter>
-                </Card>
-                {/* Study Kit Status */}
-                <Card className="shadow-md rounded-2xl">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 font-headline text-sm"><Briefcase className="text-primary"/> Study Kit Status</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-1 text-sm">
-                        <p><strong>Total Kits Uploaded:</strong> {teacherStats.studyKitsCount}</p>
-                        <p><strong>Last Kit:</strong> "Organic Chemistry Short Notes"</p>
-                        <p><strong>Sales This Month:</strong> ₹{latestKitSales}</p>
-                    </CardContent>
-                    <CardFooter className="gap-2">
-                        <Button variant="outline" className="flex-1">View My Storefront</Button>
-                        <Button asChild className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white"><Link href="/coaching-panel/create-course">+</Link></Button>
-                    </CardFooter>
-                </Card>
-                {/* Earnings Snapshot */}
-                <Card className="shadow-md rounded-2xl">
+                <Card className="shadow-md rounded-xl">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 font-headline text-sm"><IndianRupee className="text-primary"/> Earnings Snapshot</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1 text-sm">
                         <p><strong>This Month:</strong> {teacherStats.monthlyEarnings}</p>
                         <p><strong>Last Class:</strong> ₹499</p>
-                        <p><strong>Voice Pack Sale:</strong> ₹99</p>
-                        <p><strong>Kit Download:</strong> ₹199</p>
                     </CardContent>
                     <CardFooter>
                         <Button asChild variant="outline" className="w-full"><Link href="/coaching-panel/earnings">Full Earnings Report</Link></Button>
                     </CardFooter>
                 </Card>
-                 {/* Ratings + Reviews */}
-                <Card className="shadow-md rounded-2xl">
+                 <Card className="shadow-md rounded-xl">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 font-headline text-sm"><Star className="text-primary"/> Ratings + Reviews</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2 text-sm">
                         <p><strong>Avg. Rating:</strong> {teacherStats.avgRating} from {teacherStats.ratingCount} Students</p>
-                        <blockquote className="border-l-2 pl-2 italic">“Sir slides se class lena bahut easy lagta hai!”</blockquote>
-                        <blockquote className="border-l-2 pl-2 italic">“Loved your Science crash kit.”</blockquote>
+                        <blockquote className="border-l-2 pl-2 italic">“Sir your teaching style is amazing!”</blockquote>
                     </CardContent>
                     <CardFooter>
                         <Button asChild variant="outline" className="w-full"><Link href="/coaching-panel/promotions">See All Feedback</Link></Button>

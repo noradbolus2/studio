@@ -12,7 +12,7 @@ interface WelcomeMessageCardProps {
 
 export function WelcomeMessageCard({ onGetStarted }: WelcomeMessageCardProps) {
   return (
-    <Card className="w-full max-w-md text-center shadow-xl">
+    <Card className="w-full max-w-md text-center shadow-xl border-border/50 bg-card/80 backdrop-blur-sm">
       <CardHeader className="items-center">
         <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full border-2 border-primary bg-primary text-5xl font-bold text-primary-foreground shadow-xl">
             OSO
