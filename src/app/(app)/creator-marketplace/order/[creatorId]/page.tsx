@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import type { StationeryItem } from '@/components/delivery/StationeryItemCard';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 
 // Mock data for the creator being hired
@@ -74,18 +75,6 @@ function StationeryPickerDialog({ open, onOpenChange, onSelectItems }: { open: b
             return newMap;
         });
     };
-
-    const handleQuantityChange = (itemId: string, newQuantity: number) => {
-        if (newQuantity < 1) return;
-        setSelectedItems(prev => {
-            const newMap = new Map(prev);
-            const item = newMap.get(itemId);
-            if(item) {
-                newMap.set(itemId, { ...item, quantity: newQuantity });
-            }
-            return newMap;
-        });
-    }
     
     const handleConfirmSelection = () => {
         onSelectItems(Array.from(selectedItems.values()));
@@ -260,52 +249,89 @@ export default function OrderCreatorPage() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="flex items-center gap-2"><Package size={20}/> Materials & Add-ons</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-            <div className="p-3 border rounded-lg bg-muted/50">
-                <p className="text-sm font-medium mb-2">Required Materials:</p>
-                {materials.length > 0 ? (
-                    <div className="space-y-2">
-                        {materials.map(mat => (
-                            <div key={mat.id} className="flex items-center gap-2 text-sm p-2 bg-background rounded-md">
-                                <Image src={mat.imageUrl || ''} alt={mat.nameEn} width={32} height={32} className="rounded object-cover"/>
-                                <span className="flex-grow font-medium">{mat.nameEn}</span>
-                                <Input type="number" value={mat.quantity} onChange={(e) => handleMaterialQuantityChange(mat.id, parseInt(e.target.value))} className="w-16 h-8 text-center" min="1"/>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoveMaterial(mat.id)}><X size={16}/></Button>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-sm text-muted-foreground text-center py-2">No materials added yet.</p>
-                )}
-                 <Button type="button" variant="secondary" onClick={() => setIsMaterialPickerOpen(true)} className="w-full mt-3">
-                    <PlusCircle size={16} className="mr-2"/> Browse & Add Materials
-                </Button>
-            </div>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Package size={20}/> Order Summary</CardTitle>
+          <CardDescription>Review the items and services for your project request.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[60%]">Item / Service</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Creator Fee</TableCell>
+                  <TableCell>1</TableCell>
+                  <TableCell className="text-right">₹{creator.baseFee.toFixed(2)}</TableCell>
+                </TableRow>
+                 {materials.map(mat => (
+                  <TableRow key={mat.id}>
+                    <TableCell className="font-medium text-sm flex items-center gap-2">
+                        <Image src={mat.imageUrl || ''} alt={mat.nameEn} width={24} height={24} className="rounded object-cover"/>
+                        {mat.nameEn}
+                    </TableCell>
+                    <TableCell>
+                         <Input type="number" value={mat.quantity} onChange={(e) => handleMaterialQuantityChange(mat.id, parseInt(e.target.value))} className="w-16 h-8 text-center" min="1"/>
+                    </TableCell>
+                    <TableCell className="text-right">₹{(mat.price * mat.quantity).toFixed(2)}</TableCell>
+                  </TableRow>
+                 ))}
+                 {wantsVideo && (
+                    <TableRow className="bg-primary/5">
+                        <TableCell className="font-medium text-primary">Explanation Video</TableCell>
+                        <TableCell>1</TableCell>
+                        <TableCell className="text-right">₹{creator.videoFee.toFixed(2)}</TableCell>
+                    </TableRow>
+                 )}
+              </TableBody>
+            </Table>
+          </div>
+          <Button type="button" variant="secondary" onClick={() => setIsMaterialPickerOpen(true)} className="w-full mt-3">
+              <PlusCircle size={16} className="mr-2"/> Browse & Add Materials
+          </Button>
 
-             <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+          <Card className={cn(
+            "mt-4 p-4 flex items-center justify-between transition-all cursor-pointer",
+            wantsVideo ? "bg-primary/10 border-primary" : "bg-muted/50 hover:bg-muted"
+          )} onClick={() => setWantsVideo(!wantsVideo)}>
+            <div className="flex items-center gap-3">
+              <Video className={cn("h-6 w-6", wantsVideo ? "text-primary" : "text-muted-foreground")} />
+              <div>
                 <Label htmlFor="video-switch" className="font-medium">Add explanation video by creator?</Label>
-                <Switch id="video-switch" checked={wantsVideo} onCheckedChange={setWantsVideo} />
+                <p className="text-xs text-muted-foreground">Get a detailed video walkthrough of your project.</p>
+              </div>
             </div>
-            {wantsVideo && (
-                <p className="text-sm text-primary p-2 bg-primary/10 rounded-lg text-center">An additional fee of <strong>INR {creator.videoFee}</strong> will be added for the explanation video.</p>
-            )}
+            <Switch id="video-switch" checked={wantsVideo} readOnly/>
+          </Card>
         </CardContent>
-      </Card>
-      
-       <Card>
-        <CardHeader><CardTitle className="flex items-center gap-2"><IndianRupee size={20}/> Payment Summary</CardTitle></CardHeader>
-        <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between"><span>Creator Fee:</span> <span className="font-medium">INR {creator.baseFee.toFixed(2)}</span></div>
-            {wantsVideo && <div className="flex justify-between"><span>Explanation Video:</span> <span className="font-medium">INR {creator.videoFee.toFixed(2)}</span></div>}
-            {materialsCost > 0 && <div className="flex justify-between"><span>Materials Cost:</span> <span className="font-medium">INR {materialsCost.toFixed(2)}</span></div>}
-            <hr/>
-            <div className="flex justify-between text-lg font-bold text-primary"><span>Subtotal:</span> <span>INR {totalCost.toFixed(2)}</span></div>
-        </CardContent>
-        <CardFooter>
-            <Button className="w-full" size="lg" onClick={handlePlaceOrder}>Proceed to Payment</Button>
+        <CardFooter className="flex-col items-stretch space-y-2 bg-muted/30 pt-4 border-t">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Subtotal</span>
+            <span>₹{(materialsCost + creator.baseFee + (wantsVideo ? creator.videoFee : 0)).toFixed(2)}</span>
+          </div>
+           <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Delivery & Service Fee</span>
+            <span>₹40.00</span>
+          </div>
+          <hr className="my-1"/>
+          <div className="flex justify-between text-lg font-bold text-primary">
+            <span>Grand Total</span>
+            <span>₹{(totalCost + 40).toFixed(2)}</span>
+          </div>
         </CardFooter>
       </Card>
+      
+      <div className="flex justify-end">
+          <Button size="lg" onClick={handlePlaceOrder} className="w-full md:w-auto">
+            <ShoppingCart className="mr-2"/>
+            Place Order & Proceed to Payment
+          </Button>
+      </div>
 
       <StationeryPickerDialog open={isMaterialPickerOpen} onOpenChange={setIsMaterialPickerOpen} onSelectItems={handleAddMaterialsFromStore} />
 
