@@ -6,12 +6,23 @@ import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, ArrowLeft, Camera as CameraIcon, Mic } from 'lucide-react';
+import { Brain, ArrowLeft, Camera as CameraIcon, Mic, Eye, Smile, BookOpen, Clock } from 'lucide-react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { generateBrainFitnessReport, type BrainScanInput } from '@/ai/flows/brain-scan-report';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
 
+const analysisSteps = [
+  { text: "Initializing OSO Aura Engine...", duration: 1500, icon: Brain },
+  { text: "Calibrating camera for ambient light...", duration: 2000, icon: CameraIcon },
+  { text: "Analyzing eye focus and tracking...", duration: 3000, icon: Eye },
+  { text: "Detecting micro-expressions for emotional balance...", duration: 3500, icon: Smile },
+  { text: "Please read the following sentence aloud: 'The quick brown fox jumps over the lazy dog.'", duration: 5000, icon: BookOpen },
+  { text: "Analyzing voice tone for stress markers...", duration: 4000, icon: Mic },
+  { text: "Calculating final cognitive scores...", duration: 2000, icon: Clock },
+];
 
 export default function BrainScanSimplifiedPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +31,12 @@ export default function BrainScanSimplifiedPage() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(analysisSteps[0]);
 
   useEffect(() => {
     const getPermissions = async () => {
-      // Check if mediaDevices is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setHasPermission(false);
         toast({
@@ -37,7 +50,6 @@ export default function BrainScanSimplifiedPage() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         setHasPermission(true);
-
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -54,7 +66,6 @@ export default function BrainScanSimplifiedPage() {
 
     getPermissions();
     
-    // Cleanup function to stop the camera and mic stream when the component unmounts
     return () => {
         if (videoRef.current && videoRef.current.srcObject) {
             const stream = videoRef.current.srcObject as MediaStream;
@@ -64,12 +75,31 @@ export default function BrainScanSimplifiedPage() {
   }, [toast]);
 
 
+  const startAnalysis = async () => {
+    setIsAnalyzing(true);
+    let totalDuration = analysisSteps.reduce((acc, step) => acc + step.duration, 0);
+    let elapsedTime = 0;
+
+    for (const step of analysisSteps) {
+        setCurrentStep(step);
+        const stepInterval = setInterval(() => {
+            elapsedTime += 50;
+            setAnalysisProgress((elapsedTime / totalDuration) * 100);
+        }, 50);
+
+        await new Promise(resolve => setTimeout(resolve, step.duration));
+        clearInterval(stepInterval);
+    }
+    
+    setAnalysisProgress(100);
+    await handleSubmit();
+    setIsAnalyzing(false);
+  };
+
+
   const handleSubmit = async () => {
     setIsLoading(true);
-    // In a real app, studentName would come from the logged-in user's profile
     const studentName = "Aarav S."; 
-    // Since we're simulating the analysis, we'll use placeholder scores.
-    // In a real implementation, these would be derived from ML analysis of the video/audio stream.
     const inputForApi: BrainScanInput = { 
         studentName,
         clarityScore: Math.floor(Math.random() * 30) + 60, // 60-90
@@ -88,7 +118,6 @@ export default function BrainScanSimplifiedPage() {
         description: "Your Brain Fitness Report is ready.",
       });
 
-      // Explicitly stop the camera/mic tracks before navigating
       if (videoRef.current && videoRef.current.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach(track => track.stop());
@@ -102,7 +131,6 @@ export default function BrainScanSimplifiedPage() {
         description: error.message || "Could not generate the report. Please try again.",
         variant: "destructive",
       });
-      // Ensure we still turn off camera on error
       if (videoRef.current && videoRef.current.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach(track => track.stop());
@@ -152,10 +180,20 @@ export default function BrainScanSimplifiedPage() {
                     </AlertDescription>
                 </Alert>
             )}
+
+            {isAnalyzing && (
+              <div className="space-y-3 pt-2">
+                <Progress value={analysisProgress} />
+                <div className="flex items-center justify-center gap-2 text-sm text-primary">
+                    <currentStep.icon className="h-5 w-5 animate-pulse" />
+                    <p className="font-medium text-center">{currentStep.text}</p>
+                </div>
+              </div>
+            )}
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSubmit} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading || hasPermission !== true}>
-            {isLoading ? <LoadingSpinner /> : <BilingualText en="Start AI Analysis" hi="एआई विश्लेषण शुरू करें" />}
+          <Button onClick={startAnalysis} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading || hasPermission !== true || isAnalyzing}>
+            {isLoading ? <LoadingSpinner /> : (isAnalyzing ? <BilingualText en="Analyzing..." hi="विश्लेषण हो रहा है..."/> : <BilingualText en="Start AI Analysis" hi="एआई विश्लेषण शुरू करें" />)}
           </Button>
         </CardFooter>
       </Card>
