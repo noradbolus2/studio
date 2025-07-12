@@ -46,19 +46,8 @@ export default function AuraMapPage() {
   const handleScanAgain = () => {
     setIsScanning(true);
     toast({ title: "Refreshing Aura Map...", description: "Scanning cognitive state (simulated)." });
-    setTimeout(() => {
-      // Simulate new data
-      setAuraData(prev => ({
-        ...prev,
-        brainFitnessScore: Math.floor(Math.random() * 30) + 70, // 70-99
-        clarity: { ...prev.clarity, value: Math.floor(Math.random() * 50) + 50 },
-        focus: { ...prev.focus, value: Math.floor(Math.random() * 50) + 50 },
-        attention: { ...prev.attention, value: Math.floor(Math.random() * 60) + 20 },
-        stress: { ...prev.stress, value: Math.floor(Math.random() * 70) + 10 },
-      }));
-      setIsScanning(false);
-      toast({ title: "Aura Map Refreshed!", variant: "default" });
-    }, 2000);
+    // In a real app, this would trigger an AI flow. Here, we just simulate a redirect to the input page.
+    router.push('/brain-scan-simplified');
   };
 
   const handleParentViewToggle = () => {
@@ -178,3 +167,5 @@ export default function AuraMapPage() {
       </div>
     </React.Fragment>
   );
+
+    
