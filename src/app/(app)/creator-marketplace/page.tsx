@@ -1,4 +1,3 @@
-
 // src/app/(app)/creator-marketplace/page.tsx
 "use client";
 
@@ -9,134 +8,46 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Filter, ShoppingCart, Sparkles, Award, Palette, Code2, FlaskConical, Edit3, ArrowLeft, Clock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
+import { Users, Search, Filter, Sparkles, Award, Palette, Code2, FlaskConical, Edit3, ArrowLeft, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-interface CreatorProject {
+interface Creator {
   id: string;
-  titleEn: string;
-  titleHi: string;
-  creatorNameEn: string;
-  creatorNameHi: string;
-  creatorAvatarUrl?: string; 
-  dataAiHintAvatar?: string;
-  categoryEn: string;
-  categoryHi: string;
-  classLevel?: string; 
-  subjectEn?: string;
-  subjectHi?: string;
-  descriptionEn: string;
-  descriptionHi: string;
-  imageUrl?: string; 
-  dataAiHintImage: string;
-  priceDigital?: number;
-  pricePhysicalKit?: number;
-  rating?: number; 
-  reviewCount?: number;
-  estimatedTime?: string;
+  nameEn: string;
+  nameHi: string;
+  expertise: string[];
+  avatarUrl: string; 
+  dataAiHint: string;
+  rating: number;
+  reviewCount: number;
+  completedProjects: number;
 }
 
-const mockCreatorProjects: CreatorProject[] = [
-  {
-    id: 'cp1',
-    titleEn: 'AI-Powered Story Generator',
-    titleHi: 'एआई-संचालित कहानी जनरेटर',
-    creatorNameEn: 'Tech Savvy Creations',
-    creatorNameHi: 'टेक सैवी क्रिएशन्स',
-    creatorAvatarUrl: 'https://images.unsplash.com/photo-1740252117027-4275d3f84385?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjcmVhdG9yJTIwYXZhdGFyJTIwdGVjaHxlbnwwfHx8fDE3NTE5MDQ0Mjh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    dataAiHintAvatar: 'creator avatar tech',
-    categoryEn: 'Coding & AI',
-    categoryHi: 'कोडिंग और एआई',
-    classLevel: '9-12',
-    subjectEn: 'Computer Science, AI',
-    subjectHi: 'कंप्यूटर विज्ञान, एआई',
-    descriptionEn: 'A Python-based project that uses AI to generate short stories based on user prompts. Includes code and guide.',
-    descriptionHi: 'एक पायथन-आधारित प्रोजेक्ट जो उपयोगकर्ता संकेतों के आधार पर लघु कथाएँ उत्पन्न करने के लिए एआई का उपयोग करता है। इसमें कोड और गाइड शामिल हैं।',
-    imageUrl: 'https://images.unsplash.com/photo-1551033406-611cf9a28f67?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhaSUyMGNvZGUlMjBwcm9qZWN0fGVufDB8fHx8MTc1MTkwNDQyOXww&ixlib=rb-4.1.0&q=80&w=1080',
-    dataAiHintImage: 'ai code project',
-    priceDigital: 499,
-    pricePhysicalKit: 799, 
-    rating: 4.5,
-    reviewCount: 15,
-    estimatedTime: '5 hours',
-  },
-  {
-    id: 'cp2',
-    titleEn: 'Working Volcano Model Kit',
-    titleHi: 'वर्किंग ज्वालामुखी मॉडल किट',
-    creatorNameEn: 'Science Wonders',
-    creatorNameHi: 'साइंस वंडर्स',
-    creatorAvatarUrl: 'https://images.unsplash.com/photo-1688962943534-673ea28cc2be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjcmVhdG9yJTIwYXZhdGFyJTIwc2NpZW5jZXxlbnwwfHx8fDE3NTE5MDQ0Mjh8MA&ixlib.rb-4.1.0&q=80&w=1080',
-    dataAiHintAvatar: 'creator avatar science',
-    categoryEn: 'Science Model',
-    categoryHi: 'विज्ञान मॉडल',
-    classLevel: '6-8',
-    subjectEn: 'Science, Geography',
-    subjectHi: 'विज्ञान, भूगोल',
-    descriptionEn: 'Complete kit with all materials and instructions to build an impressive erupting volcano model. Safe and educational.',
-    descriptionHi: 'एक प्रभावशाली विस्फोट करने वाला ज्वालामुखी मॉडल बनाने के लिए सभी सामग्रियों और निर्देशों के साथ पूर्ण किट। सुरक्षित और शैक्षिक।',
-    imageUrl: 'https://images.unsplash.com/photo-1637515944864-426524797cdc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx2b2xjYW5vJTIwbW9kZWwlMjBraXR8ZW58MHx8fHwxNzUxODc1NzkzfDA&ixlib.rb-4.1.0&q=80&w=1080',
-    dataAiHintImage: 'volcano model kit',
-    pricePhysicalKit: 349,
-    rating: 4.8,
-    reviewCount: 28,
-    estimatedTime: '3 hours',
-  },
-  {
-    id: 'cp3',
-    titleEn: 'Historical Diorama: Indus Valley',
-    titleHi: 'ऐतिहासिक डायोरमा: सिंधु घाटी',
-    creatorNameEn: 'History Buffs Co.',
-    creatorNameHi: 'हिस्ट्री बफ्स कंपनी',
-    creatorAvatarUrl: 'https://images.unsplash.com/photo-1740252117027-4275d3f84385?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjcmVhdG9yJTIwYXZhdGFyfGVufDB8fHx8MTc1MTkwNDQyOXww&ixlib.rb-4.1.0&q=80&w=1080',
-    dataAiHintAvatar: 'creator avatar',
-    categoryEn: 'Art & Craft',
-    categoryHi: 'कला और शिल्प',
-    classLevel: '6-8',
-    subjectEn: 'History, Art',
-    subjectHi: 'इतिहास, कला',
-    descriptionEn: 'Create a detailed diorama of an Indus Valley Civilization settlement. Includes guide and material suggestions.',
-    descriptionHi: 'सिंधु घाटी सभ्यता की बस्ती का विस्तृत डायोरमा बनाएं। इसमें गाइड और सामग्री सुझाव शामिल हैं।',
-    imageUrl: 'https://images.unsplash.com/photo-1705237553911-415aeac98c83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxoaXN0b3J5JTIwZGlvcmFtYSUyMGluZHVzfGVufDB8fHx8MTc1MTkwNDQyOHww&ixlib.rb-4.1.0&q=80&w=1080',
-    dataAiHintImage: 'history diorama indus',
-    priceDigital: 199, 
-    rating: 4.2,
-    reviewCount: 9,
-    estimatedTime: '4 hours',
-  },
+const mockCreators: Creator[] = [
+  { id: 'creator1', nameEn: 'Priya\'s Projects', nameHi: 'प्रिया के प्रोजेक्ट्स', expertise: ['Science Models', 'Dioramas'], avatarUrl: 'https://images.unsplash.com/photo-1616740795230-f63547d8f10c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmZW1hbGUlMjBzdXBwb3J0fGVufDB8fHx8MTc1MTg3ODU0OHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'female creator', rating: 4.9, reviewCount: 42, completedProjects: 55 },
+  { id: 'creator2', nameEn: 'Coding Concepts by Rohan', nameHi: 'रोहन द्वारा कोडिंग कॉन्सेप्ट्स', expertise: ['Coding', 'AI', 'Robotics'], avatarUrl: 'https://images.unsplash.com/photo-1683498073270-888cec8e7abb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYWxlJTIwc3VwcG9ydHxlbnwwfHx8fDE3NTE4Nzg1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'male creator tech', rating: 4.8, reviewCount: 31, completedProjects: 40 },
+  { id: 'creator3', nameEn: 'Anika\'s Art & Essays', nameHi: 'अनिका की कला और निबंध', expertise: ['Art & Craft', 'Essay Writing'], avatarUrl: 'https://images.unsplash.com/photo-1740252117027-4275d3f84385?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjcmVhdG9yJTIwYXZhdGFyJTIwdGVjaHxlbnwwfHx8fDE3NTE5MDQ0Mjh8MA&ixlib-rb-4.1.0&q=80&w=1080', dataAiHint: 'female creator art', rating: 5.0, reviewCount: 55, completedProjects: 70 },
+  { id: 'creator4', nameEn: 'History Buffs Co.', nameHi: 'हिस्ट्री बफ्स कंपनी', expertise: ['History Projects', 'Research'], avatarUrl: 'https://images.unsplash.com/photo-1740252117027-4275d3f84385?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjcmVhdG9yJTIwYXZhdGFyfGVufDB8fHx8MTc1MTkwNDQyOXww&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: 'creator avatar', rating: 4.7, reviewCount: 25, completedProjects: 30 },
 ];
 
-const projectCategories = [
-    { id: 'all', nameEn: 'All Projects', nameHi: 'सभी प्रोजेक्ट', icon: Sparkles },
-    { id: 'science_model', nameEn: 'Science Models', nameHi: 'विज्ञान मॉडल', icon: FlaskConical },
-    { id: 'coding_ai', nameEn: 'Coding & AI', nameHi: 'कोडिंग और एआई', icon: Code2 },
-    { id: 'art_craft', nameEn: 'Art & Craft', nameHi: 'कला और शिल्प', icon: Palette },
-    { id: 'research_essay', nameEn: 'Research/Essay', nameHi: 'शोध/निबंध', icon: Edit3 },
+const expertiseCategories = [
+  { id: 'all', nameEn: 'All Experts', nameHi: 'सभी विशेषज्ञ', icon: Sparkles },
+  { id: 'Science Models', nameEn: 'Science Models', nameHi: 'विज्ञान मॉडल', icon: FlaskConical },
+  { id: 'Coding & AI', nameEn: 'Coding & AI', nameHi: 'कोडिंग और एआई', icon: Code2 },
+  { id: 'Art & Craft', nameEn: 'Art & Craft', nameHi: 'कला और शिल्प', icon: Palette },
+  { id: 'Essay Writing', nameEn: 'Essay/Research', nameHi: 'निबंध/शोध', icon: Edit3 },
 ];
-
-const classLevels = ['All Levels', '6-8', '9-12'];
 
 export default function CreatorMarketplacePage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedClassLevel, setSelectedClassLevel] = useState('All Levels');
-  const { toast } = useToast();
+  const [selectedExpertise, setSelectedExpertise] = useState('all');
   const router = useRouter();
 
-  const handleGetMade = (project: CreatorProject) => {
-    toast({
-      title: `Order Request for "${project.titleEn}" (Simulated)`,
-      description: "You would typically choose digital/physical and proceed to payment here.",
-    });
-  };
-
-  const filteredProjects = useMemo(() => mockCreatorProjects.filter(project =>
-    (project.titleEn.toLowerCase().includes(searchTerm.toLowerCase()) || project.titleHi.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedCategory === 'all' || project.categoryEn.toLowerCase().replace(' & ', '_').replace(' ', '_') === selectedCategory) &&
-    (selectedClassLevel === 'All Levels' || project.classLevel === selectedClassLevel)
-  ), [searchTerm, selectedCategory, selectedClassLevel]);
+  const filteredCreators = useMemo(() => mockCreators.filter(creator =>
+    (creator.nameEn.toLowerCase().includes(searchTerm.toLowerCase()) || creator.nameHi.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (selectedExpertise === 'all' || creator.expertise.some(e => e.toLowerCase().includes(selectedExpertise.toLowerCase().split(' ')[0])))
+  ), [searchTerm, selectedExpertise]);
 
   return (
     <div className="space-y-6">
@@ -144,10 +55,10 @@ export default function CreatorMarketplacePage() {
         <header className="space-y-1">
           <h1 className="text-3xl font-bold font-headline flex items-center gap-2">
             <Users className="h-8 w-8 text-primary" />
-            <BilingualText en="Creator Project Marketplace" hi="क्रिएटर प्रोजेक्ट मार्केटप्लेस" />
+            <BilingualText en="Hire a Creator" hi="एक निर्माता को काम पर रखें" />
           </h1>
           <p className="text-muted-foreground">
-            <BilingualText en="Discover unique projects made by talented OSO Creators." hi="प्रतिभाशाली OSO क्रिएटर्स द्वारा बनाए गए अद्वितीय प्रोजेक्ट खोजें।" />
+            <BilingualText en="Find talented experts to build your school projects." hi="अपने स्कूल प्रोजेक्ट बनाने के लिए प्रतिभाशाली विशेषज्ञों को ढूंढें।" />
           </p>
         </header>
         <Button variant="outline" onClick={() => router.back()}>
@@ -161,34 +72,24 @@ export default function CreatorMarketplacePage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder_en="Search projects by title, subject..."
-            placeholder_hi="शीर्षक, विषय के अनुसार प्रोजेक्ट खोजें..."
+            placeholder_en="Search creators by name or expertise..."
+            placeholder_hi="नाम या विशेषज्ञता के अनुसार निर्माता खोजें..."
             className="pl-10 h-11"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Select value={selectedExpertise} onValueChange={setSelectedExpertise}>
             <SelectTrigger className="h-11">
-              <SelectValue placeholder={<BilingualText en="Select Category" hi="श्रेणी चुनें" />} />
+              <SelectValue placeholder={<BilingualText en="Filter by Expertise" hi="विशेषज्ञता के अनुसार फ़िल्टर करें" />} />
             </SelectTrigger>
             <SelectContent>
-              {projectCategories.map(cat => (
+              {expertiseCategories.map(cat => (
                 <SelectItem key={cat.id} value={cat.id}>
                     <cat.icon className="inline h-4 w-4 mr-2 opacity-70" />
                     <BilingualText en={cat.nameEn} hi={cat.nameHi} />
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedClassLevel} onValueChange={setSelectedClassLevel}>
-            <SelectTrigger className="h-11">
-              <SelectValue placeholder={<BilingualText en="Select Class Level" hi="कक्षा स्तर चुनें" />} />
-            </SelectTrigger>
-            <SelectContent>
-              {classLevels.map(level => (
-                <SelectItem key={level} value={level}>{level}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -199,65 +100,39 @@ export default function CreatorMarketplacePage() {
         </div>
       </div>
 
-      {filteredProjects.length > 0 ? (
+      {filteredCreators.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredProjects.map(project => (
-            <Card key={project.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow flex flex-col">
-              <CardHeader className="p-0">
-                <div className="aspect-video relative w-full bg-muted/30">
-                  <Image 
-                    src={project.imageUrl || `https://placehold.co/300x200.png`} 
-                    alt={project.titleEn} 
-                    layout="fill" 
-                    objectFit="cover" 
-                    data-ai-hint={project.dataAiHintImage || 'project image'} 
+          {filteredCreators.map(creator => (
+            <Card key={creator.id} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow flex flex-col">
+              <CardContent className="p-4 flex items-start space-x-4">
+                 <Image 
+                    src={creator.avatarUrl || `https://placehold.co/80x80.png`} 
+                    alt={creator.nameEn} 
+                    width={80} 
+                    height={80} 
+                    className="rounded-full border-2 border-primary object-cover" 
+                    data-ai-hint={creator.dataAiHint || 'creator avatar'} 
                   />
-                </div>
-              </CardHeader>
-              <CardContent className="p-4 space-y-2 flex-grow">
-                <div className="flex items-center gap-2 mb-1">
-                    <Image 
-                      src={project.creatorAvatarUrl || `https://placehold.co/40x40.png`} 
-                      alt={project.creatorNameEn} 
-                      width={24} 
-                      height={24} 
-                      className="rounded-full" 
-                      data-ai-hint={project.dataAiHintAvatar || 'creator avatar'} 
-                    />
-                    <span className="text-xs font-medium text-primary"><BilingualText en={project.creatorNameEn} hi={project.creatorNameHi} /></span>
-                </div>
-                <CardTitle className="text-lg font-semibold leading-tight">
-                  <BilingualText en={project.titleEn} hi={project.titleHi} />
-                </CardTitle>
-                <div className="text-xs text-muted-foreground space-x-2">
-                    <span><BilingualText en={project.categoryEn} hi={project.categoryHi}/></span>
-                    {project.classLevel && <span>| Class: {project.classLevel}</span>}
-                    {project.subjectEn && <span>| <BilingualText en={project.subjectEn} hi={project.subjectHi || project.subjectEn}/></span>}
-                </div>
-                <CardDescription className="text-sm h-12 overflow-hidden line-clamp-2">
-                  <BilingualText en={project.descriptionEn} hi={project.descriptionHi} />
-                </CardDescription>
-                
-                <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center gap-1">
-                      {project.rating && Array(5).fill(0).map((_, i) => (
-                        <Sparkles key={i} size={14} className={i < Math.floor(project.rating!) ? "text-accent fill-accent" : "text-muted-foreground/50"} />
-                      ))}
-                      {project.reviewCount && <span className="text-xs text-muted-foreground">({project.reviewCount} reviews)</span>}
-                    </div>
-                     {project.estimatedTime && <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12}/>{project.estimatedTime}</span>}
-                </div>
-
-                <div className="pt-2 border-t mt-2">
-                    {project.priceDigital && <p className="text-sm font-semibold"><BilingualText en="Digital Guide: " hi="डिजिटल गाइड: "/> INR {project.priceDigital}</p>}
-                    {project.pricePhysicalKit && <p className="text-sm font-semibold"><BilingualText en="Physical Kit: " hi="फिजिकल किट: "/> INR {project.pricePhysicalKit}</p>}
-                    {!project.priceDigital && !project.pricePhysicalKit && <p className="text-sm font-semibold"><BilingualText en="Custom Pricing" hi="कस्टम मूल्य निर्धारण"/></p>}
+                <div className="flex-grow">
+                  <CardTitle className="text-lg font-semibold leading-tight">
+                    <BilingualText en={creator.nameEn} hi={creator.nameHi} />
+                  </CardTitle>
+                   <div className="text-xs text-muted-foreground space-x-1 my-1">
+                    {creator.expertise.map(exp => <Badge key={exp} variant="secondary">{exp}</Badge>)}
+                  </div>
+                  <div className="flex items-center gap-1 text-sm mt-2">
+                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                    <span className="font-bold">{creator.rating}</span>
+                    <span className="text-muted-foreground text-xs">({creator.reviewCount} reviews)</span>
+                  </div>
+                   <p className="text-xs text-muted-foreground mt-1">{creator.completedProjects}+ projects completed</p>
                 </div>
               </CardContent>
-              <CardFooter className="p-3">
-                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => handleGetMade(project)}>
-                  <ShoppingCart size={16} className="mr-2" />
-                  <BilingualText en="Get This Made" hi="यह बनवाएं" />
+              <CardFooter className="p-3 border-t bg-muted/30">
+                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Link href={`/creator-marketplace/${creator.id}`}>
+                    <BilingualText en="View Profile & Hire" hi="प्रोफ़ाइल देखें और किराए पर लें" />
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -267,10 +142,7 @@ export default function CreatorMarketplacePage() {
         <div className="text-center py-10">
           <Award className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
-            <BilingualText en="No creator projects found matching your criteria." hi="आपके मानदंडों से मेल खाने वाले कोई क्रिएटर प्रोजेक्ट नहीं मिले।" />
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            <BilingualText en="Try adjusting your filters or check back soon!" hi="अपने फ़िल्टर समायोजित करने का प्रयास करें या जल्द ही वापस देखें!" />
+            <BilingualText en="No creators found matching your criteria." hi="आपके मानदंडों से मेल खाने वाले कोई निर्माता नहीं मिले।" />
           </p>
         </div>
       )}
