@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Filter, Sparkles, Award, Palette, Code2, FlaskConical, Edit3, ArrowLeft, Star } from 'lucide-react';
+import { Users, Search, Filter, Sparkles, Award, Palette, Code2, FlaskConical, Edit3, ArrowLeft, Star, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +27,7 @@ interface Creator {
 }
 
 const mockCreators: Creator[] = [
-  { id: 'creator1', nameEn: 'Priya\'s Projects', nameHi: 'प्रिया के प्रोजेक्ट्स', expertise: ['Science Models', 'Dioramas'], avatarUrl: 'https://images.unsplash.com/photo-1616740795230-f63547d8f10c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmZW1hbGUlMjBzdXBwb3J0fGVufDB8fHx8MTc1MTg3ODU0OHww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'female creator', rating: 4.9, reviewCount: 42, completedProjects: 55 },
+  { id: 'creator1', nameEn: 'Priya\'s Projects', nameHi: 'प्रिया के प्रोजेक्ट्स', expertise: ['Science Models', 'Dioramas'], avatarUrl: 'https://images.unsplash.com/photo-1694638278223-4c3907aa2354?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmZW1hbGUlMjBjcmVhdG9yfGVufDB8fHx8MTc1MjMwNjc0N3ww&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'female creator', rating: 4.9, reviewCount: 42, completedProjects: 55 },
   { id: 'creator2', nameEn: 'Coding Concepts by Rohan', nameHi: 'रोहन द्वारा कोडिंग कॉन्सेप्ट्स', expertise: ['Coding', 'AI', 'Robotics'], avatarUrl: 'https://images.unsplash.com/photo-1683498073270-888cec8e7abb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYWxlJTIwc3VwcG9ydHxlbnwwfHx8fDE3NTE4Nzg1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080', dataAiHint: 'male creator tech', rating: 4.8, reviewCount: 31, completedProjects: 40 },
   { id: 'creator3', nameEn: 'Anika\'s Art & Essays', nameHi: 'अनिका की कला और निबंध', expertise: ['Art & Craft', 'Essay Writing'], avatarUrl: 'https://images.unsplash.com/photo-1740252117027-4275d3f84385?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjcmVhdG9yJTIwYXZhdGFyJTIwdGVjaHxlbnwwfHx8fDE3NTE5MDQ0Mjh8MA&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: 'female creator art', rating: 5.0, reviewCount: 55, completedProjects: 70 },
   { id: 'creator4', nameEn: 'History Buffs Co.', nameHi: 'हिस्ट्री बफ्स कंपनी', expertise: ['History Projects', 'Research'], avatarUrl: 'https://images.unsplash.com/photo-1740252117027-4275d3f84385?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjcmVhdG9yJTIwYXZhdGFyfGVufDB8fHx8MTc1MTkwNDQyOXww&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: 'creator avatar', rating: 4.7, reviewCount: 25, completedProjects: 30 },
@@ -63,9 +63,11 @@ export default function CreatorMarketplacePage() {
             <BilingualText en="Find talented experts to build your school projects." hi="अपने स्कूल प्रोजेक्ट बनाने के लिए प्रतिभाशाली विशेषज्ञों को ढूंढें।" />
           </p>
         </header>
-        <Button variant="outline" onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            <BilingualText en="Back" hi="वापस"/>
+        <Button variant="outline" asChild>
+            <Link href="/">
+                <Home className="mr-2 h-4 w-4" />
+                <BilingualText en="Home" hi="होम"/>
+            </Link>
         </Button>
       </div>
 
