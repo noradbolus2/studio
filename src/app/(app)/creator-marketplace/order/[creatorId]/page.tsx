@@ -1,13 +1,13 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, User, Edit3, UploadCloud, Video, Package, IndianRupee, ShoppingCart, Wand2 } from 'lucide-react';
+import { ArrowLeft, User, Edit3, UploadCloud, Video, Package, IndianRupee, ShoppingCart, Wand2, PlusCircle, Trash2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -28,13 +28,11 @@ const mockCreator = {
   videoFee: 99, // Example video fee
 };
 
-// Mock data for materials
-const mockMaterials = [
-  { id: 'mat1', name: 'A4 Chart Paper (Set of 5)', price: 20 },
-  { id: 'mat2', name: 'Modeling Clay (12 colors)', price: 100 },
-  { id: 'mat3', name: 'Craft Glue (100ml)', price: 30 },
-  { id: 'mat4', name: 'Acrylic Paint Set', price: 150 },
-];
+interface MaterialItem {
+    id: number;
+    name: string;
+    quantity: string;
+}
 
 export default function OrderCreatorPage() {
   const router = useRouter();
@@ -47,12 +45,29 @@ export default function OrderCreatorPage() {
   const [wantsVideo, setWantsVideo] = useState(false);
   const [wantsMaterials, setWantsMaterials] = useState(true);
   const [deliveryAddress, setDeliveryAddress] = useState('123, Learning Lane, Student City, 110011');
-  const [materialSearch, setMaterialSearch] = useState('');
   const [isEnhancing, setIsEnhancing] = useState(false);
 
-  const filteredMaterials = mockMaterials.filter(m => m.name.toLowerCase().includes(materialSearch.toLowerCase()));
+  // New state for editable materials
+  const [materials, setMaterials] = useState<MaterialItem[]>([
+      { id: 1, name: 'A4 Chart Paper', quantity: '5' },
+      { id: 2, name: 'Modeling Clay (12 colors)', quantity: '1 pack' },
+  ]);
+
+  const handleMaterialChange = (id: number, field: 'name' | 'quantity', value: string) => {
+    setMaterials(prev => prev.map(mat => mat.id === id ? { ...mat, [field]: value } : mat));
+  };
   
-  const totalCost = creator.baseFee + (wantsVideo ? creator.videoFee : 0) + (wantsMaterials ? filteredMaterials.reduce((sum, item) => sum + item.price, 0) : 0);
+  const addMaterialRow = () => {
+      setMaterials(prev => [...prev, { id: Date.now(), name: '', quantity: '1' }]);
+  };
+
+  const removeMaterialRow = (id: number) => {
+      setMaterials(prev => prev.filter(mat => mat.id !== id));
+  };
+
+  // The cost of materials is complex to calculate on the frontend now,
+  // so we'll show it as "To be calculated".
+  const totalCost = creator.baseFee + (wantsVideo ? creator.videoFee : 0);
 
   const handlePlaceOrder = () => {
     if (!projectDescription.trim()) {
@@ -61,7 +76,7 @@ export default function OrderCreatorPage() {
     }
      toast({
         title: "Order Placed (Simulated)!",
-        description: `Your request has been sent to ${creator.nameEn}. Total amount: INR ${totalCost}`,
+        description: `Your request has been sent to ${creator.nameEn}. The final cost including materials will be confirmed.`,
     });
     router.push('/delivery'); // Redirect to a confirmation/tracking page
   }
@@ -148,17 +163,32 @@ export default function OrderCreatorPage() {
                 <Switch id="materials-switch" checked={wantsMaterials} onCheckedChange={setWantsMaterials} />
             </div>
             {wantsMaterials && (
-                <div className="p-3 border-l-4 border-primary bg-primary/5 rounded-r-lg space-y-2">
-                    <p className="text-xs text-muted-foreground">Select materials needed. OSO will deliver them to the creator.</p>
-                    <Input placeholder="Search materials..." value={materialSearch} onChange={(e) => setMaterialSearch(e.target.value)} />
-                    <div className="max-h-40 overflow-y-auto space-y-1 pr-2">
-                        {filteredMaterials.map(mat => (
-                           <div key={mat.id} className="text-sm p-1.5 flex justify-between items-center bg-background rounded">
-                               <span>{mat.name}</span>
-                               <span className="font-semibold">INR {mat.price}</span>
+                <div className="p-3 border-l-4 border-primary bg-primary/5 rounded-r-lg space-y-3">
+                    <p className="text-xs text-muted-foreground">Specify the materials needed. OSO will procure and deliver them to the creator.</p>
+                    <div className="space-y-2">
+                        {materials.map((mat, index) => (
+                           <div key={mat.id} className="flex items-center gap-2">
+                               <Input 
+                                   placeholder={`Material ${index + 1}`} 
+                                   value={mat.name}
+                                   onChange={(e) => handleMaterialChange(mat.id, 'name', e.target.value)}
+                                   className="flex-grow"
+                                />
+                               <Input 
+                                   placeholder="Qty" 
+                                   value={mat.quantity}
+                                   onChange={(e) => handleMaterialChange(mat.id, 'quantity', e.target.value)}
+                                   className="w-24"
+                                />
+                                <Button type="button" variant="ghost" size="icon" onClick={() => removeMaterialRow(mat.id)} className="text-destructive h-8 w-8">
+                                    <Trash2 size={16}/>
+                                </Button>
                            </div>
                         ))}
                     </div>
+                    <Button type="button" variant="outline" size="sm" onClick={addMaterialRow} className="mt-2">
+                        <PlusCircle size={16} className="mr-2"/> Add Material
+                    </Button>
                 </div>
             )}
              <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
@@ -176,9 +206,9 @@ export default function OrderCreatorPage() {
         <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between"><span>Creator Fee:</span> <span className="font-medium">INR {creator.baseFee}</span></div>
             {wantsVideo && <div className="flex justify-between"><span>Explanation Video:</span> <span className="font-medium">INR {creator.videoFee}</span></div>}
-            {wantsMaterials && <div className="flex justify-between"><span>Materials Cost:</span> <span className="font-medium">INR {filteredMaterials.reduce((s, i) => s + i.price, 0)}</span></div>}
+            {wantsMaterials && <div className="flex justify-between"><span>Materials Cost:</span> <span className="font-medium">To be Calculated</span></div>}
             <hr/>
-            <div className="flex justify-between text-lg font-bold text-primary"><span>Total:</span> <span>INR {totalCost.toFixed(2)}</span></div>
+            <div className="flex justify-between text-lg font-bold text-primary"><span>Subtotal:</span> <span>INR {totalCost.toFixed(2)} + Materials</span></div>
         </CardContent>
         <CardFooter>
             <Button className="w-full" size="lg" onClick={handlePlaceOrder}>Proceed to Payment</Button>
