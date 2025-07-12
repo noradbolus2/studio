@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, ArrowLeft, Camera as CameraIcon } from 'lucide-react';
+import { Brain, ArrowLeft, Camera as CameraIcon, Mic } from 'lucide-react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { generateBrainFitnessReport, type BrainScanInput } from '@/ai/flows/brain-scan-report';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -19,42 +19,42 @@ export default function BrainScanSimplifiedPage() {
   const router = useRouter();
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const getCameraPermission = async () => {
+    const getPermissions = async () => {
       // Check if mediaDevices is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setHasCameraPermission(false);
+        setHasPermission(false);
         toast({
           variant: 'destructive',
           title: 'Unsupported Browser',
-          description: 'Your browser does not support camera access.',
+          description: 'Your browser does not support camera or microphone access.',
         });
         return;
       }
       
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        setHasCameraPermission(true);
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        setHasPermission(true);
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
       } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
+        console.error('Error accessing media devices:', error);
+        setHasPermission(false);
         toast({
           variant: 'destructive',
-          title: 'Camera Access Denied',
-          description: 'Please enable camera permissions in your browser settings to use this feature.',
+          title: 'Permission Denied',
+          description: 'Please enable camera and microphone permissions in your browser settings.',
         });
       }
     };
 
-    getCameraPermission();
+    getPermissions();
     
-    // Cleanup function to stop the camera stream when the component unmounts
+    // Cleanup function to stop the camera and mic stream when the component unmounts
     return () => {
         if (videoRef.current && videoRef.current.srcObject) {
             const stream = videoRef.current.srcObject as MediaStream;
@@ -69,7 +69,7 @@ export default function BrainScanSimplifiedPage() {
     // In a real app, studentName would come from the logged-in user's profile
     const studentName = "Aarav S."; 
     // Since we're simulating the analysis, we'll use placeholder scores.
-    // In a real implementation, these would be derived from ML analysis of the video stream.
+    // In a real implementation, these would be derived from ML analysis of the video/audio stream.
     const inputForApi: BrainScanInput = { 
         studentName,
         clarityScore: Math.floor(Math.random() * 30) + 60, // 60-90
@@ -118,25 +118,29 @@ export default function BrainScanSimplifiedPage() {
         <CardContent className="pt-6 space-y-4">
             <div className="w-full aspect-video bg-black rounded-md overflow-hidden relative">
                 <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
-                {hasCameraPermission === null && (
+                {hasPermission === null && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                         <LoadingSpinner size={32} />
-                        <p className="ml-2 text-white">Accessing camera...</p>
+                        <p className="ml-2 text-white">Accessing camera & mic...</p>
                     </div>
                 )}
+                 <div className="absolute top-2 right-2 flex items-center gap-2 p-1.5 bg-black/40 rounded-full text-xs text-white">
+                    <CameraIcon size={14} className={hasPermission ? 'text-green-400' : 'text-red-400'} />
+                    <Mic size={14} className={hasPermission ? 'text-green-400' : 'text-red-400'}/>
+                </div>
             </div>
-             {hasCameraPermission === false && (
+             {hasPermission === false && (
                 <Alert variant="destructive">
                     <CameraIcon className="h-4 w-4"/>
-                    <AlertTitle>Camera Access Required</AlertTitle>
+                    <AlertTitle>Permissions Required</AlertTitle>
                     <AlertDescription>
-                        Please allow camera access in your browser to use this feature. You may need to refresh the page after granting permission.
+                        Please allow camera and microphone access in your browser to use this feature. You may need to refresh the page after granting permission.
                     </AlertDescription>
                 </Alert>
             )}
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSubmit} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading || hasCameraPermission !== true}>
+          <Button onClick={handleSubmit} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading || hasPermission !== true}>
             {isLoading ? <LoadingSpinner /> : <BilingualText en="Start AI Analysis" hi="एआई विश्लेषण शुरू करें" />}
           </Button>
         </CardFooter>
