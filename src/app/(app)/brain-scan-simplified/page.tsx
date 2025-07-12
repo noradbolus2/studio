@@ -1,49 +1,90 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Brain, Zap, ShieldAlert, ArrowLeft } from 'lucide-react';
+import { Brain, ArrowLeft, Camera as CameraIcon } from 'lucide-react';
 import { BilingualText } from "@/components/shared/BilingualText";
-import { generateBrainFitnessReport, type BrainScanInput, type BrainScanOutput } from '@/ai/flows/brain-scan-report';
+import { generateBrainFitnessReport, type BrainScanInput } from '@/ai/flows/brain-scan-report';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+
 
 export default function BrainScanSimplifiedPage() {
-  const [formData, setFormData] = useState<Omit<BrainScanInput, 'studentName'>>({
-    clarityScore: 70,
-    attentionSpanScore: 60,
-    stressLevelScore: 50,
-    studyHours: 10,
-    sleepHours: 7,
-  });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
-  const handleSliderChange = (name: keyof typeof formData, value: number[]) => {
-    setFormData((prev) => ({ ...prev, [name]: value[0] }));
-  };
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      // Check if mediaDevices is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Unsupported Browser',
+          description: 'Your browser does not support camera access.',
+        });
+        return;
+      }
+      
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setHasCameraPermission(true);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this feature.',
+        });
+      }
+    };
+
+    getCameraPermission();
+    
+    // Cleanup function to stop the camera stream when the component unmounts
+    return () => {
+        if (videoRef.current && videoRef.current.srcObject) {
+            const stream = videoRef.current.srcObject as MediaStream;
+            stream.getTracks().forEach(track => track.stop());
+        }
+    };
+  }, [toast]);
+
 
   const handleSubmit = async () => {
     setIsLoading(true);
     // In a real app, studentName would come from the logged-in user's profile
     const studentName = "Aarav S."; 
-    const inputForApi: BrainScanInput = { ...formData, studentName };
+    // Since we're simulating the analysis, we'll use placeholder scores.
+    // In a real implementation, these would be derived from ML analysis of the video stream.
+    const inputForApi: BrainScanInput = { 
+        studentName,
+        clarityScore: Math.floor(Math.random() * 30) + 60, // 60-90
+        attentionSpanScore: Math.floor(Math.random() * 40) + 50, // 50-90
+        stressLevelScore: Math.floor(Math.random() * 40) + 20, // 20-60
+        studyHours: Math.floor(Math.random() * 10) + 5, // 5-15
+        sleepHours: Math.floor(Math.random() * 3) + 6, // 6-9
+    };
     
     try {
       const report = await generateBrainFitnessReport(inputForApi);
-      // In a real app, you'd save this report to Firestore and then navigate
-      // to the report page with the report ID.
-      // For this prototype, we'll pass the data via localStorage as a simple bridge.
       localStorage.setItem('latestAuraReport', JSON.stringify(report));
       
       toast({
-        title: "Report Generated!",
+        title: "Scan Complete!",
         description: "Your Brain Fitness Report is ready.",
       });
       router.push('/brain-scan-report'); 
@@ -66,41 +107,37 @@ export default function BrainScanSimplifiedPage() {
         </Button>
         <h1 className="text-3xl font-bold font-headline text-primary flex items-center justify-center gap-2">
           <Brain className="h-8 w-8" />
-          <BilingualText en="Quick Brain Check" hi="त्वरित ब्रेन चेक" />
+          <BilingualText en="OSO Brain Scan™" hi="OSO ब्रेन स्कैन™" />
         </h1>
         <p className="text-muted-foreground">
-          <BilingualText en="Rate your current state (0-100)." hi="अपनी वर्तमान स्थिति को रेट करें (0-100)।" />
+          <BilingualText en="Let's check your focus and clarity." hi="आइए आपकी एकाग्रता और स्पष्टता की जांच करें।" />
         </p>
       </header>
 
       <Card className="w-full max-w-md mx-auto shadow-lg">
-        <CardContent className="pt-6 space-y-8">
-           {[
-            { id: 'clarityScore', labelEn: 'Clarity Score', labelHi: 'स्पष्टता स्कोर', value: formData.clarityScore, icon: Brain },
-            { id: 'attentionSpanScore', labelEn: 'Attention / Focus', labelHi: 'ध्यान / फोकस', value: formData.attentionSpanScore, icon: Zap },
-            { id: 'stressLevelScore', labelEn: 'Stress Level', labelHi: 'तनाव स्तर', value: formData.stressLevelScore, icon: ShieldAlert },
-          ].map(item => (
-            <div key={item.id} className="space-y-2">
-              <div className="flex justify-between items-center mb-1">
-                <Label htmlFor={item.id} className="text-lg flex items-center gap-2">
-                  <item.icon className="h-5 w-5 text-primary" />
-                  <BilingualText en={item.labelEn} hi={item.labelHi} />
-                </Label>
-                <span className="text-xl font-bold text-primary">{item.value}</span>
-              </div>
-              <Slider
-                id={item.id}
-                min={0} max={100} step={1}
-                value={[item.value]}
-                onValueChange={(val) => handleSliderChange(item.id as keyof typeof formData, val)}
-                className="[&>span:first-child]:h-3 [&>span>span]:h-3 [&>span+span]:h-6 [&>span+span]:w-6"
-              />
+        <CardContent className="pt-6 space-y-4">
+            <div className="w-full aspect-video bg-black rounded-md overflow-hidden relative">
+                <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                {hasCameraPermission === null && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                        <LoadingSpinner size={32} />
+                        <p className="ml-2 text-white">Accessing camera...</p>
+                    </div>
+                )}
             </div>
-          ))}
+             {hasCameraPermission === false && (
+                <Alert variant="destructive">
+                    <CameraIcon className="h-4 w-4"/>
+                    <AlertTitle>Camera Access Required</AlertTitle>
+                    <AlertDescription>
+                        Please allow camera access in your browser to use this feature. You may need to refresh the page after granting permission.
+                    </AlertDescription>
+                </Alert>
+            )}
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSubmit} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
-            {isLoading ? <LoadingSpinner /> : <BilingualText en="Get My AI Report" hi="मेरी एआई रिपोर्ट प्राप्त करें" />}
+          <Button onClick={handleSubmit} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading || hasCameraPermission !== true}>
+            {isLoading ? <LoadingSpinner /> : <BilingualText en="Start AI Analysis" hi="एआई विश्लेषण शुरू करें" />}
           </Button>
         </CardFooter>
       </Card>
