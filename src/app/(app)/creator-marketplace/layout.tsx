@@ -1,1 +1,9 @@
-// This file is no longer needed and can be removed. The standard app layout will apply.
+import React from 'react';
+
+export default function CreatorMarketplaceLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
+}
