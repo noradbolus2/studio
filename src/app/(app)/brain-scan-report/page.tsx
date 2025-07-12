@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -10,25 +10,9 @@ import { Brain, Zap, TrendingUp, TrendingDown, Smile, Sun, Lightbulb, Eye, Refre
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import type { BrainScanOutput } from '@/ai/flows/brain-scan-report';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 
-// Mock data - replace with actual data fetching or state management
-const initialAuraReportData = {
-  studentName: "Aarav S.",
-  weekOf: "June 24 - June 30, 2024",
-  brainFitnessScore: 78, 
-  clarity: { value: 85, color: "blue", labelEn: "Clarity", labelHi: "स्पष्टता" },          // Blue
-  focus: { value: 70, color: "green", labelEn: "Focus/Balance", labelHi: "फोकस/संतुलन" }, // Green (Using Focus for Balance as per color meanings)
-  attention: { value: 40, color: "yellow", labelEn: "Attention", labelHi: "ध्यान" },     // Yellow (Low Attention)
-  stress: { value: 65, color: "red", labelEn: "Stress", labelHi: "तनाव" },                // Red
-  
-  dailyMotivationEn: "Every small step forward counts. Keep pushing!",
-  dailyMotivationHi: "हर छोटा कदम आगे मायने रखता है। कोशिश करते रहो!",
-  aiSuggestions: [
-    { id: "sug1", textEn: "Try a 5-minute mindfulness exercise before your next study session.", textHi: "अपने अगले अध्ययन सत्र से पहले 5 मिनट का सचेतनता व्यायाम करें।" },
-    { id: "sug2", textEn: "Break down large tasks into smaller, manageable chunks.", textHi: "बड़े कार्यों को छोटे, प्रबंधनीय हिस्सों में तोड़ें।" },
-    { id: "sug3", textEn: "Ensure you're getting 7-8 hours of sleep for optimal brain function.", textHi: "इष्टतम मस्तिष्क कार्य के लिए सुनिश्चित करें कि आप 7-8 घंटे की नींद ले रहे हैं।" },
-  ]
-};
 
 const auraZoneClasses: Record<string, string> = {
   blue: "border-primary bg-primary/10 animate-blue-pulse", // High Clarity
@@ -38,15 +22,27 @@ const auraZoneClasses: Record<string, string> = {
 };
 
 export default function AuraMapPage() {
-  const [auraData, setAuraData] = useState(initialAuraReportData);
-  const [isScanning, setIsScanning] = useState(false);
+  const [auraData, setAuraData] = useState<BrainScanOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
 
+  useEffect(() => {
+    setIsLoading(true);
+    const storedReport = localStorage.getItem('latestAuraReport');
+    if (storedReport) {
+        try {
+            setAuraData(JSON.parse(storedReport));
+        } catch (e) {
+            console.error("Could not parse aura report from storage.", e);
+            toast({ title: "Error", description: "Could not load your report. Please try scanning again.", variant: "destructive" });
+        }
+    }
+    setIsLoading(false);
+  }, [toast]);
+
   const handleScanAgain = () => {
-    setIsScanning(true);
-    toast({ title: "Refreshing Aura Map...", description: "Scanning cognitive state (simulated)." });
-    // In a real app, this would trigger an AI flow. Here, we just simulate a redirect to the input page.
+    // Navigate to the simplified input page
     router.push('/brain-scan-simplified');
   };
 
@@ -54,6 +50,21 @@ export default function AuraMapPage() {
     toast({ title: "Parent View (Coming Soon)", description: "This will switch to a simplified view for parents." });
   };
   
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-64"><LoadingSpinner size={48} /></div>;
+  }
+  
+  if (!auraData) {
+      return (
+          <div className="text-center space-y-4">
+              <p className="text-muted-foreground">No report found. Let's start with a quick brain check!</p>
+              <Button onClick={handleScanAgain}>
+                  <Brain className="mr-2"/> Start Brain Check
+              </Button>
+          </div>
+      );
+  }
+
   const auraMetrics = [auraData.clarity, auraData.focus, auraData.attention, auraData.stress];
 
   return (
@@ -68,8 +79,8 @@ export default function AuraMapPage() {
                 <span>Powered by OSO AI</span>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleScanAgain} disabled={isScanning} className="text-xs h-8">
-                    <RefreshCcw size={14} className={cn("mr-1.5", isScanning && "animate-spin")}/> <BilingualText en="Scan Again" hi="फिर से स्कैन करें"/>
+                <Button variant="outline" size="sm" onClick={handleScanAgain} className="text-xs h-8">
+                    <RefreshCcw size={14} className={cn("mr-1.5")}/> <BilingualText en="Scan Again" hi="फिर से स्कैन करें"/>
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleParentViewToggle} className="text-xs h-8">
                     <Eye size={14} className="mr-1.5"/> <BilingualText en="Parent View" hi="अभिभावक दृश्य"/>
@@ -82,9 +93,9 @@ export default function AuraMapPage() {
             OSO Aura Map™
           </h1>
           <p className="text-muted-foreground">
-            <BilingualText en={`Cognitive & Emotional Snapshot for ${auraData.studentName}`} hi={`${auraData.studentName} के लिए संज्ञानात्मक और भावनात्मक स्नैपशॉट`} />
+            <BilingualText en={`Cognitive & Emotional Snapshot`} hi={`संज्ञानात्मक और भावनात्मक स्नैपशॉट`} />
           </p>
-           <p className="text-sm text-muted-foreground"><BilingualText en={auraData.weekOf} hi={auraData.weekOf.replace("June", "जून").replace("July", "जुलाई")} /></p>
+           <p className="text-sm text-muted-foreground"><BilingualText en={new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} hi={new Date().toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} /></p>
         </header>
 
         <Card className="w-full max-w-lg mx-auto shadow-xl bg-card/80 border-border/30 backdrop-blur-sm">
@@ -109,7 +120,7 @@ export default function AuraMapPage() {
               <Brain className="w-16 h-16 md:w-20 md:h-20 text-primary z-10 opacity-90 filter drop-shadow-[0_0_8px_hsl(var(--primary))]"/>
             </div>
             <CardTitle className="text-2xl font-bold text-primary -mt-2">
-                <BilingualText en="Brain Fitness Score" hi="ब्रेन फिटनेस स्कोर"/>: {auraData.brainFitnessScore}/100
+                <BilingualText en="Brain Fitness Score" hi="ब्रेन फिटनेस स्कोर"/>: {Math.round(auraData.brainFitnessScore)}/100
             </CardTitle>
              <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs mt-2">
                 {auraMetrics.map(metric => (
@@ -119,6 +130,13 @@ export default function AuraMapPage() {
                 ))}
             </div>
           </CardHeader>
+        </Card>
+
+        <Card className="bg-card/80 border-border/30 backdrop-blur-sm">
+            <CardHeader><CardTitle className="text-lg font-headline text-primary">AI Summary & Advice</CardTitle></CardHeader>
+            <CardContent>
+                <p className="italic text-foreground/80">"{auraData.reportSummary}"</p>
+            </CardContent>
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -142,7 +160,7 @@ export default function AuraMapPage() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1.5 text-sm">
-                    {auraData.aiSuggestions.map(sug => (
+                    {auraData.recommendations.map(sug => (
                         <div key={sug.id} className="p-1.5 bg-muted/50 rounded-md text-xs text-muted-foreground">
                             <BilingualText en={sug.textEn} hi={sug.textHi}/>
                         </div>
@@ -159,7 +177,6 @@ export default function AuraMapPage() {
             <CardContent>
                 <div className="h-48 w-full bg-muted/30 rounded-md flex items-center justify-center border border-dashed border-border/50">
                     <Image src="https://placehold.co/600x300.png" alt="Weekly Cognitive Trends Graph Placeholder" width={600} height={300} data-ai-hint="focus stress graph" className="opacity-50"/>
-                     {/* <p className="text-muted-foreground text-sm">Weekly Graph Placeholder</p> */}
                 </div>
             </CardContent>
         </Card>
@@ -167,5 +184,4 @@ export default function AuraMapPage() {
       </div>
     </React.Fragment>
   );
-
-    
+}

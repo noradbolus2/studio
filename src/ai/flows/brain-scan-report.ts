@@ -25,6 +25,10 @@ export type BrainScanInput = z.infer<typeof BrainScanInputSchema>;
 const BrainScanOutputSchema = z.object({
   brainFitnessScore: z.number().min(0).max(100).describe("A single, overall 'Brain Fitness Score' calculated from the inputs. A higher score is better. It should be a weighted average where stress has a negative impact."),
   reportSummary: z.string().describe('A personalized, encouraging summary of the brain fitness report in a friendly, mentor-like tone. Mention the key findings in a positive light.'),
+  clarity: z.object({ value: z.number(), color: z.string(), labelEn: z.string(), labelHi: z.string() }).describe("Clarity data object."),
+  focus: z.object({ value: z.number(), color: z.string(), labelEn: z.string(), labelHi: z.string() }).describe("Focus data object."),
+  attention: z.object({ value: z.number(), color: z.string(), labelEn: z.string(), labelHi: z.string() }).describe("Attention data object."),
+  stress: z.object({ value: z.number(), color: z.string(), labelEn: z.string(), labelHi: z.string() }).describe("Stress data object."),
   recommendations: z.array(z.object({
     id: z.string(),
     textEn: z.string(),
@@ -45,7 +49,7 @@ const brainScanPrompt = ai.definePrompt({
   output: {schema: BrainScanOutputSchema},
   prompt: `You are an expert AI performance coach for students.
   
-  Your task is to analyze a student's self-reported data and generate a comprehensive, encouraging, and actionable "Brain Fitness Report".
+  Your task is to analyze a student's self-reported data and generate a comprehensive, encouraging, and actionable "Brain Fitness Report" for the OSO Aura Map.
 
   **Student's Data:**
   - Name: {{{studentName}}}
@@ -56,16 +60,21 @@ const brainScanPrompt = ai.definePrompt({
   - Nightly Sleep Hours: {{{sleepHours}}}
 
   **Your Generation Steps:**
-  1.  **Calculate Brain Fitness Score:** Compute a single 'brainFitnessScore' out of 100. This should be a weighted average. Give positive weight to Clarity and Attention, and negative weight to Stress. For example, you can use a formula like: \`(clarityScore * 0.4) + (attentionSpanScore * 0.4) + ((100 - stressLevelScore) * 0.2)\`.
-  2.  **Write Report Summary:** Create a personalized, encouraging summary (2-3 sentences). Start by addressing the student. Highlight their strengths first (the highest scores) before gently mentioning areas for improvement (the lowest scores). The tone should be like a supportive mentor.
-  3.  **Generate Recommendations:** Provide exactly 3 actionable, simple recommendations. Each recommendation should have an English ('textEn') and a simple Hindi ('textHi') version.
+  1.  **Calculate Brain Fitness Score:** Compute a single 'brainFitnessScore' out of 100. This should be a weighted average. Give positive weight to Clarity and Attention, and negative weight to Stress. A good formula is: \`(clarityScore * 0.4) + (attentionSpanScore * 0.4) + ((100 - stressLevelScore) * 0.2)\`.
+  2.  **Generate the 4 Aura Metrics:** Populate the 'clarity', 'focus', 'attention', and 'stress' objects.
+      *   'clarity': Use the 'clarityScore' for 'value'. Set color to "blue", labelEn to "Clarity", and labelHi to "स्पष्टता".
+      *   'focus': Use the 'attentionSpanScore' for 'value'. Set color to "green", labelEn to "Focus/Balance", and labelHi to "फोकस/संतुलन".
+      *   'attention': Use a transformed value of attention. A good attention score (e.g. 70) should result in a LOW attention problem score. A low attention score (e.g. 30) should result in a HIGH attention problem score. You can use (100 - attentionSpanScore). Set color to "yellow", labelEn to "Attention", labelHi to "ध्यान".
+      *   'stress': Use the 'stressLevelScore' for 'value'. Set color to "red", labelEn to "Stress", and labelHi to "तनाव".
+  3.  **Write Report Summary:** Create a personalized, encouraging summary (2-3 sentences). Address the student by name. Highlight their strengths first (the highest scores like clarity) before gently mentioning areas for improvement (the lowest scores like focus or high stress). The tone must be like a supportive mentor.
+  4.  **Generate Recommendations:** Provide exactly 3 actionable, simple recommendations. Each recommendation should have a unique 'id', an English version ('textEn'), and a simple Hindi version ('textHi').
       *   If stress is the highest score (>60), the top recommendation MUST be about stress management (e.g., "Try a 5-minute mindfulness exercise before studying.").
       *   If attention is the lowest score (<50), a recommendation should be about focus (e.g., "Use the Pomodoro Technique: 25 mins study, 5 mins break.").
       *   If study hours are low (<20) and scores are low, suggest a planning technique.
       *   If sleep is low (<7), a recommendation MUST be about improving sleep hygiene.
-  4.  **Create Daily Motivation:** Write one short, punchy, motivational line in English ('dailyMotivationEn') and its simple Hindi translation ('dailyMotivationHi').
+  5.  **Create Daily Motivation:** Write one short, punchy, motivational line in English ('dailyMotivationEn') and its simple Hindi translation ('dailyMotivationHi').
 
-  Format your entire output as a single JSON object matching the provided schema.
+  Format your entire output as a single JSON object matching the provided schema. Do not add any text before or after it.
   `,
 });
 
@@ -83,5 +92,3 @@ const brainScanFlow = ai.defineFlow(
     return output;
   }
 );
-
-    

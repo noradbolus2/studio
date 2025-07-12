@@ -39,14 +39,13 @@ export default function BrainScanSimplifiedPage() {
       const report = await generateBrainFitnessReport(inputForApi);
       // In a real app, you'd save this report to Firestore and then navigate
       // to the report page with the report ID.
-      // For this prototype, we can pass it via localStorage or router state if small enough,
-      // but a proper implementation would use an ID.
-      // Let's just simulate the end result for now.
+      // For this prototype, we'll pass the data via localStorage as a simple bridge.
+      localStorage.setItem('latestAuraReport', JSON.stringify(report));
+      
       toast({
         title: "Report Generated!",
         description: "Your Brain Fitness Report is ready.",
       });
-      // A more robust solution would be: router.push(`/brain-scan-report/${report.id}`);
       router.push('/brain-scan-report'); 
     } catch (error: any) {
       toast({
@@ -108,5 +107,4 @@ export default function BrainScanSimplifiedPage() {
     </div>
   );
 }
-
     
