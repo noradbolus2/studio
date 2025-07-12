@@ -67,6 +67,7 @@ export const metadata: Metadata = {
     template: "%s | OSO App",
   },
   description: 'Your all-in-one app for learning, study tools, and instant stationery delivery for students in India.',
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
