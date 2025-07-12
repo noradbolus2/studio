@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, type ChangeEvent, useMemo } from 'react';
+import { useState, type ChangeEvent, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -35,91 +35,11 @@ const mockCreator = {
   videoFee: 99, 
 };
 
-// Mock stationery data (normally from a shared file/API)
-const stationeryCategories = [
-  { id: 'all', nameEn: 'All', nameHi: 'सभी' },
-  { id: 'notebooks', nameEn: 'Notebooks', nameHi: 'नोटबुक' },
-  { id: 'writing', nameEn: 'Writing', nameHi: 'लेखन' },
-  { id: 'art', nameEn: 'Art & Craft', nameHi: 'कला और शिल्प' },
-];
-const allStationeryItems: (StationeryItem & { category: string })[] = [
-  { id: 'nb1', nameEn: 'Classmate Notebook', nameHi: 'क्लासमेट नोटबुक', price: 45, vendorEn: 'Gupta Stationery', vendorHi: 'गुप्ता स्टेशनरी', category: 'notebooks', imageUrl: 'https://placehold.co/100x100.png', dataAiHint:'notebook' },
-  { id: 'pen1', nameEn: 'Cello Gripper Pen', nameHi: 'सेलो ग्रिपर पेन', price: 10, vendorEn: 'Anil Store', vendorHi: 'अनिल स्टोर', category: 'writing', imageUrl: 'https://placehold.co/100x100.png', dataAiHint:'pen' },
-  { id: 'art1', nameEn: 'Modeling Clay', nameHi: 'मॉडलिंग क्ले', price: 100, vendorEn: 'Hobby Hub', vendorHi: 'हॉबी हब', category: 'art', imageUrl: 'https://placehold.co/100x100.png', dataAiHint:'clay art' },
-  { id: 'art2', nameEn: 'A4 Chart Paper', nameHi: 'A4 चार्ट पेपर', price: 5, vendorEn: 'Gupta Stationery', vendorHi: 'गुप्ता स्टेशनरी', category: 'art', imageUrl: 'https://placehold.co/100x100.png', dataAiHint:'chart paper' },
-  { id: 'art3', nameEn: 'Acrylic Paints', nameHi: 'एक्रिलिक पेंट', price: 120, vendorEn: 'Hobby Hub', vendorHi: 'हॉबी हब', category: 'art', imageUrl: 'https://placehold.co/100x100.png', dataAiHint:'paints' },
-];
+// This key will be used to pass materials between pages
+const PROJECT_MATERIALS_CART_KEY = "projectMaterialsCart";
 
 interface SelectedMaterial extends StationeryItem {
     quantity: number;
-}
-
-function StationeryPickerDialog({ open, onOpenChange, onSelectItems }: { open: boolean; onOpenChange: (open: boolean) => void; onSelectItems: (items: SelectedMaterial[]) => void; }) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedItems, setSelectedItems] = useState<Map<string, SelectedMaterial>>(new Map());
-
-    const filteredItems = useMemo(() => allStationeryItems.filter(item => 
-        (item.nameEn.toLowerCase().includes(searchTerm.toLowerCase()) || item.nameHi.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (selectedCategory === 'all' || item.category === selectedCategory)
-    ), [searchTerm, selectedCategory]);
-
-    const handleToggleItem = (item: StationeryItem) => {
-        setSelectedItems(prev => {
-            const newMap = new Map(prev);
-            if (newMap.has(item.id)) {
-                newMap.delete(item.id);
-            } else {
-                newMap.set(item.id, { ...item, quantity: 1 });
-            }
-            return newMap;
-        });
-    };
-    
-    const handleConfirmSelection = () => {
-        onSelectItems(Array.from(selectedItems.values()));
-        onOpenChange(false);
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
-                <DialogHeader>
-                    <DialogTitle>Select Materials from OSO Store</DialogTitle>
-                    <DialogDescription>Browse and add required materials to your project request.</DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col sm:flex-row gap-2">
-                    <div className="relative flex-grow">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Search materials..." className="pl-8" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-                    </div>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                        <SelectTrigger className="w-full sm:w-[180px]"><SelectValue /></SelectTrigger>
-                        <SelectContent>{stationeryCategories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.nameEn}</SelectItem>)}</SelectContent>
-                    </Select>
-                </div>
-                <ScrollArea className="flex-grow border rounded-md p-2">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {filteredItems.map(item => (
-                            <Card key={item.id} className={cn("cursor-pointer transition-all", selectedItems.has(item.id) && "ring-2 ring-primary border-primary")} onClick={() => handleToggleItem(item)}>
-                                <div className="aspect-square relative"><Image src={item.imageUrl || ''} alt={item.nameEn} layout="fill" objectFit="cover" className="rounded-t-md p-2"/></div>
-                                <div className="p-2 text-xs"><p className="font-semibold line-clamp-2">{item.nameEn}</p><p className="text-primary font-bold">₹{item.price}</p></div>
-                            </Card>
-                        ))}
-                    </div>
-                </ScrollArea>
-                <DialogFooter className="flex-col sm:flex-row justify-between items-stretch sm:items-center pt-2 border-t">
-                    <div className="text-sm">
-                        <span className="font-semibold">{selectedItems.size}</span> items selected
-                    </div>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-                        <Button onClick={handleConfirmSelection} disabled={selectedItems.size === 0}>Add to Request</Button>
-                    </div>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
 }
 
 
@@ -135,25 +55,42 @@ export default function OrderCreatorPage() {
   const [deliveryAddress, setDeliveryAddress] = useState('123, Learning Lane, Student City, 110011');
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [materials, setMaterials] = useState<SelectedMaterial[]>([]);
-  const [isMaterialPickerOpen, setIsMaterialPickerOpen] = useState(false);
   
-  const handleMaterialQuantityChange = (itemId: string, newQuantity: number) => {
-    if(newQuantity < 1) return;
-    setMaterials(prev => prev.map(m => m.id === itemId ? { ...m, quantity: newQuantity } : m));
-  };
-  
+  // This effect will run when the component mounts or when the user returns to this page.
+  // It checks localStorage for any materials selected on the delivery page.
+  useEffect(() => {
+    try {
+      const storedMaterials = localStorage.getItem(PROJECT_MATERIALS_CART_KEY);
+      if (storedMaterials) {
+        const parsedMaterials = JSON.parse(storedMaterials);
+        // Simple validation to ensure it's an array
+        if (Array.isArray(parsedMaterials)) {
+          setMaterials(parsedMaterials);
+        }
+      }
+    } catch (e) {
+      console.error("Could not parse project materials from localStorage:", e);
+      // Clear potentially corrupted data
+      localStorage.removeItem(PROJECT_MATERIALS_CART_KEY);
+    }
+  }, []);
+
+
   const handleRemoveMaterial = (itemId: string) => {
-    setMaterials(prev => prev.filter(m => m.id !== itemId));
+    const updatedMaterials = materials.filter(m => m.id !== itemId);
+    setMaterials(updatedMaterials);
+    // Update localStorage as well
+    localStorage.setItem(PROJECT_MATERIALS_CART_KEY, JSON.stringify(updatedMaterials));
   };
   
-  const handleAddMaterialsFromStore = (items: SelectedMaterial[]) => {
-      setMaterials(prev => {
-          const newItemsMap = new Map(prev.map(item => [item.id, item]));
-          items.forEach(newItem => {
-              newItemsMap.set(newItem.id, newItem);
-          });
-          return Array.from(newItemsMap.values());
-      });
+  const handleAddMaterialsClick = () => {
+    // Save current state before navigating away
+    localStorage.setItem('projectOrderCreatorId', creatorId); // Save creator context
+    localStorage.setItem('projectOrderDescription', projectDescription);
+    localStorage.setItem('projectOrderVideoChoice', JSON.stringify(wantsVideo));
+    
+    // Navigate to the delivery page in "selection mode"
+    router.push('/delivery?mode=project-materials');
   };
 
   const materialsCost = useMemo(() => {
@@ -171,6 +108,11 @@ export default function OrderCreatorPage() {
         title: "Order Placed (Simulated)!",
         description: `Your request has been sent to ${creator.nameEn}.`,
     });
+    // Clean up localStorage after placing order
+    localStorage.removeItem(PROJECT_MATERIALS_CART_KEY);
+    localStorage.removeItem('projectOrderCreatorId');
+    localStorage.removeItem('projectOrderDescription');
+    localStorage.removeItem('projectOrderVideoChoice');
     router.push('/delivery');
   }
   
@@ -273,10 +215,10 @@ export default function OrderCreatorPage() {
                   <TableRow key={mat.id}>
                     <TableCell className="font-medium text-sm flex items-center gap-2">
                         <Image src={mat.imageUrl || ''} alt={mat.nameEn} width={24} height={24} className="rounded object-cover"/>
-                        {mat.nameEn}
+                        <BilingualText en={mat.nameEn} hi={mat.nameHi}/>
                     </TableCell>
                     <TableCell>
-                         <Input type="number" value={mat.quantity} onChange={(e) => handleMaterialQuantityChange(mat.id, parseInt(e.target.value))} className="w-16 h-8 text-center" min="1"/>
+                        <Input type="number" value={mat.quantity} className="w-16 h-8 text-center" min="1" readOnly disabled/>
                     </TableCell>
                     <TableCell className="text-right">₹{(mat.price * mat.quantity).toFixed(2)}</TableCell>
                   </TableRow>
@@ -291,8 +233,8 @@ export default function OrderCreatorPage() {
               </TableBody>
             </Table>
           </div>
-          <Button type="button" variant="secondary" onClick={() => setIsMaterialPickerOpen(true)} className="w-full mt-3">
-              <PlusCircle size={16} className="mr-2"/> Browse & Add Materials
+          <Button type="button" variant="secondary" onClick={handleAddMaterialsClick} className="w-full mt-3">
+              <PlusCircle size={16} className="mr-2"/> Browse & Add Materials from OSO Store
           </Button>
 
           <Card className={cn(
@@ -333,8 +275,7 @@ export default function OrderCreatorPage() {
           </Button>
       </div>
 
-      <StationeryPickerDialog open={isMaterialPickerOpen} onOpenChange={setIsMaterialPickerOpen} onSelectItems={handleAddMaterialsFromStore} />
-
     </div>
   );
 }
+
