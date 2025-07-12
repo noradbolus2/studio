@@ -87,6 +87,14 @@ export default function BrainScanSimplifiedPage() {
         title: "Scan Complete!",
         description: "Your Brain Fitness Report is ready.",
       });
+
+      // Explicitly stop the camera/mic tracks before navigating
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+      
       router.push('/brain-scan-report'); 
     } catch (error: any) {
       toast({
