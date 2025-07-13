@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft, ChevronLeft, ChevronRight, Bot, VideoOn, MicOn, LogOut, Hand } from 'lucide-react';
+import { Pencil, Eraser, Trash2, Palette, Minus, Plus, VideoOff, MicOff, MessageSquare, BarChart, Send, Users, ArrowLeft, ChevronLeft, ChevronRight, Bot, Video, Mic, LogOut, Hand } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { BilingualText } from '@/components/shared/BilingualText';
@@ -245,10 +245,10 @@ export default function LiveClassPage({ params }: { params: { classId: string } 
                  {userRole === 'teacher' && (
                     <div className="absolute bottom-2 left-2 right-2 flex justify-center items-center gap-2">
                       <Button variant={isMicOn ? 'secondary' : 'destructive'} size="icon" className="h-9 w-9 rounded-full bg-black/50 hover:bg-black/70 border-0" onClick={() => setIsMicOn(prev => !prev)}>
-                        {isMicOn ? <MicOn size={18}/> : <MicOff size={18} />}
+                        {isMicOn ? <Mic size={18}/> : <MicOff size={18} />}
                       </Button>
                       <Button variant={isCameraOn ? 'secondary' : 'destructive'} size="icon" className="h-9 w-9 rounded-full bg-black/50 hover:bg-black/70 border-0" onClick={() => setIsCameraOn(prev => !prev)}>
-                        {isCameraOn ? <VideoOn size={18} /> : <VideoOff size={18} />}
+                        {isCameraOn ? <Video size={18} /> : <VideoOff size={18} />}
                       </Button>
                     </div>
                  )}
