@@ -1,4 +1,3 @@
-
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
