@@ -4,13 +4,14 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; 
-import { Edit, PlusCircle, Search, Trash2, ArrowLeft } from "lucide-react";
+import { Edit, PlusCircle, Search, Trash2, ArrowLeft, FileText, Bot } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Added useRouter
+import { useRouter } from "next/navigation"; 
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import type { ProfileFormData } from '../../edit-profile/page';
 
 interface Note {
   id: string;
@@ -18,49 +19,83 @@ interface Note {
   subject: string;
   date: string;
   excerpt: string;
-  content: string; 
+  content: string;
+  teacherId?: string;
+  teacherName?: string;
+  schoolId?: string;
+  classId?: string;
 }
 
 const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
 
+// Extended mock data to simulate teacher-created content
 const initialMockNotes: Note[] = [
-  { id: "note1", title: "Chapter 5: Light - Key Formulas", subject: "Physics", date: "2024-07-20", excerpt: "Reflection: angle i = angle r. Refraction: Snell's Law n1*sin(i) = n2*sin(r)...", content: "Full content for Physics notes on Light. Includes detailed derivations and examples for reflection and refraction. Remember to practice diagrams." },
-  { id: "note2", title: "Dates: Indian Independence Movement", subject: "History", date: "2024-07-18", excerpt: "1857: First War of Independence. 1915: Gandhi returns to India. 1942: Quit India Movement...", content: "Comprehensive timeline of the Indian Independence Movement. Key figures, events, and their significance. Focus on chronological order." },
-  { id: "note3", title: "Important Chemical Reactions", subject: "Chemistry", date: "2024-07-15", excerpt: "Combustion: CH4 + 2O2 -> CO2 + 2H2O. Neutralization: HCl + NaOH -> NaCl + H2O...", content: "List of important chemical reactions for Class 10. Includes balancing equations, types of reactions, and common examples. Practice writing these out." },
+  { id: "note1", title: "Chapter 5: Light - Key Formulas", subject: "Physics", date: "2024-07-20", excerpt: "Reflection: angle i = angle r. Refraction: Snell's Law n1*sin(i) = n2*sin(r)...", content: "Full content for Physics notes on Light.", teacherId: "abhishek.verma@example.com", teacherName: "Abhishek Verma", classId: "Class 10" },
+  { id: "note2", title: "Dates: Indian Independence Movement", subject: "History", date: "2024-07-18", excerpt: "1857: First War of Independence. 1915: Gandhi returns to India. 1942: Quit India Movement...", content: "Comprehensive timeline of the Indian Independence Movement.", teacherId: "rohan.sharma@example.com", teacherName: "Rohan Sharma", classId: "Class 10" },
+  { id: "note3", title: "Important Chemical Reactions", subject: "Chemistry", date: "2024-07-15", excerpt: "Combustion: CH4 + 2O2 -> CO2 + 2H2O. Neutralization: HCl + NaOH -> NaCl + H2O...", content: "List of important chemical reactions for Class 10.", teacherId: "abhishek.verma@example.com", teacherName: "Abhishek Verma", classId: "Class 10" },
+  { id: "note4", title: "Algebra Basics", subject: "Maths", date: "2024-07-14", excerpt: "Basic formulas and examples for Class 9 algebra.", content: "Full content here...", teacherId: "abhishek.verma@example.com", teacherName: "Abhishek Verma", classId: "Class 9" },
 ];
 
+
 export default function MyNotesPage() {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [allNotes, setAllNotes] = useState<Note[]>([]);
+  const [studentNotes, setStudentNotes] = useState<Note[]>([]); // This will hold notes created *by* the student
+  const [teacherNotes, setTeacherNotes] = useState<Note[]>([]); // This will hold notes from teachers
   const [searchTerm, setSearchTerm] = useState("");
+  const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
   const { toast } = useToast();
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   useEffect(() => {
-    const storedNotesString = localStorage.getItem(LOCAL_STORAGE_NOTES_KEY);
-    if (storedNotesString) {
-      try {
-        const storedNotes = JSON.parse(storedNotesString);
-        setNotes(storedNotes);
-      } catch (error) {
-        console.error("Error parsing notes from localStorage:", error);
-        setNotes(initialMockNotes); 
-        localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(initialMockNotes));
+    let currentUser: ProfileFormData | null = null;
+    if (typeof window !== "undefined") {
+      const storedProfile = localStorage.getItem('userProfileData');
+      if (storedProfile) {
+        try {
+          currentUser = JSON.parse(storedProfile);
+          setProfileData(currentUser);
+        } catch (err) {
+          console.warn("Could not parse profile data:", err);
+        }
       }
-    } else {
-      setNotes(initialMockNotes);
-      localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(initialMockNotes));
+
+      const storedNotesString = localStorage.getItem(LOCAL_STORAGE_NOTES_KEY);
+      const allStoredNotes = storedNotesString ? (JSON.parse(storedNotesString) as Note[]) : initialMockNotes;
+      setAllNotes(allStoredNotes);
+      
+      // Filter notes based on the current user's role and context
+      if (currentUser?.email) {
+        // Notes created *by* the student
+        setStudentNotes(allStoredNotes.filter(note => note.teacherId === currentUser?.email));
+        
+        // Notes visible *to* the student from teachers
+        const visibleTeacherNotes = allStoredNotes.filter(note => 
+          note.teacherId !== currentUser?.email && // Not their own note
+          (note.classId === 'all_classes' || note.classId === currentUser?.className)
+          // In a real app, you'd also check schoolId
+        );
+        setTeacherNotes(visibleTeacherNotes);
+      } else {
+        // Default view for a guest or user without profile data
+        setTeacherNotes(allStoredNotes.filter(n => !n.teacherId?.includes('@'))); // Simple filter for demo
+      }
     }
   }, []);
 
-  const filteredNotes = notes.filter(note => 
+  const filteredStudentNotes = studentNotes.filter(note => 
     note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    note.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    note.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+    note.subject.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredTeacherNotes = teacherNotes.filter(note => 
+    note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    note.subject.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleDeleteNote = (noteId: string, noteTitle: string) => {
-    const updatedNotes = notes.filter(note => note.id !== noteId);
-    setNotes(updatedNotes);
+    const updatedNotes = allNotes.filter(note => note.id !== noteId);
+    setAllNotes(updatedNotes);
+    setStudentNotes(prev => prev.filter(note => note.id !== noteId));
     localStorage.setItem(LOCAL_STORAGE_NOTES_KEY, JSON.stringify(updatedNotes));
     toast({
       title: "Note Deleted",
@@ -72,6 +107,44 @@ export default function MyNotesPage() {
   const handleEditNote = (noteId: string) => {
     router.push(`/study/my-notes/edit/${noteId}`);
   };
+  
+  const NoteCard = ({ note }: { note: Note }) => (
+    <Card className="bg-muted/50 hover:shadow-md transition-shadow">
+        <CardHeader className="pb-2">
+            <div className="flex justify-between items-start">
+                <CardTitle className="text-md font-semibold">{note.title}</CardTitle>
+                {note.subject && <Badge variant="outline" className="text-xs">{note.subject}</Badge>}
+            </div>
+            <CardDescription className="text-xs">
+                {note.teacherName ? `By: ${note.teacherName}` : `Last updated: ${note.date}`}
+            </CardDescription>
+        </CardHeader>
+        <CardContent className="pb-3">
+            <p className="text-sm text-muted-foreground line-clamp-2">{note.excerpt}</p>
+        </CardContent>
+        <CardFooter className="flex gap-2 justify-end text-xs pt-2 border-t">
+            {note.teacherId === profileData?.email ? (
+                <>
+                    <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => handleEditNote(note.id)}>
+                        <Edit className="mr-1 h-3 w-3"/> Edit
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 px-2 text-destructive hover:text-destructive"
+                        onClick={() => handleDeleteNote(note.id, note.title)}
+                    >
+                        <Trash2 className="mr-1 h-3 w-3"/> Delete
+                    </Button>
+                </>
+            ) : (
+                 <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => toast({ title: "Viewing Note...", description: "This would open the full note."})}>
+                    <BookOpen className="mr-1 h-3 w-3"/> Read More
+                </Button>
+            )}
+        </CardFooter>
+    </Card>
+  );
 
   return (
     <div className="space-y-6">
@@ -120,42 +193,41 @@ export default function MyNotesPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-
-            {filteredNotes.length > 0 ? (
-                <div className="space-y-3">
-                {filteredNotes.map(note => (
-                    <Card key={note.id} className="bg-muted/50 hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-2">
-                            <div className="flex justify-between items-start">
-                                <CardTitle className="text-md font-semibold">{note.title}</CardTitle>
-                                {note.subject && <Badge variant="outline" className="text-xs">{note.subject}</Badge>}
-                            </div>
-                            <CardDescription className="text-xs">Last updated: {note.date}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="pb-3">
-                            <p className="text-sm text-muted-foreground line-clamp-2">{note.excerpt}</p>
-                        </CardContent>
-                        <CardFooter className="flex gap-2 justify-end text-xs pt-2 border-t">
-                            <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => handleEditNote(note.id)}>
-                                <Edit className="mr-1 h-3 w-3"/> Edit
-                            </Button>
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-7 px-2 text-destructive hover:text-destructive"
-                                onClick={() => handleDeleteNote(note.id, note.title)}
-                            >
-                                <Trash2 className="mr-1 h-3 w-3"/> Delete
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                ))}
+            
+            <div className="space-y-4">
+                {/* Notes from Teachers */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <Bot className="text-primary"/> Notes from Guruji & Teachers
+                  </h3>
+                   {filteredTeacherNotes.length > 0 ? (
+                      <div className="space-y-3">
+                        {filteredTeacherNotes.map(note => <NoteCard key={note.id} note={note} />)}
+                      </div>
+                  ) : (
+                       <p className="text-muted-foreground text-center py-4 text-sm">
+                          <BilingualText en="No notes from teachers found for your class yet." hi="आपकी कक्षा के लिए शिक्षकों से अभी तक कोई नोट्स नहीं मिले हैं।" />
+                      </p>
+                  )}
                 </div>
-            ) : (
-                <p className="text-muted-foreground text-center py-6">
-                    <BilingualText en="No notes found matching your search or you haven't created any notes yet." hi="आपकी खोज से मेल खाने वाले कोई नोट्स नहीं मिले या आपने अभी तक कोई नोट्स नहीं बनाए हैं।" />
-                </p>
-            )}
+
+                {/* Notes Created by Student */}
+                <div>
+                   <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <FileText /> My Personal Notes
+                  </h3>
+                  {filteredStudentNotes.length > 0 ? (
+                      <div className="space-y-3">
+                        {filteredStudentNotes.map(note => <NoteCard key={note.id} note={note} />)}
+                      </div>
+                  ) : (
+                      <p className="text-muted-foreground text-center py-4 text-sm">
+                          <BilingualText en="You haven't created any personal notes yet. Click 'New Note' to start!" hi="आपने अभी तक कोई व्यक्तिगत नोट्स नहीं बनाए हैं। शुरू करने के लिए 'नया नोट' पर क्लिक करें!" />
+                      </p>
+                  )}
+                </div>
+            </div>
+
         </CardContent>
       </Card>
     </div>

@@ -1,4 +1,3 @@
-
 // src/app/(app)/coaching-panel/page.tsx
 "use client";
 
@@ -20,7 +19,8 @@ import {
     PlusCircle,
     BarChart3,
     BadgePercent,
-    Users
+    Users,
+    FileText // Added for My Notes
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,6 +41,7 @@ const teacherStats = {
 const quickActions = [
   { id: "create_course", labelEn: "Create New Course", labelHi: "नया कोर्स बनाएं", icon: PlusCircle, href: "/coaching-panel/create-course" },
   { id: "manage_classes", labelEn: "Manage Live Classes", labelHi: "लाइव कक्षाएं प्रबंधित करें", icon: CalendarDays, href: "/coaching-panel/live-classes" },
+  { id: "my_notes", labelEn: "My Notes & Content", labelHi: "मेरे नोट्स और सामग्री", icon: FileText, href: "/coaching-panel/notes" },
   { id: "student_analytics", labelEn: "Student Analytics", labelHi: "छात्र एनालिटिक्स", icon: BarChart3, href: "/coaching-panel/analytics" },
   { id: "earnings", labelEn: "Earnings & Payouts", labelHi: "कमाई और भुगतान", icon: IndianRupee, href: "/coaching-panel/earnings" },
   { id: "promotions", labelEn: "Promotions", labelHi: "प्रचार", icon: BadgePercent, href: "/coaching-panel/promotions" },
