@@ -66,6 +66,7 @@ export default function SwitchSchoolPage() {
     setTargetInstitution(institution);
     toast({ title: "Submitting Request", description: `Sending transfer request to ${institution.name}...` });
 
+    // Simulate checking dues and creating the transfer request
     setTimeout(() => {
       if (currentInstitution.dues > 0) {
         setTransferStatus('dues_pending');
