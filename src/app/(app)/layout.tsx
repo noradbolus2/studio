@@ -1,5 +1,5 @@
 
-"use client"; // Required for hooks like useEffect and useRouter
+"use client"; 
 
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -30,6 +30,7 @@ export default function AppLayout({
   const showAppLayout = !noAppLayoutPaths.some(path => pathname.startsWith(path));
 
   useEffect(() => {
+    // This logic now runs only on the client, after the initial render.
     const loggedInUser = localStorage.getItem('loggedInUser');
     if (!loggedInUser) {
       if (pathname !== '/login' && pathname !== '/auth') { 
