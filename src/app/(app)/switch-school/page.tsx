@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, School, Search, CheckCircle, Clock, AlertTriangle, Send, BadgeCheck, FileText, IndianRupee } from 'lucide-react';
+import { ArrowLeft, School, Search, CheckCircle, Clock, AlertTriangle, Send, BadgeCheck, FileText, IndianRupee, CalendarDays, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -42,18 +42,19 @@ export default function SwitchSchoolPage() {
   const currentInstitution = {
     name: 'OSO Public School, Lucknow',
     id: 'school456',
-    dues: 250 // Example dues
+    osoId: 'OSO-SCH-UP1039',
+    dues: 0 // Example: Set to 0 for "No dues" case
   };
   
   const filteredInstitutions = useMemo(() => 
     mockInstitutions.filter(inst => 
-      inst.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      inst.city.toLowerCase().includes(searchTerm.toLowerCase())
-    ), [searchTerm]
+      (inst.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      inst.city.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      inst.id !== currentInstitution.id
+    ), [searchTerm, currentInstitution.id]
   );
   
   const handleApply = (institution: Institution) => {
-    // Check #2: Only allow applications to verified schools (UI also disables button)
     if (!institution.isOsoVerified) {
       toast({
         title: "Application Not Available",
@@ -67,9 +68,7 @@ export default function SwitchSchoolPage() {
     setTargetInstitution(institution);
     toast({ title: "Submitting Request", description: `Sending transfer request to ${institution.name}...` });
 
-    // Simulate checking dues and creating the transfer request
     setTimeout(() => {
-      // Check #1: Student Dues
       if (currentInstitution.dues > 0) {
         setTransferStatus('dues_pending');
       } else {
@@ -83,7 +82,6 @@ export default function SwitchSchoolPage() {
     setIsLoading(true);
     toast({ title: "Processing Payment", description: "Redirecting to fees page to clear dues..."});
     setTimeout(() => {
-      // Simulate payment clearance
       currentInstitution.dues = 0;
       setTransferStatus('pending_approval');
       setIsLoading(false);
@@ -92,51 +90,67 @@ export default function SwitchSchoolPage() {
   };
 
   const renderStatusCard = () => {
+    if (transferStatus === 'idle') {
+      return null;
+    }
+
+    let statusDetails;
     switch (transferStatus) {
-      case 'idle':
-        return null;
       case 'dues_pending':
-        return (
-          <Card className="border-destructive/50 bg-destructive/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-destructive"><AlertTriangle /> Application Status</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+        statusDetails = {
+          icon: AlertTriangle,
+          title: "Application Status",
+          color: "destructive",
+          content: (
+            <>
               <p>Your transfer request to <strong>{targetInstitution?.name}</strong> is on hold.</p>
-              <p className="font-semibold">Reason: Pending dues of INR {currentInstitution.dues} at {currentInstitution.name}.</p>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={handleClearDues} disabled={isLoading} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
-                {isLoading ? <LoadingSpinner/> : <><IndianRupee className="mr-2 h-4 w-4" /> Clear Dues Now</>}
-              </Button>
-            </CardFooter>
-          </Card>
-        );
+              <p className="font-semibold mt-2">Reason: Pending dues of INR {currentInstitution.dues} at {currentInstitution.name}.</p>
+            </>
+          ),
+          footer: (
+            <Button onClick={handleClearDues} disabled={isLoading} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+              {isLoading ? <LoadingSpinner/> : <><IndianRupee className="mr-2 h-4 w-4" /> Clear Dues Now</>}
+            </Button>
+          )
+        };
+        break;
       case 'pending_approval':
-        return (
-          <Card className="border-yellow-500/50 bg-yellow-500/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-yellow-600"><Clock /> Application Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Your transfer request to <strong>{targetInstitution?.name}</strong> has been submitted and is awaiting approval from their administration.</p>
-            </CardContent>
-          </Card>
-        );
-      case 'transfer_complete':
-        return (
-          <Card className="border-green-500/50 bg-green-500/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-600"><CheckCircle /> Transfer Complete!</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Congratulations! Your OSO ID has been successfully transferred to <strong>{targetInstitution?.name}</strong>. Your profile is now updated.</p>
-            </CardContent>
-          </Card>
-        );
+        statusDetails = {
+          icon: Clock,
+          title: "Application Status",
+          color: "yellow-600",
+          content: (
+            <>
+                <p className="flex items-center gap-2"><ArrowRight className="h-4 w-4"/> Transfer Request: Sent to <strong>{targetInstitution?.name}</strong></p>
+                <p className="flex items-center gap-2"><CalendarDays className="h-4 w-4"/> Date: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}</p>
+                <p className="flex items-center gap-2"><Clock className="h-4 w-4"/> Status: Awaiting School Approval</p>
+            </>
+          )
+        };
+        break;
+       case 'transfer_complete':
+        statusDetails = {
+          icon: CheckCircle,
+          title: "Transfer Complete!",
+          color: "green-600",
+          content: <p>Congratulations! Your OSO ID has been successfully transferred to <strong>{targetInstitution?.name}</strong>. Your profile is now updated.</p>
+        };
+        break;
       default:
         return null;
     }
+
+    return (
+        <Card className={`border-${statusDetails.color}/50 bg-${statusDetails.color}/10`}>
+            <CardHeader>
+                <CardTitle className={`flex items-center gap-2 text-${statusDetails.color}`}>
+                    <statusDetails.icon /> {statusDetails.title}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1 text-sm">{statusDetails.content}</CardContent>
+            {statusDetails.footer && <CardFooter>{statusDetails.footer}</CardFooter>}
+        </Card>
+    );
   };
 
   return (
@@ -156,8 +170,10 @@ export default function SwitchSchoolPage() {
         <CardHeader>
             <CardTitle>Current Institution</CardTitle>
         </CardHeader>
-        <CardContent>
-            <p className="text-lg font-semibold">{currentInstitution.name}</p>
+        <CardContent className="space-y-2 text-sm">
+            <p className="flex items-center gap-2 font-semibold text-lg"><School className="h-5 w-5 text-muted-foreground"/> {currentInstitution.name}</p>
+            <p className="flex items-center gap-2"><FileText className="h-5 w-5 text-muted-foreground"/> OSO ID: {currentInstitution.osoId}</p>
+            <p className="flex items-center gap-2 text-green-600 font-medium"><CheckCircle className="h-5 w-5"/> No dues pending</p>
         </CardContent>
       </Card>
 
@@ -193,6 +209,9 @@ export default function SwitchSchoolPage() {
                 </Button>
               </div>
             ))}
+             {filteredInstitutions.length === 0 && (
+                <p className="text-center text-muted-foreground py-4 text-sm">No other verified institutions found.</p>
+             )}
           </div>
         </CardContent>
       </Card>
