@@ -103,7 +103,7 @@ export default function ScheduleClassPage() {
           title: "Class Scheduled",
           description: `"${data.title}" has been scheduled.`,
         });
-        router.push("/coaching-panel"); 
+        router.push("/coaching-panel/live-classes"); 
     } catch(e) {
         console.error("Failed to save class to localStorage:", e);
         toast({ title: "Error", description: "Could not schedule the class.", variant: "destructive"});

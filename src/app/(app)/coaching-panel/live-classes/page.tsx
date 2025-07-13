@@ -1,3 +1,4 @@
+
 // src/app/(app)/coaching-panel/live-classes/page.tsx
 "use client";
 
