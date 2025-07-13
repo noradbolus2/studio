@@ -1,72 +1,90 @@
-
 // src/types/coaching-teacher.ts
 // Note: If using Firebase JS SDK v9+, Timestamp would be imported from 'firebase/firestore'
 // import type { Timestamp } from 'firebase/firestore';
 
-export interface CoachingTeacher {
-  /** Unique identifier for the teacher, typically their Firebase Authentication UID. */
+export interface LiveClassSchedule {
+  platform?: "Google Meet" | "Zoom" | "YouTube Live" | "OSO Platform"; // Optional if not live or details pending
+  join_link?: string | null;
+  /** ISO string for start date & time, e.g., "2025-07-05T15:00:00.000Z" */
+  start_datetime: string; 
+  /** E.g., "Mon, Wed, Fri @ 7 PM IST" or structured recurrence rule or "One-time" */
+  repeat_info?: string | null; 
+  next_class_datetime?: string | null; // ISO string
+}
+
+export interface TeacherCourse {
+  /** Auto-generated unique identifier for the course. */
+  course_id: string;
+
+  /** Identifier of the teacher who created this course. References coaching_teachers.teacher_id. */
   teacher_id: string;
 
-  /** Full name of the teacher. */
-  name: string;
+  /** Identifier of the exam this course is primarily for. References exam_master_list.exam_id. */
+  exam_id?: string | null; // Made optional, could be general or for specific class level
 
-  /** Email address of the teacher, used for login and communication. */
-  email: string;
+  /** Subject this course covers (e.g., "Physics", "Organic Chemistry"). */
+  subject: string;
 
-  /** Contact phone number for the teacher (optional). */
-  phone?: string | null;
+  /** Class level(s) this course is intended for. */
+  class_level: string; // e.g., "Class 10", "JEE", "NEET UG"
 
-  /** URL to the teacher's profile image (optional). */
-  profile_image_url?: string | null;
+  /** Title of the course in English. */
+  course_title_en: string;
 
-  /** AI hint for the profile image (optional). */
-  dataAiHintProfile?: string | null;
+  /** Title of the course in Hindi. */
+  course_title_hi?: string | null;
 
-  /** 
-   * Array of subjects the teacher specializes in.
-   * Can be a comma-separated string from ProfileFormData.expertise, parsed into an array.
-   */
-  subjects_specialized: string[];
+  /** Detailed description of the course in English. */
+  description_en: string;
 
-  /**
-   * Array of exam_ids the teacher targets.
-   * References exam_master_list.exam_id.
-   * Can be derived or an extension of ProfileFormData.examTarget.
-   */
-  target_exam_ids: string[];
+  /** Detailed description of the course in Hindi. */
+  description_hi?: string | null;
 
-  /**
-   * The exam_id currently active on the teacher's dashboard.
-   * Should be one of the IDs from target_exam_ids.
-   * Maps from ProfileFormData.examTarget.
-   */
-  current_active_exam_id?: string | null;
+  /** Type of the course offering. */
+  course_type: "Live Interactive" | "Recorded Lectures" | "Notes Only" | "Live + Recorded + Notes" | "Full Course" | "Crash Course";
 
-  /** A short biography or professional summary of the teacher. Maps from ProfileFormData.bio. */
-  bio?: string | null;
+  /** Price of the course in INR. Null or 0 for free courses. */
+  price_inr?: number | null;
 
-  /** 
-   * Indicates if the teacher is currently available for doubt-solving sessions. 
-   * Maps from ProfileFormData.availability_for_doubts.
-   */
-  availability_for_doubts?: boolean;
+  /** Estimated total duration of the course in hours or descriptive (e.g., "4 weeks"). */
+  duration_descriptive?: string | null;
 
-  /** Current status of the teacher regarding live classes. (System-managed) */
-  live_class_status?: "offline" | "online_available" | "in_live_session";
+  /** Primary language of instruction for the course. */
+  language_of_instruction?: "English" | "Hindi" | "Hinglish";
 
-  /** Overall rating of the teacher, typically an average from course feedback. (System-managed) */
-  overall_rating?: number | null;
+  /** URL for the course thumbnail image (optional). */
+  thumbnail_image_url?: string | null;
 
-  /** Optional social media or portfolio links for the teacher. Maps from ProfileFormData.portfolioUrl. */
-  social_links?: {
-    youtube?: string;
-    linkedin?: string;
-    website?: string;
-  } | null;
+  /** AI hint for the thumbnail image (optional). */
+  dataAiHintThumbnail?: string | null;
 
-  /** Timestamp indicating when the teacher record was created. */
+  /** Indicates if notes or study materials are uploaded and included. */
+  notes_uploaded?: boolean; // True if notes are part of this course package
+  
+  /** Link to uploaded notes (e.g., Google Drive, or path in Firebase Storage), if applicable. */
+  notes_link?: string | null;
+
+  /** Details for live classes, if applicable. */
+  live_class_details?: LiveClassSchedule | null;
+
+  /** Indicates if a dedicated doubt-solving forum or mechanism is enabled for this course. */
+  is_doubt_forum_enabled?: boolean;
+
+  /** Number of students currently enrolled in the course (system-updated). */
+  student_enrollment_count?: number;
+
+  /** Average rating of the course from student feedback (system-updated). */
+  average_rating?: number | null;
+
+  /** Current status of the course. */
+  status: "Draft" | "Published" | "Archived" | "Pending Approval";
+
+  /** Indicates if the course has been approved by OSO platform admin. */
+  approved_by_admin?: boolean;
+
+  /** Timestamp indicating when the course record was created. */
   created_at: Date; // Will be Firestore Timestamp
 
-  /** Timestamp indicating when the teacher record was last updated. */
+  /** Timestamp indicating when the course record was last updated. */
   updated_at: Date; // Will be Firestore Timestamp
 }
