@@ -56,7 +56,7 @@ const defaultUser = {
 const heroSlides = [
   { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "project help technology", href:"/creator-marketplace" },
   { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://images.unsplash.com/photo-1646920912229-bc0d5d94e68b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXN0JTIwZGVsaXZlcnklMjBib29rc3xlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "fast delivery books", href:"/delivery" },
-  { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://images.unsplash.com/photo-1538491247542-5da27794bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhaSUyMHJvYm90JTIwdGVhY2hpbmd8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
+  { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://images.unsplash.com/photo-1538491247542-5da27794bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhaSUyMHJvYm90JTIwdGVhY2hpbmd8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib=rb-4.1.0&q=80&w=1080", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
 ];
 
 const baseQuickCategories = [
@@ -73,7 +73,7 @@ const baseQuickCategories = [
   { id: 'oso_circle', labelEn: 'OSO Circle', labelHi: 'OSO सर्कल', icon: Users, href: '/circle', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["peer", "circle", "connect", "group"] },
   { id: 'college_predictor', labelEn: 'College Predictor', labelHi: 'कॉलेज भविष्यवक्ता', icon: GraduationCap, href: '/college-predictor', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["college", "admission", "predictor", "university"] },
   { id: 'study_dashboard', labelEn: 'Study Dashboard', labelHi: 'अध्ययन डैशबोर्ड', icon: ClipboardList, href: '/study-dashboard', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["study", "dashboard", "notes", "offline", "tracker", "progress"] },
-  { id: 'schedule_class', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Video, href: '/live-classes/all', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["class", "live", "schedule", "online class"] },
+  { id: 'live_classes', labelEn: 'Live Classes', labelHi: 'लाइव कक्षाएं', icon: Video, href: '/live-classes/all', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["class", "live", "schedule", "online class"] },
 ];
 
 const recommendationsMock = [
@@ -342,7 +342,7 @@ export default function ModernHomePage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
                   <Avatar className="h-8 w-8 border-2 border-primary">
-                    <AvatarImage src={displayAvatar || 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib.rb-4.1.0&q=80&w=1080'} alt={displayName} data-ai-hint={displayAvatarHint || 'student avatar'} />
+                    <AvatarImage src={displayAvatar || 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080'} alt={displayName} data-ai-hint={displayAvatarHint || 'student avatar'} />
                     <AvatarFallback>{displayName.substring(0,1)}</AvatarFallback>
                   </Avatar>
                 </Button>

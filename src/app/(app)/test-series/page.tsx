@@ -396,7 +396,7 @@ export default function TestSeriesPage() {
     setRecommendationError(null);
     setRecommendations(null);
 
-    const studentNameFromProfile = profileData?.fullName || "Student";
+    const studentNameFromProfile = profileData?.fullName || "Aarav";
     const examTargetFromProfile = profileData?.examTarget || "General Competitive Exam"; 
 
     const dynamicStudentInput: TestSeriesRecommendationInput = {
