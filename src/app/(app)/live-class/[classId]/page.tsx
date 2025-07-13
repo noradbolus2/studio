@@ -51,16 +51,23 @@ export default function LiveClassPage({ params }: { params: { classId: string } 
   
   useEffect(() => {
     // Determine user role from localStorage
-    const loggedInUser = localStorage.getItem('loggedInUser');
-    if (loggedInUser) {
-        const user = JSON.parse(loggedInUser);
-        if(user.role === 'teacher' || user.role === 'school') { // School admins/principals can also host
-            setUserRole('teacher');
-        } else {
+    const loggedInUserString = localStorage.getItem('loggedInUser');
+    if (loggedInUserString) {
+        try {
+            const user = JSON.parse(loggedInUserString);
+            // Explicitly check for teacher or school admin roles
+            if (user && (user.role === 'teacher' || user.role === 'school')) {
+                setUserRole('teacher');
+            } else {
+                setUserRole('student');
+            }
+        } catch(e) {
+            console.error("Failed to parse user role, defaulting to student.", e);
             setUserRole('student');
         }
     } else {
-        setUserRole('student'); // Default to student if not logged in
+        // Default to student if no user is logged in
+        setUserRole('student');
     }
 
     const deckId = searchParams.get('deckId');
