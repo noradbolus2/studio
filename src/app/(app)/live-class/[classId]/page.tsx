@@ -29,7 +29,7 @@ export default function LiveClassPage({ params }: { params: { classId: string } 
   const whiteboardRef = useRef<WhiteboardHandle>(null);
   
   // Role-based state
-  const [userRole, setUserRole] = useState<'teacher' | 'student' | null>(null);
+  const [userRole, setUserRole] = useState<'teacher' | 'student'>('student'); // Default to student
 
   // Whiteboard state
   const [tool, setTool] = React.useState<'pen' | 'eraser'>('pen');
@@ -51,24 +51,27 @@ export default function LiveClassPage({ params }: { params: { classId: string } 
   
   useEffect(() => {
     // Determine user role from localStorage
-    const loggedInUserString = localStorage.getItem('loggedInUser');
-    if (loggedInUserString) {
-        try {
-            const user = JSON.parse(loggedInUserString);
-            // Explicitly check for teacher or school admin roles
-            if (user && (user.role === 'teacher' || user.role === 'school')) {
-                setUserRole('teacher');
-            } else {
-                setUserRole('student');
-            }
-        } catch(e) {
-            console.error("Failed to parse user role, defaulting to student.", e);
-            setUserRole('student');
-        }
-    } else {
-        // Default to student if no user is logged in
-        setUserRole('student');
+    if (typeof window !== "undefined") {
+      const loggedInUserString = localStorage.getItem('loggedInUser');
+      if (loggedInUserString) {
+          try {
+              const user = JSON.parse(loggedInUserString);
+              // Explicitly check for teacher or school admin roles
+              if (user && (user.role === 'teacher' || user.role === 'school')) {
+                  setUserRole('teacher');
+              } else {
+                  setUserRole('student');
+              }
+          } catch(e) {
+              console.error("Failed to parse user role, defaulting to student.", e);
+              setUserRole('student');
+          }
+      } else {
+          // Default to student if no user is logged in
+          setUserRole('student');
+      }
     }
+
 
     const deckId = searchParams.get('deckId');
     if (deckId) {
