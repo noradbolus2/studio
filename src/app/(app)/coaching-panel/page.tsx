@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { 
     CalendarDays,
     UploadCloud,
@@ -25,9 +24,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ProfileFormData } from '../edit-profile/page';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 
 
