@@ -32,7 +32,7 @@ export default function AppLayout({
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser');
     if (!loggedInUser) {
-      if (pathname !== '/login') { 
+      if (pathname !== '/login' && pathname !== '/auth') { 
          router.push('/login');
       } else {
         setIsCheckingAuth(false);

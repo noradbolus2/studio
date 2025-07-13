@@ -4,6 +4,7 @@ import { useState, type FormEvent, useEffect } from "react";
 import Image from "next/image";
 import { Languages, LogIn, UserPlus, KeyRound, Mail, User as UserIcon, ArrowLeft, Briefcase, School as SchoolIconLucide, Sparkles as CreatorIcon, Bike, ExternalLink, ShieldCheck, UserCheck, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
