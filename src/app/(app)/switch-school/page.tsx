@@ -53,6 +53,7 @@ export default function SwitchSchoolPage() {
   );
   
   const handleApply = (institution: Institution) => {
+    // Check #2: Only allow applications to verified schools (UI also disables button)
     if (!institution.isOsoVerified) {
       toast({
         title: "Application Not Available",
@@ -68,6 +69,7 @@ export default function SwitchSchoolPage() {
 
     // Simulate checking dues and creating the transfer request
     setTimeout(() => {
+      // Check #1: Student Dues
       if (currentInstitution.dues > 0) {
         setTransferStatus('dues_pending');
       } else {
@@ -186,7 +188,7 @@ export default function SwitchSchoolPage() {
                   </h4>
                   <p className="text-xs text-muted-foreground">{inst.city} • {inst.type}</p>
                 </div>
-                <Button size="sm" onClick={() => handleApply(inst)} disabled={isLoading || transferStatus !== 'idle'}>
+                <Button size="sm" onClick={() => handleApply(inst)} disabled={isLoading || transferStatus !== 'idle' || !inst.isOsoVerified}>
                   <Send className="mr-2 h-4 w-4" /> Apply
                 </Button>
               </div>
