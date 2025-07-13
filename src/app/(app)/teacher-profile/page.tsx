@@ -7,17 +7,18 @@ import { useRouter } from 'next/navigation';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Star, BookOpen, UserPlus, Bell, Layers, Download, PlayCircle, RadioTower, History } from "lucide-react";
+import { ArrowLeft, Star, BookOpen, UserPlus, Bell, Layers, Download, PlayCircle, RadioTower, History, MessageSquare } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 const mockTeacherProfile = {
   name: "Abhishek Verma",
   title: "Physics Expert (NEET + Class 11–12)",
   institution: "Ex-Faculty at Aakash Institute",
-  avatarUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYWxlJTIwdGVhY2hlcnxlbnwwfHx8fDE3NTI1NzU2NzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  avatarUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYWxlJTIwdGVhY2hlcnxlbnwwfHx8fDE3NTI1NzU2NzF8MA&ixlib.rb-4.1.0&q=80&w=1080",
   dataAiHint: "male teacher",
   bio: "With over 10 years of experience, I simplify complex Physics concepts to help students excel in NEET and board exams. My teaching philosophy focuses on building a strong foundation and problem-solving skills.",
   subjects: ["Physics", "NEET Prep", "Class 11", "Class 12", "JEE Physics"],
@@ -43,7 +44,25 @@ const mockNotes = [
 
 export default function TeacherProfilePage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(mockTeacherProfile.followers);
+
+  const handleFollowToggle = () => {
+    setIsFollowing(prev => {
+        const newFollowState = !prev;
+        if (newFollowState) {
+            setFollowerCount(prev => prev + 1);
+            toast({
+                title: "Followed!",
+                description: `You'll now receive updates from ${mockTeacherProfile.name}.`
+            });
+        } else {
+            setFollowerCount(prev => prev - 1);
+        }
+        return newFollowState;
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -69,12 +88,19 @@ export default function TeacherProfilePage() {
             <CardDescription className="text-sm mt-1">{mockTeacherProfile.institution}</CardDescription>
             <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground mt-2">
               <span className="flex items-center gap-1"><Star className="h-4 w-4 text-yellow-400 fill-yellow-400" /> {mockTeacherProfile.rating}/5.0</span>
-              <span className="font-semibold">{mockTeacherProfile.followers.toLocaleString()} Followers</span>
+              <span className="font-semibold">{followerCount.toLocaleString()} Followers</span>
             </div>
           </div>
-          <Button size="lg" onClick={() => setIsFollowing(!isFollowing)} className="w-full md:w-auto">
-            <UserPlus className="mr-2 h-5 w-5"/> {isFollowing ? 'Following' : 'Follow'}
-          </Button>
+           <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+             <Button size="lg" onClick={handleFollowToggle} variant={isFollowing ? 'secondary' : 'default'} className="flex-1">
+                <UserPlus className="mr-2 h-5 w-5"/> {isFollowing ? 'Following' : 'Follow'}
+              </Button>
+              <Button size="lg" variant="outline" className="flex-1" asChild>
+                <Link href="/ai-guruji">
+                    <MessageSquare className="mr-2 h-5 w-5"/> Message
+                </Link>
+              </Button>
+            </div>
         </CardContent>
       </Card>
       
