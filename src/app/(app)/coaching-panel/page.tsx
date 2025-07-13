@@ -20,7 +20,7 @@ import {
     PlusCircle,
     BarChart3,
     BadgePercent,
-    Users // Added for "Find Teachers"
+    Users
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -42,7 +42,6 @@ const quickActions = [
   { id: "create_course", labelEn: "Create New Course", labelHi: "नया कोर्स बनाएं", icon: PlusCircle, href: "/coaching-panel/create-course" },
   { id: "manage_classes", labelEn: "Manage Live Classes", labelHi: "लाइव कक्षाएं प्रबंधित करें", icon: CalendarDays, href: "/coaching-panel/live-classes" },
   { id: "student_analytics", labelEn: "Student Analytics", labelHi: "छात्र एनालिटिक्स", icon: BarChart3, href: "/coaching-panel/analytics" },
-  { id: "find_teachers", labelEn: "Find Teachers", labelHi: "शिक्षक खोजें", icon: Users, href: "/coaching-panel/teachers" }, // New action
   { id: "earnings", labelEn: "Earnings & Payouts", labelHi: "कमाई और भुगतान", icon: IndianRupee, href: "/coaching-panel/earnings" },
   { id: "promotions", labelEn: "Promotions", labelHi: "प्रचार", icon: BadgePercent, href: "/coaching-panel/promotions" },
   { id: "edit_profile", labelEn: "Edit My Profile", labelHi: "मेरी प्रोफ़ाइल संपादित करें", icon: Edit, href: "/edit-profile?role=teacher" },
@@ -153,7 +152,7 @@ export default function CoachingPanelPage() {
 
                 <Card className="shadow-md rounded-xl">
                     <CardHeader><CardTitle className="font-headline">Quick Actions</CardTitle></CardHeader>
-                    <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {quickActions.map(action => (
                             <Button
                                 key={action.id}

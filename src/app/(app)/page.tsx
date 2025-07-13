@@ -50,22 +50,23 @@ import { DynamicQuoteCard } from '@/components/dashboard/DynamicQuoteCard';
 // Mock data
 const defaultUser = {
   name: 'Abhishek Verma',
-  avatarUrl: 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080',
+  avatarUrl: 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib-rb-4.1.0&q=80&w=1080',
   dataAiHint: 'student avatar'
 };
 
 const heroSlides = [
   { id: 1, titleEn: "1-Click Project Help", titleHi: "1-क्लिक प्रोजेक्ट सहायता", descriptionEn: "AI assistance & material kits", descriptionHi: "एआई सहायता और सामग्री किट", imageUrl: "https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "project help technology", href:"/creator-marketplace" },
-  { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://images.unsplash.com/photo-1646920912229-bc0d5d94e68b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXN0JTIwZGVsaXZlcnklMjBib29rc3xlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "fast delivery books", href:"/delivery" },
+  { id: 2, titleEn: "Study Material in 30 Mins!", titleHi: "30 मिनट में अध्ययन सामग्री!", descriptionEn: "Notes, books & stationery, delivered fast", descriptionHi: "नोट्स, किताबें और स्टेशनरी, तेजी से डिलीवर", imageUrl: "https://images.unsplash.com/photo-1646920912229-bc0d5d94e68b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXN0JTIwZGVsaXZlcnklMjBib29rc3xlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib-rb-4.1.0&q=80&w=1080", dataAiHint: "fast delivery books", href:"/delivery" },
   { id: 3, titleEn: "OSO Guruji is Online", titleHi: "OSO गुरुजी ऑनलाइन हैं", descriptionEn: "Your 24/7 study partner", descriptionHi: "आपका 24/7 अध्ययन भागीदार", imageUrl: "https://images.unsplash.com/photo-1538491247542-5da27794bc65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhaSUyMHJvYm90JTIwdGVhY2hpbmd8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080", dataAiHint: "ai robot teaching", href:"/ai-guruji" },
 ];
 
 const baseQuickCategories = [
   { id: 'oso_library', labelEn: 'OSO Library', labelHi: 'OSO पुस्तकालय', icon: Library, href: '/class-6-12-books', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["book", "library", "ncert", "textbook", "syllabus", "class", "exam book", "competitive", "preparation"] },
-  { id: 'projects', labelEn: 'Creator Projects', labelHi: 'निर्माता प्रोजेक्ट', icon: Users, href: '/creator-marketplace', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["project", "model", "assignment", "homework", "creator", "marketplace"] },
+  { id: 'projects', labelEn: 'Creator Projects', labelHi: 'निर्माता प्रोजेक्ट', icon: Sparkles, href: '/creator-marketplace', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["project", "model", "assignment", "homework", "creator", "marketplace"] },
   { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
   { id: 'brainmate', labelEn: 'Brainmate', labelHi: 'ब्रेनमेट', icon: BrainCircuit, href: '/brainmate', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["brainmate", "concept", "explain", "ai"] },
   { id: 'oso_assistant', labelEn: 'OSO Assistant', labelHi: 'OSO असिस्टेंट', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["guruji", "vaani", "assistant", "buddy", "support", "call", "voice", "help", "ai"] },
+  { id: 'find_teacher', labelEn: 'Find a Teacher', labelHi: 'शिक्षक खोजें', icon: Users, href: '/coaching-panel/teachers', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["teacher", "educator", "tutor", "coach"] },
   { id: 'revision_vault', labelEn: 'Revision Vault', labelHi: 'रिवीजन वॉल्ट', icon: History, href: '/study/revision-vault', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["revision", "vault", "doubts", "marked", "history"] },
   { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["mind", "mood", "diary", "stress"] },
   { id: 'handwriting_notes', labelEn: 'Handwriting', labelHi: 'हस्तलेखन', icon: FileSignature, href: '/handwriting-notes', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["handwriting", "notes", "writing", "script"] },
@@ -78,7 +79,7 @@ const baseQuickCategories = [
 ];
 
 const recommendationsMock = [
-  { id: 'rec_book_neet', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Objective Biology for NEET', titleHi: 'नीट के लिए वस्तुनिष्ठ जीवविज्ञान', imageUrl: 'https://images.unsplash.com/photo-1636959865743-f3999844bdff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxuZWV0JTIwYmlvbG9neSUyMGJvb2t8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: "neet biology book", href: '/competitive-bookstore', priceEn: 'INR 799', priceHi: 'INR 799', relevance: ['neet', 'medical'] },
+  { id: 'rec_book_neet', typeEn: 'Book', typeHi: 'किताब', titleEn: 'Objective Biology for NEET', titleHi: 'नीट के लिए वस्तुनिष्ठ जीवविज्ञान', imageUrl: 'https://images.unsplash.com/photo-1636959865743-f3999844bdff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxuZWV0JTIwYmlvbG9neSUyMGJvb2t8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib-rb-4.1.0&q=80&w=1080', dataAiHint: "neet biology book", href: '/competitive-bookstore', priceEn: 'INR 799', priceHi: 'INR 799', relevance: ['neet', 'medical'] },
   { id: 'rec_project_volcano', typeEn: 'Project', typeHi: 'प्रोजेक्ट', titleEn: 'Volcano Model Kit', titleHi: 'ज्वालामुखी मॉडल किट', descriptionEn: 'Get All Materials', descriptionHi: 'सभी सामग्री प्राप्त करें', imageUrl: 'https://images.unsplash.com/photo-1720210745848-5a47be4d5ac1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx2b2xjYW5vJTIwbW9kZWwlMjBraXR8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: "volcano model kit", href: '/creator-marketplace', priceEn: 'INR 299', priceHi: 'INR 299', relevance: ['science', 'class 6', 'class 7', 'class 8'] },
   { id: 'rec_guruji_jee', typeEn: 'Guruji Advice', typeHi: 'गुरुजी सलाह', titleEn: 'Ask Guruji: JEE Physics Doubts', titleHi: 'गुरुजी से पूछें: JEE भौतिकी शंकाएँ', descriptionEn: 'Clear your concepts', descriptionHi: 'अपनी अवधारणाएँ स्पष्ट करें', imageUrl: 'https://images.unsplash.com/photo-1606479067834-db5efd9f2fe9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhaSUyMGNoYXQlMjBleGFtfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: "ai chat exam", href: '/ai-guruji', priceEn: 'Free', priceHi: 'निःशुल्क', relevance: ['jee', 'physics', 'engineering'] },
   { id: 'rec_test_jee', typeEn: 'Test', typeHi: 'टेस्ट', titleEn: 'JEE Main Mock Test Series', titleHi: 'JEE मुख्य मॉक टेस्ट सीरीज़', descriptionEn: 'Full Syllabus Coverage', descriptionHi: 'पूर्ण पाठ्यक्रम कवरेज', imageUrl: 'https://images.unsplash.com/photo-1665470909939-959569b20021?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8b25saW5lJTIwdGVzdCUyMGludGVyZmFjZXxlbnwwfHx8fDE3NTExNTQ4MjN8MA&ixlib.rb-4.1.0&q=80&w=1080', dataAiHint: "online test interface", href: '/test-series', priceEn: 'INR 199', priceHi: 'INR 199', relevance: ['jee', 'engineering'] },
@@ -106,7 +107,7 @@ const studyBoosters = [
 
 const searchIcons = [
     {labelEn: "Library", labelHi: "पुस्तकालय", icon: Library, href:"/class-6-12-books"},
-    {labelEn: "Projects", labelHi: "प्रोजेक्ट", icon: Brain, href:"/creator-marketplace"},
+    {labelEn: "Projects", labelHi: "प्रोजेक्ट", icon: Sparkles, href:"/creator-marketplace"},
     {labelEn: "Stationery", labelHi: "स्टेशनरी", icon: PackageIcon, href:"/delivery"},
     {labelEn: "Guruji", labelHi: "गुरुजी", icon: Bot, href:"/ai-guruji"},
 ];
@@ -348,7 +349,7 @@ export default function ModernHomePage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
                   <Avatar className="h-8 w-8 border-2 border-primary">
-                    <AvatarImage src={displayAvatar || 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080'} alt={displayName} data-ai-hint={displayAvatarHint || 'student avatar'} />
+                    <AvatarImage src={displayAvatar || 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib.rb-4.1.0&q=80&w=1080'} alt={displayName} data-ai-hint={displayAvatarHint || 'student avatar'} />
                     <AvatarFallback>{displayName.substring(0,1)}</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -458,7 +459,7 @@ export default function ModernHomePage() {
             )}
           >
             <MemoizedImage
-              src={slide.imageUrl || 'https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib-rb-4.1.0&q=80&w=1080'}
+              src={slide.imageUrl || 'https://images.unsplash.com/photo-1640955785023-1854685dae05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9qZWN0JTIwaGVscCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzUxMTU0ODIzfDA&ixlib.rb-4.1.0&q=80&w=1080'}
               alt={currentLang === 'en' ? slide.titleEn : slide.titleHi}
               layout="fill"
               objectFit="cover"
