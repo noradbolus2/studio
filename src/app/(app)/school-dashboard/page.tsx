@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { 
     School, Users, UserCog, Bell, CalendarDays, FileText, ArrowRight, BarChart3, Edit, Activity, CheckCircle,
-    BookOpen as LibraryIcon, IndianRupee as RupeeIcon, MessageSquare as InquiryIcon, Settings as GenericStaffIcon, Briefcase, LogOut
+    BookOpen as LibraryIcon, IndianRupee as RupeeIcon, MessageSquare as InquiryIcon, Settings as GenericStaffIcon, Briefcase, LogOut, SendHorizonal, X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -70,6 +70,18 @@ const schoolActionsGenericStaff = [
     { id: "it_support_generic", labelEn: "IT Support Request", labelHi: "आईटी सहायता अनुरोध", icon: GenericStaffIcon, href: "/school-dashboard/staff/it-support"},
 ];
 
+interface TransferRequest {
+  id: string;
+  studentName: string;
+  studentOsoId: string;
+  fromSchool: string;
+}
+
+const mockTransferRequests: TransferRequest[] = [
+  { id: "req123", studentName: "Aarav Sharma", studentOsoId: "OSO-SCH-UP1039", fromSchool: "OSO Public School, Lucknow" },
+  { id: "req124", studentName: "Riya Gupta", studentOsoId: "OSO-SCH-DL5821", fromSchool: "Springdales, Pusa Road" },
+];
+
 
 export default function SchoolDashboardPage() {
   const router = useRouter();
@@ -77,6 +89,7 @@ export default function SchoolDashboardPage() {
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfileFormData | null>(null);
   const [loggedInUser, setLoggedInUser] = useState<{role?: string; designation?: string; fullName?: string; email?:string; schoolId?: string;} | null>(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [transferRequests, setTransferRequests] = useState(mockTransferRequests);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -129,6 +142,16 @@ export default function SchoolDashboardPage() {
     });
     router.push('/login'); 
   };
+  
+  const handleTransferDecision = (requestId: string, studentName: string, decision: 'accept' | 'reject') => {
+    setTransferRequests(prev => prev.filter(req => req.id !== requestId));
+    toast({
+        title: `Request ${decision === 'accept' ? 'Approved' : 'Rejected'}`,
+        description: `Transfer request for ${studentName} has been ${decision === 'accept' ? 'approved' : 'rejected'}. The student's data is now available in your system.`,
+        variant: decision === 'reject' ? 'destructive' : 'default',
+    });
+    // In a real app, you would make an API call here to update backend records.
+  }
 
   if (loadingData) {
     return (
@@ -142,6 +165,34 @@ export default function SchoolDashboardPage() {
   const userDesignation = loggedInUser?.designation?.toLowerCase() || "";
   let specificDashboardView: React.ReactNode = null;
   let actionsToDisplay: typeof schoolActionsPrincipal = [];
+  
+  const transferRequestCard = (
+    <Card>
+        <CardHeader>
+            <CardTitle className="font-headline flex items-center gap-2">
+                <SendHorizonal className="h-6 w-6 text-primary"/>
+                <BilingualText en="Incoming Transfer Requests" hi="आने वाले स्थानांतरण अनुरोध" />
+            </CardTitle>
+            <CardDescription><BilingualText en="Review and approve new student admissions." hi="नए छात्र प्रवेश की समीक्षा और अनुमोदन करें।" /></CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+            {transferRequests.length > 0 ? transferRequests.map(req => (
+                <div key={req.id} className="p-3 border rounded-md">
+                    <p className="font-semibold text-sm">{req.studentName}</p>
+                    <p className="text-xs text-muted-foreground">From: {req.fromSchool} ({req.studentOsoId})</p>
+                    <div className="flex justify-end gap-2 mt-2">
+                        <Button size="sm" variant="destructive" onClick={() => handleTransferDecision(req.id, req.studentName, 'reject')}><X className="h-4 w-4 mr-1"/> Reject</Button>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleTransferDecision(req.id, req.studentName, 'accept')}><CheckCircle className="h-4 w-4 mr-1"/> Accept</Button>
+                    </div>
+                </div>
+            )) : (
+                 <p className="text-muted-foreground text-sm text-center py-4">
+                    <BilingualText en="No pending transfer requests." hi="कोई लंबित स्थानांतरण अनुरोध नहीं।" />
+                </p>
+            )}
+        </CardContent>
+    </Card>
+  );
 
   if (userDesignation.includes('principal') || userDesignation.includes('vice principal') || userDesignation.includes('coordinator') || (userDesignation.includes('admin') && !userDesignation.includes('staff'))) {
     actionsToDisplay = schoolActionsPrincipal;
@@ -160,6 +211,8 @@ export default function SchoolDashboardPage() {
             </Card>
           ))}
         </div>
+        
+        {transferRequestCard}
 
         <Card>
           <CardHeader>

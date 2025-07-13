@@ -1,3 +1,4 @@
+
 // src/types/school-student.ts
 
 export interface SchoolStudent {
@@ -12,6 +13,7 @@ export interface SchoolStudent {
   status: "Active" | "Inactive" | "Alumni";
   dateOfBirth?: Date; // Firestore Timestamp
   admissionDate: Date; // Firestore Timestamp
+  schoolHistory?: string[]; // Array of past school IDs
 }
 
 /*
