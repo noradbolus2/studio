@@ -25,6 +25,8 @@ const mockInstitutions: Institution[] = [
   { id: 'school789', name: 'Sunshine College, Mumbai', city: 'Mumbai', type: 'College', isOsoVerified: true },
   { id: 'school111', name: 'Wisdom School, Kanpur', city: 'Kanpur', type: 'School', isOsoVerified: false },
   { id: 'school222', name: 'Springdales, Pusa Road', city: 'Delhi', type: 'School', isOsoVerified: true },
+  { id: 'school555', name: 'Lucknow Public College', city: 'Lucknow', type: 'College', isOsoVerified: true},
+  { id: 'school666', name: 'City Montessori School', city: 'Lucknow', type: 'School', isOsoVerified: false},
 ];
 
 type TransferStatus = 'idle' | 'pending_approval' | 'dues_pending' | 'transfer_complete';
