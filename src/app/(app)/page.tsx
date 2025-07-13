@@ -64,7 +64,7 @@ const baseQuickCategories = [
   { id: 'projects', labelEn: 'Creator Projects', labelHi: 'निर्माता प्रोजेक्ट', icon: Users, href: '/creator-marketplace', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["project", "model", "assignment", "homework", "creator", "marketplace"] },
   { id: 'stationery', labelEn: 'Stationery', labelHi: 'स्टेशनरी', icon: PackageIcon, href: '/delivery', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["stationery", "pen", "notebook", "delivery"] },
   { id: 'brainmate', labelEn: 'Brainmate', labelHi: 'ब्रेनमेट', icon: BrainCircuit, href: '/brainmate', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["brainmate", "concept", "explain", "ai"] },
-  { id: 'oso_vaani', labelEn: 'OSO Vaani', labelHi: 'OSO वाणी', icon: Bot, href: '/ai-voice-call', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["vaani", "buddy", "support", "call", "voice", "help"] },
+  { id: 'oso_assistant', labelEn: 'OSO Assistant', labelHi: 'OSO असिस्टेंट', icon: Bot, href: '/ai-guruji', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["guruji", "vaani", "assistant", "buddy", "support", "call", "voice", "help", "ai"] },
   { id: 'revision_vault', labelEn: 'Revision Vault', labelHi: 'रिवीजन वॉल्ट', icon: History, href: '/study/revision-vault', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["revision", "vault", "doubts", "marked", "history"] },
   { id: 'mind_diary', labelEn: 'Mind Diary', labelHi: 'माइंड डायरी', icon: Smile, href: '/mind-diary', color: 'text-accent-foreground', bgColor: 'bg-accent/20 hover:bg-accent/30', keywords: ["mind", "mood", "diary", "stress"] },
   { id: 'handwriting_notes', labelEn: 'Handwriting', labelHi: 'हस्तलेखन', icon: FileSignature, href: '/handwriting-notes', color: 'text-primary', bgColor: 'bg-primary/10 hover:bg-primary/20', keywords: ["handwriting", "notes", "writing", "script"] },
@@ -342,7 +342,7 @@ export default function ModernHomePage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
                   <Avatar className="h-8 w-8 border-2 border-primary">
-                    <AvatarImage src={displayAvatar || 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib=rb-4.1.0&q=80&w=1080'} alt={displayName} data-ai-hint={displayAvatarHint || 'student avatar'} />
+                    <AvatarImage src={displayAvatar || 'https://images.unsplash.com/photo-1635194936300-08a36d3a90de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwYXZhdGFyfGVufDB8fHx8MTc1MTE1NDgyM3ww&ixlib.rb-4.1.0&q=80&w=1080'} alt={displayName} data-ai-hint={displayAvatarHint || 'student avatar'} />
                     <AvatarFallback>{displayName.substring(0,1)}</AvatarFallback>
                   </Avatar>
                 </Button>
