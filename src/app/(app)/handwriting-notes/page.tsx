@@ -27,7 +27,7 @@ const handwritingStyles = [
 export default function HandwritingNotesPage() {
   const [sampleFileName, setSampleFileName] = useState<string | null>(null);
   const [inputText, setInputText] = useState("");
-  const [generatedText, setGeneratedText] =useState("");
+  const [generatedText, setGeneratedText] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
   const [matchedStyle, setMatchedStyle] = useState(handwritingStyles[0]);

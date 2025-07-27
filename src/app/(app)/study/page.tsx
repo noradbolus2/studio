@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MindDiaryCard } from "@/components/shared/MindDiaryCard";
-import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight, Brain, History, Target, Presentation, BrainCircuit } from "lucide-react";
+import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight, Brain, History, Target, Presentation, FileSignature } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner";
 import Link from "next/link"; // Added Link
@@ -13,11 +13,11 @@ import { cn } from "@/lib/utils"; // Added for styling
 const studySections = [
   { titleEn: "Courses", titleHi: "पाठ्यक्रम", descriptionEn: "AI, Coding, NCERT & more", descriptionHi: "एआई, कोडिंग, एनसीईआरटी और अधिक", icon: BookMarked, ctaEn: "Explore Courses", ctaHi: "पाठ्यक्रम देखें", href: "/study/courses" },
   { titleEn: "Test Series", titleHi: "टेस्ट सीरीज़", descriptionEn: "AI Mocks & PYQs", descriptionHi: "एआई मॉक्स और पीवाईक्यू", icon: Target, ctaEn: "Attempt Tests", ctaHi: "टेस्ट दें", href: "/test-series" },
-  { titleEn: "Aura Map", titleHi: "ऑरा मैप", descriptionEn: "Check your Brain Fitness Score", descriptionHi: "अपना ब्रेन फिटनेस स्कोर जांचें", icon: BrainCircuit, ctaEn: "Start Scan", ctaHi: "स्कैन शुरू करें", href: "/brain-scan-simplified" },
   { titleEn: "My Notes", titleHi: "मेरे नोट्स", descriptionEn: "Access your saved notes", descriptionHi: "अपने सहेजे गए नोट्स तक पहुंचें", icon: Edit, ctaEn: "View Notes", ctaHi: "नोट्स देखें", href: "/study/my-notes" },
   { titleEn: "Revision Vault", titleHi: "रिवीजन वॉल्ट", descriptionEn: "Review marked topics & ask doubts", descriptionHi: "चिह्नित विषय देखें और शंकाएं पूछें", icon: History, ctaEn: "Open Vault", ctaHi: "वॉल्ट खोलें", href: "/study/revision-vault" },
   { titleEn: "Brainmate™", titleHi: "ब्रेनमेट™", descriptionEn: "Concept Explanations", descriptionHi: "अवधारणा स्पष्टीकरण", icon: Brain, ctaEn: "Ask Brainmate", ctaHi: "ब्रेनमेट से पूछें", href: "/brainmate" },
   { titleEn: "Presentation Coach", titleHi: "प्रस्तुति कोच", descriptionEn: "Practice your public speaking skills.", descriptionHi: "अपने सार्वजनिक बोलने के कौशल का अभ्यास करें।", icon: Presentation, ctaEn: "Start Practice", ctaHi: "अभ्यास शुरू करें", href: "/presentation-coach" },
+  { titleEn: "Kalam AI™ Handwriting", titleHi: "कलम AI™ हस्तलेखन", descriptionEn: "Convert typed text to your handwriting.", descriptionHi: "टाइप किए गए टेक्स्ट को अपनी लिखावट में बदलें।", icon: FileSignature, ctaEn: "Start Writing", ctaHi: "लिखना शुरू करें", href: "/handwriting-notes" },
 ];
 
 const courseHighlights = [
