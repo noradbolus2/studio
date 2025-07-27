@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupee, BarChart3, Trophy, LifeBuoy, ArrowRight, Info, ClipboardList, BookCheck } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupee, BarChart3, Trophy, LifeBuoy, ArrowRight, Info, ClipboardList, BookCheck, Eye } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -321,6 +321,25 @@ export default function ProfilePage() {
                     <div className="text-left">
                       <p className="font-semibold text-md"><BilingualText en="My OSO Passport" hi="मेरा OSO पासपोर्ट" /></p>
                       <p className="text-xs text-muted-foreground"><BilingualText en="View your academic & cognitive identity." hi="अपनी शैक्षणिक और संज्ञानात्मक पहचान देखें।" /></p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-primary"/>
+                </div>
+              </Button>
+            </Link>
+          </CardContent>
+      </Card>
+
+      <Card>
+          <CardContent className="p-4">
+            <Link href="/parent-mode" passHref>
+              <Button variant="secondary" className="w-full h-auto py-3">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-3">
+                    <Eye className="h-6 w-6 text-primary"/>
+                    <div className="text-left">
+                      <p className="font-semibold text-md"><BilingualText en="Parent Shadow Mode™" hi="पेरेंट शैडो मोड™" /></p>
+                      <p className="text-xs text-muted-foreground"><BilingualText en="View a summary of your child's progress." hi="अपने बच्चे की प्रगति का सारांश देखें।" /></p>
                     </div>
                   </div>
                   <ArrowRight className="h-5 w-5 text-primary"/>
