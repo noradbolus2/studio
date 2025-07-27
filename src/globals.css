@@ -173,3 +173,21 @@
 .animate-green-pulse { animation: pulse-green 2.5s infinite; }
 .animate-yellow-pulse { animation: pulse-yellow 2.5s infinite; }
 .animate-red-flicker { animation: flicker-red 1.5s infinite; }
+
+/* Rider Dashboard Scan Animations */
+@keyframes scan-y {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(120px); }
+}
+.animate-scan-y {
+  animation: scan-y 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
