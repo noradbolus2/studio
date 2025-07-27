@@ -33,7 +33,7 @@ const mockCourses: Course[] = [
     descriptionHi: "कृत्रिम बुद्धिमत्ता और प्रोग्रामिंग की दुनिया को अनलॉक करें। शुरुआती और स्कूली छात्रों के लिए उपयुक्त।", 
     icon: BrainCircuit, 
     tags: ["AI", "Python", "Coding", "Beginner", "Robotics Basics"], 
-    imageUrl: "https://placehold.co/300x200.png", 
+    imageUrl: "https://images.unsplash.com/photo-1581092334247-44dd684e3c82?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWklMjByb2JvdCUyMGNvZGV8ZW58MHx8fHwxNzUzNTkxMTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", 
     dataAiHint: "ai robot code", 
     href: "/study/courses/ai-coding" 
   },
@@ -45,7 +45,7 @@ const mockCourses: Course[] = [
     descriptionHi: "कक्षा 6-12 के लिए एनसीईआरटी पाठ्यक्रम का व्यापक कवरेज, जिसमें प्रमुख अवधारणाएं और प्रश्न बैंक शामिल हैं।", 
     icon: BookCopy, 
     tags: ["NCERT", "School Syllabus", "All Subjects", "Revision"], 
-    imageUrl: "https://placehold.co/300x200.png", 
+    imageUrl: "https://images.unsplash.com/photo-1643363877827-25eb04ee09a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0ZXh0Ym9va3MlMjBuY2VydCUyMHN0dWR5fGVufDB8fHx8MTc1MzU5MTEzMHww&ixlib=rb-4.1.0&q=80&w=1080", 
     dataAiHint: "textbooks ncert study", 
     href: "/study/courses/ncert-mastery" 
   },
@@ -57,7 +57,7 @@ const mockCourses: Course[] = [
     descriptionHi: "विशेषज्ञ के नेतृत्व वाले सत्रों के साथ जेईई, नीट, सीयूईटी और अन्य प्रतियोगी परीक्षाओं के लिए एक मजबूत आधार बनाएं।", 
     icon: Target, 
     tags: ["JEE", "NEET", "Foundation", "CUET", "Competitive"], 
-    imageUrl: "https://placehold.co/300x200.png", 
+    imageUrl: "https://images.unsplash.com/photo-1752578753798-ff3a23e16498?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxleGFtJTIwcHJlcGFyYXRpb24lMjB0YXJnZXR8ZW58MHx8fHwxNzUzNTkxMTMwfDA&ixlib=rb-4.1.0&q=80&w=1080", 
     dataAiHint: "exam preparation target", 
     href: "/study/courses/exam-foundation" 
   },
@@ -69,9 +69,9 @@ const mockCourses: Course[] = [
     descriptionHi: "हिंग्लिश और क्षेत्रीय भाषाओं के लिए वॉयस-टू-नोट्स सुविधा का प्रभावी ढंग से उपयोग करना सीखें। अपनी अध्ययन दक्षता को अधिकतम करें।", 
     icon: Mic, 
     tags: ["Productivity", "Study Skills", "AI Tool", "Note Taking"], 
-    imageUrl: "https://placehold.co/300x200.png", 
+    imageUrl: "https://images.unsplash.com/photo-1659083725992-9d88c12e719c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtaWNyb3Bob25lJTIwYXVkaW8lMjB3YXZlfGVufDB8fHx8MTc1MzU5MTEzMHww&ixlib.rb-4.1.0&q=80&w=1080", 
     dataAiHint: "microphone audio wave", 
-    href: "/study/my-notes" // Link to notes page where this feature would be used
+    href: "/handwriting-notes" // Link to notes page where this feature would be used
   },
 ];
 
