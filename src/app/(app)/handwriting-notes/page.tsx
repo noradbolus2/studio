@@ -1,20 +1,21 @@
 
 "use client";
 
-import { useState, type ChangeEvent, useRef } from 'react';
+import { useState, type ChangeEvent, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
-import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch, ArrowLeft, Hand } from 'lucide-react';
+import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch, ArrowLeft, Hand, Camera, Info } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
+import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
 const handwritingStyles = [
     { name: 'Kalam (Regular)', className: 'font-handwriting' },
@@ -33,11 +34,117 @@ export default function HandwritingNotesPage() {
   const [isTraining, setIsTraining] = useState(false);
   const [matchedStyle, setMatchedStyle] = useState(handwritingStyles[0]);
   const [matchingPercentage, setMatchingPercentage] = useState<number | null>(null);
+  
   const [isTouchlessModeOn, setIsTouchlessModeOn] = useState(false);
+  const [gestureStatus, setGestureStatus] = useState("Idle");
+  const [lastGesture, setLastGesture] = useState<string | null>(null);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
   const router = useRouter();
+  const { toast } = useToast();
+  
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const handLandmarkerRef = useRef<HandLandmarker | null>(null);
+  const requestRef = useRef<number>();
+
+  // Initialize Hand Landmarker
+  useEffect(() => {
+    const createHandLandmarker = async () => {
+      try {
+        const vision = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+        );
+        const landmarker = await HandLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
+            delegate: "GPU",
+          },
+          runningMode: "VIDEO",
+          numHands: 2,
+        });
+        handLandmarkerRef.current = landmarker;
+        setGestureStatus("Ready");
+      } catch (error) {
+        console.error("Error loading Hand Landmarker:", error);
+        setGestureStatus("Error loading model");
+        toast({ variant: "destructive", title: "AI Model Error", description: "Could not load the hand tracking model."});
+      }
+    };
+    createHandLandmarker();
+  }, [toast]);
+  
+  // Handle Camera and Gesture Loop
+  useEffect(() => {
+    let stream: MediaStream;
+    const enableWebcam = async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.addEventListener("loadeddata", predictWebcam);
+        }
+      } catch (err) {
+        console.error("Error accessing webcam:", err);
+        setGestureStatus("Camera access denied");
+        toast({ variant: "destructive", title: "Camera Error", description: "Please allow camera access to use gesture controls."});
+        setIsTouchlessModeOn(false);
+      }
+    };
+
+    const disableWebcam = () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+      if (videoRef.current?.srcObject) {
+        const mediaStream = videoRef.current.srcObject as MediaStream;
+        mediaStream.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+    };
+
+    if (isTouchlessModeOn) {
+      enableWebcam();
+    } else {
+      disableWebcam();
+    }
+
+    return () => {
+      disableWebcam();
+    };
+  }, [isTouchlessModeOn]); // Re-run when touchless mode is toggled
+
+  const predictWebcam = async () => {
+    if (!videoRef.current || !handLandmarkerRef.current || !isTouchlessModeOn) {
+      return;
+    }
+    
+    const landmarker = handLandmarkerRef.current;
+    const video = videoRef.current;
+    
+    if (video.currentTime === (video as any).lastWebcamTime) {
+      requestRef.current = requestAnimationFrame(predictWebcam);
+      return;
+    }
+    (video as any).lastWebcamTime = video.currentTime;
+    
+    const startTimeMs = performance.now();
+    const results = await landmarker.detectForVideo(video, startTimeMs);
+
+    if (results.landmarks && results.landmarks.length > 0) {
+      setGestureStatus("Detecting...");
+      // NOTE: Basic gesture detection logic would go here.
+      // This is a complex task. For this prototype, we will just show the detection status.
+      // A real implementation would analyze the coordinates of `results.landmarks`
+      // over several frames to determine swipes, pinches, etc.
+      setLastGesture(`Hand${results.landmarks.length > 1 ? 's' : ''} detected`);
+    } else {
+      setLastGesture(null);
+    }
+    
+    requestRef.current = requestAnimationFrame(predictWebcam);
+  };
+
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -166,9 +273,18 @@ export default function HandwritingNotesPage() {
                 />
             </div>
             {isTouchlessModeOn && (
-                <CardDescription className="pt-2 text-primary">
-                    Touchless mode is active. Use hand gestures to control the app. (Feature in development)
-                </CardDescription>
+                <div className="pt-2">
+                    <div className="flex items-center gap-4 bg-muted/50 p-2 rounded-lg">
+                        <div className="relative w-24 h-20 bg-black rounded-md overflow-hidden">
+                           <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline/>
+                        </div>
+                        <div className="text-xs space-y-1">
+                            <p><strong>Status:</strong> <span className="text-primary">{gestureStatus}</span></p>
+                            <p><strong>Last Gesture:</strong> {lastGesture || 'None'}</p>
+                             <p className="text-muted-foreground italic pt-1">This is a proof-of-concept. Full gesture controls coming soon!</p>
+                        </div>
+                    </div>
+                </div>
             )}
         </CardHeader>
       </Card>
