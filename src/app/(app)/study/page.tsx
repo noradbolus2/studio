@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MindDiaryCard } from "@/components/shared/MindDiaryCard";
-import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight, Brain, History, Target, Presentation, FileSignature } from "lucide-react";
+import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight, Brain, History, Target, Presentation, FileSignature, Lightbulb } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner";
 import Link from "next/link"; // Added Link
@@ -18,14 +18,7 @@ const studySections = [
   { titleEn: "Brainmate™", titleHi: "ब्रेनमेट™", descriptionEn: "Concept Explanations", descriptionHi: "अवधारणा स्पष्टीकरण", icon: Brain, ctaEn: "Ask Brainmate", ctaHi: "ब्रेनमेट से पूछें", href: "/brainmate" },
   { titleEn: "Presentation Coach", titleHi: "प्रस्तुति कोच", descriptionEn: "Practice your public speaking skills.", descriptionHi: "अपने सार्वजनिक बोलने के कौशल का अभ्यास करें।", icon: Presentation, ctaEn: "Start Practice", ctaHi: "अभ्यास शुरू करें", href: "/presentation-coach" },
   { titleEn: "Kalam AI™ Handwriting", titleHi: "कलम AI™ हस्तलेखन", descriptionEn: "Convert typed text to your handwriting.", descriptionHi: "टाइप किए गए टेक्स्ट को अपनी लिखावट में बदलें।", icon: FileSignature, ctaEn: "Start Writing", ctaHi: "लिखना शुरू करें", href: "/handwriting-notes" },
-];
-
-const courseHighlights = [
-    { titleEn: "AI + Coding for Kids", titleHi: "बच्चों के लिए AI + कोडिंग", icon: Bot, detailsEn: "Language toggle: English, Hinglish, Regional + English", detailsHi: "भाषा टॉगल: अंग्रेजी, हिंग्लिश, क्षेत्रीय + अंग्रेजी", href: "/study/courses" },
-    { titleEn: "NCERT & State Board", titleHi: "NCERT और राज्य बोर्ड", icon: BookMarked, detailsEn: "Full syllabus coverage", detailsHi: "पूर्ण पाठ्यक्रम कवरेज", href: "/class-6-12-books" },
-    { titleEn: "Previous Year Papers", titleHi: "पिछले वर्ष के प्रश्नपत्र", icon: Edit, detailsEn: "Practice with real exam questions", detailsHi: "वास्तविक परीक्षा प्रश्नों के साथ अभ्यास करें", href: "/test-series" },
-    { titleEn: "Smart Voice-to-Notes", titleHi: "स्मार्ट वॉयस-टू-नोट्स", icon: Languages, detailsEn: "Hinglish + Regional language support", detailsHi: "हिंग्लिश + क्षेत्रीय भाषा समर्थन", href: "/handwriting-notes" },
-    { titleEn: "Parent Mode", titleHi: "अभिभावक मोड", icon: PlaySquare, detailsEn: "Explainer videos for kids", detailsHi: "बच्चों के लिए व्याख्याता वीडियो", href: "/parent-mode" }
+  { titleEn: "Aura Map", titleHi: "ऑरा मैप", descriptionEn: "Check your Brain Fitness Score.", descriptionHi: "अपना ब्रेन फिटनेस स्कोर जांचें।", icon: Lightbulb, ctaEn: "View Aura Map", ctaHi: "ऑरा मैप देखें", href: "/brain-scan-report" },
 ];
 
 
@@ -40,8 +33,6 @@ export default function StudyPage() {
             <BilingualText en="All your learning tools in one place." hi="आपके सभी शिक्षण उपकरण एक ही स्थान पर।" />
         </p>
       </header>
-
-      <MindDiaryCard />
 
       <section>
         <h2 className="text-xl font-semibold mb-4 font-headline"><BilingualText en="Learning Sections" hi="शिक्षण अनुभाग" /></h2>
@@ -68,30 +59,6 @@ export default function StudyPage() {
         </div>
       </section>
       
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
-            <BookMarked className="h-7 w-7 text-primary" />
-            <BilingualText en="Courses Highlights" hi="पाठ्यक्रम की मुख्य विशेषताएं" />
-          </CardTitle>
-          <CardDescription><BilingualText en="Key features available in our courses." hi="हमारे पाठ्यक्रमों में उपलब्ध मुख्य विशेषताएं।" /></CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {courseHighlights.map(highlight => (
-            <Link key={highlight.titleEn} href={highlight.href} className="block group">
-              <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg group-hover:bg-primary/10 transition-colors">
-                <highlight.icon className="h-6 w-6 text-accent mt-1 shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-foreground group-hover:text-primary"><BilingualText en={highlight.titleEn} hi={highlight.titleHi} /></h4>
-                  <p className="text-sm text-muted-foreground"><BilingualText en={highlight.detailsEn} hi={highlight.detailsHi} /></p>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground ml-auto self-center group-hover:translate-x-1 transition-transform"/>
-              </div>
-            </Link>
-          ))}
-        </CardContent>
-      </Card>
-
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-headline">
