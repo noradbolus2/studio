@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, BarChart3, Trophy, LifeBuoy, ArrowRight } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, BarChart3, Trophy, LifeBuoy, ArrowRight, Info } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -461,6 +461,12 @@ export default function ProfilePage() {
                 <Link href="/settings/accounts">
                     <Link2 className="h-5 w-5 text-muted-foreground" />
                     <BilingualText en="Manage Linked Accounts" hi="जुड़े हुए खाते प्रबंधित करें" />
+                </Link>
+            </Button>
+             <Button asChild variant="outline" className="w-full justify-start gap-2">
+                <Link href="/about">
+                    <Info className="h-5 w-5 text-muted-foreground" />
+                    <BilingualText en="About OSO" hi="OSO के बारे में" />
                 </Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start gap-2">
