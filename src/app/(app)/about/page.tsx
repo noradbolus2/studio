@@ -4,7 +4,7 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Rocket, CheckCircle, School, Package, Bike, Briefcase, Wand2, Calendar, Brain, Heart, Users, Link as LinkIcon, Flag } from "lucide-react";
+import { ArrowLeft, Rocket, CheckCircle, School, Package, Bike, Briefcase, Wand2, Calendar, Brain, Heart, Users, Link as LinkIcon, Flag, Pin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { LucideIcon } from 'lucide-react';
 import Link from "next/link";
@@ -96,8 +96,8 @@ const aboutData = {
     ]
   },
   next: {
-    title: "What’s Next",
-    icon: Heart,
+    title: "Coming Soon",
+    icon: Pin,
     content: [
       "State-level LMS for govt tenders",
       "AI + Coding courses in regional languages",
@@ -187,3 +187,4 @@ export default function AboutPage() {
         </div>
     );
 }
+
