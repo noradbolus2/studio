@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MindDiaryCard } from "@/components/shared/MindDiaryCard";
-import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight, Brain, History, Target } from "lucide-react";
+import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight, Brain, History, Target, Presentation } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner";
 import Link from "next/link"; // Added Link
@@ -16,7 +16,7 @@ const studySections = [
   { titleEn: "My Notes", titleHi: "मेरे नोट्स", descriptionEn: "Access your saved notes", descriptionHi: "अपने सहेजे गए नोट्स तक पहुंचें", icon: Edit, ctaEn: "View Notes", ctaHi: "नोट्स देखें", href: "/study/my-notes" },
   { titleEn: "Revision Vault", titleHi: "रिवीजन वॉल्ट", descriptionEn: "Review marked topics & ask doubts", descriptionHi: "चिह्नित विषय देखें और शंकाएं पूछें", icon: History, ctaEn: "Open Vault", ctaHi: "वॉल्ट खोलें", href: "/study/revision-vault" },
   { titleEn: "Brainmate™", titleHi: "ब्रेनमेट™", descriptionEn: "Concept Explanations", descriptionHi: "अवधारणा स्पष्टीकरण", icon: Brain, ctaEn: "Ask Brainmate", ctaHi: "ब्रेनमेट से पूछें", href: "/brainmate" },
-  { titleEn: "Live Doubt Solving", titleHi: "लाइव शंका समाधान", descriptionEn: "Get expert help instantly", descriptionHi: "तुरंत विशेषज्ञ सहायता प्राप्त करें", icon: MessageCircleQuestion, ctaEn: "Join Session", ctaHi: "सत्र में शामिल हों", href: "/live-classes/all" },
+  { titleEn: "Presentation Coach", titleHi: "प्रस्तुति कोच", descriptionEn: "Practice your public speaking skills.", descriptionHi: "अपने सार्वजनिक बोलने के कौशल का अभ्यास करें।", icon: Presentation, ctaEn: "Start Practice", ctaHi: "अभ्यास शुरू करें", href: "/presentation-coach" },
 ];
 
 const courseHighlights = [
