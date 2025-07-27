@@ -90,13 +90,13 @@ const aboutData = {
     title: "Partner With OSO",
     icon: Users,
     content: [
-      { title: "For Schools", text: "Get OSO SchoolX Panel with library + student progress tools", icon: School, href: "/login?role=school" },
-      { title: "For Vendors", text: "Sell academic items on OSO, get daily payouts", icon: Package, href: "/login?role=vendor" },
-      { title: "For Riders", text: "Work flexibly, get bonuses for timely deliveries", icon: Bike, href: "/login?role=rider" }
+      { title: "For Schools", text: "Get OSO SchoolX Panel with library + student progress tools", icon: School },
+      { title: "For Vendors", text: "Sell academic items on OSO, get daily payouts", icon: Package },
+      { title: "For Riders", text: "Work flexibly, get bonuses for timely deliveries", icon: Bike }
     ]
   },
   next: {
-    title: "Coming Soon",
+    title: "What’s Next",
     icon: Pin,
     content: [
       "State-level LMS for govt tenders",
@@ -168,12 +168,10 @@ export default function AboutPage() {
                     {aboutData.partner.content.map((item, index) => {
                         const Icon = item.icon;
                         return (
-                            <Link key={index} href={item.href} className="block hover:bg-muted/70 rounded-lg transition-colors">
-                                <div className="p-3 bg-muted/50 rounded-lg">
-                                    <h4 className="font-semibold flex items-center gap-2 text-primary"><Icon className="h-5 w-5"/> {item.title}</h4>
-                                    <p className="text-sm text-muted-foreground ml-7">{item.text}</p>
-                                </div>
-                            </Link>
+                            <div key={index} className="p-3 bg-muted/50 rounded-lg">
+                                <h4 className="font-semibold flex items-center gap-2 text-primary"><Icon className="h-5 w-5"/> {item.title}</h4>
+                                <p className="text-sm text-muted-foreground ml-7">{item.text}</p>
+                            </div>
                         );
                     })}
                 </div>
@@ -188,3 +186,4 @@ export default function AboutPage() {
     );
 }
 
+    
