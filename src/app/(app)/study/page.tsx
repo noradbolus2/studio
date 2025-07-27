@@ -1,4 +1,6 @@
 
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MindDiaryCard } from "@/components/shared/MindDiaryCard";
@@ -6,6 +8,7 @@ import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Lan
 import { BilingualText } from "@/components/shared/BilingualText";
 import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner";
 import Link from "next/link"; // Added Link
+import { cn } from "@/lib/utils"; // Added for styling
 
 const studySections = [
   { titleEn: "Courses", titleHi: "पाठ्यक्रम", descriptionEn: "AI, Coding, NCERT & more", descriptionHi: "एआई, कोडिंग, एनसीईआरटी और अधिक", icon: BookMarked, ctaEn: "Explore Courses", ctaHi: "पाठ्यक्रम देखें", href: "/study/courses" },
@@ -17,11 +20,11 @@ const studySections = [
 ];
 
 const courseHighlights = [
-    { titleEn: "AI + Coding for Kids", titleHi: "बच्चों के लिए AI + कोडिंग", icon: Bot, detailsEn: "Language toggle: English, Hinglish, Regional + English", detailsHi: "भाषा टॉगल: अंग्रेजी, हिंग्लिश, क्षेत्रीय + अंग्रेजी" },
-    { titleEn: "NCERT & State Board", titleHi: "NCERT और राज्य बोर्ड", icon: BookMarked, detailsEn: "Full syllabus coverage", detailsHi: "पूर्ण पाठ्यक्रम कवरेज" },
-    { titleEn: "Previous Year Papers", titleHi: "पिछले वर्ष के प्रश्नपत्र", icon: Edit, detailsEn: "Practice with real exam questions", detailsHi: "वास्तविक परीक्षा प्रश्नों के साथ अभ्यास करें" },
-    { titleEn: "Smart Voice-to-Notes", titleHi: "स्मार्ट वॉयस-टू-नोट्स", icon: Languages, detailsEn: "Hinglish + Regional language support", detailsHi: "हिंग्लिश + क्षेत्रीय भाषा समर्थन" },
-    { titleEn: "Parent Mode", titleHi: "अभिभावक मोड", icon: PlaySquare, detailsEn: "Explainer videos for kids", detailsHi: "बच्चों के लिए व्याख्याता वीडियो" }
+    { titleEn: "AI + Coding for Kids", titleHi: "बच्चों के लिए AI + कोडिंग", icon: Bot, detailsEn: "Language toggle: English, Hinglish, Regional + English", detailsHi: "भाषा टॉगल: अंग्रेजी, हिंग्लिश, क्षेत्रीय + अंग्रेजी", href: "/study/courses" },
+    { titleEn: "NCERT & State Board", titleHi: "NCERT और राज्य बोर्ड", icon: BookMarked, detailsEn: "Full syllabus coverage", detailsHi: "पूर्ण पाठ्यक्रम कवरेज", href: "/class-6-12-books" },
+    { titleEn: "Previous Year Papers", titleHi: "पिछले वर्ष के प्रश्नपत्र", icon: Edit, detailsEn: "Practice with real exam questions", detailsHi: "वास्तविक परीक्षा प्रश्नों के साथ अभ्यास करें", href: "/test-series" },
+    { titleEn: "Smart Voice-to-Notes", titleHi: "स्मार्ट वॉयस-टू-नोट्स", icon: Languages, detailsEn: "Hinglish + Regional language support", detailsHi: "हिंग्लिश + क्षेत्रीय भाषा समर्थन", href: "/handwriting-notes" },
+    { titleEn: "Parent Mode", titleHi: "अभिभावक मोड", icon: PlaySquare, detailsEn: "Explainer videos for kids", detailsHi: "बच्चों के लिए व्याख्याता वीडियो", href: "/parent-mode" }
 ];
 
 
@@ -74,13 +77,16 @@ export default function StudyPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           {courseHighlights.map(highlight => (
-            <div key={highlight.titleEn} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-              <highlight.icon className="h-6 w-6 text-accent mt-1 shrink-0" />
-              <div>
-                <h4 className="font-semibold"><BilingualText en={highlight.titleEn} hi={highlight.titleHi} /></h4>
-                <p className="text-sm text-muted-foreground"><BilingualText en={highlight.detailsEn} hi={highlight.detailsHi} /></p>
+            <Link key={highlight.titleEn} href={highlight.href} className="block group">
+              <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg group-hover:bg-primary/10 transition-colors">
+                <highlight.icon className="h-6 w-6 text-accent mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-foreground group-hover:text-primary"><BilingualText en={highlight.titleEn} hi={highlight.titleHi} /></h4>
+                  <p className="text-sm text-muted-foreground"><BilingualText en={highlight.detailsEn} hi={highlight.detailsHi} /></p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground ml-auto self-center group-hover:translate-x-1 transition-transform"/>
               </div>
-            </div>
+            </Link>
           ))}
         </CardContent>
       </Card>
