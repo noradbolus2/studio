@@ -8,12 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
-import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch, ArrowLeft } from 'lucide-react';
+import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch, ArrowLeft, Hand } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { Switch } from '@/components/ui/switch';
 
 const handwritingStyles = [
     { name: 'Kalam (Regular)', className: 'font-handwriting' },
@@ -32,6 +33,7 @@ export default function HandwritingNotesPage() {
   const [isTraining, setIsTraining] = useState(false);
   const [matchedStyle, setMatchedStyle] = useState(handwritingStyles[0]);
   const [matchingPercentage, setMatchingPercentage] = useState<number | null>(null);
+  const [isTouchlessModeOn, setIsTouchlessModeOn] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -150,6 +152,26 @@ export default function HandwritingNotesPage() {
             <BilingualText en="Back" hi="वापस"/>
         </Button>
       </div>
+
+      <Card>
+        <CardHeader>
+            <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center gap-2">
+                    <Hand className="text-accent"/> Touchless AI Control
+                </CardTitle>
+                <Switch
+                    checked={isTouchlessModeOn}
+                    onCheckedChange={setIsTouchlessModeOn}
+                    id="touchless-mode"
+                />
+            </div>
+            {isTouchlessModeOn && (
+                <CardDescription className="pt-2 text-primary">
+                    Touchless mode is active. Use hand gestures to control the app. (Feature in development)
+                </CardDescription>
+            )}
+        </CardHeader>
+      </Card>
 
       <Card>
         <CardHeader>
