@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupeeIcon, BarChart3, Trophy, LifeBuoy, ArrowRight, Info } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupee, BarChart3, Trophy, LifeBuoy, ArrowRight, Info, ClipboardList } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -291,6 +291,26 @@ export default function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+      
+      <Card>
+          <CardContent className="p-4">
+            <Link href="/student-dashboard" passHref>
+              <Button variant="secondary" className="w-full h-auto py-3">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-3">
+                    <ClipboardList className="h-6 w-6 text-primary"/>
+                    <div className="text-left">
+                      <p className="font-semibold text-md"><BilingualText en="Student Dashboard" hi="छात्र डैशबोर्ड" /></p>
+                      <p className="text-xs text-muted-foreground"><BilingualText en="Your personal learning portfolio & tools." hi="आपका व्यक्तिगत शिक्षण पोर्टफोलियो और उपकरण।" /></p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-primary"/>
+                </div>
+              </Button>
+            </Link>
+          </CardContent>
+      </Card>
+
 
        <Card>
           <CardContent className="p-4">
@@ -300,8 +320,8 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3">
                     <School className="h-6 w-6 text-primary"/>
                     <div className="text-left">
-                      <p className="font-semibold text-md">OSO Campus Switch™</p>
-                      <p className="text-xs text-muted-foreground">Digitally apply to a new School/College</p>
+                      <p className="font-semibold text-md"><BilingualText en="OSO Campus Switch™" hi="OSO कैंपस स्विच™" /></p>
+                      <p className="text-xs text-muted-foreground"><BilingualText en="Digitally apply to a new School/College" hi="डिजिटल रूप से नए स्कूल/कॉलेज में आवेदन करें" /></p>
                     </div>
                   </div>
                   <ArrowRight className="h-5 w-5 text-primary"/>
@@ -486,4 +506,3 @@ export default function ProfilePage() {
   );
 }
 
-    
