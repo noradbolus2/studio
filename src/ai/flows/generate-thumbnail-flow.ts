@@ -35,22 +35,22 @@ export async function generateAiThumbnail(input: GenerateThumbnailInput): Promis
     async (input) => {
 
       const teacherPromptPart = input.teacherImageUri 
-        ? `An Indian teacher is the main subject. Their facial expression should match the "${input.mood}" mood (e.g., energetic/excited for 'Energetic', focused/serious for 'Exam Mode'). The teacher's image provided should be used as a reference for their appearance. The background should be abstract and related to the style. Do NOT just place the image on a background; integrate it naturally.`
-        : `The background should be an abstract representation of the subject. For example, for 'Thermodynamics', use fire, energy bursts, or atoms. For 'Maths', use abstract geometric shapes or graphs.`;
+        ? `The main subject is an Indian teacher, whose appearance should be based on the provided reference image. Their facial expression should match the "${input.mood}" mood (e.g., energetic/excited for 'Energetic', focused/serious for 'Exam Mode'). Integrate the teacher naturally into a dynamic background related to the subject, not just pasted on top.`
+        : `The main visual element should be an abstract, artistic representation of the subject. For example, for 'Thermodynamics', use swirling fire and energy patterns. For 'Maths', use abstract geometric shapes or glowing graphs.`;
         
       const promptText = `
-        Generate a high-energy, high-contrast, visually engaging YouTube thumbnail for an educational video. The thumbnail must be 1280x720 pixels.
+        You are a professional graphic designer creating a high-quality, photorealistic, and visually engaging promotional poster for an educational course. The poster must be high-resolution (1280x720 pixels). It should look modern, unique, and compelling, avoiding generic stock photo aesthetics.
 
         **CRITICAL INSTRUCTIONS:**
-        1.  **Primary Text:** The video title is "${input.videoTitle}". This text MUST be the largest and most prominent text on the thumbnail. Use a bold, modern, sans-serif font.
-        2.  **Secondary Text/Badge:** Include the subject "${input.subject}" as a smaller badge or text element.
+        1.  **Primary Text:** The course title is "${input.videoTitle}". This text MUST be the largest and most prominent element, rendered in a bold, modern, sans-serif font.
+        2.  **Secondary Text/Badge:** Include the subject "${input.subject}" as a smaller, stylish badge or text element.
         3.  **Mood & Style:** The mood is "${input.mood}". Adapt the design accordingly:
-            *   **Energetic/Motivational:** Use bright, dynamic colors like yellows, oranges, and blues. Use explosive backgrounds, speed lines, or glowing effects. The text should be bold and may have a slight tilt.
-            *   **Calm:** Use softer colors like light blues, greens, and pastels. The background should be clean and uncluttered. Use a clean, sans-serif font.
-            *   **Exam Mode:** Use a more serious and high-contrast color scheme like red, black, and white. Use elements like a timer icon, a target icon, or a graph background. The font should be impactful and clear.
-        4.  **Imagery:** ${teacherPromptPart}
-        5.  **Layout:** The main text should occupy the upper-left or central part of the thumbnail. The person (if any) should be on the right side. This follows standard CTR optimization practices. DO NOT place text too close to the edges.
-        6.  **Overall Feel:** The thumbnail should look professional, clickable, and clear, as if made by a top educational content creator. It must be in English. It should NOT look like a generic stock photo.
+            *   **Energetic/Motivational:** Use a vibrant, dynamic color palette (yellows, oranges, electric blues). The background should feature abstract elements like light streaks, energy bursts, or glowing geometric patterns. Text should be bold and impactful, possibly with a slight angle or 3D effect.
+            *   **Calm:** Employ a softer, clean color scheme (light blues, greens, pastels) with an uncluttered, minimalist background. Fonts should be clean, elegant, and sans-serif.
+            *   **Exam Mode:** Use a high-contrast, serious palette (red, black, white, deep blue). Background elements could include subtle grids, graphs, or target icons. Fonts must be extremely clear and impactful.
+        4.  **Imagery & Composition:** ${teacherPromptPart} The overall composition must be well-balanced and professional.
+        5.  **Layout:** Follow standard design principles. The main text should be in a high-contrast area, like the upper-left or center. If a person is present, place them on the right, looking towards the text. Ensure a clear visual hierarchy. DO NOT place text too close to the edges.
+        6.  **Final Quality:** The final image must be sharp, clear, and look like it was designed by a top-tier educational content creator. It must be in English.
       `;
       
       let promptPayload;
