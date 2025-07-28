@@ -4,10 +4,10 @@
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; 
-import { Edit, PlusCircle, Search, Trash2, ArrowLeft, FileText, Bot } from "lucide-react";
+import { Edit, PlusCircle, Search, Trash2, ArrowLeft, FileText, Bot, Volume2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +45,7 @@ export default function MyNotesPage() {
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(() => {
     let currentUser: ProfileFormData | null = null;
@@ -103,6 +104,33 @@ export default function MyNotesPage() {
       variant: "destructive"
     });
   };
+  
+  const handleReadAloud = (textToRead: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) {
+        toast({ title: "TTS Not Supported", description: "Your browser does not support text-to-speech.", variant: "destructive" });
+        return;
+    }
+
+    // Stop any previously playing speech
+    if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+    }
+
+    const newUtterance = new SpeechSynthesisUtterance(textToRead);
+    
+    // Retrieve and apply saved settings
+    const savedSettings = JSON.parse(localStorage.getItem('ttsSettings') || '{}');
+    const voices = window.speechSynthesis.getVoices();
+    if (savedSettings.voiceURI && voices.length > 0) {
+        const selectedVoice = voices.find(v => v.voiceURI === savedSettings.voiceURI);
+        if (selectedVoice) newUtterance.voice = selectedVoice;
+    }
+    newUtterance.rate = savedSettings.rate || 1;
+    newUtterance.pitch = savedSettings.pitch || 1;
+    
+    utteranceRef.current = newUtterance;
+    window.speechSynthesis.speak(newUtterance);
+  };
 
   const handleEditNote = (noteId: string) => {
     router.push(`/study/my-notes/edit/${noteId}`);
@@ -123,6 +151,9 @@ export default function MyNotesPage() {
             <p className="text-sm text-muted-foreground line-clamp-2">{note.excerpt}</p>
         </CardContent>
         <CardFooter className="flex gap-2 justify-end text-xs pt-2 border-t">
+            <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => handleReadAloud(note.content)}>
+                <Volume2 className="mr-1 h-3 w-3"/> Read Aloud
+            </Button>
             {note.teacherId === profileData?.email ? (
                 <>
                     <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => handleEditNote(note.id)}>

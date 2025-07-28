@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupee, BarChart3, Trophy, LifeBuoy, ArrowRight, Info, ClipboardList, BookCheck, Eye } from "lucide-react";
+import { Award, Settings, LogOut, UserCircle2, Edit, Mail, Phone, School, CalendarDays, Users, TargetIcon, MapPin, Settings2, Bell, Link2, History, Receipt, Video, PackageSearch, IndianRupee, BarChart3, Trophy, LifeBuoy, ArrowRight, Info, ClipboardList, BookCheck, Eye, Accessibility } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import Link from "next/link";
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -507,6 +507,12 @@ export default function ProfilePage() {
                 <Link href="/settings/app">
                     <Settings2 className="h-5 w-5 text-muted-foreground" />
                     <BilingualText en="App Settings" hi="ऐप सेटिंग्स" />
+                </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+                <Link href="/settings/accessibility">
+                    <Accessibility className="h-5 w-5 text-muted-foreground" />
+                    <BilingualText en="Accessibility" hi="अभिगम्यता" />
                 </Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start gap-2">
