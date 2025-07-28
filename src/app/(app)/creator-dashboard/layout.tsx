@@ -1,3 +1,4 @@
+
 "use client"
 import {
   Sidebar,
@@ -39,7 +40,7 @@ import { useToast } from '@/hooks/use-toast';
 const sidebarItems = [
     { href: "/creator-dashboard", icon: Home, label: "Dashboard" },
     { href: "/creator-dashboard/ai-assistant", icon: Bot, label: "AI Assistant" },
-    { href: "/creator-dashboard/my-projects", icon: ClipboardList, label: "My Tasks" },
+    { href: "/creator-dashboard/orders", icon: ClipboardList, label: "My Tasks" },
     { href: "/creator-dashboard/earnings", icon: Wallet, label: "Earnings" },
     { href: "#", icon: CalendarCheck, label: "Mentorship Bookings" },
     { href: "#", icon: Store, label: "My Storefront" },
@@ -143,7 +144,7 @@ export default function CreatorDashboardLayout({ children }: { children: React.R
                  {/* CTA Button */}
                 <div className="p-3 border-b">
                     <Button className="w-full" asChild>
-                        <Link href="/creator-dashboard/my-projects">
+                        <Link href="/creator-dashboard/orders">
                             <CirclePlus className="mr-2 h-4 w-4"/>
                             Start New Task
                         </Link>
