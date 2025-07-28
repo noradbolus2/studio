@@ -217,11 +217,10 @@ export default function AuthPage() {
         <Button
             onClick={() => router.push('/login')}
             variant="outline"
-            size="icon"
             className="text-foreground hover:bg-accent/10"
-            aria-label="Back to role selection"
         >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            <BilingualText en="Back to Roles" hi="भूमिका पर वापस" lang={currentLang} />
         </Button>
       </div>
       <Button
