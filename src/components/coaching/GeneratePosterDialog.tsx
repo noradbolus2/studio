@@ -93,60 +93,62 @@ export function GeneratePosterDialog({ isOpen, onOpenChange }: GeneratePosterDia
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh]">
+            <DialogContent className="max-h-[90vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2"><Wand2 /> AI Poster Generator</DialogTitle>
                     <DialogDescription>
                         Create an eye-catching promotional poster for your course.
                     </DialogDescription>
                 </DialogHeader>
-                <ScrollArea className="pr-4 -mr-4">
-                    <div className="space-y-4 py-2">
-                        <div>
-                            <Label htmlFor="title">Course Title*</Label>
-                            <Input id="title" name="title" value={formData.title} onChange={handleInputChange} placeholder="e.g., Mastering Modern Physics" />
-                        </div>
-                        <div>
-                            <Label htmlFor="subject">Subject / Exam*</Label>
-                            <Input id="subject" name="subject" value={formData.subject} onChange={handleInputChange} placeholder="e.g., NEET 2025 / Class 12" />
-                        </div>
-                        <div>
-                            <Label>Mood / Style*</Label>
-                            <Select value={formData.mood} onValueChange={handleMoodChange}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Energetic">Energetic</SelectItem>
-                                    <SelectItem value="Motivational">Motivational</SelectItem>
-                                    <SelectItem value="Calm">Calm</SelectItem>
-                                    <SelectItem value="Exam Mode">Exam Mode</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Label htmlFor="teacher-photo" className="flex items-center gap-1.5">
-                                <ImageIcon className="h-4 w-4" /> Add Your Face (Optional)
-                            </Label>
-                            <Input id="teacher-photo" type="file" accept="image/*" onChange={handleTeacherPhotoChange} className="cursor-pointer file:mr-2 file:py-2 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
-                            {teacherPhotoPreview && <Image src={teacherPhotoPreview} alt="Teacher preview" width={60} height={60} className="mt-2 rounded-md border p-1" />}
-                        </div>
-                        {isGenerating && (
-                            <div className="flex justify-center py-6">
-                                <LoadingSpinner />
-                            </div>
-                        )}
-                        {generatedImage && (
-                            <div className="mt-4 space-y-3">
-                                <h4 className="text-sm font-semibold text-center">Generated Poster:</h4>
-                                <Image src={generatedImage} alt="AI Generated Poster" width={1280} height={720} className="rounded-lg border-2 border-primary shadow-lg" />
-                                <div className="flex gap-2">
-                                    <Button type="button" variant="outline" size="sm" className="w-full" onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download</Button>
-                                    <Button type="button" variant="ghost" size="sm" className="w-full" onClick={handleGenerate}><RefreshCw className="mr-2 h-4 w-4" /> Generate Again</Button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </ScrollArea>
-                <DialogFooter className="pt-4 border-t">
+                <div className="flex-grow overflow-hidden">
+                  <ScrollArea className="h-full pr-4">
+                      <div className="space-y-4 py-2">
+                          <div>
+                              <Label htmlFor="title">Course Title*</Label>
+                              <Input id="title" name="title" value={formData.title} onChange={handleInputChange} placeholder="e.g., Mastering Modern Physics" />
+                          </div>
+                          <div>
+                              <Label htmlFor="subject">Subject / Exam*</Label>
+                              <Input id="subject" name="subject" value={formData.subject} onChange={handleInputChange} placeholder="e.g., NEET 2025 / Class 12" />
+                          </div>
+                          <div>
+                              <Label>Mood / Style*</Label>
+                              <Select value={formData.mood} onValueChange={handleMoodChange}>
+                                  <SelectTrigger><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                      <SelectItem value="Energetic">Energetic</SelectItem>
+                                      <SelectItem value="Motivational">Motivational</SelectItem>
+                                      <SelectItem value="Calm">Calm</SelectItem>
+                                      <SelectItem value="Exam Mode">Exam Mode</SelectItem>
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                          <div>
+                              <Label htmlFor="teacher-photo" className="flex items-center gap-1.5">
+                                  <ImageIcon className="h-4 w-4" /> Add Your Face (Optional)
+                              </Label>
+                              <Input id="teacher-photo" type="file" accept="image/*" onChange={handleTeacherPhotoChange} className="cursor-pointer file:mr-2 file:py-2 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
+                              {teacherPhotoPreview && <Image src={teacherPhotoPreview} alt="Teacher preview" width={60} height={60} className="mt-2 rounded-md border p-1" />}
+                          </div>
+                          {isGenerating && (
+                              <div className="flex justify-center py-6">
+                                  <LoadingSpinner />
+                              </div>
+                          )}
+                          {generatedImage && (
+                              <div className="mt-4 space-y-3">
+                                  <h4 className="text-sm font-semibold text-center">Generated Poster:</h4>
+                                  <Image src={generatedImage} alt="AI Generated Poster" width={1280} height={720} className="rounded-lg border-2 border-primary shadow-lg" />
+                                  <div className="flex gap-2">
+                                      <Button type="button" variant="outline" size="sm" className="w-full" onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download</Button>
+                                      <Button type="button" variant="ghost" size="sm" className="w-full" onClick={handleGenerate}><RefreshCw className="mr-2 h-4 w-4" /> Generate Again</Button>
+                                  </div>
+                              </div>
+                          )}
+                      </div>
+                  </ScrollArea>
+                </div>
+                <DialogFooter className="pt-4 border-t flex-shrink-0">
                     <Button type="button" onClick={handleGenerate} disabled={isGenerating}>
                         {isGenerating ? <LoadingSpinner /> : <Wand2 className="mr-2 h-4 w-4" />}
                         Generate Now
