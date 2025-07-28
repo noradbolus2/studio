@@ -13,6 +13,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { generateAiThumbnail, type GenerateThumbnailInput } from "@/ai/flows/generate-thumbnail-flow";
 import { Wand2, Download, RefreshCw, ImageIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface GeneratePosterDialogProps {
     isOpen: boolean;
@@ -94,14 +95,13 @@ export function GeneratePosterDialog({ isOpen, onOpenChange }: GeneratePosterDia
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[90vh] flex flex-col">
-                <DialogHeader>
+                <DialogHeader className="flex-shrink-0">
                     <DialogTitle className="flex items-center gap-2"><Wand2 /> AI Poster Generator</DialogTitle>
                     <DialogDescription>
                         Create an eye-catching promotional poster for your course.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="flex-grow overflow-hidden">
-                  <ScrollArea className="h-full pr-4">
+                <div className="flex-grow overflow-y-auto pr-4">
                       <div className="space-y-4 py-2">
                           <div>
                               <Label htmlFor="title">Course Title*</Label>
@@ -138,7 +138,7 @@ export function GeneratePosterDialog({ isOpen, onOpenChange }: GeneratePosterDia
                           {generatedImage && (
                               <div className="mt-4 space-y-3">
                                   <h4 className="text-sm font-semibold text-center">Generated Poster:</h4>
-                                  <Image src={generatedImage} alt="AI Generated Poster" width={1280} height={720} className="rounded-lg border-2 border-primary shadow-lg" />
+                                  <Image src={generatedImage} alt="AI Generated Poster" width={1280} height={720} className="rounded-lg border-2 border-primary shadow-lg w-full h-auto" />
                                   <div className="flex gap-2">
                                       <Button type="button" variant="outline" size="sm" className="w-full" onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download</Button>
                                       <Button type="button" variant="ghost" size="sm" className="w-full" onClick={handleGenerate}><RefreshCw className="mr-2 h-4 w-4" /> Generate Again</Button>
@@ -146,7 +146,6 @@ export function GeneratePosterDialog({ isOpen, onOpenChange }: GeneratePosterDia
                               </div>
                           )}
                       </div>
-                  </ScrollArea>
                 </div>
                 <DialogFooter className="pt-4 border-t flex-shrink-0">
                     <Button type="button" onClick={handleGenerate} disabled={isGenerating}>
