@@ -3,12 +3,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MindDiaryCard } from "@/components/shared/MindDiaryCard";
-import { BookMarked, Bot, MessageCircleQuestion, DownloadCloud, Users, Edit, Languages, PlaySquare, ArrowRight, Brain, History, Target, Presentation, FileSignature, Lightbulb } from "lucide-react";
+import { BookMarked, Bot, Target, Edit, History, Brain, Presentation, FileSignature, Lightbulb, ArrowRight } from "lucide-react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner";
-import Link from "next/link"; // Added Link
-import { cn } from "@/lib/utils"; // Added for styling
+import Link from "next/link";
 
 const studySections = [
   { titleEn: "Courses", titleHi: "पाठ्यक्रम", descriptionEn: "AI, Coding, NCERT & more", descriptionHi: "एआई, कोडिंग, एनसीईआरटी और अधिक", icon: BookMarked, ctaEn: "Explore Courses", ctaHi: "पाठ्यक्रम देखें", href: "/study/courses" },
@@ -59,25 +57,6 @@ export default function StudyPage() {
         </div>
       </section>
       
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
-            <DownloadCloud className="h-7 w-7 text-accent" />
-            <BilingualText en="OSO Pocket School™" hi="OSO पॉकेट स्कूल™" />
-          </CardTitle>
-          <CardDescription>
-            <BilingualText en="Offline learning engine. Access lessons anywhere, anytime." hi="ऑफ़लाइन शिक्षण इंजन। पाठों तक कहीं भी, कभी भी पहुँचें।" />
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Placeholder for Pocket School content or loading animation */}
-          <PocketSchoolLoadingAnimation />
-          <Button className="w-full mt-4" variant="outline">
-            <BilingualText en="Manage Offline Content" hi="ऑफ़लाइन सामग्री प्रबंधित करें" />
-          </Button>
-        </CardContent>
-      </Card>
-
     </div>
   );
 }
