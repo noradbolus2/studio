@@ -67,7 +67,7 @@ export async function generateAiThumbnail(input: GenerateThumbnailInput): Promis
         model: 'googleai/gemini-2.0-flash-preview-image-generation',
         prompt: promptPayload,
         config: {
-          responseModalities: ['IMAGE'],
+          responseModalities: ['TEXT', 'IMAGE'],
         },
       });
 
