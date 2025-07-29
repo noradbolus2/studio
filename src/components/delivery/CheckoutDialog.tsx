@@ -195,7 +195,7 @@ export function CheckoutDialog({ isOpen, onClose, cartItems, cartTotal, onConfir
 
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open) { onClose(); setStep('details'); }}}>
       <AlertDialogContent className="max-w-md">
         {renderContent()}
       </AlertDialogContent>
