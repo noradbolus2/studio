@@ -177,7 +177,8 @@ export default function ParentDashboardPage() {
 
       {/* OSO Brain Scan Widget */}
       <Card 
-        className="border-primary/20 shadow-lg shadow-primary/10 overflow-hidden" 
+        className="glass-card animate-float-in"
+        style={{ animationDelay: '100ms'}}
       >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline text-primary">
@@ -225,7 +226,8 @@ export default function ParentDashboardPage() {
       
       {/* Parent Alerts Widget */}
       <Card 
-        className="border-border"
+        className="glass-card animate-float-in"
+        style={{ animationDelay: '200ms'}}
       >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -246,7 +248,8 @@ export default function ParentDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* OSO Mind Diary Widget */}
         <Card 
-          className="border-border"
+          className="glass-card animate-float-in"
+          style={{ animationDelay: '300ms'}}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -268,7 +271,8 @@ export default function ParentDashboardPage() {
         
          {/* Goals + Motivation Tracker Widget */}
         <Card 
-          className="border-border"
+          className="glass-card animate-float-in"
+          style={{ animationDelay: '400ms'}}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -290,7 +294,8 @@ export default function ParentDashboardPage() {
        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Study Summary Widget */}
         <Card 
-          className="border-border"
+          className="glass-card animate-float-in"
+          style={{ animationDelay: '500ms'}}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -306,7 +311,8 @@ export default function ParentDashboardPage() {
         
         {/* Test Performance Widget */}
         <Card 
-          className="border-border"
+          className="glass-card animate-float-in"
+          style={{ animationDelay: '600ms'}}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -324,7 +330,8 @@ export default function ParentDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* OSO Orders Widget */}
         <Card 
-          className="border-border"
+          className="glass-card animate-float-in"
+          style={{ animationDelay: '700ms'}}
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -354,7 +361,8 @@ export default function ParentDashboardPage() {
         
         {/* Downloads + Documents Widget */}
         <Card 
-          className="border-border"
+          className="glass-card animate-float-in"
+          style={{ animationDelay: '800ms'}}
         >
           <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg font-headline">
@@ -378,7 +386,8 @@ export default function ParentDashboardPage() {
       </div>
 
       <Card 
-        className="border-border"
+        className="glass-card animate-float-in"
+        style={{ animationDelay: '900ms'}}
       >
         <CardHeader>
           <CardTitle className="text-lg font-headline"><BilingualText en="Quick Actions" hi="त्वरित कार्रवाई" lang={currentLang}/></CardTitle>
