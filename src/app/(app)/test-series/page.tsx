@@ -15,6 +15,7 @@ import type { ProfileFormData } from '../edit-profile/page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; 
 import { Label } from "@/components/ui/label";
 import { useRouter } from 'next/navigation';
+import { TestSeriesCheckoutDialog, type FeaturedTest } from '@/components/test-series/TestSeriesCheckoutDialog';
 
 const testCategories = [
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं', descriptionEn: "Browse all available test series.", descriptionHi: "सभी उपलब्ध टेस्ट सीरीज़ ब्राउज़ करें।" },
@@ -124,12 +125,12 @@ const testCategories = [
   { id: 'defence_airforce_airmen', nameEn: 'Indian Air Force Airmen (Group X & Y)', nameHi: 'भारतीय वायु सेना एयरमैन (ग्रुप एक्स और वाई)', descriptionEn: "Recruitment for Indian Air Force Airmen.", descriptionHi: "भारतीय वायु सेना एयरमैन के लिए भर्ती।" },
   { id: 'defence_coast_guard', nameEn: 'Indian Coast Guard (Navik, Yantrik)', nameHi: 'भारतीय तट रक्षक (नाविक, यांत्रिक)', descriptionEn: "Recruitment for Indian Coast Guard.", descriptionHi: "भारतीय तट रक्षक के लिए भर्ती।" },
   { id: 'defence_territorial_army', nameEn: 'Territorial Army', nameHi: 'प्रादेशिक सेना', descriptionEn: "Territorial Army Officer Recruitment.", descriptionHi: "प्रादेशिक सेना अधिकारी भर्ती।" },
-  // General University Entrance
+  // University
   { id: 'uni_cuet_ug', nameEn: 'CUET UG', nameHi: 'सीयूईटी यूजी', descriptionEn: "Common University Entrance Test (UG).", descriptionHi: "कॉमन यूनिवर्सिटी एंट्रेंस टेस्ट (यूजी)।" },
   { id: 'uni_cuet_pg', nameEn: 'CUET PG', nameHi: 'सीयूईटी पीजी', descriptionEn: "Common University Entrance Test (PG).", descriptionHi: "कॉमन यूनिवर्सिटी एंट्रेंस टेस्ट (पीजी)।" },
   { id: 'uni_jmi_entrance', nameEn: 'JMI Entrance', nameHi: 'जेएमआई प्रवेश', descriptionEn: "Jamia Millia Islamia Entrance Exams.", descriptionHi: "जामिया मिलिया इस्लामिया प्रवेश परीक्षाएँ।" },
   { id: 'uni_amu_entrance', nameEn: 'AMU Entrance', nameHi: 'एएमयू प्रवेश', descriptionEn: "Aligarh Muslim University Entrance Exams.", descriptionHi: "अलीगढ़ मुस्लिम विश्वविद्यालय प्रवेश परीक्षाएँ।" },
-  // Design & Architecture
+  // Design
   { id: 'design_nid_dat', nameEn: 'NID DAT', nameHi: 'एनआईडी डीएटी', descriptionEn: "National Institute of Design - Design Aptitude Test.", descriptionHi: "नेशनल इंस्टीट्यूट ऑफ डिजाइन - डिजाइन एप्टीट्यूड टेस्ट।" },
   { id: 'design_uceed_ceed', nameEn: 'UCEED / CEED', nameHi: 'यूसीईईडी / सीईईडी', descriptionEn: "Undergraduate/Common Entrance Exam for Design.", descriptionHi: "डिजाइन के लिए स्नातक/कॉमन एंट्रेंस एग्जाम।" },
   { id: 'design_nift_entrance', nameEn: 'NIFT Entrance', nameHi: 'एनआईएफटी प्रवेश', descriptionEn: "National Institute of Fashion Technology Entrance Exam.", descriptionHi: "नेशनल इंस्टीट्यूट ऑफ फैशन टेक्नोलॉजी प्रवेश परीक्षा।" },
@@ -139,7 +140,7 @@ const testCategories = [
   // Hotel Management
   { id: 'hotel_mgmt_nchm_jee', nameEn: 'NCHM JEE', nameHi: 'एनसीएचएम जेईई', descriptionEn: "National Council for Hotel Management Joint Entrance Examination.", descriptionHi: "नेशनल काउंसिल फॉर होटल मैनेजमेंट संयुक्त प्रवेश परीक्षा।" },
   { id: 'hotel_mgmt_state_ihm', nameEn: 'State IHM Entrances', nameHi: 'राज्य आईएचएम प्रवेश', descriptionEn: "State level Institute of Hotel Management entrances.", descriptionHi: "राज्य स्तरीय होटल प्रबंधन संस्थान प्रवेश।" },
-  // Agriculture & Veterinary Science
+  // Agriculture
   { id: 'agri_vet_icar_aieea', nameEn: 'ICAR AIEEA (UG, PG, PhD)', nameHi: 'आईसीएआर एआईईईए (यूजी, पीजी, पीएचडी)', descriptionEn: "Indian Council of Agricultural Research All India Entrance Examination.", descriptionHi: "भारतीय कृषि अनुसंधान परिषद अखिल भारतीय प्रवेश परीक्षा।" },
   { id: 'agri_vet_state_agri_uni', nameEn: 'State Agriculture University Entrances', nameHi: 'राज्य कृषि विश्वविद्यालयों के लिए प्रवेश', descriptionEn: "Entrance exams for State Agriculture Universities.", descriptionHi: "राज्य कृषि विश्वविद्यालयों के लिए प्रवेश परीक्षाएँ।" },
   // Teaching
@@ -154,31 +155,18 @@ const testCategories = [
   { id: 'pharmacy_gpat', nameEn: 'GPAT', nameHi: 'जीपीएटी', descriptionEn: "Graduate Pharmacy Aptitude Test.", descriptionHi: "स्नातक फार्मेसी एप्टीट्यूड टेस्ट।" },
   { id: 'pharmacy_state_cet_bpharm', nameEn: 'State CETs for B.Pharm', nameHi: 'बी.फार्म के लिए राज्य सीईटी', descriptionEn: "State Common Entrance Tests for B.Pharmacy.", descriptionHi: "बी.फार्मेसी के लिए राज्य कॉमन एंट्रेंस टेस्ट।" },
   { id: 'pharmacy_niper_jee', nameEn: 'NIPER JEE', nameHi: 'एनआईपीईआर जेईई', descriptionEn: "National Institute of Pharmaceutical Education and Research Joint Entrance Exam.", descriptionHi: "नेशनल इंस्टीट्यूट ऑफ फार्मास्युटिकल एजुकेशन एंड रिसर्च संयुक्त प्रवेश परीक्षा।" },
-  // Research Fellowships & PhD Entrance
+  // Research
   { id: 'research_fellowship_phd', nameEn: 'Research Fellowships & PhD Entrance', nameHi: 'रिसर्च फेलोशिप और पीएचडी प्रवेश', descriptionEn: "Exams like UGC NET JRF, CSIR NET JRF, ICMR JRF, DBT JRF, etc.", descriptionHi: "यूजीसी नेट जेआरएफ, सीएसआईआर नेट जेआरएफ, आईसीएमआर जेआरएफ, डीबीटी जेआरएफ, आदि जैसी परीक्षाएँ।" },
-  // Commerce & Finance Professional Courses
+  // Commerce
   { id: 'commerce_ca', nameEn: 'CA (Foundation, Inter, Final)', nameHi: 'सीए (फाउंडेशन, इंटर, फाइनल)', descriptionEn: "Chartered Accountancy exams.", descriptionHi: "चार्टर्ड अकाउंटेंसी परीक्षाएँ।" },
   { id: 'commerce_cs', nameEn: 'CS (CSEET, Executive, Professional)', nameHi: 'सीएस (सीएसईईटी, एक्जीक्यूटिव, प्रोफेशनल)', descriptionEn: "Company Secretary exams.", descriptionHi: "कंपनी सचिव परीक्षाएँ।" },
   { id: 'commerce_cma', nameEn: 'CMA (Foundation, Inter, Final)', nameHi: 'सीएमए (फाउंडेशन, इंटर, फाइनल)', descriptionEn: "Cost and Management Accountancy exams.", descriptionHi: "लागत और प्रबंधन लेखा परीक्षाएँ।" },
-  // School Level Olympiads & Talent Search
+  // Olympiads
   { id: 'school_olympiads_ntse', nameEn: 'NTSE', nameHi: 'एनटीएसई', descriptionEn: "National Talent Search Examination.", descriptionHi: "राष्ट्रीय प्रतिभा खोज परीक्षा।" },
   { id: 'school_olympiads_kvpy', nameEn: 'KVPY (check status)', nameHi: 'केवीपीवाई (स्थिति जांचें)', descriptionEn: "Kishore Vaigyanik Protsahan Yojana.", descriptionHi: "किशोर वैज्ञानिक प्रोत्साहन योजना।" },
   { id: 'school_olympiads_sof', nameEn: 'SOF Olympiads (NSO, IMO, IEO, etc.)', nameHi: 'एसओएफ ओलंपियाड (एनएसओ, आईएमओ, आईईओ, आदि)', descriptionEn: "Science Olympiad Foundation exams.", descriptionHi: "साइंस ओलंपियाड फाउंडेशन परीक्षाएँ।" },
   { id: 'school_olympiads_homi_bhabha', nameEn: 'Homi Bhabha Balvaidnyanik Spardha', nameHi: 'होमी भाभा बालवैज्ञानिक स्पर्धा', descriptionEn: "For students in Maharashtra & Goa.", descriptionHi: "महाराष्ट्र और गोवा के छात्रों के लिए।" },
 ];
-
-
-interface FeaturedTest {
-  id: string;
-  categoryId: string; 
-  titleEn: string;
-  titleHi: string;
-  descriptionEn: string;
-  descriptionHi: string;
-  price: string;
-  generationTitleEn?: string; 
-  defaultNumQuestions?: number; 
-}
 
 const featuredTests: FeaturedTest[] = [
   // Medical
@@ -302,75 +290,6 @@ const featuredTests: FeaturedTest[] = [
 ];
 
 
-function getCategoryFromExamTarget(examTarget?: string): string {
-  if (!examTarget) return 'all';
-  const targetLower = examTarget.toLowerCase().trim();
-
-  // Prioritize direct matches from testCategories (id or nameEn)
-  const directMatch = testCategories.find(cat => 
-    cat.id.toLowerCase() === targetLower || 
-    cat.nameEn.toLowerCase() === targetLower ||
-    cat.nameEn.toLowerCase().split('(')[0].trim() === targetLower // Match "NEET UG" from "NEET UG (MBBS...)"
-  );
-  if (directMatch && directMatch.id !== 'all') return directMatch.id;
-
-  // Broader keyword matching as fallback
-  const categoryKeywordsMap: Record<string, string[]> = {
-    // Engineering
-    engineering_jee_main: ['jee main'], engineering_jee_advanced: ['jee advanced'], engineering_bitsat: ['bitsat'], engineering_viteee: ['viteee'], engineering_srmjee: ['srmjeee'], engineering_met: ['met', 'manipal'], engineering_comedk_uget: ['comedk'], engineering_kiitee: ['kiitee'], engineering_wbjee: ['wbjee'], engineering_mht_cet: ['mht cet eng'], engineering_gujcet: ['gujcet'], engineering_ap_eamcet: ['ap eamcet eng', 'apeamcet eng'], engineering_ts_eamcet: ['ts eamcet eng', 'tseamcet eng'], engineering_kcet: ['kcet eng'], engineering_gate: ['gate'],
-    // Medical
-    medical_neet_ug: ['neet ug', 'mbbs', 'bds', 'ayush ug', 'b.v.sc', 'neet'], medical_neet_pg: ['neet pg', 'md', 'ms', 'pg diploma'], medical_ini_cet: ['ini cet', 'aiims pg', 'jipmer pg', 'pgimer', 'nimhans pg'], medical_neet_ss: ['neet ss', 'dm', 'mch'], medical_fmge: ['fmge'], medical_aiims_nursing: ['aiims nursing'], medical_army_nursing: ['army nursing', 'mns'], medical_aiapget: ['aiapget', 'pg ayush'],
-    // Management
-    management_cat: ['cat'], management_xat: ['xat'], management_cmat: ['cmat'], management_snap: ['snap'], management_nmat: ['nmat'], management_mat: ['mat'], management_atma: ['atma'], management_iift: ['iift'], management_tissnet: ['tissnet'], management_ibsat: ['ibsat'], management_micat: ['micat'], management_gmat_indian_b: ['gmat'],
-    // Law
-    law_clat_ug_pg: ['clat'], law_ailet_ug_pg: ['ailet'], law_lsat_india: ['lsat india'], law_slat: ['slat'], law_mh_cet_law: ['mh cet law'], law_ap_lawcet: ['ap lawcet'], law_ts_lawcet: ['ts lawcet'], law_kerala_klee: ['kerala klee', 'klee'], law_pcs_j: ['judicial services', 'pcs-j'],
-    // Govt
-    govt_upsc_cse: ['upsc cse', 'ias', 'ips', 'civil services'], govt_upsc_ifos: ['upsc ifos', 'ifs'], govt_upsc_ese_ies: ['upsc ese', 'ies'], govt_upsc_geo_scientist: ['geo-scientist'], govt_upsc_cms: ['upsc cms'], govt_upsc_capf: ['capf'],
-    govt_ssc_cgl: ['ssc cgl'], govt_ssc_chsl: ['ssc chsl'], govt_ssc_je: ['ssc je'], govt_ssc_stenographer: ['ssc steno'], govt_ssc_mts: ['ssc mts'], govt_ssc_gd_constable: ['ssc gd'], govt_ssc_cpo: ['ssc cpo'],
-    govt_ibps_po: ['ibps po'], govt_ibps_clerk: ['ibps clerk'], govt_ibps_so: ['ibps so'], govt_ibps_rrb: ['ibps rrb'],
-    govt_sbi_po: ['sbi po'], govt_sbi_clerk: ['sbi clerk'], govt_sbi_so: ['sbi so'],
-    govt_rbi_grade_b: ['rbi grade b'], govt_rbi_assistant: ['rbi assistant'],
-    govt_nabard: ['nabard'], govt_lic_aao_ado: ['lic aao', 'lic ado'], govt_insurance_other: ['uiic', 'niacl', 'oicl', 'insurance exam'], govt_esic_fci: ['esic', 'fci'],
-    govt_rrb_ntpc: ['rrb ntpc', 'railway ntpc'], govt_rrb_je: ['rrb je'], govt_rrb_alp: ['rrb alp'], govt_rrb_group_d: ['rrb group d'],
-    govt_state_psc: ['state psc', 'public service commission'], govt_state_police: ['state police', 'police recruitment'], govt_high_court: ['high court exam'],
-    // Defence
-    defence_nda_na: ['nda', 'na exam'], defence_cds: ['cds'], defence_afcat: ['afcat'], defence_inet: ['inet'], defence_army_tes: ['army tes'], defence_navy_sailors: ['navy sailor', 'ssr', 'aa', 'mr'], defence_airforce_airmen: ['airforce airmen', 'group x', 'group y'], defence_coast_guard: ['coast guard', 'navik', 'yantrik'], defence_territorial_army: ['territorial army'],
-    // University
-    uni_cuet_ug: ['cuet ug'], uni_cuet_pg: ['cuet pg'], uni_jmi_entrance: ['jmi entrance', 'jamia millia'], uni_amu_entrance: ['amu entrance', 'aligarh muslim'],
-    // Design
-    design_nid_dat: ['nid dat'], design_uceed_ceed: ['uceed', 'ceed'], design_nift_entrance: ['nift'], design_nata: ['nata'], design_jee_main_p2: ['jee paper 2', 'b.arch', 'b.plan'], design_aieed: ['aieed'],
-    // Hotel Management
-    hotel_mgmt_nchm_jee: ['nchm jee', 'hotel management entrance'], hotel_mgmt_state_ihm: ['state ihm'],
-    // Agriculture
-    agri_vet_icar_aieea: ['icar aieea', 'agriculture entrance', 'veterinary science'], agri_vet_state_agri_uni: ['state agriculture university'],
-    // Teaching
-    teaching_ctet: ['ctet'], teaching_state_tet: ['state tet', 'tet'], teaching_ugc_net: ['ugc net'], teaching_csir_ugc_net: ['csir net'], teaching_set_slet: ['set exam', 'slet'], teaching_kvs_nvs_dsssb: ['kvs', 'nvs', 'dsssb'], teaching_bed_entrance: ['b.ed entrance'],
-    // Pharmacy
-    pharmacy_gpat: ['gpat'], pharmacy_state_cet_bpharm: ['b.pharm cet'], pharmacy_niper_jee: ['niper jee'],
-    // Research
-    research_fellowship_phd: ['research fellowship', 'phd entrance', 'jrf'],
-    // Commerce
-    commerce_ca: ['ca foundation', 'ca inter', 'ca final', 'chartered accountant'], commerce_cs: ['cs cseet', 'cs executive', 'cs professional', 'company secretary'], commerce_cma: ['cma foundation', 'cma inter', 'cma final', 'cost management accountant'],
-    // Olympiads
-    school_olympiads_ntse: ['ntse'], school_olympiads_kvpy: ['kvpy'], school_olympiads_sof: ['sof olympiad', 'nso', 'imo', 'ieo'], school_olympiads_homi_bhabha: ['homi bhabha'],
-    school_class_1: ['class 1'], school_class_2: ['class 2'], school_class_3: ['class 3'], school_class_4: ['class 4'], school_class_5: ['class 5'],
-    school_class_6: ['class 6'], school_class_7: ['class 7'], school_class_8: ['class 8'], school_class_9: ['class 9'],
-    school_boards_class10: ['class 10', '10th board', 'matriculation'],
-    school_class_11: ['class 11'],
-    school_boards_class12: ['class 12', '12th board', 'intermediate'],
-    school_nursery_lkg_ukg: ['nursery', 'lkg', 'ukg', 'pre-primary'],
-  };
-
-  for (const categoryId in categoryKeywordsMap) {
-    if (categoryKeywordsMap[categoryId].some(keyword => targetLower.includes(keyword))) {
-      return categoryId;
-    }
-  }
-  
-  return 'all';
-}
-
-
 export default function TestSeriesPage() {
   const router = useRouter();
   const [recommendations, setRecommendations] = useState<TestSeriesRecommendationOutput | null>(null);
@@ -379,6 +298,23 @@ export default function TestSeriesPage() {
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
   const [selectedTestCategory, setSelectedTestCategory] = useState<string>('all');
   const { toast } = useToast();
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [selectedTestPack, setSelectedTestPack] = useState<FeaturedTest | null>(null);
+
+  const handleBuyPack = (testPack: FeaturedTest) => {
+    setSelectedTestPack(testPack);
+    setIsCheckoutOpen(true);
+  };
+  
+  const handleConfirmPurchase = () => {
+      toast({
+          title: "Purchase Successful (Simulated)",
+          description: `You have successfully purchased the "${selectedTestPack?.titleEn}" pack.`,
+      });
+      setIsCheckoutOpen(false);
+      setSelectedTestPack(null);
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -411,22 +347,22 @@ export default function TestSeriesPage() {
     setRecommendations(null);
 
     const studentNameFromProfile = profileData?.fullName || "Aarav";
-    const examTargetFromProfile = profileData?.examTarget || "General Competitive Exam"; 
+    const examTargetFromProfile = profileData?.examTarget || "NEET UG"; 
 
     const dynamicStudentInput: TestSeriesRecommendationInput = {
         studentName: studentNameFromProfile,
         examType: examTargetFromProfile, 
         preferredLanguage: 'en', 
         lastTestPerformances: [ 
-            { title: "General Aptitude Mock 1", score: "70/100", weakTopics: ["Quantitative Reasoning", "Logical Puzzles"] },
-            { title: "Subject Proficiency Test - Physics", score: "60/100", weakTopics: ["Rotational Motion", "Thermodynamics"] },
+            { title: "Biology Mock 1", score: "120/180", weakTopics: ["Genetics", "Plant Physiology"] },
+            { title: "Physics Sectional - Mechanics", score: "60/100", weakTopics: ["Rotational Motion", "Work Energy Power"] },
              { title: `Previous ${examTargetFromProfile} Mock`, score: "65%", weakTopics: ["Topic A", "Topic B"] }
         ],
         availableTestSets: [ 
             { title: `${examTargetFromProfile} Full Syllabus Mock (Set A)`, subject: "All", level: "Medium" },
-            { title: `${examTargetFromProfile} - Advanced Problems`, subject: "Mixed", level: "Hard" },
-            { title: "General Knowledge Booster", subject: "GK", level: "Medium" },
-            { title: "Verbal Ability Challenge", subject: "English", level: "Tough" },
+            { title: `${examTargetFromProfile} Biology - Genetics Special`, subject: "Biology", level: "Hard" },
+            { title: `${examTargetFromProfile} Physics - Mechanics Booster`, subject: "Physics", level: "Medium" },
+            { title: `${examTargetFromProfile} Chemistry - Organic Mastery`, subject: "Chemistry", level: "Tough" },
             { title: "JEE Main Physics Practice Set 1", subject: "Physics", level: "Medium"},
             { title: "NEET UG Biology Concept Reviewer", subject: "Biology", level: "Medium"},
             { title: "CAT Quantitative Aptitude Drills", subject: "Maths", level: "Hard"},
@@ -452,6 +388,7 @@ export default function TestSeriesPage() {
 
 
   return (
+    <>
     <div className="space-y-8">
        <div className="flex items-center justify-between">
         <header>
@@ -567,7 +504,7 @@ export default function TestSeriesPage() {
                 <Button 
                     size="sm" 
                     className="w-full bg-primary/90 hover:bg-primary text-primary-foreground"
-                    onClick={() => toast({ title: "Purchase Action", description: "This would normally lead to a payment gateway for the test pack."})}
+                    onClick={() => handleBuyPack(test)}
                 >
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     <BilingualText 
@@ -650,6 +587,15 @@ export default function TestSeriesPage() {
         </CardContent>
       </Card>
     </div>
+    {selectedTestPack && (
+        <TestSeriesCheckoutDialog
+            isOpen={isCheckoutOpen}
+            onClose={() => setIsCheckoutOpen(false)}
+            testPack={selectedTestPack}
+            onConfirmPurchase={handleConfirmPurchase}
+        />
+    )}
+    </>
   );
 }
 
