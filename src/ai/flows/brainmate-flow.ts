@@ -190,9 +190,22 @@ const brainmateFlow = ai.defineFlow(
       return output;
     } catch (error: any) {
         console.error('[Genkit Flow - brainmateFlow] A critical error occurred during prompt execution. Error:', error);
+        
+        let errorMessage = "I'm facing some technical difficulties at the moment. Please try again in a few minutes.";
+        let followUp = "Your patience is appreciated while my circuits cool down!";
+        const errorString = error.message?.toLowerCase() || '';
+
+        if (errorString.includes('503') || errorString.includes('overloaded')) {
+            errorMessage = "I'm experiencing high traffic right now and my circuits are a bit busy.";
+            followUp = "Could you please try asking me again in a few seconds? Thanks for your patience!";
+        } else if (errorString.includes('prompt') || errorString.includes('schema')) {
+            errorMessage = "I had a little trouble understanding how to structure my response for that query.";
+            followUp = "Could you try rephrasing your question? It might help me process it better.";
+        }
+        
         return {
-            explanation: "I'm facing some technical difficulties at the moment. Please try again in a few minutes.",
-            followUpQuestion: "Your patience is appreciated while my circuits cool down!",
+            explanation: errorMessage,
+            followUpQuestion: followUp,
         };
     }
   }
