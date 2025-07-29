@@ -1,21 +1,21 @@
 
 "use client";
 
-import { useState, type ChangeEvent, useRef, useEffect } from 'react';
+import { useState, type ChangeEvent, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BilingualText } from "@/components/shared/BilingualText";
-import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch, ArrowLeft, Hand, Camera, Info } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { UploadCloud, FileSignature, Sparkles, Download, Loader2, BrainCircuit, ScanSearch, ArrowLeft, Hand, Camera, Info, ThumbsUp, HandIcon, HandMetal } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
-import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
+import { HandLandmarker, FilesetResolver, Landmark } from "@mediapipe/tasks-vision";
 
 const handwritingStyles = [
     { name: 'Kalam (Regular)', className: 'font-handwriting' },
@@ -25,6 +25,60 @@ const handwritingStyles = [
     { name: 'Gochi Hand (Casual)', className: 'font-handwriting-gochi' },
     { name: 'Indie Flower (Bubbly)', className: 'font-handwriting-indie' },
 ];
+
+type Gesture = 'open_palm' | 'closed_fist' | 'thumb_up' | 'none';
+
+// Function to calculate distance between two landmarks
+const getDistance = (p1: Landmark, p2: Landmark): number => {
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
+};
+
+// Function to detect gesture from hand landmarks
+const getGesture = (landmarks: Landmark[]): Gesture => {
+    if (landmarks.length === 0) return 'none';
+
+    const thumbTip = landmarks[4];
+    const indexTip = landmarks[8];
+    const middleTip = landmarks[12];
+    const ringTip = landmarks[16];
+    const pinkyTip = landmarks[20];
+
+    const thumbMcp = landmarks[2];
+    const indexMcp = landmarks[5];
+    const middleMcp = landmarks[9];
+    const ringMcp = landmarks[13];
+    const pinkyMcp = landmarks[17];
+    
+    // Check for Thumbs Up
+    const isThumbUp = thumbTip.y < indexMcp.y && thumbTip.y < middleMcp.y && thumbTip.y < ringMcp.y && thumbTip.y < pinkyMcp.y;
+    const areFingersDown = indexTip.y > indexMcp.y && middleTip.y > middleMcp.y && ringTip.y > ringMcp.y;
+    if (isThumbUp && areFingersDown) {
+        return 'thumb_up';
+    }
+
+    // Check for Closed Fist
+    const isFist = 
+        getDistance(indexTip, indexMcp) < getDistance(indexMcp, landmarks[6]) && // Index finger curled
+        getDistance(middleTip, middleMcp) < getDistance(middleMcp, landmarks[10]) && // Middle finger curled
+        getDistance(ringTip, ringMcp) < getDistance(ringMcp, landmarks[14]) && // Ring finger curled
+        getDistance(pinkyTip, pinkyMcp) < getDistance(pinkyMcp, landmarks[18]); // Pinky finger curled
+    if (isFist) {
+        return 'closed_fist';
+    }
+
+    // Check for Open Palm
+    const isOpenPalm =
+        indexTip.y < indexMcp.y &&
+        middleTip.y < middleMcp.y &&
+        ringTip.y < ringMcp.y &&
+        pinkyTip.y < pinkyMcp.y;
+    if (isOpenPalm) {
+        return 'open_palm';
+    }
+
+    return 'none';
+};
+
 
 export default function HandwritingNotesPage() {
   const [sampleFileName, setSampleFileName] = useState<string | null>(null);
@@ -37,7 +91,9 @@ export default function HandwritingNotesPage() {
   
   const [isTouchlessModeOn, setIsTouchlessModeOn] = useState(false);
   const [gestureStatus, setGestureStatus] = useState("Idle");
-  const [lastGesture, setLastGesture] = useState<string | null>(null);
+  const [lastGesture, setLastGesture] = useState<Gesture>('none');
+  const lastGestureTimeRef = useRef(0);
+  const gestureActionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
@@ -47,6 +103,40 @@ export default function HandwritingNotesPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const handLandmarkerRef = useRef<HandLandmarker | null>(null);
   const requestRef = useRef<number>();
+
+  const handleGenerate = useCallback(() => {
+    if (!sampleFileName) {
+      toast({ title: "No Sample Trained", description: "Please upload and train a handwriting sample first.", variant: "destructive" });
+      return;
+    }
+    if (!inputText.trim()) {
+      toast({ title: "No Text to Generate", description: "Please enter some text in the input box.", variant: "destructive" });
+      return;
+    }
+    setGeneratedText(inputText);
+  }, [inputText, sampleFileName, toast]);
+
+  // Handle gesture actions
+  useEffect(() => {
+    if (gestureActionTimeoutRef.current) {
+        clearTimeout(gestureActionTimeoutRef.current);
+    }
+    gestureActionTimeoutRef.current = setTimeout(() => {
+        if (lastGesture === 'thumb_up') {
+            toast({ title: "Gesture Detected: Thumbs Up!", description: "Generating notes..." });
+            handleGenerate();
+        } else if (lastGesture === 'closed_fist') {
+            toast({ title: "Gesture Detected: Closed Fist", description: "Clearing text area." });
+            setInputText("");
+        }
+    }, 500); // Wait 500ms of holding the gesture
+
+    return () => {
+        if (gestureActionTimeoutRef.current) {
+            clearTimeout(gestureActionTimeoutRef.current);
+        }
+    };
+  }, [lastGesture, handleGenerate, toast]);
 
   // Initialize Hand Landmarker
   useEffect(() => {
@@ -61,7 +151,7 @@ export default function HandwritingNotesPage() {
             delegate: "GPU",
           },
           runningMode: "VIDEO",
-          numHands: 2,
+          numHands: 1, // Track only one hand for simplicity
         });
         handLandmarkerRef.current = landmarker;
         setGestureStatus("Ready");
@@ -74,6 +164,42 @@ export default function HandwritingNotesPage() {
     createHandLandmarker();
   }, [toast]);
   
+  const predictWebcam = useCallback(async () => {
+    if (!videoRef.current || !handLandmarkerRef.current || !isTouchlessModeOn) {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      return;
+    }
+    
+    const landmarker = handLandmarkerRef.current;
+    const video = videoRef.current;
+    
+    if (video.currentTime === (video as any).lastWebcamTime) {
+      requestRef.current = requestAnimationFrame(predictWebcam);
+      return;
+    }
+    (video as any).lastWebcamTime = video.currentTime;
+    
+    const startTimeMs = performance.now();
+    const results = await landmarker.detectForVideo(video, startTimeMs);
+
+    if (results.landmarks && results.landmarks.length > 0) {
+      setGestureStatus("Detecting...");
+      const detectedGesture = getGesture(results.landmarks[0]);
+      
+      const now = Date.now();
+      // Update gesture state only if it's different and some time has passed to prevent flickering
+      if (detectedGesture !== lastGesture && now - lastGestureTimeRef.current > 200) {
+        setLastGesture(detectedGesture);
+        lastGestureTimeRef.current = now;
+      }
+    } else {
+      setLastGesture('none');
+    }
+    
+    requestRef.current = requestAnimationFrame(predictWebcam);
+  }, [isTouchlessModeOn, lastGesture]);
+
+
   // Handle Camera and Gesture Loop
   useEffect(() => {
     let stream: MediaStream;
@@ -82,7 +208,9 @@ export default function HandwritingNotesPage() {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          videoRef.current.addEventListener("loadeddata", predictWebcam);
+          videoRef.current.addEventListener("loadeddata", () => {
+            requestRef.current = requestAnimationFrame(predictWebcam);
+          });
         }
       } catch (err) {
         console.error("Error accessing webcam:", err);
@@ -112,38 +240,8 @@ export default function HandwritingNotesPage() {
     return () => {
       disableWebcam();
     };
-  }, [isTouchlessModeOn]); // Re-run when touchless mode is toggled
+  }, [isTouchlessModeOn, predictWebcam, toast]);
 
-  const predictWebcam = async () => {
-    if (!videoRef.current || !handLandmarkerRef.current || !isTouchlessModeOn) {
-      return;
-    }
-    
-    const landmarker = handLandmarkerRef.current;
-    const video = videoRef.current;
-    
-    if (video.currentTime === (video as any).lastWebcamTime) {
-      requestRef.current = requestAnimationFrame(predictWebcam);
-      return;
-    }
-    (video as any).lastWebcamTime = video.currentTime;
-    
-    const startTimeMs = performance.now();
-    const results = await landmarker.detectForVideo(video, startTimeMs);
-
-    if (results.landmarks && results.landmarks.length > 0) {
-      setGestureStatus("Detecting...");
-      // NOTE: Basic gesture detection logic would go here.
-      // This is a complex task. For this prototype, we will just show the detection status.
-      // A real implementation would analyze the coordinates of `results.landmarks`
-      // over several frames to determine swipes, pinches, etc.
-      setLastGesture(`Hand${results.landmarks.length > 1 ? 's' : ''} detected`);
-    } else {
-      setLastGesture(null);
-    }
-    
-    requestRef.current = requestAnimationFrame(predictWebcam);
-  };
 
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -179,18 +277,6 @@ export default function HandwritingNotesPage() {
         });
       }, 2500);
     }
-  };
-
-  const handleGenerate = () => {
-    if (!sampleFileName) {
-      toast({ title: "No Sample Trained", description: "Please upload and train a handwriting sample first.", variant: "destructive" });
-      return;
-    }
-    if (!inputText.trim()) {
-      toast({ title: "No Text to Generate", description: "Please enter some text in the input box.", variant: "destructive" });
-      return;
-    }
-    setGeneratedText(inputText);
   };
 
   const handleDownloadPdf = async () => {
@@ -242,6 +328,23 @@ export default function HandwritingNotesPage() {
     }
   };
 
+  const getGestureIcon = () => {
+    switch(lastGesture) {
+        case 'open_palm': return <Hand className="h-5 w-5"/>;
+        case 'closed_fist': return <HandIcon className="h-5 w-5"/>; // Replaced Fist with HandIcon
+        case 'thumb_up': return <ThumbsUp className="h-5 w-5"/>;
+        default: return <HandMetal className="h-5 w-5"/>;
+    }
+  };
+  const getGestureText = () => {
+    switch(lastGesture) {
+        case 'open_palm': return "Open Palm";
+        case 'closed_fist': return "Closed Fist (Clear Text)";
+        case 'thumb_up': return "Thumbs Up (Generate)";
+        default: return 'None';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -276,12 +379,12 @@ export default function HandwritingNotesPage() {
                 <div className="pt-2">
                     <div className="flex items-center gap-4 bg-muted/50 p-2 rounded-lg">
                         <div className="relative w-24 h-20 bg-black rounded-md overflow-hidden">
-                           <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline/>
+                           <video ref={videoRef} className="w-full h-full object-cover scale-x-[-1]" autoPlay playsInline/>
                         </div>
                         <div className="text-xs space-y-1">
                             <p><strong>Status:</strong> <span className="text-primary">{gestureStatus}</span></p>
-                            <p><strong>Last Gesture:</strong> {lastGesture || 'None'}</p>
-                             <p className="text-muted-foreground italic pt-1">This is a proof-of-concept. Full gesture controls coming soon!</p>
+                            <p className="flex items-center gap-1.5"><strong>Gesture:</strong> {getGestureIcon()} {getGestureText()}</p>
+                             <p className="text-muted-foreground italic pt-1">Hold gesture to trigger action.</p>
                         </div>
                     </div>
                 </div>
@@ -387,4 +490,3 @@ export default function HandwritingNotesPage() {
     </div>
   );
 }
-
