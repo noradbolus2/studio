@@ -18,6 +18,20 @@ import { useRouter } from 'next/navigation';
 
 const testCategories = [
   { id: 'all', nameEn: 'All Exams', nameHi: 'सभी परीक्षाएं', descriptionEn: "Browse all available test series.", descriptionHi: "सभी उपलब्ध टेस्ट सीरीज़ ब्राउज़ करें।" },
+  // School Classes
+  { id: 'school_nursery_lkg_ukg', nameEn: 'Nursery, LKG, UKG', nameHi: 'नर्सरी, एलकेजी, यूकेजी', descriptionEn: "Tests for early learners.", descriptionHi: "छोटे बच्चों के लिए टेस्ट।" },
+  { id: 'school_class_1', nameEn: 'Class 1', nameHi: 'कक्षा 1', descriptionEn: "Practice tests for Class 1.", descriptionHi: "कक्षा 1 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_2', nameEn: 'Class 2', nameHi: 'कक्षा 2', descriptionEn: "Practice tests for Class 2.", descriptionHi: "कक्षा 2 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_3', nameEn: 'Class 3', nameHi: 'कक्षा 3', descriptionEn: "Practice tests for Class 3.", descriptionHi: "कक्षा 3 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_4', nameEn: 'Class 4', nameHi: 'कक्षा 4', descriptionEn: "Practice tests for Class 4.", descriptionHi: "कक्षा 4 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_5', nameEn: 'Class 5', nameHi: 'कक्षा 5', descriptionEn: "Practice tests for Class 5.", descriptionHi: "कक्षा 5 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_6', nameEn: 'Class 6', nameHi: 'कक्षा 6', descriptionEn: "Practice tests for Class 6.", descriptionHi: "कक्षा 6 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_7', nameEn: 'Class 7', nameHi: 'कक्षा 7', descriptionEn: "Practice tests for Class 7.", descriptionHi: "कक्षा 7 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_8', nameEn: 'Class 8', nameHi: 'कक्षा 8', descriptionEn: "Practice tests for Class 8.", descriptionHi: "कक्षा 8 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_9', nameEn: 'Class 9', nameHi: 'कक्षा 9', descriptionEn: "Practice tests for Class 9.", descriptionHi: "कक्षा 9 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_boards_class10', nameEn: 'Class 10 Boards', nameHi: 'कक्षा 10 बोर्ड', descriptionEn: "Practice tests for Class 10 board exams (CBSE, ICSE, State).", descriptionHi: "कक्षा 10 बोर्ड परीक्षाओं (सीबीएसई, आईसीएसई, राज्य) के लिए अभ्यास परीक्षण।" },
+  { id: 'school_class_11', nameEn: 'Class 11', nameHi: 'कक्षा 11', descriptionEn: "Practice tests for Class 11.", descriptionHi: "कक्षा 11 के लिए अभ्यास परीक्षण।" },
+  { id: 'school_boards_class12', nameEn: 'Class 12 Boards', nameHi: 'कक्षा 12 बोर्ड', descriptionEn: "Practice tests for Class 12 board exams (CBSE, ICSE, State).", descriptionHi: "कक्षा 12 बोर्ड परीक्षाओं (सीबीएसई, आईसीएसई, राज्य) के लिए अभ्यास परीक्षण।" },
   // Engineering
   { id: 'engineering_jee_main', nameEn: 'JEE Main', nameHi: 'जेईई मुख्य', descriptionEn: "Tests for Joint Entrance Examination Main.", descriptionHi: "संयुक्त प्रवेश परीक्षा मुख्य के लिए मॉक टेस्ट।" },
   { id: 'engineering_jee_advanced', nameEn: 'JEE Advanced', nameHi: 'जेईई एडवांस्ड', descriptionEn: "Tests for Joint Entrance Examination Advanced (IITs).", descriptionHi: "संयुक्त प्रवेश परीक्षा एडवांस्ड (आईआईटी) के लिए मॉक टेस्ट।" },
@@ -151,9 +165,6 @@ const testCategories = [
   { id: 'school_olympiads_kvpy', nameEn: 'KVPY (check status)', nameHi: 'केवीपीवाई (स्थिति जांचें)', descriptionEn: "Kishore Vaigyanik Protsahan Yojana.", descriptionHi: "किशोर वैज्ञानिक प्रोत्साहन योजना।" },
   { id: 'school_olympiads_sof', nameEn: 'SOF Olympiads (NSO, IMO, IEO, etc.)', nameHi: 'एसओएफ ओलंपियाड (एनएसओ, आईएमओ, आईईओ, आदि)', descriptionEn: "Science Olympiad Foundation exams.", descriptionHi: "साइंस ओलंपियाड फाउंडेशन परीक्षाएँ।" },
   { id: 'school_olympiads_homi_bhabha', nameEn: 'Homi Bhabha Balvaidnyanik Spardha', nameHi: 'होमी भाभा बालवैज्ञानिक स्पर्धा', descriptionEn: "For students in Maharashtra & Goa.", descriptionHi: "महाराष्ट्र और गोवा के छात्रों के लिए।" },
-  // School Boards
-  { id: 'school_boards_class10', nameEn: 'Class 10 Boards', nameHi: 'कक्षा 10 बोर्ड', descriptionEn: "Practice tests for Class 10 board exams (CBSE, ICSE, State).", descriptionHi: "कक्षा 10 बोर्ड परीक्षाओं (सीबीएसई, आईसीएसई, राज्य) के लिए अभ्यास परीक्षण।" },
-  { id: 'school_boards_class12', nameEn: 'Class 12 Boards', nameHi: 'कक्षा 12 बोर्ड', descriptionEn: "Practice tests for Class 12 board exams (CBSE, ICSE, State).", descriptionHi: "कक्षा 12 बोर्ड परीक्षाओं (सीबीएसई, आईसीएसई, राज्य) के लिए अभ्यास परीक्षण।" },
 ];
 
 
@@ -342,9 +353,12 @@ function getCategoryFromExamTarget(examTarget?: string): string {
     commerce_ca: ['ca foundation', 'ca inter', 'ca final', 'chartered accountant'], commerce_cs: ['cs cseet', 'cs executive', 'cs professional', 'company secretary'], commerce_cma: ['cma foundation', 'cma inter', 'cma final', 'cost management accountant'],
     // Olympiads
     school_olympiads_ntse: ['ntse'], school_olympiads_kvpy: ['kvpy'], school_olympiads_sof: ['sof olympiad', 'nso', 'imo', 'ieo'], school_olympiads_homi_bhabha: ['homi bhabha'],
-    // School Boards
-    school_boards_class10: ['class 10 board', '10th board', 'matriculation', 'class 10'],
-    school_boards_class12: ['class 12 board', '12th board', 'intermediate', 'class 12'],
+    school_class_1: ['class 1'], school_class_2: ['class 2'], school_class_3: ['class 3'], school_class_4: ['class 4'], school_class_5: ['class 5'],
+    school_class_6: ['class 6'], school_class_7: ['class 7'], school_class_8: ['class 8'], school_class_9: ['class 9'],
+    school_boards_class10: ['class 10', '10th board', 'matriculation'],
+    school_class_11: ['class 11'],
+    school_boards_class12: ['class 12', '12th board', 'intermediate'],
+    school_nursery_lkg_ukg: ['nursery', 'lkg', 'ukg', 'pre-primary'],
   };
 
   for (const categoryId in categoryKeywordsMap) {
@@ -645,4 +659,3 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
-
