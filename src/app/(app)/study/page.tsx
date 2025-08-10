@@ -9,7 +9,7 @@ import { PocketSchoolLoadingAnimation } from "@/components/shared/LoadingSpinner
 import Link from "next/link";
 
 const studySections = [
-  { titleEn: "AI Teacher", titleHi: "एआई शिक्षक", descriptionEn: "Interactive video lessons with AI avatars.", descriptionHi: "एआई अवतारों के साथ इंटरैक्टिव वीडियो पाठ।", icon: Bot, ctaEn: "Start Learning", ctaHi: "सीखना शुरू करें", href: "/ai-teacher" },
+  { titleEn: "AI Teacher", titleHi: "एआई शिक्षक", descriptionEn: "Interactive video lessons with AI avatars.", descriptionHi: "एआई अवतारों के साथ इंटरैक्टिव वीडियो पाठ।", icon: Presentation, ctaEn: "Start Learning", ctaHi: "सीखना शुरू करें", href: "/ai-teacher" },
   { titleEn: "Courses", titleHi: "पाठ्यक्रम", descriptionEn: "AI, Coding, NCERT & more", descriptionHi: "एआई, कोडिंग, एनसीईआरटी और अधिक", icon: BookMarked, ctaEn: "Explore Courses", ctaHi: "पाठ्यक्रम देखें", href: "/study/courses" },
   { titleEn: "Test Series", titleHi: "टेस्ट सीरीज़", descriptionEn: "AI Mocks & PYQs", descriptionHi: "एआई मॉक्स और पीवाईक्यू", icon: Target, ctaEn: "Attempt Tests", ctaHi: "टेस्ट दें", href: "/test-series" },
   { titleEn: "My Notes", titleHi: "मेरे नोट्स", descriptionEn: "Access your saved notes", descriptionHi: "अपने सहेजे गए नोट्स तक पहुंचें", icon: Edit, ctaEn: "View Notes", ctaHi: "नोट्स देखें", href: "/study/my-notes" },
