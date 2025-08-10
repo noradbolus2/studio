@@ -25,6 +25,7 @@ export default function AppLayout({
     '/platform-admin',
     '/ai-voice-call',
     '/live-class',
+    '/ai-teacher' // Add AI Teacher to the list
   ];
 
   const showAppLayout = !noAppLayoutPaths.some(path => pathname.startsWith(path));
