@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Bot, User, Sparkles, Brain, GraduationCap, FileSignature } from 'lucide-react'; 
+import { Home, BookOpen, Bot, User, Sparkles } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react'; 
 
@@ -11,7 +11,7 @@ const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/study', label: 'Study', icon: BookOpen },
   { href: '/creator-marketplace', label: 'Projects', icon: Sparkles }, 
-  { href: '/ai-guruji', label: 'AI', icon: Bot },
+  { href: '/ai-teacher', label: 'AI Teacher', icon: Bot }, // Changed href and label
   { href: '/profile', label: 'Me', icon: User },
 ];
 
