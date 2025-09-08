@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { ArrowLeft, FileCog, ThumbsUp, ThumbsDown, User, Layers, Tag } from "lucide-react";
+import { ArrowLeft, FileCog, ThumbsUp, ThumbsDown, User, Layers, Tag, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -19,12 +19,7 @@ interface ModerationItem {
   contentSnippet: string;
 }
 
-const mockModerationQueue: ModerationItem[] = [
-  { id: "mod1", type: "Course", title: "Advanced Quantum Physics", author: "Dr. Quantum", submittedDate: "2024-07-22", contentSnippet: "An in-depth course on quantum mechanics for advanced learners..." },
-  { id: "mod2", type: "Project", title: "DIY Smart Dustbin", author: "TinkerHub", submittedDate: "2024-07-21", contentSnippet: "Build an IoT-based smart dustbin using Arduino and ultrasonic sensors..." },
-  { id: "mod3", type: "Comment", title: "On 'Algebra Basics' Video", author: "Student123", submittedDate: "2024-07-21", contentSnippet: "This video is amazing but contains some external links that might be spam." },
-  { id: "mod4", type: "Course", title: "Learn Calligraphy", author: "ArtfulScribe", submittedDate: "2024-07-20", contentSnippet: "Master the art of beautiful writing from scratch. All materials discussed." },
-];
+const mockModerationQueue: ModerationItem[] = [];
 
 
 export default function ContentModerationPage() {

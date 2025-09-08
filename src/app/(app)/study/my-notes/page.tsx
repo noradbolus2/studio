@@ -28,13 +28,7 @@ interface Note {
 
 const LOCAL_STORAGE_NOTES_KEY = "userNotesOSOApp";
 
-// Extended mock data to simulate teacher-created content
-const initialMockNotes: Note[] = [
-  { id: "note1", title: "Chapter 5: Light - Key Formulas", subject: "Physics", date: "2024-07-20", excerpt: "Reflection: angle i = angle r. Refraction: Snell's Law n1*sin(i) = n2*sin(r)...", content: "Full content for Physics notes on Light.", teacherId: "abhishek.verma@example.com", teacherName: "Abhishek Verma", classId: "Class 10" },
-  { id: "note2", title: "Dates: Indian Independence Movement", subject: "History", date: "2024-07-18", excerpt: "1857: First War of Independence. 1915: Gandhi returns to India. 1942: Quit India Movement...", content: "Comprehensive timeline of the Indian Independence Movement.", teacherId: "rohan.sharma@example.com", teacherName: "Rohan Sharma", classId: "Class 10" },
-  { id: "note3", title: "Important Chemical Reactions", subject: "Chemistry", date: "2024-07-15", excerpt: "Combustion: CH4 + 2O2 -> CO2 + 2H2O. Neutralization: HCl + NaOH -> NaCl + H2O...", content: "List of important chemical reactions for Class 10.", teacherId: "abhishek.verma@example.com", teacherName: "Abhishek Verma", classId: "Class 10" },
-  { id: "note4", title: "Algebra Basics", subject: "Maths", date: "2024-07-14", excerpt: "Basic formulas and examples for Class 9 algebra.", content: "Full content here...", teacherId: "abhishek.verma@example.com", teacherName: "Abhishek Verma", classId: "Class 9" },
-];
+const initialMockNotes: Note[] = [];
 
 
 export default function MyNotesPage() {

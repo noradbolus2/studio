@@ -20,13 +20,7 @@ interface Review {
   date: string;
 }
 
-const mockReviews: Review[] = [
-  { id: "R1", studentName: "Anika S.", rating: 5, comment: "This lecture was amazing! Helped me clear all my concepts for NEET.", category: "Lecture", contentTitle: "Video: Rotational Motion Part 1", date: "2 days ago", avatarUrl: "https://placehold.co/40x40.png?text=AS", dataAiHint: "female student" },
-  { id: "R2", studentName: "Rohan V.", rating: 4, comment: "Good notes, but would love more practice problems at the end.", category: "Notes", contentTitle: "PDF: Chemical Bonding Summary", date: "5 days ago", avatarUrl: "https://placehold.co/40x40.png?text=RV", dataAiHint: "male student" },
-  { id: "R3", studentName: "Priya M.", rating: 5, comment: "The test series was very close to the actual exam pattern. Highly recommended!", category: "Test Series", contentTitle: "Mock Test: Full Syllabus NEET", date: "1 week ago", avatarUrl: "https://placehold.co/40x40.png?text=PM", dataAiHint: "female student" },
-  { id: "R4", studentName: "Karan J.", rating: 3, comment: "Quiz was a bit too difficult for a chapter-end test.", category: "Quiz", contentTitle: "Quiz: Subatomic Particles", date: "1 week ago", avatarUrl: "https://placehold.co/40x40.png?text=KJ", dataAiHint: "male student" },
-  { id: "R5", studentName: "Sneha P.", rating: 5, comment: "Loved the animation in the video. Made learning easy!", category: "Lecture", contentTitle: "Video: Human Digestive System", date: "2 weeks ago", avatarUrl: "https://placehold.co/40x40.png?text=SP", dataAiHint: "female student" },
-];
+const mockReviews: Review[] = [];
 
 
 export default function ReviewsPage() {

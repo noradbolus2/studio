@@ -1,3 +1,4 @@
+
 // src/app/(app)/school-dashboard/announcements/page.tsx
 "use client";
 import { useState } from "react";
@@ -21,11 +22,7 @@ interface Announcement {
   targetAudience: "All" | "Students" | "Teachers" | "Parents" | `Class ${string}`;
 }
 
-const mockAnnouncements: Announcement[] = [
-  { id: "AN001", title: "Annual Sports Day Rescheduled", content: "The Annual Sports Day has been rescheduled to next Friday due to weather conditions. New timings will be shared soon.", date: "2024-07-20", targetAudience: "All" },
-  { id: "AN002", title: "PTM for Class 10", content: "Parent-Teacher Meeting for Class 10 will be held on Saturday, 27th July, from 9 AM to 12 PM.", date: "2024-07-18", targetAudience: "Class 10" },
-  { id: "AN003", title: "Staff Meeting", content: "A mandatory staff meeting is scheduled for tomorrow at 3 PM in the auditorium.", date: "2024-07-15", targetAudience: "Teachers" },
-];
+const mockAnnouncements: Announcement[] = [];
 
 export default function SchoolAnnouncementsPage() {
   const router = useRouter();

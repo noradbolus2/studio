@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -60,33 +61,7 @@ interface Order {
 
 const VENDOR_ORDERS_KEY = "vendorOrders_mock";
 
-const initialMockOrders: Order[] = [
-  { 
-    id: "OSO19451", 
-    status: "Pending Pickup", 
-    type: 'Stationery', 
-    pickupLocation: 'Gupta Stationery', 
-    pickupDistance: '0.5 km', 
-    pickupReadyBy: '11:55 AM', 
-    deliveryTo: 'Priya (Class 8)', 
-    deliveryLocation: 'Modern School, Barakhamba Road', 
-    deliveryInstructions: 'Drop at Gate 2 - Ask Mr. Tripathi (Security)',
-    deliveryWindow: "9:30–11:00 AM",
-    items: [{name: 'Class 10 Biology Practical File', quantity: 1}], 
-    totalAmount: 120,
-    isPriority: true,
-    priorityDetails: {
-      bonus: 20,
-      countdownMins: 20,
-      reason: "Submission today"
-    }
-  },
-  { id: "OSO19452", status: "Pending Pickup", type: 'Stationery', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Riya (Class 8)', deliveryLocation: 'Modern School, Barakhamba Road', deliveryInstructions: 'Drop at Main Gate Reception', deliveryWindow: "9:30–11:00 AM", items: [{name: 'Notebook Pack', quantity: 5}, {name:'Pen Box', quantity:1}], totalAmount: 350, clusterId: "CL-998", clusterSize: 2 },
-  { id: "OSO19453", status: "Pending Pickup", type: 'Print Order', pickupLocation: 'Anil Book Store', pickupDistance: '0.8 km', pickupReadyBy: '12:15 PM', deliveryTo: 'Karan (Class 8)', deliveryLocation: 'Modern School, Barakhamba Road', deliveryInstructions: 'Drop at Main Gate Reception', deliveryWindow: "9:30–11:00 AM", items: [{name: 'Project Report Printout', quantity: 1}], totalAmount: 50, clusterId: "CL-998", clusterSize: 2 },
-  { id: "OSO19448", status: "Out for Delivery", type: 'Print Order', pickupLocation: 'PrintFast', pickupDistance: '2.5 km', deliveryTo: 'Mohan (Class 12)', deliveryLocation: 'Springdales School', deliveryInstructions: 'Reception Desk', deliveryWindow: "10:00 AM - 1:00 PM", deliveryOtp: '7432', items: [{name: 'Physics Notes Spiral', quantity: 1}], totalAmount: 150 },
-  { id: "OSO19445", status: "Delivered", type: 'Kit Combo', pickupLocation: 'Hobby Hub', pickupDistance: '3.1 km', deliveryTo: 'Sneha (Class 6)', deliveryLocation: 'Amity International', items: [{name: 'Art Project Kit', quantity: 1}], totalAmount: 499 },
-  { id: "OSO19440", status: "Cancelled", type: 'Stationery', pickupLocation: 'Gupta Stationery', pickupDistance: '1.5 km', deliveryTo: 'Karan (Class 9)', deliveryLocation: 'Ryan International', items: [{name: 'Geometry Box', quantity: 1}], totalAmount: 80 },
-];
+const initialMockOrders: Order[] = [];
 
 const riderData = {
     name: 'Pankaj Kumar',
@@ -113,44 +88,7 @@ interface Mission {
   icon: React.ElementType;
 }
 
-const mockMissions: Mission[] = [
-  {
-    id: "m1",
-    titleEn: "School Spirit",
-    titleHi: "स्कूल स्पिरिट",
-    descriptionEn: "Complete 5 orders to students of Modern School",
-    descriptionHi: "मॉडर्न स्कूल के छात्रों को 5 ऑर्डर पूरे करें",
-    progress: 2,
-    target: 5,
-    progressUnit: "orders",
-    bonus: "₹50",
-    icon: SchoolIconLucide,
-  },
-  {
-    id: "m2",
-    titleEn: "Speed Demon",
-    titleHi: "स्पीड डीमन",
-    descriptionEn: "Complete 3 orders within 1 hour",
-    descriptionHi: "1 घंटे के भीतर 3 ऑर्डर पूरे करें",
-    progress: 1,
-    target: 3,
-    progressUnit: "orders",
-    bonus: "Speed Bonus",
-    icon: Zap,
-  },
-  {
-    id: "m3",
-    titleEn: "Combo Master",
-    titleHi: "कॉम्बो मास्टर",
-    descriptionEn: "Deliver 2 Uniforms + 2 Printouts",
-    descriptionHi: "2 यूनिफॉर्म + 2 प्रिंटआउट डिलीवर करें",
-    progress: 1,
-    target: 4,
-    progressUnit: "deliveries",
-    bonus: "Combo Bonus",
-    icon: Package,
-  }
-];
+const mockMissions: Mission[] = [];
 
 
 const deliveryTypeIcons: Record<DeliveryType, React.ElementType> = {
@@ -445,7 +383,7 @@ export default function RiderDashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                                 <Image src="https://images.unsplash.com/photo-1694610018733-1053fcfb5289?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYXAlMjBsb2NhdGlvbiUyMHBvaW50c3xlbnwwfHx8fDE3NTE5MzQwODd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Demand Heatmap" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map location points" />
+                                 <Image src="https://placehold.co/600x300.png" alt="Demand Heatmap" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map location points" />
                             </div>
                             <div className="space-y-3">
                                 <div className="text-sm p-2 bg-red-500/10 rounded-md border border-red-500/20">
@@ -468,7 +406,7 @@ export default function RiderDashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                                <Image src="https://images.unsplash.com/photo-1621421770492-272ae6d7882a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYXAlMjBuYXZpZ2F0aW9uJTIwcm91dGV8ZW58MHx8fHwxNzUxOTM0MDg3fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Live map placeholder" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map navigation route" />
+                                <Image src="https://placehold.co/600x300.png" alt="Live map placeholder" width={600} height={300} className="opacity-50 object-cover" data-ai-hint="map navigation route" />
                             </div>
                             <div className="p-3 bg-green-500/10 text-green-700 rounded-lg border border-green-500/20">
                               <h4 className="font-bold flex items-center gap-1.5"><Leaf size={16}/> Green Route Rewards™</h4>

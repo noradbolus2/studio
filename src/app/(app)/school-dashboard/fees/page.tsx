@@ -1,3 +1,4 @@
+
 // src/app/(app)/school-dashboard/fees/page.tsx
 "use client";
 import { useState } from "react";
@@ -22,14 +23,8 @@ interface FeeRecord {
   lastPaidDate?: string;
 }
 
-const mockFeeRecords: FeeRecord[] = [
-  { id: "FEE001", studentName: "Aarav Sharma", class: "10A", rollNumber: "10A01", amountDue: 0, status: "Paid", dueDate: "2024-07-10", lastPaidDate: "2024-07-05" },
-  { id: "FEE002", studentName: "Priya Singh", class: "9B", rollNumber: "09B15", amountDue: 2500, status: "Due", dueDate: "2024-08-10" },
-  { id: "FEE003", studentName: "Rohan Verma", class: "10A", rollNumber: "10A02", amountDue: 5000, status: "Overdue", dueDate: "2024-06-10" },
-  { id: "FEE004", studentName: "Sneha Reddy", class: "8C", rollNumber: "08C05", amountDue: 1500, status: "Partial", dueDate: "2024-07-15", lastPaidDate: "2024-07-10 (Paid 1000)"},
-];
-
-const classesForFilter = ["All", "10A", "9B", "8C"]; // Example classes
+const mockFeeRecords: FeeRecord[] = [];
+const classesForFilter = ["All"]; // Will be populated dynamically if there's data
 
 export default function SchoolFeesPage() {
   const router = useRouter();
