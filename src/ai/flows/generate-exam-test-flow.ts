@@ -125,6 +125,14 @@ Generate the JSON test data now.
 `,
 });
 
+// Fallback prompt for when the main prompt fails
+const generateFallbackTestPrompt = ai.definePrompt({
+    name: 'generateFallbackTestPrompt',
+    output: { schema: GenerateExamTestOutputSchema },
+    prompt: `Generate a 5-question general knowledge multiple-choice quiz suitable for a wide audience. Include a 'testTitle' like "General Knowledge Fun Quiz". Each question must be an MCQ with 'questionText', an array of 4 'options', a 'correctAnswerIndex' (0-3), and an 'explanation'. The 'questionType' for all must be "mcq".`,
+});
+
+
 const generateExamTestFlow = ai.defineFlow(
   {
     name: 'generateExamTestFlow',
@@ -177,13 +185,24 @@ const generateExamTestFlow = ai.defineFlow(
       console.log(`[Genkit Flow - generateExamTestFlow] Test Generation Complete. Title: "${finalOutput.testTitle}". Total questions processed: ${finalOutput.questions.length}. Questions with diagrams generated (attempted): ${finalOutput.questions.filter(q => q.diagramDataUri).length}`);
       return finalOutput;
     } catch (error: any) {
-      const errorMessage = `Failed to generate test for "${input.examNameOrType}". The AI model may be overloaded or the topic is too specific. Please try a smaller test or a different topic.`;
-      console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred. Error: ${error?.message || 'Unknown error'}.`);
+      console.error(`[Genkit Flow - generateExamTestFlow] A critical error occurred during main test generation. Error: ${error?.message || 'Unknown error'}. Switching to fallback.`);
       
-      return {
-        testTitle: `Error: ${errorMessage}`,
-        questions: [],
-      };
+      // Fallback logic
+      try {
+        const { output: fallbackOutput } = await generateFallbackTestPrompt();
+        if (!fallbackOutput || !fallbackOutput.testTitle || fallbackOutput.questions.length === 0) {
+           throw new Error("Fallback test generation also failed.");
+        }
+        console.log(`[Genkit Flow - generateExamTestFlow] Fallback test generated successfully. Title: "${fallbackOutput.testTitle}"`);
+        return fallbackOutput;
+      } catch (fallbackError: any) {
+        console.error(`[Genkit Flow - generateExamTestFlow] Fallback test generation failed. Error: ${fallbackError?.message || 'Unknown fallback error'}`);
+        // Return a valid but empty structure to prevent UI crashing
+        return {
+            testTitle: `Error: Could not generate a test for "${input.examNameOrType}". Please try again later.`,
+            questions: [],
+        };
+      }
     }
   }
 );
