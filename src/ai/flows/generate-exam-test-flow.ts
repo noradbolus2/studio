@@ -197,7 +197,7 @@ const generateExamTestFlow = ai.defineFlow(
         return fallbackOutput;
       } catch (fallbackError: any) {
         console.error(`[Genkit Flow - generateExamTestFlow] Fallback test generation failed. Error: ${fallbackError?.message || 'Unknown fallback error'}`);
-        // Return a valid but empty structure to prevent UI crashing
+        // Return a valid but empty structure with an error title to prevent UI crashing.
         return {
             testTitle: `Error: Could not generate a test for "${input.examNameOrType}". Please try again later.`,
             questions: [],
