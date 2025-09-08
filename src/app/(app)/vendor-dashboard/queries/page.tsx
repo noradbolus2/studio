@@ -14,7 +14,7 @@ import { useState } from "react";
 interface Query {
   id: string;
   customerName: string;
-  customerAvatar?: string; // Made optional
+  customerAvatar?: string; 
   dataAiHint?: string;
   queryText: string;
   date: string;
@@ -22,7 +22,6 @@ interface Query {
   productName?: string; 
 }
 
-// MOCK DATA REMOVED
 const mockQueries: Query[] = [];
 
 export default function VendorQueriesPage() {

@@ -14,7 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-// MOCK DATA REMOVED - In a real app, this data would be fetched from a database.
 const mockActiveTasks: { id: string; title: string; deadline: string; pay: number; status: 'In Progress' | 'Pending' }[] = [];
 
 export default function MyTasksPage() {

@@ -28,14 +28,13 @@ interface Product {
 
 const VENDOR_PRODUCTS_KEY = "vendorProducts_mock";
 
-// MOCK DATA REMOVED
 const initialMockProducts: Product[] = [];
 
 export default function VendorProductsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(initialMockProducts);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'status'>>({ name: '', category: '', mrp: 0, price: 0, stock: 0, schoolName: '', classTag: '' });
 

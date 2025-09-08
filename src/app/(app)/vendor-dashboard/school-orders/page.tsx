@@ -18,7 +18,6 @@ interface B2BOrder {
   status: "Pending Quote" | "Quote Sent" | "Order Confirmed" | "Completed";
 }
 
-// MOCK DATA REMOVED
 const mockB2BOrders: B2BOrder[] = [];
 
 export default function SchoolOrdersPage() {

@@ -18,7 +18,6 @@ interface Bundle {
   category: 'Exam' | 'Festival' | 'Admission';
 }
 
-// MOCK DATA REMOVED
 const mockBundles: Bundle[] = [];
 
 export default function VendorBundlesPage() {

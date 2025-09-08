@@ -23,7 +23,6 @@ interface PlatformOrder {
   status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
 }
 
-// MOCK DATA REMOVED - In a real app, this data would be fetched from a database.
 const mockPlatformOrders: PlatformOrder[] = [];
 
 export default function PlatformOrdersPage() {
@@ -31,17 +30,18 @@ export default function PlatformOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [orders] = useState<PlatformOrder[]>(mockPlatformOrders);
 
 
   const filteredOrders = useMemo(() => {
-    return mockPlatformOrders.filter(order =>
+    return orders.filter(order =>
       (order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
        order.vendorOrCreator.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (filterType === "all" || order.type === filterType) &&
       (filterStatus === "all" || order.status === filterStatus)
     );
-  }, [searchTerm, filterType, filterStatus]);
+  }, [searchTerm, filterType, filterStatus, orders]);
 
   const getStatusBadge = (status: PlatformOrder['status']) => {
     switch(status) {

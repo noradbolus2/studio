@@ -30,7 +30,6 @@ interface ProjectOrderDetail {
   shippingAddress?: string; // For physical kit
 }
 
-// MOCK DATA REMOVED
 const mockOrderDetails: Record<string, ProjectOrderDetail> = {};
 
 
@@ -48,7 +47,6 @@ export default function CreatorOrderDetailPage() {
       setIsLoading(true);
       // Simulate fetching order details
       setTimeout(() => {
-        // In a real app, you would fetch from your database here
         const foundOrder = mockOrderDetails[orderId];
         setOrder(foundOrder || null);
         setIsLoading(false);

@@ -20,19 +20,14 @@ interface LogEntry {
     user?: string;
 }
 
-const mockLogs: LogEntry[] = [
-    { id: "log1", timestamp: "2024-07-22 10:31:05", level: "INFO", service: "Auth", message: "User 'admin@oso.com' logged in successfully.", user: "admin@oso.com"},
-    { id: "log2", timestamp: "2024-07-22 10:30:15", level: "INFO", service: "Orders", message: "New order #ORD78923 placed.", user: "student@oso.com"},
-    { id: "log3", timestamp: "2024-07-22 10:25:00", level: "WARN", service: "API-Gateway", message: "High latency detected on /api/recommendations (1500ms)."},
-    { id: "log4", timestamp: "2024-07-22 10:15:45", level: "ERROR", service: "Payments", message: "Payment failed for user 'student2@oso.com'. Reason: Insufficient funds.", user: "student2@oso.com"},
-    { id: "log5", timestamp: "2024-07-22 10:05:10", level: "CRITICAL", service: "Database", message: "Failed to connect to primary database cluster. Failing over to replica."},
-];
+const mockLogs: LogEntry[] = [];
 
 export default function SystemLogsPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [logs] = useState<LogEntry[]>(mockLogs);
 
-  const filteredLogs = mockLogs.filter(log => 
+  const filteredLogs = logs.filter(log => 
     log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.service.toLowerCase().includes(searchTerm.toLowerCase()) ||
     log.level.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -95,7 +90,7 @@ export default function SystemLogsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredLogs.map(log => (
+                        {filteredLogs.length > 0 ? filteredLogs.map(log => (
                             <TableRow key={log.id}>
                                 <TableCell className="font-mono text-xs">{log.timestamp}</TableCell>
                                 <TableCell><Badge variant="outline" className={getLevelBadgeVariant(log.level)}>{log.level}</Badge></TableCell>
@@ -103,7 +98,13 @@ export default function SystemLogsPage() {
                                 <TableCell className="font-mono text-xs">{log.message}</TableCell>
                                 <TableCell>{log.user || 'N/A'}</TableCell>
                             </TableRow>
-                        ))}
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                                    No logs to display.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </div>

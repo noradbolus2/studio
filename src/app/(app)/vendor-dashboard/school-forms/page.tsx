@@ -20,7 +20,6 @@ interface SchoolFormOrder {
   date: string;
 }
 
-// MOCK DATA REMOVED
 const mockFormOrders: SchoolFormOrder[] = [];
 
 export default function SchoolFormsPage() {

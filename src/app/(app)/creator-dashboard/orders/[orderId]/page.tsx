@@ -30,7 +30,6 @@ interface ProjectOrderDetail {
   shippingAddress?: string; // For physical kit
 }
 
-// MOCK DATA REMOVED - In a real app, this data would be fetched from a database.
 const mockOrderDetails: Record<string, ProjectOrderDetail> = {};
 
 
@@ -48,7 +47,6 @@ export default function CreatorOrderDetailPage() {
       // Simulate fetching order details
       setTimeout(() => {
         // In a real app, you would fetch from your database here
-        // e.g., const foundOrder = await db.collection('orders').doc(orderId).get();
         const foundOrder = mockOrderDetails[orderId];
         setOrder(foundOrder || null);
         setIsLoading(false);

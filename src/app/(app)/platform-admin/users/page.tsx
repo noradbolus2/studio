@@ -23,7 +23,6 @@ interface PlatformUser {
   joinDate: string;
 }
 
-// MOCK DATA REMOVED
 const mockUsers: PlatformUser[] = [];
 
 const userRoles = ["Student", "Parent", "Teacher", "School Admin", "Vendor", "Creator", "Rider"];
@@ -32,13 +31,15 @@ export default function UserManagementPage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
+  const [users] = useState<PlatformUser[]>(mockUsers);
+
 
   const filteredUsers = useMemo(() => {
-    return mockUsers.filter(user => 
+    return users.filter(user => 
       (user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (filterRole === "all" || user.role === filterRole)
     );
-  }, [searchTerm, filterRole]);
+  }, [searchTerm, filterRole, users]);
   
   const getStatusBadgeVariant = (status: PlatformUser['status']) => {
     switch (status) {

@@ -18,7 +18,6 @@ interface CoachingKit {
   price: number;
 }
 
-// MOCK DATA REMOVED
 const mockKits: CoachingKit[] = [];
 
 export default function CoachingKitsPage() {

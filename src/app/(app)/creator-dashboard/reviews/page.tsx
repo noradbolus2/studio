@@ -7,6 +7,7 @@ import { ArrowLeft, Star, ThumbsUp, FileText, Video, TestTube2, Target } from "l
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
 
 interface Review {
   id: string;
@@ -25,6 +26,8 @@ const mockReviews: Review[] = [];
 
 export default function ReviewsPage() {
   const router = useRouter();
+  const [reviews] = useState<Review[]>(mockReviews);
+
 
   const ReviewCard = ({ review }: { review: Review }) => (
     <Card className="bg-muted/50">
@@ -51,6 +54,22 @@ export default function ReviewsPage() {
       </CardContent>
     </Card>
   );
+  
+  const renderReviews = (category: Review['category'] | 'all') => {
+      const filtered = category === 'all' ? reviews : reviews.filter(r => r.category === category);
+      if (filtered.length === 0) {
+          return (
+              <div className="text-center py-10 text-muted-foreground">
+                  <p>No reviews in this category yet.</p>
+              </div>
+          );
+      }
+      return (
+          <div className="space-y-3">
+              {filtered.map(review => <ReviewCard key={review.id} review={review} />)}
+          </div>
+      );
+  };
 
   return (
     <div className="space-y-6">
@@ -98,20 +117,20 @@ export default function ReviewsPage() {
             <TabsTrigger value="Test Series"><Target className="mr-2 h-4 w-4"/> Test Series</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="mt-4 space-y-3">
-            {mockReviews.map(review => <ReviewCard key={review.id} review={review} />)}
+        <TabsContent value="all" className="mt-4">
+            {renderReviews('all')}
         </TabsContent>
-        <TabsContent value="Lecture" className="mt-4 space-y-3">
-            {mockReviews.filter(r => r.category === 'Lecture').map(review => <ReviewCard key={review.id} review={review} />)}
+        <TabsContent value="Lecture" className="mt-4">
+            {renderReviews('Lecture')}
         </TabsContent>
-        <TabsContent value="Notes" className="mt-4 space-y-3">
-             {mockReviews.filter(r => r.category === 'Notes').map(review => <ReviewCard key={review.id} review={review} />)}
+        <TabsContent value="Notes" className="mt-4">
+            {renderReviews('Notes')}
         </TabsContent>
-        <TabsContent value="Quiz" className="mt-4 space-y-3">
-             {mockReviews.filter(r => r.category === 'Quiz').map(review => <ReviewCard key={review.id} review={review} />)}
+        <TabsContent value="Quiz" className="mt-4">
+            {renderReviews('Quiz')}
         </TabsContent>
-        <TabsContent value="Test Series" className="mt-4 space-y-3">
-             {mockReviews.filter(r => r.category === 'Test Series').map(review => <ReviewCard key={review.id} review={review} />)}
+        <TabsContent value="Test Series" className="mt-4">
+            {renderReviews('Test Series')}
         </TabsContent>
       </Tabs>
     </div>
