@@ -178,7 +178,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Comprehensive pack: 12 Unit Tests, 4 Part-Syllabus Tests, and 9 Full NEET Replica Mock Tests. All India Ranking.",
     descriptionHi: "व्यापक पैक: 12 यूनिट टेस्ट, 4 भाग-सिलेबस टेस्ट, और 9 पूर्ण नीट प्रतिकृति मॉक टेस्ट। अखिल भारतीय रैंकिंग।",
     price: "INR 199",
-    generationTitleEn: "NEET UG Full Syllabus Mock Test (Sample)",
+    generationTitleEn: "NEET UG Full Syllabus Mock Test",
     defaultNumQuestions: 200
   },
   // Engineering
@@ -190,7 +190,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Boost your prep: 10 Topic Tests, 5 Part-Syllabus Tests, and 5 Full JEE Main Replica Mocks.",
     descriptionHi: "अपनी तैयारी बढ़ाएँ: 10 टॉपिक टेस्ट, 5 भाग-सिलेबस टेस्ट, और 5 पूर्ण जेईई मुख्य प्रतिकृति मॉक।",
     price: "INR 179",
-    generationTitleEn: "JEE Main Full Mock (Sample)",
+    generationTitleEn: "JEE Main Full Mock",
     defaultNumQuestions: 90
   },
   {
@@ -201,7 +201,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Ace IITs: 7 Challenging Topic Tests, 3 Part-Syllabus Tests, and 5 Full JEE Advanced Replica Mocks.",
     descriptionHi: "आईआईटी में सफलता: 7 चुनौतीपूर्ण टॉपिक टेस्ट, 3 भाग-सिलेबस टेस्ट, और 5 पूर्ण जेईई एडवांस्ड प्रतिकृति मॉक।",
     price: "INR 249",
-    generationTitleEn: "JEE Advanced Full Mock (Sample)",
+    generationTitleEn: "JEE Advanced Full Mock",
     defaultNumQuestions: 54 // Example: 1 Paper (18P+18C+18M)
   },
   // Management
@@ -213,7 +213,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Conquer CAT: 4 Sectional Tests (VARC, DILR, QA) and 6 Full-Length CAT Replica Mocks.",
     descriptionHi: "कैट पर विजय: 4 अनुभागीय टेस्ट (वीएआरसी, डीआईएलआर, क्यूए) और 6 पूर्ण-लंबाई कैट प्रतिकृति मॉक।",
     price: "INR 299",
-    generationTitleEn: "CAT Full Mock (Sample)",
+    generationTitleEn: "CAT Full Mock",
     defaultNumQuestions: 66 // (VARC 24, DILR 20, QA 22)
   },
   // Law
@@ -225,7 +225,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Law School Ready: 5 Sectional Tests (English, Legal, Logical, GK, Quant) and 10 Full CLAT UG Mocks.",
     descriptionHi: "लॉ स्कूल के लिए तैयार: 5 अनुभागीय टेस्ट (अंग्रेजी, कानूनी, तार्किक, जीके, मात्रात्मक) और 10 पूर्ण क्लैट यूजी मॉक।",
     price: "INR 199",
-    generationTitleEn: "CLAT UG Full Mock (Sample)",
+    generationTitleEn: "CLAT UG Full Mock",
     defaultNumQuestions: 120 // New pattern
   },
   // Civil Services
@@ -237,7 +237,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Crack Civils: 10 Subject-wise Tests, 5 Current Affairs Mocks, and 5 Full GS Paper 1 Replicas.",
     descriptionHi: "सिविल सेवा में सफलता: 10 विषय-वार टेस्ट, 5 करंट अफेयर्स मॉक, और 5 पूर्ण जीएस पेपर 1 प्रतिकृति।",
     price: "INR 349",
-    generationTitleEn: "UPSC CSE Prelims GS Paper 1 Mock (Sample)",
+    generationTitleEn: "UPSC CSE Prelims GS Paper 1 Mock",
     defaultNumQuestions: 100
   },
    // Defence
@@ -249,7 +249,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Join the Forces: 5 Maths Tests, 5 GAT Tests, and 5 Full NDA Replica Mocks.",
     descriptionHi: "सेना में शामिल हों: 5 गणित टेस्ट, 5 जीएटी टेस्ट, और 5 पूर्ण एनडीए प्रतिकृति मॉक।",
     price: "INR 229",
-    generationTitleEn: "NDA GAT Mock (Sample)", 
+    generationTitleEn: "NDA GAT Mock", 
     defaultNumQuestions: 150 
   },
   // University Entrance
@@ -261,7 +261,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "College Ready: Tests for English, General Test, and 3 Domain Subjects (e.g., History, Pol Sci, Eco).",
     descriptionHi: "कॉलेज के लिए तैयार: अंग्रेजी, सामान्य परीक्षा, और 3 डोमेन विषयों (जैसे, इतिहास, राजनीति विज्ञान, अर्थशास्त्र) के लिए टेस्ट।",
     price: "INR 279",
-    generationTitleEn: "CUET UG General Test (Sample)", 
+    generationTitleEn: "CUET UG General Test", 
     defaultNumQuestions: 60 
   },
   // School Boards
@@ -273,7 +273,7 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Excel in Boards: Chapter-wise tests for Science, 3 Pre-Board Science Mocks, and sample papers.",
     descriptionHi: "बोर्ड में उत्कृष्टता: विज्ञान के लिए अध्याय-वार टेस्ट, 3 प्री-बोर्ड विज्ञान मॉक, और नमूना पत्र।",
     price: "INR 149",
-    generationTitleEn: "Class 10 Science Board Mock (Sample)",
+    generationTitleEn: "Class 10 Science Board Mock",
     defaultNumQuestions: 38 
   },
   {
@@ -284,10 +284,53 @@ const featuredTests: FeaturedTest[] = [
     descriptionEn: "Score High: Chapter tests for Accountancy, Business Studies, Economics, 3 Full Pre-Board Mocks.",
     descriptionHi: "उच्च अंक प्राप्त करें: अकाउंटेंसी, बिजनेस स्टडीज, इकोनॉमिक्स के लिए अध्याय टेस्ट, 3 पूर्ण प्री-बोर्ड मॉक।",
     price: "INR 229",
-    generationTitleEn: "Class 12 Accountancy Board Mock (Sample)", 
+    generationTitleEn: "Class 12 Accountancy Board Mock", 
     defaultNumQuestions: 34 
   }
 ];
+
+function getCategoryFromExamTarget(examTarget?: string): string {
+  if (!examTarget) return 'all';
+  const targetLower = examTarget.toLowerCase();
+
+  const categoryKeywordsMap: Record<string, string[]> = {
+    engineering_jee_main: ['jee main'], engineering_jee_advanced: ['jee advanced'], engineering_bitsat: ['bitsat'], engineering_viteee: ['viteee'], engineering_srmjee: ['srmjeee'], engineering_met: ['met', 'manipal'], engineering_comedk: ['comedk'], engineering_kiitee: ['kiitee'], engineering_wbjee: ['wbjee'], engineering_mht_cet: ['mht cet (eng'], engineering_gujcet: ['gujcet'], engineering_ap_eamcet: ['ap eamcet (eng', 'apeamcet (eng'], engineering_ts_eamcet: ['ts eamcet (eng', 'tseamcet (eng'], engineering_kcet: ['kcet (eng'], engineering_gate: ['gate'],
+    medical_neet_ug: ['neet ug', 'mbbs', 'bds', 'ayush ug', 'b.v.sc'], medical_neet_pg: ['neet pg', 'md', 'ms', 'pg diploma'], medical_ini_cet: ['ini cet', 'aiims pg', 'jipmer pg', 'pgimer', 'nimhans pg'], medical_neet_ss: ['neet ss', 'dm', 'mch'], medical_fmge: ['fmge'], medical_aiims_nursing: ['aiims nursing'], medical_army_nursing: ['army nursing', 'mns'], medical_aiapget: ['aiapget', 'pg ayush'],
+    management_cat: ['cat'], management_xat: ['xat'], management_cmat: ['cmat'], management_snap: ['snap'], management_nmat: ['nmat'], management_mat: ['mat'], management_atma: ['atma'], management_iift: ['iift'], management_tissnet: ['tissnet'], management_ibsat: ['ibsat'], management_micat: ['micat'], management_gmat_indian_b: ['gmat'],
+    law_clat_ug_pg: ['clat'], law_ailet_ug_pg: ['ailet'], law_lsat_india: ['lsat india'], law_slat: ['slat'], law_mh_cet_law: ['mh cet law'], law_ap_lawcet: ['ap lawcet'], law_ts_lawcet: ['ts lawcet'], law_kerala_klee: ['kerala klee', 'klee'], law_pcs_j: ['judicial services', 'pcs-j'],
+    govt_upsc_cse: ['upsc cse', 'ias', 'ips', 'civil services'], govt_upsc_ifos: ['upsc ifos', 'ifs'], govt_upsc_ese_ies: ['upsc ese', 'ies'], govt_upsc_geo_scientist: ['geo-scientist'], govt_upsc_cms: ['upsc cms'], govt_upsc_capf: ['capf'],
+    govt_ssc_cgl: ['ssc cgl'], govt_ssc_chsl: ['ssc chsl'], govt_ssc_je: ['ssc je'], govt_ssc_stenographer: ['ssc steno'], govt_ssc_mts: ['ssc mts'], govt_ssc_gd_constable: ['ssc gd'], govt_ssc_cpo: ['ssc cpo'],
+    govt_ibps_po: ['ibps po'], govt_ibps_clerk: ['ibps clerk'], govt_ibps_so: ['ibps so'], govt_ibps_rrb: ['ibps rrb'],
+    govt_sbi_po: ['sbi po'], govt_sbi_clerk: ['sbi clerk'], govt_sbi_so: ['sbi so'],
+    govt_rbi_grade_b: ['rbi grade b'], govt_rbi_assistant: ['rbi assistant'],
+    govt_nabard: ['nabard'], govt_lic_aao_ado: ['lic aao', 'lic ado'], govt_insurance_other: ['uiic', 'niacl', 'oicl', 'insurance exam'], govt_esic_fci: ['esic', 'fci'],
+    govt_rrb_ntpc: ['rrb ntpc', 'railway ntpc'], govt_rrb_je: ['rrb je'], govt_rrb_alp: ['rrb alp'], govt_rrb_group_d: ['rrb group d'],
+    govt_state_psc: ['state psc', 'public service commission'], govt_state_police: ['state police', 'police recruitment'], govt_high_court: ['high court exam'],
+    defence_nda_na: ['nda', 'na exam'], defence_cds: ['cds'], defence_afcat: ['afcat'], defence_inet: ['inet'], defence_army_tes: ['army tes'], defence_navy_sailors: ['navy sailor', 'ssr', 'aa', 'mr'], defence_airforce_airmen: ['airforce airmen', 'group x', 'group y'], defence_coast_guard: ['coast guard', 'navik', 'yantrik'], defence_territorial_army: ['territorial army'],
+    uni_cuet_ug: ['cuet ug'], uni_cuet_pg: ['cuet pg'], uni_jmi_entrance: ['jmi entrance', 'jamia millia'], uni_amu_entrance: ['amu entrance', 'aligarh muslim'],
+    design_nid_dat: ['nid dat'], design_uceed_ceed: ['uceed', 'ceed'], design_nift_entrance: ['nift'], design_nata: ['nata'], design_jee_main_p2: ['jee paper 2', 'b.arch', 'b.plan'], design_aieed: ['aieed'],
+    hotel_mgmt_nchm_jee: ['nchm jee', 'hotel management entrance'], hotel_mgmt_state_ihm: ['state ihm'],
+    agri_vet_icar_aieea: ['icar aieea', 'agriculture entrance', 'veterinary science'], agri_vet_state_agri_uni: ['state agriculture university'],
+    teaching_ctet: ['ctet'], teaching_state_tet: ['state tet', 'tet'], teaching_ugc_net: ['ugc net'], teaching_csir_ugc_net: ['csir net'], teaching_set_slet: ['set exam', 'slet'], teaching_kvs_nvs_dsssb: ['kvs', 'nvs', 'dsssb'], teaching_bed_entrance: ['b.ed entrance'],
+    pharmacy_gpat: ['gpat'], pharmacy_state_cet_bpharm: ['b.pharm cet'], pharmacy_niper_jee: ['niper jee'],
+    research_fellowship_phd: ['research fellowship', 'phd entrance', 'jrf'],
+    commerce_ca: ['ca foundation', 'ca inter', 'ca final', 'chartered accountant'], commerce_cs: ['cs cseet', 'cs executive', 'cs professional', 'company secretary'], commerce_cma: ['cma foundation', 'cma inter', 'cma final', 'cost management accountant'],
+    school_olympiads_ntse: ['ntse'], school_olympiads_kvpy: ['kvpy'], school_olympiads_sof: ['sof olympiad', 'nso', 'imo', 'ieo'], school_olympiads_homi_bhabha: ['homi bhabha'],
+  };
+
+  for (const categoryId in categoryKeywordsMap) {
+    if (categoryKeywordsMap[categoryId].some(keyword => targetLower.includes(keyword))) {
+      return categoryId;
+    }
+  }
+  
+  if (targetLower.includes("class 10")) return 'school_boards_class10';
+  if (targetLower.includes("class 12")) return 'school_boards_class12';
+  if (targetLower.includes("nursery")) return 'school_nursery_lkg_ukg';
+
+  return 'all'; // Default if no specific match
+}
+
 
 export default function TestSeriesPage() {
   const router = useRouter();
@@ -604,5 +647,7 @@ declare module "@radix-ui/react-select" {
     placeholder_hi?: string;
   }
 }
+
+    
 
     
