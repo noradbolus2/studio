@@ -176,8 +176,10 @@ export default function AttemptTestPage() {
         if (generatedTest.testTitle.startsWith("Error:") && generatedTest.questions.length === 0) {
           const errorMessage = generatedTest.testTitle.replace("Error: ", "");
           setTestError(errorMessage);
+          setTestData(null); // Explicitly set test data to null on error
         } else {
           setTestData(generatedTest);
+          setTestError(null);
         }
       } catch (err: any) {
         console.error("AttemptTestPage: Failed to generate test:", err);
