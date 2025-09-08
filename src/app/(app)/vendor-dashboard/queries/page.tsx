@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/queries/page.tsx
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
@@ -8,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 interface Query {
   id: string;
@@ -20,14 +22,12 @@ interface Query {
   productName?: string; 
 }
 
-const mockQueries: Query[] = [
-  { id: "Q001", customerName: "Aarav Sharma", customerAvatar: "https://placehold.co/40x40.png?text=AS", dataAiHint:"student avatar", queryText: "Is the Classmate notebook available in unruled format?", date: "2024-07-22 02:15 PM", status: "New", productName: "Classmate Notebook" },
-  { id: "Q002", customerName: "Priya Singh", dataAiHint:"girl avatar", queryText: "When will the Fevicol MR 100g be back in stock?", date: "2024-07-21 09:00 AM", status: "Replied", productName: "Fevicol MR Squeeze Bottle (100g)" }, // customerAvatar removed
-  { id: "Q003", customerName: "Rohan Verma", customerAvatar: "https://placehold.co/40x40.png?text=RV", dataAiHint:"boy avatar", queryText: "Can I get a bulk discount on Apsara pencils for my class?", date: "2024-07-20 03:30 PM", status: "Resolved" },
-];
+// MOCK DATA REMOVED
+const mockQueries: Query[] = [];
 
 export default function VendorQueriesPage() {
   const router = useRouter();
+  const [queries, setQueries] = useState(mockQueries);
 
   return (
     <div className="space-y-6">
@@ -47,7 +47,7 @@ export default function VendorQueriesPage() {
           <CardDescription><BilingualText en="Respond to inquiries and provide support." hi="पूछताछ का जवाब दें और सहायता प्रदान करें।" /></CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {mockQueries.length > 0 ? mockQueries.map(query => (
+          {queries.length > 0 ? queries.map(query => (
             <Card key={query.id} className={`p-4 ${query.status === 'New' ? 'bg-primary/5 border-primary/30' : 'bg-muted/30'}`}>
               <div className="flex items-start gap-3">
                 <Avatar className="h-9 w-9">

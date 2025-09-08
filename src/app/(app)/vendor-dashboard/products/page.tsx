@@ -28,13 +28,8 @@ interface Product {
 
 const VENDOR_PRODUCTS_KEY = "vendorProducts_mock";
 
-const initialMockProducts: Product[] = [
-  { id: "PROD001", name: "Classmate Notebook - Single Line (172 Pages)", category: "Notebooks", mrp: 50, price: 45, stock: 150, status: "Active" },
-  { id: "PROD002", name: "Cello Gripper Ball Pen - Blue (Pack of 5)", category: "Pens", mrp: 50, price: 50, stock: 300, status: "Active" },
-  { id: "PROD003", name: "Apsara Platinum Pencils (Box of 10)", category: "Pencils", mrp: 55, price: 50, stock: 8, status: "Active" },
-  { id: "PROD004", name: "Fevicol MR Squeeze Bottle (100g)", category: "Adhesives", mrp: 35, price: 35, stock: 0, status: "Inactive" },
-  { id: "UNI001", name: "Boys Shirt (Summer, White)", category: "School Uniforms", mrp: 500, price: 450, stock: 100, status: "Active", schoolName: "Delhi Public School, Noida", classTag: "6-10" },
-];
+// MOCK DATA REMOVED
+const initialMockProducts: Product[] = [];
 
 export default function VendorProductsPage() {
   const router = useRouter();
@@ -50,12 +45,11 @@ export default function VendorProductsPage() {
         if (storedProducts) {
             setProducts(JSON.parse(storedProducts));
         } else {
-            setProducts(initialMockProducts);
-            localStorage.setItem(VENDOR_PRODUCTS_KEY, JSON.stringify(initialMockProducts));
+            setProducts([]); // Start with an empty list
         }
     } catch (e) {
         console.error("Failed to load products from localStorage:", e);
-        setProducts(initialMockProducts);
+        setProducts([]);
     }
   }, []);
 
@@ -158,7 +152,7 @@ export default function VendorProductsPage() {
                             <Badge variant="secondary">{items.length}</Badge>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="p-2 space-y-3">
+                    <AccordionContent className="p-2 space-y-2">
                         {items.map(product => (
                             <Card key={product.id} className="grid grid-cols-5 items-center p-2">
                                 <div className="col-span-3 sm:col-span-2">
@@ -190,7 +184,7 @@ export default function VendorProductsPage() {
                 </AccordionItem>
             )) : (
                  <div className="text-center py-10 text-muted-foreground">
-                    <p><BilingualText en="No products found." hi="कोई उत्पाद नहीं मिला।" /></p>
+                    <p><BilingualText en="No products found. Use 'Add New Product' to get started." hi="कोई उत्पाद नहीं मिला। आरंभ करने के लिए 'नया उत्पाद जोड़ें' का उपयोग करें।" /></p>
                 </div>
             )}
           </Accordion>

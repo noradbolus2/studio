@@ -1,3 +1,4 @@
+
 // src/app/(app)/school-dashboard/students/page.tsx
 "use client";
 import { useState, useEffect, useMemo, type FormEvent } from "react";
@@ -31,11 +32,8 @@ interface Student {
   status: "Active" | "Inactive";
 }
 
-const initialMockStudents: Student[] = [
-  { id: "S1001", name: "Aarav Sharma", class: "10", section: "A", rollNumber: "10A01", parentName: "Mr. Rajesh Sharma", status: "Active" },
-  { id: "S1002", name: "Priya Singh", class: "9", section: "B", rollNumber: "09B15", parentName: "Mrs. Sunita Singh", status: "Active" },
-  { id: "S1004", name: "Sneha Reddy", class: "8", section: "C", rollNumber: "08C05", parentName: "Mr. Mohan Reddy", status: "Inactive" },
-];
+// MOCK DATA REMOVED
+const initialMockStudents: Student[] = [];
 
 export default function SchoolStudentsPage() {
   const router = useRouter();
@@ -68,12 +66,11 @@ export default function SchoolStudentsPage() {
             if (storedStudents) {
                 setStudents(JSON.parse(storedStudents));
             } else {
-                setStudents(initialMockStudents); // You might want to have school-specific mocks or an empty array
-                localStorage.setItem(`schoolStudents_${currentSchoolId}`, JSON.stringify(initialMockStudents));
+                setStudents([]); // Start with an empty list
             }
         } catch (error) {
             console.error("Failed to load students from storage:", error);
-            setStudents(initialMockStudents);
+            setStudents([]);
         }
     }
     setIsLoading(false);
@@ -285,7 +282,7 @@ export default function SchoolStudentsPage() {
             ) : (
               <div className="text-center py-10">
                 <p className="text-muted-foreground">
-                  <BilingualText en="No students found matching your criteria." hi="आपके मानदंडों से मेल खाने वाला कोई छात्र नहीं मिला।" />
+                  <BilingualText en="No students found matching your criteria. Use 'Add New Student' to get started." hi="आपके मानदंडों से मेल खाने वाला कोई छात्र नहीं मिला। आरंभ करने के लिए 'नया छात्र जोड़ें' का उपयोग करें।" />
                 </p>
               </div>
             )}

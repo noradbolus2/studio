@@ -4,7 +4,7 @@
 import { useState, useMemo, type FormEvent } from "react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, School, PlusCircle, Search, Edit, Trash2, Camera } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -27,19 +27,10 @@ interface UniformProduct {
   status: "Active" | "Inactive";
 }
 
-const mockSchools = [
-  { id: "dps_noida", name: "Delhi Public School, Noida" },
-  { id: "modern_delhi", name: "Modern School, Barakhamba Road" },
-  { id: "lps_lucknow", name: "Lucknow Public School" },
-];
-
+// MOCK DATA REMOVED
+const mockSchools: { id: string; name: string; }[] = [];
 const VENDOR_UNIFORMS_KEY = "vendorUniforms_mock";
-
-const initialMockUniforms: UniformProduct[] = [
-  { id: "UNI001", schoolId: "dps_noida", type: "Shirt", gender: "Boys", classMap: "6-10", size: "28", price: 450, stock: 50, status: "Active" },
-  { id: "UNI002", schoolId: "dps_noida", type: "Skirt", gender: "Girls", classMap: "6-8", size: "26", price: 400, stock: 0, status: "Inactive" },
-  { id: "UNI003", schoolId: "modern_delhi", type: "Blazer", gender: "Unisex", classMap: "9-12", size: "M", price: 1200, stock: 30, status: "Active" },
-];
+const initialMockUniforms: UniformProduct[] = [];
 
 export default function VendorUniformsPage() {
   const router = useRouter();
@@ -142,7 +133,11 @@ export default function VendorUniformsPage() {
                             ))}
                         </AccordionContent>
                     </AccordionItem>
-                )) : <p className="text-center text-muted-foreground py-6">No uniform products found.</p>}
+                )) : (
+                  <div className="text-center py-10 text-muted-foreground">
+                    <p><BilingualText en="No uniform products found. Use 'Add New Uniform' to get started." hi="कोई यूनिफ़ॉर्म उत्पाद नहीं मिला। आरंभ करने के लिए 'नई यूनिफ़ॉर्म जोड़ें' का उपयोग करें।" /></p>
+                  </div>
+                )}
              </Accordion>
         </CardContent>
       </Card>

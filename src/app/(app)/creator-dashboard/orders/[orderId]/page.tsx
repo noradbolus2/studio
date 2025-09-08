@@ -30,13 +30,8 @@ interface ProjectOrderDetail {
   shippingAddress?: string; // For physical kit
 }
 
-const mockOrderDetails: Record<string, ProjectOrderDetail> = {
-  "ORD78901": { id: "ORD78901", projectTitleEn: "AI Story Generator", projectTitleHi: "एआई कहानी जनरेटर", studentName: "Riya Sharma", studentId: "USR101", orderDate: "2024-07-15", status: "Pending Acceptance", deliveryType: "Digital", amount: 499, studentNotes: "Need this for a school competition by next week." },
-  "ORD78902": { id: "ORD78902", projectTitleEn: "Volcano Model Kit", projectTitleHi: "ज्वालामुखी मॉडल किट", studentName: "Amit Patel", studentId: "USR102", orderDate: "2024-07-14", status: "Accepted", deliveryType: "Physical Kit", amount: 349, shippingAddress: "123 Science Lane, Innovation City" },
-  "ORD78903": { id: "ORD78903", projectTitleEn: "AI Story Generator", projectTitleHi: "एआई कहानी जनरेटर", studentName: "Sneha Reddy", studentId: "USR103", orderDate: "2024-07-13", status: "In Progress", deliveryType: "Digital", amount: 499, deliverablesLink: "#" },
-  "ORD78904": { id: "ORD78904", projectTitleEn: "Indus Valley Diorama", projectTitleHi: "सिंधु घाटी डायोरमा", studentName: "Mohan Kumar", studentId: "USR104", orderDate: "2024-07-12", status: "Dispatched", deliveryType: "Digital", amount: 199, deliverablesLink: "#" },
-  "ORD78905": { id: "ORD78905", projectTitleEn: "Volcano Model Kit", projectTitleHi: "ज्वालामुखी मॉडल किट", studentName: "Priya Singh", studentId: "USR105", orderDate: "2024-07-11", status: "Completed", deliveryType: "Physical Kit", amount: 349, shippingAddress: "456 Learning Drive, Knowledge Town" },
-};
+// MOCK DATA REMOVED - In a real app, this data would be fetched from a database.
+const mockOrderDetails: Record<string, ProjectOrderDetail> = {};
 
 
 export default function CreatorOrderDetailPage() {
@@ -52,6 +47,8 @@ export default function CreatorOrderDetailPage() {
       setIsLoading(true);
       // Simulate fetching order details
       setTimeout(() => {
+        // In a real app, you would fetch from your database here
+        // e.g., const foundOrder = await db.collection('orders').doc(orderId).get();
         const foundOrder = mockOrderDetails[orderId];
         setOrder(foundOrder || null);
         setIsLoading(false);

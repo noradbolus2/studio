@@ -18,10 +18,8 @@ interface CoachingKit {
   price: number;
 }
 
-const mockKits: CoachingKit[] = [
-  { id: "KIT001", title: "XYZ NEET Coaching Class Kit", coachingCenterName: "XYZ Classes", items: ["Physics Vol 1", "Chemistry Notes", "Biology Question Bank"], price: 1499 },
-  { id: "KIT002", title: "ABC JEE Foundation Kit", coachingCenterName: "ABC Academy", items: ["Maths Foundation", "Physics Concepts", "Practice File"], price: 1299 },
-];
+// MOCK DATA REMOVED
+const mockKits: CoachingKit[] = [];
 
 export default function CoachingKitsPage() {
   const router = useRouter();
@@ -56,7 +54,7 @@ export default function CoachingKitsPage() {
             <Button><PlusCircle className="mr-2 h-4 w-4"/> Create Kit</Button>
         </CardHeader>
         <CardContent className="space-y-3">
-            {kits.map(kit => (
+            {kits.length > 0 ? kits.map(kit => (
                 <Card key={kit.id} className="p-4 flex justify-between items-center">
                     <div>
                         <div className="flex items-center gap-2">
@@ -73,7 +71,11 @@ export default function CoachingKitsPage() {
                         </Button>
                     </div>
                 </Card>
-            ))}
+            )) : (
+              <div className="text-center py-10 text-muted-foreground">
+                  <p><BilingualText en="No coaching kits created yet." hi="अभी तक कोई कोचिंग किट नहीं बनाई गई है।" /></p>
+              </div>
+            )}
         </CardContent>
       </Card>
     </div>

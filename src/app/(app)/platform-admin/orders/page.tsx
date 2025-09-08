@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -21,13 +22,8 @@ interface PlatformOrder {
   status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
 }
 
-const mockPlatformOrders: PlatformOrder[] = [
-  { id: "ORD78923", type: "Stationery", customerName: "Aarav Sharma", vendorOrCreator: "Gupta Stationery", date: "2024-07-22", totalAmount: 140, status: "Pending" },
-  { id: "ORD78924", type: "Project Kit", customerName: "Priya Singh", vendorOrCreator: "Science Wonders", date: "2024-07-21", totalAmount: 349, status: "Processing" },
-  { id: "ORD78903", type: "Course Access", customerName: "Sneha Reddy", vendorOrCreator: "Intro to Python Course", date: "2024-07-13", totalAmount: 999, status: "Delivered" },
-  { id: "ORD78904", type: "Creator Service", customerName: "Mohan Kumar", vendorOrCreator: "History Buffs Co.", date: "2024-07-12", totalAmount: 199, status: "Delivered" },
-  { id: "ORD78926", type: "Stationery", customerName: "Vikram Kumar", vendorOrCreator: "Anil Book Store", date: "2024-07-18", totalAmount: 50, status: "Cancelled" },
-];
+// MOCK DATA REMOVED - In a real app, this data would be fetched from a database.
+const mockPlatformOrders: PlatformOrder[] = [];
 
 export default function PlatformOrdersPage() {
   const router = useRouter();
@@ -122,7 +118,7 @@ export default function PlatformOrdersPage() {
                 )) : (
                      <TableRow>
                         <TableCell colSpan={7} className="h-24 text-center">
-                           No orders found.
+                           <BilingualText en="No orders found." hi="कोई ऑर्डर नहीं मिला।" />
                         </TableCell>
                     </TableRow>
                 )}

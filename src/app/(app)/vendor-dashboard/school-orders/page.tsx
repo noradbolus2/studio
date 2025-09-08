@@ -1,3 +1,4 @@
+
 // src/app/(app)/vendor-dashboard/school-orders/page.tsx
 "use client";
 import { useState } from "react";
@@ -17,11 +18,8 @@ interface B2BOrder {
   status: "Pending Quote" | "Quote Sent" | "Order Confirmed" | "Completed";
 }
 
-const mockB2BOrders: B2BOrder[] = [
-  { id: "B2B001", schoolName: "Delhi Public School, Noida", items: [{ description: "Class 7 Science Textbooks", quantity: 150 }, { description: "100-page single-line notebooks", quantity: 300 }], requestedDelivery: "2024-08-15", status: "Pending Quote" },
-  { id: "B2B002", schoolName: "Modern School, Barakhamba", items: [{ description: "Customized Annual Planners", quantity: 50 }], requestedDelivery: "2024-09-01", status: "Quote Sent" },
-  { id: "B2B003", schoolName: "Lucknow Public School", items: [{ description: "Full stationery kits for Class 5", quantity: 80 }], requestedDelivery: "2024-07-30", status: "Order Confirmed" },
-];
+// MOCK DATA REMOVED
+const mockB2BOrders: B2BOrder[] = [];
 
 export default function SchoolOrdersPage() {
   const router = useRouter();
@@ -56,7 +54,7 @@ export default function SchoolOrdersPage() {
           <CardDescription><BilingualText en="Manage bulk orders from OSO partner schools and institutions." hi="OSO भागीदार स्कूलों और संस्थानों से बल्क ऑर्डर प्रबंधित करें।" /></CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-            {orders.map(order => (
+            {orders.length > 0 ? orders.map(order => (
                 <Card key={order.id} className="bg-muted/50">
                     <CardHeader className="pb-3 flex flex-row items-start justify-between">
                         <div>
@@ -87,7 +85,11 @@ export default function SchoolOrdersPage() {
                         <Button size="sm" variant="outline">View Details</Button>
                     </CardFooter>
                 </Card>
-            ))}
+            )) : (
+              <div className="text-center py-10 text-muted-foreground">
+                  <p><BilingualText en="No B2B orders found." hi="कोई B2B ऑर्डर नहीं मिला।" /></p>
+              </div>
+            )}
         </CardContent>
       </Card>
     </div>

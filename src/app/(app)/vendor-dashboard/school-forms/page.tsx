@@ -1,7 +1,7 @@
 
 // src/app/(app)/vendor-dashboard/school-forms/page.tsx
 "use client";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -20,11 +20,8 @@ interface SchoolFormOrder {
   date: string;
 }
 
-const mockFormOrders: SchoolFormOrder[] = [
-  { id: "FORM001", studentName: "Anjali Mehta", schoolName: "DPS Noida", formType: "Transfer Certificate", quantity: 2, status: "New", date: "2024-07-24" },
-  { id: "FORM002", studentName: "Rohan Kumar", schoolName: "Modern School", formType: "Admission Form", quantity: 1, status: "Processing", date: "2024-07-23" },
-  { id: "FORM003", studentName: "Priya Singh", schoolName: "DPS Noida", formType: "Bonafide Certificate", quantity: 5, status: "Ready", date: "2024-07-22" },
-];
+// MOCK DATA REMOVED
+const mockFormOrders: SchoolFormOrder[] = [];
 
 export default function SchoolFormsPage() {
   const router = useRouter();
@@ -61,7 +58,7 @@ export default function SchoolFormsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {orders.map(order => (
+            {orders.length > 0 ? orders.map(order => (
                 <Card key={order.id} className="bg-muted/50">
                     <CardHeader className="pb-2 flex flex-row items-start justify-between">
                         <div>
@@ -85,7 +82,11 @@ export default function SchoolFormsPage() {
                         )}
                     </CardFooter>
                 </Card>
-            ))}
+            )) : (
+              <div className="text-center py-6 text-muted-foreground">
+                <BilingualText en="No new form requests." hi="कोई नया फॉर्म अनुरोध नहीं।" />
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

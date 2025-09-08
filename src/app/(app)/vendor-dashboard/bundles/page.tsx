@@ -18,11 +18,8 @@ interface Bundle {
   category: 'Exam' | 'Festival' | 'Admission';
 }
 
-const mockBundles: Bundle[] = [
-  { id: "BUN001", title: "Board Exam Survival Kit", items: ["2 Pens", "1 Highlighter", "Exam Pad", "PYQ Booklet"], price: 199, category: "Exam" },
-  { id: "BUN002", title: "Admission Starter Kit", items: ["School Bag", "5 Notebooks", "ID Card Pouch", "School Badge"], price: 799, category: "Admission" },
-  { id: "BUN003", title: "Raksha Bandhan Student Combo", items: ["Pencil Box", "Chocolates", "Rakhi"], price: 149, category: "Festival" },
-];
+// MOCK DATA REMOVED
+const mockBundles: Bundle[] = [];
 
 export default function VendorBundlesPage() {
   const router = useRouter();
@@ -57,7 +54,7 @@ export default function VendorBundlesPage() {
             <Button><PlusCircle className="mr-2 h-4 w-4"/> Create Bundle</Button>
         </CardHeader>
         <CardContent className="space-y-3">
-            {bundles.map(bundle => (
+            {bundles.length > 0 ? bundles.map(bundle => (
                 <Card key={bundle.id} className="p-4 flex justify-between items-center">
                     <div>
                         <div className="flex items-center gap-2">
@@ -74,7 +71,11 @@ export default function VendorBundlesPage() {
                         </Button>
                     </div>
                 </Card>
-            ))}
+            )) : (
+              <div className="text-center py-10 text-muted-foreground">
+                <p><BilingualText en="No bundles created yet. Click 'Create Bundle' to start." hi="अभी तक कोई बंडल नहीं बनाया गया है। आरंभ करने के लिए 'बंडल बनाएं' पर क्लिक करें।" /></p>
+              </div>
+            )}
         </CardContent>
       </Card>
     </div>

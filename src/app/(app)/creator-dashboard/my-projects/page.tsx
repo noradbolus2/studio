@@ -1,4 +1,5 @@
 
+
 "use client";
 import { BilingualText } from "@/components/shared/BilingualText";
 import { Button } from "@/components/ui/button";
@@ -11,21 +12,23 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
-const mockActiveTasks = [
-  { id: "TASK001", title: "Create 20 Biology MCQs", deadline: "6 July", pay: 200, status: 'In Progress' },
-  { id: "TASK002", title: "Review History Flashcards", deadline: "8 July", pay: 150, status: 'Pending' }
-];
+// MOCK DATA REMOVED - In a real app, this data would be fetched from a database.
+const mockActiveTasks: { id: string; title: string; deadline: string; pay: number; status: 'In Progress' | 'Pending' }[] = [];
 
 export default function MyTasksPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [tasks, setTasks] = useState(mockActiveTasks);
+
 
   const handleSubmitForReview = (taskId: string) => {
     toast({
       title: "Submitted for Review",
       description: `Task #${taskId} has been submitted.`
     });
+    // In a real app, you would also update the status of the task here.
   };
 
   return (
@@ -41,7 +44,7 @@ export default function MyTasksPage() {
         </Button>
       </div>
 
-      {mockActiveTasks.map(task => (
+      {tasks.length > 0 ? tasks.map(task => (
          <Card key={task.id}>
             <CardHeader>
                 <div className="flex justify-between items-center">
@@ -76,11 +79,10 @@ export default function MyTasksPage() {
                 </Button>
             </CardFooter>
         </Card>
-      ))}
-      {mockActiveTasks.length === 0 && (
+      )) : (
          <Card>
             <CardContent className="p-6 text-center text-muted-foreground">
-                You have no active tasks.
+                <BilingualText en="You have no active tasks. Check the main dashboard for new opportunities." hi="आपके पास कोई सक्रिय कार्य नहीं है। नए अवसरों के लिए मुख्य डैशबोर्ड देखें।" />
             </CardContent>
         </Card>
       )}

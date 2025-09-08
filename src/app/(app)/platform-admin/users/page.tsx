@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -21,15 +22,8 @@ interface PlatformUser {
   joinDate: string;
 }
 
-const mockUsers: PlatformUser[] = [
-  { id: "USR101", name: "Riya Sharma", email: "riya.s@example.com", role: "Student", status: "Active", joinDate: "2024-07-15" },
-  { id: "USR102", name: "Amit Patel", email: "amit.p@example.com", role: "Student", status: "Active", joinDate: "2024-07-14" },
-  { id: "VND001", name: "Gupta Stationery", email: "gupta.stat@example.com", role: "Vendor", status: "Active", joinDate: "2024-06-20" },
-  { id: "TCH005", name: "Anjali Gupta", email: "anjali.g@example.com", role: "Teacher", status: "Active", joinDate: "2024-05-10" },
-  { id: "CRT002", name: "ScienceWonders", email: "contact@sciencewonders.com", role: "Creator", status: "Suspended", joinDate: "2024-06-25" },
-  { id: "SCH001", name: "DPS Noida Admin", email: "admin@dpsnoida.com", role: "School Admin", status: "Active", joinDate: "2024-04-01" },
-  { id: "PAR003", name: "Mr. Kumar", email: "mkumar@example.com", role: "Parent", status: "Pending", joinDate: "2024-07-22" },
-];
+// MOCK DATA REMOVED
+const mockUsers: PlatformUser[] = [];
 
 const userRoles = ["Student", "Parent", "Teacher", "School Admin", "Vendor", "Creator", "Rider"];
 
