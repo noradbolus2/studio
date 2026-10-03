@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Founder OS",
+    "slug": "founder-os",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "founderos",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.noradbolus.founderos",
+      "adaptiveIcon": {
+        "backgroundColor": "#6d5dfc"
+      }
+    },
+    "plugins": [],
+    "extra": {
+      "apiBaseUrl": "${EXPO_PUBLIC_API_BASE_URL}"
+    }
+  }
+}
